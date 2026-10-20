@@ -2,7 +2,7 @@ class_name Waist
 extends Node3D
 ## Your waist: a line tied on here leaves your hands free, at the price of
 ## walking slower and catching more wind. Use with a line in your hand and
-## nothing to work ties it on, and with your hands empty takes the last one
+## nothing to work ties it on, and with your hands empty takes the selected one
 ## back into them. Tying is instant; untying takes a moment, so a gust can
 ## catch you still tied on. The first sail's sheet tied here teaches its how-to.
 
@@ -14,6 +14,7 @@ var tied: Array[RigidBody3D] = []
 ## Seconds left untying, or -1; and whether it ends in your hand or on the sand.
 var untying := -1.0
 var _to_hand := false
+var _taking: RigidBody3D
 var _player: Player
 var _tuning := Tuning.current()
 var _was := {}
@@ -77,14 +78,40 @@ func take_from_hands() -> bool:
 	return true
 
 
-## The last line tied on back into your hands, once it's untied. Says whether
+## The selected line back into your hands, once it's untied. Says whether
 ## there was one to untie.
 func give_back() -> bool:
 	if untying >= 0.0 or tied.is_empty() or _player.hands.held != null:
 		return false
+	_taking = _player.hands.reel.waist_body()
+	# A sole stake returns as a whole; ropes never fall back to the last tie.
+	if _taking == null and tied.size() == 1 and tied[0] is Stake:
+		_taking = tied[0]
+	if _taking == null:
+		return false
 	untying = _tuning.untie_seconds
 	_to_hand = true
 	return true
+
+
+## A deliberate release starts a full untie, never shortcuts one in progress.
+func release_all() -> bool:
+	if untying >= 0.0:
+		return false
+	return let_go()
+
+
+func release_readout() -> String:
+	if untying < 0.0 or _to_hand:
+		return ""
+	var what := "all waist lines" if _only.is_empty() else "waist lines"
+	return "Releasing %s · %.1f s · still tied" % [what, maxf(untying, 0.0)]
+
+
+func release_progress() -> float:
+	if release_readout() == "":
+		return 0.0
+	return 1.0 - clampf(untying / _tuning.untie_seconds, 0.0, 1.0) if _tuning.untie_seconds > 0.0 else 1.0
 
 
 ## Lets go of every line tied on, or only `these`, once they're untied. Says
@@ -134,19 +161,30 @@ func _process(_delta: float) -> void:
 
 func _undone() -> void:
 	var hands := _player.hands
-	if _to_hand and hands.held == null:
-		hands.hold(untie(tied.back()))
+	if _to_hand:
+		if hands.held == null and is_instance_valid(_taking) and tied.has(_taking):
+			hands.hold(untie(_taking))
+		_taking = null
 		return
 	var going: Array[RigidBody3D] = tied.duplicate()
 	if not _only.is_empty():
 		going.assign(_only.filter(func(b: RigidBody3D) -> bool: return tied.has(b)))
 	_only = []
+	var released: Array[Rope] = []
 	for body: RigidBody3D in going:
+		if not is_instance_valid(body):
+			continue
+		for child in body.get_children():
+			if child is RopeEnd:
+				for rope: Rope in _player.world.ropes.lines_on(child):
+					if not released.has(rope):
+						released.append(rope)
 		untie(body)
 		# Down at your feet, moving as you were; it can't push you until it's clear.
 		body.linear_velocity = _player.velocity
 		body.add_collision_exception_with(_player)
 		_falling.append(body)
+	Deeds.measure(_player.world, &"cast_off", released.size())
 
 
 func _clear_of_you() -> void:

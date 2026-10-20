@@ -1,6 +1,6 @@
 extends MovementProbe
 ## Movement probe 5: the warnings always come first. Leave a small camp, a
-## shield generator and a crate, in a straight line at every speed from a
+## shield generator and a chassis, in a straight line at every speed from a
 ## walk to a board flat out with a tailwind behind it, along the chunk grid
 ## and across it: the first warning comes at least 15 s before you reach the
 ## edge where the camp is lost, the last at least 5 s before, and past the
@@ -16,7 +16,7 @@ const WAYS := [Vector2(1.0, 0.0), Vector2(0.6, -0.8)]
 ## Enough time to react, s, before the edge.
 const FIRST_LEAST := 15.0
 const LAST_LEAST := 5.0
-## Where the camp stands, from spawn, m: the shield and the crate.
+## Where the camp stands, from spawn, m: the shield and the chassis.
 const CAMP := [Vector2(2.0, 3.0), Vector2(-2.0, 3.5)]
 ## The countdown at the last warning is out by no more than this, s.
 const HONEST := 2.0
@@ -130,7 +130,7 @@ func _camp(home: Vector2) -> Array[Device]:
 	await settle(true)
 	var made: Array[Device] = []
 	for k in CAMP.size():
-		var device := Catalog.device(&"shield" if k == 0 else &"crate_frame")
+		var device := Catalog.device(&"shield" if k == 0 else &"chassis")
 		world.content.add_child(device)
 		var at: Vector2 = home + CAMP[k]
 		device.global_position = Vector3(world.engine_x(at.x), world.height_at(at.x, at.y) + 0.3, world.engine_z(at.y))

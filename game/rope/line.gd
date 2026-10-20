@@ -61,6 +61,25 @@ static func between(world: World, from: Socket, to: Socket, slack := 0.3) -> Lin
 	return line
 
 
+## A line already laid from a device's free tie socket to your waist, `slack`
+## metres longer than the way between them: a kit's sheet, a scenario's.
+static func to_waist(world: World, tie: Socket, slack: float) -> Line:
+	var line := Line.new()
+	line._world = world
+	world.content.add_child(line)
+	var device := tie.get_parent() as Device
+	var at := device.global_transform * tie.transform
+	var ends: Array[Part] = [line._end(at), line._end(world.player.global_transform)]
+	device.fit(ends[0], tie)
+	world.player.waist.tie(ends[1])
+	line.ends = ends
+	var span := _tip(ends[0]).global_position.distance_to(_tip(ends[1]).global_position)
+	line.full = maxf(span + slack, SHORTEST)
+	line._tie(line.full)
+	line.state = State.LAID
+	return line
+
+
 func _ready() -> void:
 	# Before the ropes are solved, and before the hands move on this tick.
 	process_physics_priority = -20
@@ -291,5 +310,8 @@ func _lost() -> void:
 	rope = null
 	for end in ends:
 		if is_instance_valid(end):
+			# A bare end left after a lost line is no longer a waist tether.
+			if _world.player.waist.holds(end):
+				_world.player.waist.untie(end)
 			end.remove_meta(&"line")
 	queue_free()

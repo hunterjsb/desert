@@ -38,7 +38,6 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | food_drop.ogg | the harvester's food landing on you | Kenney Impact `impactSoft_medium_001` and RPG Audio `cloth2` | CC0 | -36 | -16 |
 | drip_a.ogg, drip_b.ogg | the condenser's drip | made here: water drops | CC0 | -40 at 2 m | -24 |
 | chime_first/last/lost.ogg | the camp-range warnings | made here: soft bell notes | CC0 | -32, -30, -30 | -21 to -24 |
-| low_tick.ogg | the board's low-battery tick | made here | CC0 | -38 | -17 |
 | hover.ogg | the board's ride | Sand Game `object_bubbleplanter_hover.wav`, cut to a seamless loop | Sand Game | -34 | -21 |
 | board_on.ogg, board_off.ogg | getting on and off the board; a hover tray lifting off and settling | made here: a soft rising and falling hum | CC0 | -32 | -19, -21 |
 | shield_boot/hum/down.ogg | the shield | Sand Game `object_shield-boot`, `-sustain`, `-powerdown` | Sand Game | -26, -49 (the hum played 15 dB down), -28 at 4 m | -12, -22, -12 |
@@ -56,7 +55,111 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_eye_tunnel.ogg | the Eye's other drone, played in place of the first when the seed picks it | gonkhub's `A-amb-tunnel.wav`, mono, levelled to `radio_eye.ogg` (its loud spells' RMS), 0.5 s fades | gonkhub's own | -28 at 3 m | -19 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
 | menu_theme.ogg | the main menu's theme, "Salt" | Hunter's `A-Mx-salt.wav`, stereo, levelled to about -20 dBFS, 20 ms fades for a seamless loop | Hunter's own | about -20 LUFS, on the UI bus | -5 |
-| boom.ogg | a vent's burst or a gas pocket's blowout, from far off | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, and low-passed | -6 |
+| boom.ogg | a vent's burst or a gas pocket's blowout, from far off | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, never over 0 dB, and low-passed | -6 |
+| boom_roll.ogg | the low roll a boom rolls on with | made here (`make_rumble_sounds.py`): brown rumble under 140 Hz surging back nine times over a steady floor, a growl under it falling from 40 to 28 Hz, dying over 16 s | CC0 | -24.5 (its loudest 400 ms), 6 dB under the thump; played with it, 1.5 dB less spreading a doubling past a kilometre and lower and longer, low-passed alike | -12 |
+| vent_build.ogg | a live vent's deep build as a burst nears, looped | made here (`make_rumble_sounds.py`): a harmonic tremor at 31 Hz wandering in pitch over brown rumble, stones rattling faintly in it, softly saturated | CC0 | -21 at its loudest, a vent's greatest burst at its onset within 300 m; played by the root of distance past that | -8.5 |
 | vent_roar.ogg | a live vent's steady roar, near | made here: brown noise under 260 Hz breathing over its 7 s, a little hiss over it, looped | CC0 | -29 at 150 m seeping | -6 |
 
-The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
+The vents' felt sounds, the roll and the build, are made here by `make_rumble_sounds.py` (numpy,
+then ffmpeg's Vorbis and its EBU R128 meter; CC0). As heard in the game (`look/rumble/record.tscn`,
+the whole stereo mix through Master, by ffmpeg's ebur128): in the "vent" scenario, 1.5 km across the
+rift in a 7 m/s breeze, the wind and the vent's roar make a bed of -37 LUFS short-term, the build
+rises over it to -30 at the burst's onset, and the boom comes 4.3 s later at -21 momentary, its roll
+-26 to -28 for four seconds; the true peak is -10 dBTP, nowhere near the limiter. From 12 km in a
+9 m/s breeze there's no build, and the boom comes 32 s after the burst at -35 momentary over a -39
+wind, rolling on about 15 s where its thump alone would last 6 (measured offline, both through the
+Booms bus's 323 Hz there). Against the music's -28 at 3 m and the wind's -30 at a gale, the build is
+at most level with a gale and under the music, and only the boom's first moment is louder: felt,
+not loud.
+
+Scrapping's sounds are made here, numpy only, by `make_scrap_sounds.py` (CC0), as WAV. Their
+level is their loudest 400 ms unweighted, an estimate short of LUFS, with the voice's offset in
+the game:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| cutter.wav | the heat cutter firing, looped | made here: a torch's roar and hiss over a hum, crackling | CC0 | about -31 at 2 m | -12 |
+| plate_free.wav | a plate coming free | made here: a groan of metal and the snap of the last weld | CC0 | about -29 at 3 m | -9 |
+| plate_land.wav | a plate landing | made here: a dull clang of uneven partials and a thud | CC0 | about -28 at 3 m | -8 |
+| arc_loop.wav | a live capacitor bank, looped | made here: a mains buzz and the crackle of a leak | CC0 | about -41 at 1.2 m | -14 |
+| zap.wav | a shock, a bank shorted | made here: a discharge's crack and a falling buzz | CC0 | about -29 | -6 |
+| hiss_loop.wav | a breached store, looped | made here: a thin hiss | CC0 | about -35 at 1.2 m | -18 |
+| scoop.wav | a stroke of the scoop | made here: a blade through packed sand | CC0 | about -31 | -14 |
+| seal.wav | sealant over a breach | made here: a spray and the plop of it setting | CC0 | about -30 | -14 |
+
+The ride's sounds are made here too, numpy only, by `make_board_sounds.py` (CC0), as WAV,
+levelled the same way (a loop by its whole):
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| board_carve.wav | a carve's hiss as the hover holds you round, looped | made here: an airy hiss over a faint rustle, breathing | CC0 | about -36 at its hardest | -21 |
+| board_rush.wav | the wind's rush at speed, looped | made here: wide low noise gusting slowly, a thin whistle over it | CC0 | about -33 flat out | -20 |
+| board_pop.wav | a pop off a lip, or a hop | made here: a soft low thup and a fwip of air | CC0 | about -33 | -18 |
+| board_land.wav | a landing, by how hard | made here: a muffled whumph and a burst of sand | CC0 | about -31 at the jar | -17 |
+| board_slam.wav | a landing past the jar | made here: a deep thud, more sand and the deck's rattle | CC0 | about -27 | -14 |
+| board_knock.wav | a crash into something solid | made here: a hollow body's short-ringing knock, again as it comes back, a thud under | CC0 | about -27 | -14 |
+| board_bite.wav | a skid taking hold again | made here: a short scuff and the field's chirp | CC0 | about -36 | -17 |
+| hum_racer.wav | the skimmer racer's hum, looped | made here: a thin whine at 330 Hz with a buzz in it, a little vibrato | CC0 | about -35 | -31 |
+| hum_patrol.wav | the Knights' patrol board's hum, looped | made here: a deep thrum at 110 Hz pulsing like a rotor, a growl under it | CC0 | about -34 | -27 |
+| hum_temple.wav | the temple board's hum, looped | made here: a soft hum at 196 Hz, a ceramic ring of two beating partials, a breath of air | CC0 | about -35 | -28 |
+| battery_low.wav | a board's battery low, once, about a minute from flat | made here: a soft falling two-note "do-doo" | CC0 | about -34 | -24 |
+| battery_critical.wav | and critical, once, about 15 s from flat | made here: the same, lower, shorter and trembling | CC0 | about -30 | -19 |
+| tumble_a.wav, tumble_b.wav | your body hitting the sand as you tumble, by how hard | made here: a padded thud and whump, the sand crunching, a spray pattering back and your kit knocking | CC0 | about -29 at the hardest | -12, -14 |
+
+The issue board's hum is still `hover.ogg`. The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
+
+A deed's sound is made here too, numpy only, by `make_deed_sound.py` (CC0), as WAV, levelled by its
+loudest 400 ms (momentary LUFS) on the menus' bus:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| deed.wav | a deed done, as its badge shows | made here: three soft bell notes rising, A, E and A an octave up, over a warm low swell and a breath of high air | CC0 | -28 | -18 |
+
+The living city's chatter is made here too, numpy only, by `make_city_motifs.py` (CC0), as WAV at
+22.05 kHz: each tone a soft reed, odd harmonics over its fundamental, a breath of air on its attack and a
+slow vibrato, played through the radio's speaker like a god's tones:
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| city_storm.wav | storm coming: three falling, G, E and A | made here: reed tones | CC0 | -36 | -31 |
+| city_tether.wav | tether in: two low and two higher, A A D D | made here: reed tones | CC0 | -37 | -31 |
+| city_moving.wav | city moving: three rising, A, D and G | made here: reed tones | CC0 | -36 | -31 |
+| city_clear.wav | all clear: up and back, E A A E | made here: reed tones | CC0 | -36 | -31 |
+| city_position.wav | its position: a run of eight | made here: reed tones | CC0 | -37 | -31 |
+
+**The radio's voice** (`voice/`, one OGG a phrase, named by its words) reads the weather
+station's reports and a Console's battery warnings. It's rendered here, once, by
+`voice/make_voice.py` with [Piper](https://github.com/OHF-Voice/piper1-gpl) 1.8.0 and the
+`en_US-ljspeech-high` voice from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/high):
+
+- **The voice model:** trained from scratch on LJ Speech by Bryce Beattie, who releases it as
+  public domain ("Feel free to use these for any legal and ethical purpose",
+  [brycebeattie.com/files/tts](https://brycebeattie.com/files/tts/)); the piper-voices
+  repository is MIT.
+- **Its training data:** [LJ Speech](https://keithito.com/LJ-Speech-Dataset/), recordings by
+  Linda Johnson for LibriVox: "in the public domain in the US (and most likely other countries
+  as well)", with no limits on its use.
+- **Piper** (GPL) and the Whisper model the script checks each take with are tools only; none of
+  their code or weights ship, and neither claims what they make.
+
+Credit is optional and given here. Each phrase is trimmed to a breath either side, eased in
+and out over 5 and 30 ms so phrases join without a click, and levelled to -23 dBFS RMS over
+its voiced part, peaks under -6 dBFS; a report through the radio's speaker reads at about
+-25 LUFS, 3 dB over the music, to come through the static. Mono Vorbis at 22.05 kHz, about
+40 kbps: 165 phrases, 1.4 MB.
+
+The regular report and the advisories' phrases (the local time, the temperature, the bare
+numbers, "Weather advisory." to "Take shelter.", 90 more) were rendered the same way by gonkhub,
+2026-10-20, with the same script, voice and checks, encoded by libsndfile (soundfile) where
+there was no ffmpeg.
+
+## Field receiver (2026-10-20)
+
+Original mono sounds generated for Desert by `scripts/make_receiver_sounds.py`
+(Python and ffmpeg, no third-party recordings; CC0). Measured with ffmpeg ebur128.
+
+| File | Sound | Integrated loudness | True peak |
+|---|---|---|---|
+| receiver_switch.wav | the field receiver power latch | -34.0 LUFS | -10.0 dBTP |
+| receiver_tick.wav | the field receiver tuning detent | -35.3 LUFS | -9.1 dBTP |
+| receiver_pulse.wav | the directional field receiver contact pulse | -33.9 LUFS | -19.6 dBTP |

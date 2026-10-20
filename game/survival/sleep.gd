@@ -157,7 +157,7 @@ func storm_due() -> bool:
 func radio() -> Radio:
 	var at := _world.player.camera.global_position
 	for each: Radio in get_tree().get_nodes_in_group(Radio.GROUP):
-		if each.world != _world or each.wrecked() or each.global_position.distance_to(at) > Broadcast.EARSHOT:
+		if each is SurveyReceiver or each.world != _world or each.wrecked() or each.global_position.distance_to(at) > Broadcast.EARSHOT:
 			continue
 		if each.powered and (_world.power.pool_wh(each) > 0.0 or each.production_w() > 0.0):
 			return each
@@ -235,10 +235,14 @@ func overnight(until: float, station: Radio = null) -> Dictionary:
 	var groups := _groups()
 	var gave := {}
 	var woke := &""
+	var camps := _camps()
+	var field := world.weather.field
+	var stormed := false
 	while t < until - 1e-6:
 		woke = _woken(t, call, station)
 		if woke != &"":
 			break
+		stormed = stormed or field.raw_storm_at(world.player_world_x(), world.player_world_z(), t) > 0.0
 		var h := minf(_tuning.sleep_tick, until - t)
 		if _bear(t, h, bearings, gave):
 			groups = _groups()
@@ -260,6 +264,8 @@ func overnight(until: float, station: Radio = null) -> Dictionary:
 		if is_instance_valid(device) and not device.is_queued_for_deletion() and sound[device] > 0.0 \
 				and device.wrecked():
 			night.wrecked.append(_name(device))
+	if stormed and field.raw_storm_at(world.player_world_x(), world.player_world_z(), t) <= 0.0 and _kept(camps):
+		Deeds.done(world, &"slept_it_off")
 	world.weather.forecast_now()
 	# The storm pass's map is drawn again for the hour you woke to while it's dark.
 	world.weather.map.update(t, 1.0)
@@ -492,6 +498,34 @@ func _moving(motion: Vector2) -> bool:
 
 static func _still_moving(body: Node) -> String:
 	return "the %s's still moving" % _name(body).to_lower()
+
+
+## Your camp as you lie down: each deck near you, and all of it (Chassis.camp).
+func _camps() -> Dictionary:
+	var out := {}
+	if not Deeds.waiting(_world, &"slept_it_off"):
+		return out
+	var at := _world.player.global_position
+	for node in _world.content.get_children():
+		var deck := node as Chassis
+		if deck != null and deck.global_position.distance_to(at) <= _tuning.sleep_camp_m:
+			out[deck] = deck.camp().filter(func(each: Node) -> bool: return not (each is Device and each.wrecked()))
+	return out
+
+
+## Whether every deck of a camp woke with all of it still on it, nothing
+## wrecked.
+static func _kept(camps: Dictionary) -> bool:
+	if camps.is_empty():
+		return false
+	for deck: Chassis in camps:
+		if not is_instance_valid(deck) or deck.is_queued_for_deletion():
+			return false
+		var now := deck.camp()
+		for each: Node in camps[deck]:
+			if not each in now or each is Device and (each as Device).wrecked():
+				return false
+	return true
 
 
 ## The camp: your devices and stakes loose near you.

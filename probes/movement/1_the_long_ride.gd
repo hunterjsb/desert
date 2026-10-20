@@ -75,8 +75,9 @@ func run() -> void:
 		% [seen.ridden / 1000.0, seen.ticks / 60.0, seen.ridden / (seen.ticks / 60.0), seen.fastest, seen.seams, used])
 	print("underside at least %.3f m over the sand; %d launches off crests, the highest %.2f m over its ride height and the longest %.2f s, %d elsewhere, %d bounces"
 		% [seen.lowest, seen.launches, seen.highest, seen.longest, seen.astray, seen.bounces])
-	print("hardest %.1f m/s² (%.1f g), %d judders, bottomed %d times"
-		% [seen.hardest, seen.hardest / 9.8, seen.judders, ride.bottomed])
+	print("hardest %.1f m/s² (%.1f g), %d judders, bottomed %d times, %.2f m/s at most; the hardest landing %.1f m/s; %s"
+		% [seen.hardest, seen.hardest / 9.8, seen.judders, ride.bottomed, ride.hardest, ride.landed_hardest,
+			"thrown off (%s)" % ride.thrown if ride.caught else "never thrown"])
 	check(seen.ridden >= DISTANCE and seen.seams > 250, "20 km over the chunk seams (%d crossed)" % seen.seams)
 	check(seen.lowest >= 0.0, "the board never dipped below the sand (%.3f m at least)" % seen.lowest)
 	check(seen.astray == 0, "it never launched but off a crest (%d elsewhere)" % seen.astray)

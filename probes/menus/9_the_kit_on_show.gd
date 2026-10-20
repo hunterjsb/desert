@@ -1,6 +1,6 @@
 extends MenuProbe
 ## Menus & UI probe 9: the prop aside, and the music's switch. Before any run
-## the main menu shows the Surveyor's crate. Every menu opened off it stands
+## the main menu shows the Surveyor's camp. Every menu opened off it stands
 ## down the left with the prop slid aside: the deeds, Options, the controls
 ## list, the question before a reset, who you come as and the mode; back slides it
 ## home. Who you come as shows the highlighted Salvager's board, and each
@@ -15,7 +15,7 @@ func run() -> void:
 	await open_main()
 	var surveyor := Kit.named(&"surveyor")
 	var salvager := Kit.named(&"salvager")
-	check(main.showpiece.shown == surveyor.id, "before any run, the menu shows the Surveyor's crate")
+	check(main.showpiece.shown == surveyor.id, "before any run, the menu shows the Surveyor's camp")
 	var home := _across()
 	press(&"ui_down")
 	press(&"ui_accept")
@@ -24,12 +24,11 @@ func run() -> void:
 	press(&"ui_down")
 	press(&"ui_accept")
 	await _aside("Options", home)
-	for i in 4:
-		press(&"ui_down")
+	_down_to("controls")
 	press(&"ui_accept")
 	await _aside("the controls list", home)
 	press(&"ui_cancel")
-	press(&"ui_down")
+	_down_to("reset")
 	press(&"ui_accept")
 	await _aside("the question before a reset", home)
 	press(&"ui_cancel")
@@ -46,11 +45,12 @@ func run() -> void:
 	var drift := PackedStringArray()
 	for kit in Kit.origins():
 		var listed := kit.gear()
-		for id in kit.carried:
-			listed[id] -= kit.carried[id]
+		var on_you := kit.carried_gear()
+		for id in on_you:
+			listed[id] -= on_you[id]
 			if listed[id] == 0:
 				listed.erase(id)
-		var got := _set_down(kit)
+		var got := await _set_down(kit)
 		if str(_sorted(listed)) != str(_sorted(got)):
 			drift.append("the %s lists %s, a run sets down %s" % [kit.label, _sorted(listed), _sorted(got)])
 	check(drift.is_empty(), "each origin's gear as listed is what its run sets down (%s)" % "; ".join(drift))
@@ -102,13 +102,34 @@ func _set_down(kit: Kit) -> Dictionary:
 			else (&"cable" if node is Cable else node.get_meta(&"catalog", &"")))
 		if node in plugs or id == &"":
 			continue
-		got[id] = got.get(id, 0) + 1
-		# A line's ends are the line's.
-		if node is Device:
-			for socket: Socket in node.frame_sockets():
-				if socket.part != null and socket.kind != &"tie":
+		var deck := node as Chassis
+		# A deck counts each of its pieces, and the parts stuck on it; the
+		# devices stuck on it are in what was made already.
+		var bodies: Array = deck.pieces() if deck != null else [node]
+		for body: Node in bodies:
+			got[id] = got.get(id, 0) + 1
+			# A line's ends are the line's.
+			if body is Device:
+				for socket: Socket in body.frame_sockets():
+					if socket.part != null and socket.kind != &"tie":
+						var part: StringName = socket.part.get_meta(&"catalog")
+						got[part] = got.get(part, 0) + 1
+		if deck != null:
+			for socket in deck.stuck():
+				if socket.part != null:
 					var part: StringName = socket.part.get_meta(&"catalog")
 					got[part] = got.get(part, 0) + 1
+	# A line tied at your waist is waited on a frame, as a sheet there is.
+	var waist := main.view.player.waist
+	var tied := []
+	for node in made:
+		if node is Line:
+			for end in (node as Line).ends:
+				if waist.holds(end):
+					tied.append(waist.untie(end))
+	await get_tree().process_frame
+	for end in tied:
+		end.free()
 	for node in made:
 		if is_instance_valid(node):
 			node.free()
@@ -134,3 +155,12 @@ func _until(done: Callable, max_frames := 600) -> void:
 		if done.call():
 			return
 		await get_tree().process_frame
+
+
+## Down the menu on top to the word that begins so, wherever Options puts it.
+func _down_to(start: String) -> void:
+	var menu: Words = main.ui.top()
+	for i in menu.words().size():
+		if menu.words()[menu.highlighted()].to_lower().begins_with(start):
+			return
+		press(&"ui_down")

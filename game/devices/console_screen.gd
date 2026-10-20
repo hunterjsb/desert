@@ -7,8 +7,9 @@ extends Control
 ## blue, unknown air dark; the front's numbers where the front is, the
 ## pressure's bar down its edge, the forecast along its foot, and under it the
 ## gyro and the legend. Its power page is the deck's electrics as a panel: one
-## line from what makes power through the batteries to what draws it, each
-## device's switches on its row. Its other pages draw rows as a Terminal
+## line from what makes power through each power box, its bays as its strips
+## show them, and the batteries to what draws it, each device's switches on its
+## row, paged when they're more than it holds. Its other pages draw rows as a Terminal
 ## prints them: a table's labels in the accent, numbers right-aligned, units
 ## after; what's urgent in amber, rows that run on dim. Nothing wraps: a row
 ## too long for its line is cut. Its tabs run along its foot. Drawn only when
@@ -45,6 +46,12 @@ const PANEL := 56.0
 const LINE := 40.0
 const SWITCHES := 52.0
 const BAR := 28.0
+## A power box's bays: a row of them, the gap between, a bay's strip's width.
+const BAY_ROW := 66.0
+const BAY_GAP := 6.0
+const BAY_STRIP := 14.0
+## Held to charge only, a bay reads in the strips' cool blue.
+const HELD := Color(0.3, 0.55, 1.0)
 ## The legend's gyro, its middle in from the legend's corner and its radius,
 ## and the stats page's.
 const LEGEND_GYRO := Vector3(118.0, 128.0, 92.0)
@@ -60,6 +67,9 @@ const WALL := Color(0.86, 0.6, 0.24)
 const HEART := Color(0.6, 0.26, 0.08)
 ## Tu-ward's mark, Tu's lit rim.
 const TU := Color("#9fc0f0")
+## The chart's noted bearings, and an anomaly on any map once the Walker's taught.
+const BEARING := Color(0.55, 0.9, 0.8)
+const ANOMALY := Color(0.85, 0.4, 0.95)
 ## The pressure bar's span either side of the storm's line, in the field's units.
 const BAR_SPAN := 0.6
 ## The gyro's vectors are full length at this wind, m/s.
@@ -89,14 +99,31 @@ static func lay_out(model: Dictionary) -> void:
 		for source: Dictionary in panel.sources:
 			source["y"] = y
 			y += LINE
+		for box: Dictionary in panel.get("boxes", []):
+			box["y"] = y
+			y += LINE
+			var n: int = box.bays.size()
+			var columns := n if n <= 5 else (4 if n % 4 == 0 else 5)
+			var cell := (canvas.x - MARGIN - PANEL - BAY_GAP * (columns - 1)) / columns
+			for i in n:
+				var bay: Dictionary = box.bays[i]
+				bay["box"] = Rect2(Vector2(PANEL + (i % columns) * (cell + BAY_GAP), y + (i / columns) * BAY_ROW),
+					Vector2(cell, BAY_ROW - BAY_GAP))
+				if bay.has("key"):
+					bay.key["box"] = bay.box
+					keys.append(bay.key)
+			y += ceili(n / float(columns)) * BAY_ROW
 		panel.bank["y"] = y
 		y += 3.0 * LINE + BAR
 		panel["draws_y"] = y
 		y += LINE
 		var shown := 0
-		for load: Dictionary in panel.loads:
+		var loads: Array = panel.loads
+		var first: int = panel.get("first", 0)
+		for k in range(first, loads.size()):
+			var load: Dictionary = loads[k]
 			var tall: float = LINE + SWITCHES * load.groups.size()
-			# Room is kept for a row saying how many more there are.
+			# Room is kept for a row paging to the rest.
 			if y + tall > top - LINE:
 				break
 			load["y"] = y
@@ -110,6 +137,13 @@ static func lay_out(model: Dictionary) -> void:
 			shown += 1
 		panel["shown"] = shown
 		panel["end_y"] = y
+		if panel.has("more") and (first > 0 or first + shown < loads.size()):
+			var next := first + shown if first + shown < loads.size() else 0
+			var more: Dictionary = panel.more
+			more.text = "+%d MORE" % (loads.size() - first - shown) if next > 0 else "FROM THE TOP"
+			more.act = (more.act as Callable).bind(next)
+			more["box"] = Rect2(Vector2(PANEL, y + 2.0), Vector2(canvas.x - MARGIN - PANEL, LINE - 4.0))
+			keys.append(more)
 	model["keys"] = keys
 
 
@@ -129,10 +163,16 @@ func _draw() -> void:
 		"POWER":
 			_draw_header()
 			_draw_power()
+		"SURVEY":
+			_draw_header()
+			_draw_survey(keys_top)
+		"CHART":
+			_draw_chart(keys_top)
 		_:
 			_draw_header()
 			_draw_rows(keys_top)
 	_draw_keys()
+	_draw_bays()
 
 
 func _color(name: StringName) -> Color:
@@ -146,6 +186,8 @@ func _draw_radar(keys_top: float) -> void:
 	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), UNKNOWN)
 	if not map.is_empty() and map.has("cells"):
 		_draw_cells(map, side)
+	if map.has("reach"):
+		_draw_anomalies(map.get("anomalies", []), map.reach, side)
 	var middle := Vector2(side, side) * 0.5
 	var text := _color(&"text")
 	var accent := _color(&"accent")
@@ -172,6 +214,64 @@ func _draw_radar(keys_top: float) -> void:
 		draw_string(FONT, Vector2(MARGIN, side - 16.0), fits, HORIZONTAL_ALIGNMENT_CENTER, side - 2.0 * MARGIN, SMALL, text)
 	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), Color(accent, 0.5), false, 2.0)
 	_draw_legend(map, Rect2(0.0, side + 8.0, side, keys_top - side - 8.0))
+
+
+## The ground radar's map, the Console in its middle and north up, rings
+## every hundred metres: the old lines under the sand faint, a structure a
+## square, a dune's ruin a triangle, an outline while the sand's over it,
+## amber while a storm lays it bare, solid once it's out; and under the map
+## the nearest, listed.
+func _draw_survey(keys_top: float) -> void:
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var accent := _color(&"accent")
+	var side := size.x - 2.0 * MARGIN
+	var box := Rect2(Vector2(MARGIN, TOP), Vector2(side, side))
+	draw_rect(box, UNKNOWN)
+	var middle := box.get_center()
+	var survey: Dictionary = _model.get("survey", {})
+	var reach: float = survey.get("reach", 0.0)
+	if reach > 0.0:
+		var scale := side * 0.5 / reach
+		for ring in range(100, int(reach) + 1, 100):
+			draw_arc(middle, ring * scale, 0.0, TAU, 64, Color(dim, 0.35), 2.0)
+		var inside := Rect2(box.position, box.size)
+		for points: PackedVector2Array in survey.get("lines", []):
+			for i in points.size() - 1:
+				var a := middle + points[i] * scale * (-1.0 if _model.flip else 1.0)
+				var b := middle + points[i + 1] * scale * (-1.0 if _model.flip else 1.0)
+				if inside.has_point(a) or inside.has_point(b):
+					draw_line(_clamped(a, inside), _clamped(b, inside), Color(accent, 0.35), 3.0)
+		for each: Dictionary in survey.get("sites", []):
+			var at: Vector2 = each.at * scale * (-1.0 if _model.flip else 1.0)
+			if absf(at.x) > side * 0.5 or absf(at.y) > side * 0.5:
+				continue
+			var spot := middle + at
+			var color := URGENT if each.bared else (text if each.under <= 0.0 else dim)
+			var mark := PackedVector2Array([spot + Vector2(0.0, -12.0), spot + Vector2(11.0, 8.0), spot + Vector2(-11.0, 8.0)]) \
+				if each.dune else PackedVector2Array([spot + Vector2(-8.0, -8.0), spot + Vector2(8.0, -8.0),
+					spot + Vector2(8.0, 8.0), spot + Vector2(-8.0, 8.0)])
+			if each.bared or each.under <= 0.0:
+				draw_colored_polygon(mark, color)
+			else:
+				mark.append(mark[0])
+				draw_polyline(mark, color, 3.0)
+	draw_line(middle - Vector2(10.0, 0.0), middle + Vector2(10.0, 0.0), text, 3.0)
+	draw_line(middle - Vector2(0.0, 10.0), middle + Vector2(0.0, 10.0), text, 3.0)
+	_label(box.position + Vector2(10.0, 8.0), "N", MID, accent)
+	if _model.get("cells", "") != "":
+		_label(box.position + Vector2(10.0, side - 36.0), _model.cells, SMALL - 4, dim)
+	draw_rect(box, Color(accent, 0.5), false, 2.0)
+	var y := TOP + side + 12.0
+	for row: String in _model.get("rows", []):
+		if y + ROW > keys_top:
+			break
+		_table_row(row, MARGIN, y, STATS_COLUMNS)
+		y += ROW
+
+
+static func _clamped(at: Vector2, box: Rect2) -> Vector2:
+	return at.clamp(box.position, box.end)
 
 
 ## Each cell its storm, as dense as its sand where a sensor reads it, or its
@@ -204,6 +304,78 @@ func _draw_cells(map: Dictionary, side: float) -> void:
 				for s in 3:
 					var from := box.position + Vector2(box.size.x * s / 3.0, box.size.y)
 					draw_line(from, from + Vector2(box.size.x / 3.0, -box.size.y / 3.0), GLASS, 2.0)
+
+
+## The chart: the moon round the Console, north up, rings each 10 km; the
+## Rim and Tu-ward; each noted bearing a line from where the Walker stood,
+## that spot a dot; a fix where three cross; and once the Walker's taught,
+## the anomalies. Its rows under it.
+func _draw_chart(keys_top: float) -> void:
+	var side := size.x
+	var chart: Dictionary = _model.get("chart", {})
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var accent := _color(&"accent")
+	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), UNKNOWN)
+	var middle := Vector2(side, side) * 0.5
+	var reach: float = chart.get("reach", 1.0)
+	var scale := side * 0.5 / reach
+	for k in range(1, int(reach / 10000.0) + 1):
+		draw_arc(middle, k * 10000.0 * scale, 0.0, TAU, 48, Color(dim, 0.25), 1.0)
+	var on := func(at: Vector2) -> Vector2: return middle + at * scale
+	_polyline(chart.get("rim", PackedVector2Array()), on, Color(TU, 0.5), 2.0, side)
+	if chart.has("tu"):
+		var tu: Vector2 = on.call(chart.tu)
+		if Rect2(Vector2.ZERO, Vector2(side, side)).has_point(tu):
+			draw_circle(tu, 8.0, TU)
+			_label(tu + Vector2(10.0, -10.0), "TU", KEY, TU)
+	_draw_anomalies(chart.get("anomalies", []), reach, side)
+	for line: PackedVector2Array in chart.get("lines", []):
+		_polyline(line, on, Color(BEARING, 0.8), 2.0, side)
+		draw_circle(on.call(line[0]), 5.0, BEARING)
+	if chart.has("fix"):
+		var fix: Vector2 = on.call(chart.fix)
+		draw_arc(fix, 16.0, 0.0, TAU, 24, URGENT, 3.0)
+		_label_at(fix, "FIX", MID, URGENT, side)
+	draw_line(middle - Vector2(10.0, 0.0), middle + Vector2(10.0, 0.0), text, 3.0)
+	draw_line(middle - Vector2(0.0, 10.0), middle + Vector2(0.0, 10.0), text, 3.0)
+	_label(Vector2(MARGIN, MARGIN), "N", MID, accent)
+	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), Color(accent, 0.5), false, 2.0)
+	var y := side + 16.0
+	for row: String in _model.get("rows", []):
+		if y + ROW > keys_top:
+			break
+		_table_row(row, MARGIN, y, STATS_COLUMNS)
+		y += ROW
+	_label(Vector2(side - 200.0, side - 44.0), "%d km across" % roundi(reach * 2.0 / 1000.0), SMALL - 4, dim)
+
+
+## A line of map places, kept to the map's square.
+func _polyline(points: PackedVector2Array, on: Callable, color: Color, width: float, side: float) -> void:
+	var box := Rect2(Vector2.ZERO, Vector2(side, side))
+	for i in points.size() - 1:
+		var a: Vector2 = on.call(points[i])
+		var b: Vector2 = on.call(points[i + 1])
+		if box.has_point(a) or box.has_point(b):
+			draw_line(a.clamp(Vector2.ZERO, Vector2(side, side)), b.clamp(Vector2.ZERO, Vector2(side, side)), color, width)
+
+
+## Each anomaly as a ring as wide as it reaches, as bright as it stands
+## strong, its heart marked: its place east and south of the map's middle.
+func _draw_anomalies(hearts: Array, reach: float, side: float) -> void:
+	var middle := Vector2(side, side) * 0.5
+	var scale := side * 0.5 / maxf(reach, 1.0)
+	for heart: Dictionary in hearts:
+		var at: Vector2 = heart.at
+		var spot := middle + at * scale
+		var r: float = heart.radius * scale
+		if (spot - middle).length() - r > side * 0.5:
+			continue
+		draw_arc(spot, r, 0.0, TAU, 48, Color(ANOMALY, 0.4 + 0.5 * heart.strength), 3.0)
+		draw_arc(spot, r * 0.25, 0.0, TAU, 24, ANOMALY, 2.0)
+		draw_circle(spot, 6.0, ANOMALY)
+		if Rect2(Vector2.ZERO, Vector2(side, side)).has_point(spot):
+			_label_at(spot, "ANOMALY", SMALL, ANOMALY, side)
 
 
 ## Pressure as a bar down the map's edge, the storm's line across it, filled
@@ -409,6 +581,9 @@ func _draw_power() -> void:
 		var at: float = source.y + mid
 		_arrow(Vector2(PANEL - 6.0, at), Vector2(BUS + 6.0, at), accent, 3.0)
 		nodes.append(at)
+	for box: Dictionary in panel.get("boxes", []):
+		_power_row(box.row, box.y, true)
+		nodes.append(box.y + mid)
 	var bank: Dictionary = panel.bank
 	_power_row(bank.row, bank.y)
 	nodes.append(bank.y + mid)
@@ -421,23 +596,69 @@ func _draw_power() -> void:
 	_power_row(panel.draws, panel.draws_y)
 	nodes.append(panel.draws_y + mid)
 	var loads: Array = panel.loads
+	var first: int = panel.get("first", 0)
 	for i in panel.shown:
-		var load: Dictionary = loads[i]
+		var load: Dictionary = loads[first + i]
 		_power_row(("!" if load.dark else "") + load.row, load.y, true)
 		# What draws takes from the line.
 		var at: float = load.y + mid
 		_arrow(Vector2(BUS + 6.0, at), Vector2(PANEL - 8.0, at), dim if load.dark else text, 3.0)
 		nodes.append(at)
-	if panel.shown < loads.size():
+	if panel.shown < loads.size() and not panel.has("more"):
 		_power_row(" +%d more" % (loads.size() - panel.shown), panel.end_y)
 	draw_line(Vector2(BUS, nodes[0]), Vector2(BUS, nodes[-1]), accent, 4.0)
 	for at in nodes:
 		draw_circle(Vector2(BUS, at), 5.0, accent)
-	# The batteries sit on the line: a cell's mark.
-	var cell := Rect2(Vector2(BUS - 12.0, bank.y + mid - 7.0), Vector2(24.0, 14.0))
-	draw_rect(cell, GLASS)
-	draw_rect(cell, accent, false, 2.0)
-	draw_rect(Rect2(Vector2(BUS - 4.0, cell.position.y - 4.0), Vector2(8.0, 4.0)), accent)
+	# The batteries sit on the line, a box's and the bank: a cell's mark.
+	var stores: Array[float] = [bank.y + mid]
+	for box: Dictionary in panel.get("boxes", []):
+		stores.append(box.y + mid)
+	for y in stores:
+		var cell := Rect2(Vector2(BUS - 12.0, y - 7.0), Vector2(24.0, 14.0))
+		draw_rect(cell, GLASS)
+		draw_rect(cell, accent, false, 2.0)
+		draw_rect(Rect2(Vector2(BUS - 4.0, cell.position.y - 4.0), Vector2(8.0, 4.0)), accent)
+
+
+## Each box's bays as its strips show them: a bar as full as the bay, in the
+## charge lights' colours, an arrow up as it charges and down as it supplies,
+## its share and its watts beside; held to charge, it reads blue; dead or
+## empty, it says so. Over the keys, so a cabinet's bay reads as you aim at it.
+func _draw_bays() -> void:
+	var panel: Dictionary = _model.get("panel", {})
+	if panel.is_empty() or _model.page != "POWER":
+		return
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var faint := _color(&"faint")
+	var keys: Array = _model.keys
+	for box: Dictionary in panel.get("boxes", []):
+		for bay: Dictionary in box.bays:
+			var r: Rect2 = bay.box
+			var aimed: bool = bay.has("key") and _model.aim == keys.find(bay.key)
+			var ink := GLASS if aimed else text
+			if not bay.has("key"):
+				draw_rect(r, Color(faint, 0.5), false, 2.0)
+			var strip := Rect2(r.position + Vector2(6.0, 6.0), Vector2(BAY_STRIP, r.size.y - 12.0))
+			draw_rect(strip, Color(GLASS, 0.9))
+			var state: int = bay.state
+			var share: float = bay.share
+			var level := ChargeLight.COLORS[3 if share > 0.5 else (2 if share > 0.2 else (1 if share > 0.0 else 0))]
+			if state < 2 and share > 0.0:
+				var tall := strip.size.y * share
+				draw_rect(Rect2(Vector2(strip.position.x, strip.end.y - tall), Vector2(strip.size.x, tall)), level)
+			draw_rect(strip, HELD if state == 1 else Color(faint, 0.8), false, 3.0 if state == 1 else 1.0)
+			var x := strip.end.x + 8.0
+			var line := (r.size.y - 4.0) * 0.5
+			var flow: float = bay.flow
+			if state < 2 and absf(flow) >= 0.5:
+				_trend(Vector2(x + ARROW * 0.5, r.position.y + 2.0 + line * 0.5), "▲" if flow > 0.0 else "▼", level)
+			var size := KEY
+			var at := x + ARROW + 4.0
+			var room := r.end.x - at - 4.0
+			var base := r.position.y + 2.0 + (line + FONT.get_ascent(size) - FONT.get_descent(size)) * 0.5
+			_words(Vector2(at, base), bay.pct, room, size, (HELD if state == 1 and not aimed else ink) if state < 2 else dim)
+			_words(Vector2(x, base + line), bay.w, r.end.x - x - 4.0, size - 2, dim if not aimed else GLASS)
 
 
 ## A row of the power panel, centred in its line.

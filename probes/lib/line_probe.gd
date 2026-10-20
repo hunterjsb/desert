@@ -36,8 +36,8 @@ func blow(along: Vector2, gusts := 0.0) -> void:
 		else func(_x: float, _z: float, _t: float) -> Vector2: return Vector2.ZERO
 
 
-## A catalog device floating on its tray over `at`, a battery in and a hook on
-## every ring mount.
+## A catalog device floating on its tray over `at`, a battery in or on it
+## and a hook on every ring.
 func floating(id: StringName, at: Vector3) -> Device:
 	var made := device(id, at, world.tuning.hover_height)
 	fit_part(made, &"hover_tray")

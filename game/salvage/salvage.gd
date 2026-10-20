@@ -9,7 +9,10 @@ extends Node
 ## an ordinary thing in the world. A site remembers what was taken from it
 ## while it's laid, and the save keeps that; a chunk remembers its loose
 ## finds taken while it's loaded. And the drift a storm carries is caught on
-## your lines (Drift).
+## your lines (Drift). A wreck's scrapping (Wreckage) is built with its
+## chunk's finds: its plates, the sand in its holds, its hazards, and its
+## modules held fast until they're cleared; what was done to it is kept in
+## its site's memory with what was taken.
 
 ## How long a loose find may take to settle before it's frozen anyway, s, and
 ## how still it must be to count as settled.
@@ -41,11 +44,14 @@ var _forgotten: Array = []
 ## Loose finds settling: [body, seconds since placed, seconds still].
 var _settling: Array[Array] = []
 ## What was taken from each site while it's laid, by its id: [the site, or
-## null until a resumed run's is laid again, {socket: true}].
+## null until a resumed run's is laid again, {socket: true}, what was done to
+## it if it's a wreck (Wreckage.state)].
 var _sites := {}
 ## Site finds easing to where they lie now: [body, its transform in its
 ## chunk's frame to come to, whether it's sinking out of reach].
 var _easing: Array[Array] = []
+## Each wreck's scrapping built now, by its site.
+var _wreckage := {}
 ## Whether a chunk has gone since the sites' memory was last pruned.
 var _prune := false
 ## The last tick of drift drawn.
@@ -66,6 +72,7 @@ class Lot:
 	var seen := {}
 	var waiting := {}
 	var drawn := {}
+	var wrecks: Array[Wreckage] = []
 
 
 ## Work for the streaming budget: planning a chunk (no spec), or what one
@@ -82,6 +89,8 @@ class Piece:
 	## Read again as a storm works on its site: what's newly within reach
 	## comes up out of the sand.
 	var again := false
+	## A wreck's scrapping still being built, a piece a step.
+	var wreck: Wreckage
 
 	func _init(at: Vector2i, find := {}, of: Structure = null, i := -1, anew := false) -> void:
 		coord = at
@@ -110,9 +119,10 @@ func _first_time() -> void:
 	Ruin.prepare()
 	SiteLoot.prepare()
 	Dress.prepare()
-	var spec := {"id": &"crate_frame", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
+	Wreckage.prepare()
+	var spec := {"id": &"chassis", "device": true, "layer": Finds.DEEP, "x": 0.0, "z": 0.0, "yaw": 0.0,
 		"lean": 0.0, "lean_by": 0.0, "bury": 0.3, "sound": 0.5, "charge": 0.5,
-		"fill": [[0, &"battery", 0.5], [5, &"hook", 0.0], [1, &"hover_tray", 0.0], [2, &"solar_panel", 0.0]]}
+		"fill": [[0, &"hook", 0.0], [4, &"hover_tray", 0.0], [5, &"battery", 0.5], [6, &"solar_panel", 0.0]]}
 	var stand_in := Finds.make(spec)
 	stand_in.transform = Finds.pose(stand_in, spec, func(_x: float, _z: float) -> float: return -1000.0)
 	stand_in.freeze = true
@@ -152,6 +162,9 @@ func stream(deadline: int) -> void:
 		elif piece.again:
 			_queue.pop_front()
 			_read_again(piece, lot)
+		elif piece.wreck != null:
+			if not is_instance_valid(piece.wreck) or piece.wreck.build_step():
+				_queue.pop_front()
 		elif piece.site != null and piece.spec.is_empty():
 			_queue.pop_front()
 			var spec := SiteLoot.within_reach(piece.site, piece.socket, _world.height_at, _taken_from(piece.site))
@@ -173,11 +186,15 @@ func stream(deadline: int) -> void:
 
 
 ## A loaded site a storm is working on, read again when enough sand has
-## come off it or gone back: called each time its chunk moves what stands on it.
+## come off it or gone back: called each time its chunk moves what stands on
+## it. A wreck's scrapping moves with it every time.
 func follow(chunk: TerrainChunk) -> void:
 	var lot: Lot = _lots.get(chunk.coord)
 	if lot == null or lot.chunk != chunk:
 		return
+	for wreck in lot.wrecks:
+		if is_instance_valid(wreck):
+			wreck.follow(chunk)
 	for site in chunk.structures():
 		var was: Variant = lot.seen.get(site)
 		if was == null or lot.waiting.has(site):
@@ -238,7 +255,7 @@ func _laying(site: Structure, i: int) -> bool:
 
 ## Where a find lies for its spec, in its chunk's frame.
 func _placed(lot: Lot, body: RigidBody3D, spec: Dictionary) -> Transform3D:
-	var pose := Finds.pose(body, spec, _world.height_at)
+	var pose := _stowed(body, spec) if spec.has("base") else Finds.pose(body, spec, _world.height_at)
 	var at := Vector3(_world.engine_x(pose.origin.x), pose.origin.y, _world.engine_z(pose.origin.z))
 	return Transform3D(pose.basis, at - lot.chunk.position)
 
@@ -347,10 +364,16 @@ func lying(body: Node) -> bool:
 ## from now on, loose unless the sand still holds it, running if its battery
 ## can, and its chunk won't lay it out again while it's loaded.
 func claim(body: Node) -> void:
+	# What's seated on a found rig is the rig's: the whole rig becomes yours.
+	while body is Device and not body.has_meta(&"find") and (body as Device).host() != null:
+		body = (body as Device).host()
 	if body == null or not body.has_meta(&"find"):
 		return
 	var from: Array = body.get_meta(&"find")
 	body.remove_meta(&"find")
+	var module: Array = body.get_meta(&"module", [])
+	if body.has_meta(&"module"):
+		body.remove_meta(&"module")
 	var lot: Lot = _lots.get(from[0])
 	for i in range(_easing.size() - 1, -1, -1):
 		if _easing[i][0] == body:
@@ -358,9 +381,13 @@ func claim(body: Node) -> void:
 	if from.size() > 2:
 		var memory: Array = _sites.get(from[2], [])
 		if memory.is_empty():
-			memory = [_laid_site(from[2]), {}]
+			memory = [_laid_site(from[2]), {}, {}]
 			_sites[from[2]] = memory
 		memory[1][from[1]] = true
+		_deeds(memory, module)
+		var site: Structure = memory[0].get_ref() if memory[0] != null else null
+		if site != null and site.piece.sockets[from[1]].kind == SiteLoot.RIGGED:
+			Deeds.done(_world, &"hand_me_down")
 	elif lot != null:
 		lot.taken[from[1]] = true
 	if lot != null:
@@ -377,6 +404,22 @@ func claim(body: Node) -> void:
 	if body is Device:
 		_world.power.wake(body)
 	_discovered(body)
+
+
+## Site loot taken: from a site a storm working on it has bared; a wreck's
+## module freed, its last, and its kind scrapped.
+func _deeds(memory: Array, module: Array) -> void:
+	var site: Structure = memory[0].get_ref() if memory[0] != null else null
+	if site != null and Deeds.waiting(_world, &"bared") and site.bared() > 0.0:
+		Deeds.done(_world, &"bared")
+	if module.is_empty():
+		return
+	var wreck: Structure = module[0]
+	Deeds.done(_world, &"bonepicker", wreck.kind)
+	for i in wreck.piece.sockets.size():
+		if wreck.piece.sockets[i].kind in SiteLoot.MODULES and not memory[1].has(i):
+			return
+	Deeds.done(_world, &"stripped")
 
 
 ## Every kind of thing a find held, reported to the profile: the first of
@@ -409,7 +452,9 @@ func unbury(body: RigidBody3D) -> void:
 			var corner := body.global_transform * box.get_endpoint(i)
 			rise = maxf(rise, _world.height_under(corner) - corner.y)
 		body.global_position.y += rise + Finds.DROP
-	body.freeze = false
+	# What's seated on a rig stays held fast on it.
+	if not (body is Device and (body as Device).host() != null):
+		body.freeze = false
 
 
 func _on_grounded(chunk: TerrainChunk) -> void:
@@ -453,6 +498,11 @@ func _forget(coord: Vector2i, lot: Lot) -> void:
 	lot.seen.clear()
 	lot.waiting.clear()
 	lot.drawn.clear()
+	for wreck in lot.wrecks:
+		if is_instance_valid(wreck):
+			_wreckage.erase(wreck.site)
+			wreck.queue_free()
+	lot.wrecks.clear()
 	for i in range(_queue.size() - 1, -1, -1):
 		if _queue[i].coord == coord:
 			_drop(i)
@@ -469,6 +519,8 @@ func _plan(coord: Vector2i, lot: Lot) -> void:
 	var size := _tuning.chunk_size
 	for site in lot.chunk.structures():
 		lot.seen[site] = Vector2(site.taken(), site.floor_y)
+		if site.piece.wreck != null:
+			_build_wreck(lot, site)
 		for i in site.piece.sockets.size():
 			_queue.append(Piece.new(coord, {}, site, i))
 	if is_nan(lot.exposure):
@@ -477,6 +529,100 @@ func _plan(coord: Vector2i, lot: Lot) -> void:
 	for spec in Finds.plan(_world.run_seed, coord, lot.exposure, _tuning, _world.height_at, on_way, on_site):
 		if not lot.taken.has(spec.index):
 			_queue.append(Piece.new(coord, spec))
+
+
+## Structures just laid over a solid chunk (a dune's ruin): what each holds,
+## a socket a piece of work, as the chunk's plan would have laid it.
+func adopt(chunk: TerrainChunk, sites: Array[Structure]) -> void:
+	var lot: Lot = _lots.get(chunk.coord)
+	if lot == null or lot.chunk != chunk:
+		return
+	for site in sites:
+		lot.seen[site] = Vector2(site.taken(), site.floor_y)
+		for i in site.piece.sockets.size():
+			_queue.append(Piece.new(chunk.coord, {}, site, i))
+
+
+## A wreck's scrapping, built as it was left, at its floor as its chunk draws it.
+func _build_wreck(lot: Lot, site: Structure) -> void:
+	var memory := _memory_of(site)
+	var wreck := Wreckage.new(site, memory[2], _world.height_at)
+	var chunk := lot.chunk
+	wreck.transform = Transform3D(site.basis(), Vector3(site.x - chunk.coord.x * chunk.side, 0.0,
+		site.z - chunk.coord.y * chunk.side))
+	wreck.follow(chunk)
+	chunk.add_child(wreck)
+	lot.wrecks.append(wreck)
+	_wreckage[site] = wreck
+	# Built a piece at a time inside the streaming budget, ahead of what it holds.
+	var step := Piece.new(chunk.coord)
+	step.wreck = wreck
+	_queue.push_front(step)
+
+
+## The wrecks' scrapping built now, in every loaded chunk.
+func wrecks() -> Array[Wreckage]:
+	var all: Array[Wreckage] = []
+	for wreck: Variant in _wreckage.values():
+		if is_instance_valid(wreck):
+			all.append(wreck)
+	return all
+
+
+## A wreck's scrapping built now, or null.
+func wreckage_of(site: Structure) -> Wreckage:
+	var wreck: Variant = _wreckage.get(site)
+	return wreck if is_instance_valid(wreck) else null
+
+
+## The wreck whose ground a point (the engine's frame) is on, or null.
+func wreckage_near(at: Vector3) -> Wreckage:
+	var x := _world.world_x(at.x)
+	var z := _world.world_z(at.z)
+	for wreck in wrecks():
+		if wreck.site.reaches(x, z):
+			return wreck
+	return null
+
+
+## Why something you'd take is held fast in its wreck, or "": a module, or
+## anything in or on one.
+func held_fast(body: Node) -> String:
+	var module := _module_of(body)
+	if module.is_empty():
+		return ""
+	var wreck := wreckage_of(module[0])
+	return "" if wreck == null else wreck.held_fast(module[1])
+
+
+## Taking hold of a module, or of something in it: a live hazard riding on
+## it goes off on whoever does. Returns the hazard, or &"".
+func touched(body: Node, by: Player) -> StringName:
+	var module := _module_of(body)
+	if module.is_empty():
+		return &""
+	var wreck := wreckage_of(module[0])
+	if wreck == null:
+		return &""
+	var hazard := wreck.hazard(module[1])
+	if hazard != &"":
+		var at := wreck.hazard_body(module[1]).global_position
+		wreck.spend(module[1])
+		by.vitals.wounds.take(hazard, at)
+	return hazard
+
+
+## The wreck and module a body is or is in, while it still lies there:
+## [site, socket], or [].
+func _module_of(body: Node) -> Array:
+	var device := body as Device
+	if body is Part and (body as Part).socket != null:
+		device = (body as Part).socket.get_parent() as Device
+	while device != null and device.host() != null:
+		device = device.host()
+	if device == null or not device.has_meta(&"find") or not device.has_meta(&"module"):
+		return []
+	return device.get_meta(&"module")
 
 
 ## Whether a world place is a structure's ground, which loose finds keep clear of.
@@ -501,6 +647,18 @@ func _taken_from(site: Structure) -> Dictionary:
 		_sites.erase(site.id)
 		return {}
 	return memory[1]
+
+
+## A site's memory, made if it has none yet: [the site, taken, done].
+func _memory_of(site: Structure) -> Array:
+	_taken_from(site)
+	var memory: Array = _sites.get(site.id, [])
+	if memory.is_empty():
+		memory = [weakref(site), {}, {}]
+		_sites[site.id] = memory
+	while memory.size() < 3:
+		memory.append({})
+	return memory
 
 
 ## The site laid now with an id, as a weak reference, or null.
@@ -557,6 +715,8 @@ func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D, si
 	body.set_meta(&"find", [coord, spec.index, spec.site] if spec.has("site") else [coord, spec.index])
 	if spec.bury > 0.0:
 		body.set_meta(&"buried", true)
+	if spec.get("module", false) and site != null:
+		body.set_meta(&"module", [site, spec.index])
 	body.freeze = spec.bury > 0.0 or spec.get("frozen", false)
 	lot.chunk.add_child(body)
 	if body is Device:
@@ -565,6 +725,15 @@ func _lay_out(coord: Vector2i, lot: Lot, spec: Dictionary, body: RigidBody3D, si
 	if not body.freeze:
 		_settling.append([body, 0.0, 0.0])
 	return body
+
+
+## A wreck's module as it was stowed: its foot on its rack or floor, in the
+## frame its spec says, world metres.
+static func _stowed(body: RigidBody3D, spec: Dictionary) -> Transform3D:
+	var box := Finds.bounds(body)
+	var middle := box.get_center()
+	return (spec.base as Transform3D) * Transform3D(Basis.IDENTITY,
+		Vector3(-middle.x, -box.position.y + SiteLoot.DROP, -middle.z))
 
 
 ## A loose find settles from where it was set down, then holds there.
@@ -616,6 +785,24 @@ func _drift() -> void:
 				Drift.lay(_world, spec)
 				piled += 1
 				caught += 1
+	_lee_falls(maxi(from, tick - Drift.LEE_TICKS_MOST), tick)
+
+
+## Light things falling out of the slowed wind in the lee of crests near
+## camp, no line needed, while fewer than drift_most lie there already.
+func _lee_falls(from: int, tick: int) -> void:
+	var here := Vector2(_world.player_world_x(), _world.player_world_z())
+	var lying := Drift.fallen_near(_world, here, _tuning.drift_lee_fall_m)
+	for k in range(from, tick + 1):
+		if lying >= _tuning.drift_most or Exposure.reading(_world.weather.field, here.x, here.y,
+				k * _tuning.drift_tick_s, _tuning) <= 0.0:
+			continue
+		for ground in Drift.lee_ground(_world, k * _tuning.drift_tick_s):
+			var spec := Drift.fallen(_world, ground, k)
+			if not spec.is_empty() and lying < _tuning.drift_most:
+				Drift.lay(_world, spec)
+				lying += 1
+				caught += 1
 
 
 ## What a save keeps of the finds, for each chunk remembered: [coord, how
@@ -630,12 +817,18 @@ func memories() -> Array:
 
 
 ## What a save keeps of the sites: for each laid one something was taken
-## from, [its id, the sockets taken].
+## from or done to, [its id, the sockets taken, and a wreck's scrapping
+## (Wreckage.state) once it's been worked].
 func site_memories() -> Array:
 	_prune_sites()
 	var out := []
 	for id: int in _sites:
-		out.append([id, _sites[id][1].keys()])
+		var memory: Array = _sites[id]
+		var done: Dictionary = memory[2] if memory.size() > 2 else {}
+		if done.get("touched", false):
+			out.append([id, memory[1].keys(), done])
+		elif not memory[1].is_empty():
+			out.append([id, memory[1].keys()])
 	return out
 
 
@@ -647,7 +840,7 @@ func recall_sites(memories: Array) -> void:
 		var taken := {}
 		for socket: int in each[1]:
 			taken[socket] = true
-		_sites[each[0]] = [null, taken]
+		_sites[each[0]] = [null, taken, (each[2] as Dictionary).duplicate(true) if each.size() > 2 else {}]
 
 
 ## A resumed run's finds as they were: a remembered chunk within view of

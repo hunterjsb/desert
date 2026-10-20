@@ -17,6 +17,7 @@ func run() -> void:
 	radio.on = true
 	radio.frequency = Dial.MUSIC_KHZ
 	var moored := Scenarios.to_waist(world, stake.free_tie(player.global_position))
+	hands.reel.choose(moored.ends[1])
 	await simulate(0.5)
 
 	look(eye(), radio.global_position)
@@ -28,7 +29,7 @@ func run() -> void:
 	check(got.khz == 0.0 and absf(got.line - Reel.NOTCH) < 0.01,
 		"looking away, it reels the line and leaves the dial (%.0f kHz, %.2f m)" % [got.khz, got.line])
 
-	var led := await lead(floating(&"crate_frame", spot(-3.0, 0.0)))
+	var led := await lead(floating(&"planter", spot(-3.0, 0.0)))
 	look(eye(), radio.global_position)
 	got = await _reel_in(led.rope, radio)
 	check(got.khz == 0.0 and got.line > 0.1, "a line's end in your hand reels, even looking at the radio (%.0f kHz, %.2f m)"

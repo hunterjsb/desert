@@ -12,6 +12,8 @@ signal died
 
 const FULL := 100.0
 const HARMS: Array[StringName] = [&"wind", &"storm", &"temperature"]
+## An anomaly's hidden term this deep where you stand is its heart.
+const HEART := 0.99
 
 var health := FULL
 var hunger := FULL
@@ -25,6 +27,11 @@ var taken := {&"wind": 0.0, &"storm": 0.0, &"temperature": 0.0}
 ## What you've drunk, L, and eaten, kcal.
 var drunk := 0.0
 var eaten := 0.0
+## Stood in an anomaly's heart, and not yet out of it.
+var in_heart := false
+
+## What a wreck's hazards left you with (Wounds).
+var wounds: Wounds
 
 var _player: Player
 var _next := 0.0
@@ -37,9 +44,11 @@ func _ready() -> void:
 	var bars := Bars.new()
 	bars.vitals = self
 	add_child(bars)
+	wounds = Wounds.new()
+	add_child(wounds)
 
 
-## Fed, watered and whole, on a fresh suit's kit.
+## Fed, watered and whole, and counting afresh; what you carry stays.
 func fresh() -> void:
 	health = FULL
 	hunger = FULL
@@ -49,7 +58,6 @@ func fresh() -> void:
 	eaten = 0.0
 	for harm in HARMS:
 		taken[harm] = 0.0
-	_player.suit.restock()
 
 
 ## Health a second each harm takes at a place, now or at world time t: the
@@ -77,7 +85,17 @@ func thirsting(at: Vector3, t := NAN) -> float:
 	var tuning := _player.world.tuning
 	var heat := clampf(inverse_lerp(tuning.thirst_heat_from, tuning.suit_hot,
 		_player.world.weather.felt_temperature(at, t)), 0.0, 1.0)
-	return lerpf(1.0, tuning.heat_thirst, heat)
+	return lerpf(1.0, tuning.heat_thirst, heat) * wounds.thirst_factor()
+
+
+## Health taken at once, by a wound: at none you die.
+func hurt(amount: float) -> void:
+	if dead:
+		return
+	health = maxf(health - amount, 0.0)
+	if health <= 0.0:
+		dead = true
+		died.emit()
 
 
 ## Drinks or eats from a supply up to full; returns how much it gave.
@@ -140,12 +158,28 @@ func _tick(seconds: float, t: float) -> void:
 		loss += tuning.starving_harm * seconds
 	if thirst <= 0.0:
 		loss += tuning.parched_harm * seconds
+	loss += wounds.loss(seconds)
 	if loss == 0.0:
 		health = minf(health + FULL / (tuning.heal_days * day) * seconds, FULL)
 	health = maxf(health - loss, 0.0)
 	if health <= 0.0:
 		dead = true
+		in_heart = false
 		died.emit()
+	_heart(at, t)
+
+
+## Into an anomaly's heart where you stand, and out of it alive.
+func _heart(at: Vector3, t: float) -> void:
+	var world := _player.world
+	if not in_heart and not Deeds.waiting(world, &"anomaly_eye"):
+		return
+	var deep := world.weather.anomaly(at, t)
+	if deep >= HEART:
+		in_heart = true
+	elif deep <= 0.0 and in_heart and not dead:
+		in_heart = false
+		Deeds.done(world, &"anomaly_eye")
 
 
 ## Below its mark, the suit tops you up from what you carry, one supply after another.

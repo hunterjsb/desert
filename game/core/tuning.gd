@@ -55,6 +55,9 @@ static var _current: Tuning
 @export var deed_board_height_m: float = 8.0
 ## One ride without stepping off, m: more than a scout round camp.
 @export var deed_board_m: float = 5000.0
+## Tumbled in one wipeout, m: thrown off near flat out, past what an edge
+## caught in a stop throws you.
+@export var deed_tumble_m: float = 12.0
 ## Full storm one shield holds off, minutes, over however many storms.
 @export var deed_storm_minutes: float = 60.0
 ## Made at once in one system, W: more than the reference camp makes at its best.
@@ -63,6 +66,31 @@ static var _current: Tuning
 @export var deed_crop_kinds: int = 3
 @export var deed_planters_towed: int = 2
 @export var deed_deck_pieces: int = 6
+## A bulk release counts the live lines actually let go together.
+@export var deed_release_lines: int = 2
+## Ground made against the wind under one sail, m, through its tacks: a
+## keeled yacht's half a day close-hauled, a camp on skates' most of one.
+@export var deed_upwind_m: float = 500.0
+## Sailed in one sitting at a keeled camp's helm, m: half a day on its reaches.
+@export var deed_yacht_m: float = 5000.0
+## Sailed on a front's outflow ahead of its wall, m, without leaving it: a
+## broad reach entered at the wall, holding it as the band slips behind.
+@export var deed_outflow_m: float = 3000.0
+## Sites a storm has freshly bared, reached in that one storm.
+@export var deed_bared_sites: int = 3
+## How far off a glint was seen, m, its site reached after: past the built
+## ground, where most glints in sight shine from.
+@export var deed_glint_m: float = 1000.0
+## How far a vent's burst is heard booming from, m: further than any start
+## stands from the rift's live vents.
+@export var deed_thunder_m: float = 35000.0
+## Tu this near straight up, degrees, is overhead.
+@export var deed_tu_overhead_degrees: float = 5.0
+## Days lived in one run.
+@export var deed_days: int = 10
+## A deck moved this far in one day, m, from where it stood as the day began:
+## a yacht's reaches over half of one, a camp on skates' all of one.
+@export var deed_moved_m: float = 5000.0
 
 @export_group("Terrain")
 @export var chunk_size: int = 64
@@ -191,6 +219,16 @@ static var _current: Tuning
 ## texel. Marks further off are forgotten.
 @export var track_cells: int = 4096
 @export var track_texel: float = 0.25
+## Drawn dent depth, m, and the share of its near view-ray relief.
+@export var track_depth: float = 0.08
+## Extra drawn depth and loose lip for the deepest sideways board skid, m.
+@export var track_gouge_depth: float = 0.08
+@export var track_gouge_rim: float = 0.02
+@export var track_relief: float = 1.0
+## Compacted sand loses this share of its colour.
+@export var track_shade: float = 0.16
+## Curvature of a soft stamp that raises a full loose lip.
+@export var track_rim_shape: float = 0.08
 ## How long the wind takes to fill a fresh, full-depth mark, minutes: in calm
 ## air, and in a full storm. A step still reads with a tenth of its depth left.
 @export var track_calm_minutes: float = 90.0
@@ -430,6 +468,15 @@ static var _current: Tuning
 ## How quickly you dig in and come back up, s.
 @export var haul_seconds: float = 0.4
 
+@export_group("Ledge vault")
+## Reach above the current feet, forward reach, m; jump rise is not added again.
+@export var vault_height: float = 0.65
+@export var vault_reach: float = 0.9
+@export var vault_clearance: float = 0.02
+@export var vault_seconds: float = 0.3
+@export var vault_stamina: float = 4.0
+@export var vault_settle_speed: float = 0.1
+
 @export_group("Hoverboard")
 ## Flat out on the flat in still air, m/s: 72 km/h, faster than any storm
 ## front rides the wind (the prevailing wind's 10 m/s swings up to 14).
@@ -437,6 +484,22 @@ static var _current: Tuning
 ## The push from a standstill, m/s²; drag grows with speed² until it matches
 ## the push at top speed. Enough to climb a slip face at about 11 m/s.
 @export var board_push: float = 6.5
+## A loaded motor can tow slowly; sustained opposing load grounds the hover.
+@export var board_tow_force_n: float = 90.0
+@export var board_tow_work_w: float = 80.0
+@export var board_tow_load_n: float = 15.0
+@export var board_tow_overload_n: float = 70.0
+@export var board_tow_response_s: float = 0.2
+@export var board_tow_hot_s: float = 0.6
+@export var board_tow_stall_speed: float = 0.1
+@export var board_tow_latch: float = 0.6
+@export var board_tow_ground_height: float = 0.04
+@export var board_tow_ground_drag: float = 3.0
+@export var board_tow_efficiency: float = 0.8
+@export var board_tow_sputter_hz: float = 6.0
+@export var board_tow_sputter_on: float = 0.25
+@export var board_tow_hum_pitch: float = 0.55
+@export var board_tow_hum_db: float = -12.0
 ## The share of that drag that's the air's, felt against the wind: a tailwind
 ## carries you faster, a headwind holds you back, and a tuck shows it less.
 @export var board_air_share: float = 0.35
@@ -471,6 +534,22 @@ static var _current: Tuning
 @export var board_drift_grip: float = 14.0
 @export var board_drift_slide: float = 0.25
 @export var board_drift_speed: float = 8.0
+## A skid: standing, a carve past the hover's grip breaks loose this fast or
+## faster, m/s, and slides on keeping this share of that grip, a full
+## sideways slide bleeding this share of its speed a second, until it comes
+## back near your way and bites.
+@export var board_skid_speed: float = 7.0
+@export var board_skid_grip: float = 0.9
+@export var board_skid_drag: float = 0.6
+## Flying, the board's tilt follows its path this fast, Hz: its nose up off a
+## lip and down as it falls, easing to the sand it's coming down on.
+@export var board_air_hertz: float = 2.5
+## Landing, the speed it meets the sand at, m/s (harder crossed): past the
+## first it slides out and jars you, past the second it throws you off. Into
+## something solid faster than this, m/s, it throws you off.
+@export var board_land_jar: float = 9.0
+@export var board_land_throw: float = 15.0
+@export var board_crash: float = 7.0
 ## A kick off the sand: m/s along the board from rest, less the faster you
 ## go and nothing at top speed; one this often while sprint is held, s, for
 ## this much stamina. Kicking, you don't get your breath back.
@@ -510,6 +589,12 @@ static var _current: Tuning
 ## It reads the sand this many seconds of travel ahead and behind, so it
 ## rounds a dip's bottom instead of slamming into it.
 @export var board_look_seconds: float = 0.45
+## Maximum newly reachable solid support above the underside, m; a wall stays a wall.
+@export var board_surface_rise_m: float = 0.18
+## One outer-tick broadphase cap; no space queries inside the board's inner steps.
+@export var board_surface_shapes: int = 64
+## Bound the broadphase and nearby chunk collection even after an abnormal shove.
+@export var board_surface_reach_m: float = 16.0
 ## A hop, m/s up, and this much more from a full crouch.
 @export var board_hop: float = 4.0
 @export var board_pop: float = 1.5
@@ -517,7 +602,7 @@ static var _current: Tuning
 ## battery's 100 Wh lasts twenty minutes flat out, about 24 km.
 @export var board_hover_w: float = 40.0
 @export var board_push_w: float = 260.0
-## Racked on a crate, it charges from the camp at up to this, W: a base
+## On a deck, it charges from the camp at up to this, W: a base
 ## battery in two hours, as far as the camp can spare it.
 @export var board_charge_w: float = 50.0
 
@@ -566,7 +651,7 @@ static var _current: Tuning
 ## A hover tray pushes all it can lift with its face this high over the sand
 ## or nearer, m, and a share of it higher up, falling off by e each
 ## hover_falloff m: a cushion, so every load bobs at one rate and a light one
-## rides higher. The kit's crate rides with its middle about 1.2 m up.
+## rides higher.
 @export var hover_height: float = 0.84
 @export var hover_falloff: float = 0.06
 ## How much the cushion's bounce dies in one swing (1 settles without bouncing).
@@ -597,6 +682,9 @@ static var _current: Tuning
 @export var throw_speed: float = 6.0
 ## Your strength on what you hold too heavy to carry, or walk into, N.
 @export var hand_strength: float = 400.0
+## Having hold of something, a throw punches it where you look instead, a
+## small shove to right a tipped rig with, N·s.
+@export var punch_impulse: float = 45.0
 ## How fast what you hold comes to where you'd have it, 1/s, and the most it
 ## comes faster than you, m/s, so nothing you swing round is flung.
 @export var hold_rate: float = 4.0
@@ -792,6 +880,11 @@ static var _current: Tuning
 @export var drift_tick_s: float = 20.0
 @export var drift_most: int = 8
 @export var drift_shortest_m: float = 1.5
+## With no line at all, light things fall out in the lee of a crest near
+## camp: this many an hour on a hundred square metres of full lee in a storm's
+## heart, within this far of you or a deck of yours, m.
+@export var drift_lee_fall: float = 0.5
+@export var drift_lee_fall_m: float = 24.0
 ## Drift off a site a storm lays bare (Drift.from_sites): things an hour it
 ## sheds in a storm's heart once the storm has dug it right out; how far
 ## downwind the stream carries before most of it has fallen out, m; and how
@@ -816,6 +909,21 @@ static var _current: Tuning
 ## this hard as much as a storm's heart, m/s.
 @export var exposure_calm_wind: float = 16.0
 @export var exposure_gale_wind: float = 30.0
+## Scrapping a wreck (Wreckage): seconds a heat cutter's hot spot takes
+## through each metre of a plate's seam (times the wreck's armour), and a
+## scoop through each m³ of packed sand. The cutter draws this while it
+## fires, W: its battery's 60 Wh last half an hour of cutting.
+@export var cut_seconds_per_m: float = 1.5
+@export var clear_seconds_per_m3: float = 0.35
+@export var cutter_w: float = 120.0
+## A live capacitor bank's shock: health it takes at once, and seconds you're
+## stunned. A breached store's sickness: health a second it takes, for how
+## many seconds of world time, and how much faster you thirst meanwhile.
+@export var shock_harm: float = 25.0
+@export var shock_stun: float = 1.5
+@export var sickness_harm: float = 0.08
+@export var sickness_seconds: float = 240.0
+@export var sick_thirst: float = 1.8
 
 @export_group("History")
 ## The moon's cells history is made and laid in, m across.
@@ -856,6 +964,12 @@ static var _current: Tuning
 @export var site_surge_m: float = 0.8
 @export var site_surge_return_minutes: float = 5.0
 @export var site_surge_window_minutes: float = 25.0
+## Where a site lies among the dunes (Exposure.dune_at): on a windward face
+## or crest the wind strips this much more, the storm's work off it too; in a
+## lee or on a slip face the sand comes back this much more, the storm's work
+## onto it too, each a share at its fullest.
+@export var site_dune_strip: float = 1.0
+@export var site_dune_bury: float = 1.0
 ## Where a storm's dunes move off ground or onto it (WeatherField.dune_shift_at):
 ## patches this many metres across, changing over this many minutes, leaning
 ## this far toward moving off and swinging this hard.
@@ -867,10 +981,34 @@ static var _current: Tuning
 ## ground; once you're off, it comes back this fast at most, m/s.
 @export var site_rebury_m_s: float = 0.05
 
+@export_group("Dune ruins")
+## A ruin lies in the lee of each big dune (DuneRuins): one to a cell this
+## long along its crest, m, under a dune standing at least this tall over the
+## trough past its slip face, m, as deep as this, m, least and most.
+@export var dune_ruin_cell_m: float = 300.0
+@export var dune_ruin_big_m: float = 14.0
+@export var dune_ruin_depth_m := Vector2(5.5, 6.5)
+## Each is a seed until it's needed. Slower than this, m/s, for this long, s,
+## you've slowed: the seeds round you are looked at out to this far, m, each
+## again this often, s of world time; and one bared builds once you're this near, m.
+@export var dune_ruin_slow_m_s: float = 4.5
+@export var dune_ruin_slow_s: float = 2.0
+@export var dune_ruin_check_m: float = 300.0
+@export var dune_ruin_recheck_s: float = 15.0
+@export var dune_ruin_build_m: float = 150.0
+## Digging a site out with a scoop: seconds through each m³ of its sand, its
+## footprint's area a metre deep, and the share of its depth the dig must take
+## for it to be yours, not a storm's. A sieve sifts this many finds out of
+## each m³ dug.
+@export var dig_seconds_per_m3: float = 1.5
+@export var dig_own_share: float = 0.5
+@export var sift_per_m3: float = 0.02
+
 @export_group("Plume")
 ## A live vent's seep as a buoyancy flux, m⁴/s³ at this tuning's gravity: how
-## hard what it lets out climbs. Bursts multiply it (Geology).
-@export var plume_buoyancy: float = 25000.0
+## hard the hot gas it lets out climbs, lifting its column of dust 1.5 to 3
+## km. Bursts multiply it (Geology).
+@export var plume_buoyancy: float = 300000.0
 ## A plume dissolves into the distance between these, m: further than the
 ## storm walls, since what towers over the haze stands clear of it.
 @export var plume_fade_m := Vector2(30000.0, 45000.0)
@@ -997,6 +1135,38 @@ static var _current: Tuning
 ## The Walker's pace round the Rim, m/s.
 @export var walker_speed: float = 1.5
 
+@export_group("The Walker and the living city")
+## The Walker's log goes out weaker than its forecast: whole within the first
+## distance, m, lost to noise past the second. It reads one entry this often,
+## s: its survey, then each contact it keeps, the last this many.
+@export var walker_log_m := Vector2(8000.0, 40000.0)
+@export var walker_log_every: float = 8.0
+@export var walker_contacts_kept: int = 6
+## Taught, its feed flags an anomaly whose heart is this near the radio, m.
+@export var walker_flag_m: float = 30000.0
+## Where the living city keeps on the far side, degrees from under Tu; moored
+## this many days at a time; each leg this long, m, made at the storms' own
+## pace, m/s.
+@export var city_from_tu_degrees := Vector2(105.0, 160.0)
+@export var city_moored_days := Vector2(12.0, 24.0)
+@export var city_leg_m := Vector2(4000.0, 9000.0)
+@export var city_speed: float = 10.0
+## One of its nomads prays to the Walker once in this many days.
+@export var city_prayer_days := Vector2(0.6, 1.8)
+## Its chatter on its own carrier in this band, kHz: whole within the first
+## distance, m, and gone past the second; a motif this often, s. Storm coming
+## warns this long ahead, s.
+@export var city_band_khz := Vector2(1480.0, 1520.0)
+@export var city_heard_m := Vector2(3000.0, 4500.0)
+@export var city_chatter_every: float = 20.0
+@export var city_warn_s: float = 240.0
+## Its lights go out when you come this near, m: it isn't found by walking up.
+@export var city_douse_m: float = 500.0
+## Three noted bearings fix a place where they cross within this far of one
+## another, m, none of them closer than this many degrees to another.
+@export var triangulate_m: float = 3000.0
+@export var triangulate_degrees: float = 8.0
+
 @export_group("Console")
 ## How often a Console's instruments read the field, s of world time, and how
 ## often its screen looks for a change to draw, s. It draws only while someone
@@ -1040,6 +1210,11 @@ static var _current: Tuning
 @export var storm_map_every: float = 1.0
 ## A smart shield switches itself on once the radar sees a front this near, m.
 @export var smart_shield_auto_m: float = 1500.0
+## A Console with a radio in its system says aloud that its battery is low,
+## then critical, once each as what its pool has left to run it on falls past
+## these shares: the charge above where it gives way (Power).
+@export var console_battery_low: float = 0.2
+@export var console_battery_critical: float = 0.05
 
 @export_group("Loose objects")
 ## Wind drag per (m/s)² per m² of a thing's biggest face: half the air density
@@ -1047,9 +1222,37 @@ static var _current: Tuning
 ## Hunter judged, so floating things swing and drift and resting ones slide
 ## only when the wind beats their friction.
 @export var wind_catch_per_m2: float = 0.5
-## What something resting on the sand feels. Jolt takes the geometric mean of
-## two frictions, so the sand itself is this squared, against a body's 1.0.
+## The share of its weight the sand holds a resting body by: the sand's own
+## friction, as Godot's Jolt takes the lesser of two and bodies keep 1.0.
 @export var sand_friction: float = 0.5
+
+@export_group("Wind on faces")
+## A face with another just upwind square across it catches this share of
+## what it would alone: the one in front took the wind (Faces).
+@export var face_shaded: float = 0.1
+## A frame open into the wind with its back closed, and every side round
+## about, catches this many times what its back would flat: a parachute's
+## cup against a flat plate's drag.
+@export var face_cup: float = 1.3
+
+
+@export_group("Survey receiver")
+@export var receiver_reach_m: float = 1200.0
+@export var receiver_w: float = 0.5
+@export var receiver_band_khz: float = 40.0
+@export var receiver_side_gain: float = 0.08
+@export var receiver_meter_steps: int = 8
+@export var receiver_approach_m: float = 60.0
+@export var receiver_arrive_m: float = 15.0
+@export var receiver_faint: float = 0.2
+@export var receiver_strong: float = 0.6
+@export var receiver_signal_min: float = 0.01
+@export var receiver_deed_strength: float = 0.05
+@export var receiver_storm_loss: float = 0.5
+@export var receiver_hiss_clear: float = 0.035
+@export var receiver_hiss_empty: float = 0.15
+@export var receiver_hiss_storm: float = 0.25
+@export var receiver_hiss_duck: float = 0.8
 
 
 ## One shared instance, held here so probe overrides can't be dropped by the

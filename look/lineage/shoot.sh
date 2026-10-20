@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shoots the lineage look-test and builds its sheet: a crate and a battery in
+# Shoots the lineage look-test and builds its sheet: a chassis piece and a battery in
 # each era and lineage, close up and from 5 m, and the row whole.
 #   look/lineage/shoot.sh <out dir>    sheet to ~/Desktop/lineage.png
 # No window: it runs unseen (scripts/unseen.sh), so it shoots while someone plays.

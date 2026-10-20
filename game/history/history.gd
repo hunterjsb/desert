@@ -19,8 +19,8 @@ const LANDMARKS := [
 		[[&"bunker", "the Quartermaster's bunker", 0.0, 0.0, 60.0], [&"specimen_case", "the specimen case", 0.0, -15.0, 5.0]]],
 	[&"port_morgan", "Port Morgan", 1600.0, "pylons and pad lights over the plateau",
 		[[&"bastion", "the Bastion", 0.0, 0.0, 300.0], [&"pads", "the Pads", 0.0, 700.0, 400.0],
-		[&"kesselside", "Kesselside", 700.0, -200.0, 400.0], [&"lowtown", "Lowtown", -800.0, -100.0, 450.0],
-		[&"okafor_bunker", "the Okafor bunker", 60.0, 40.0, 30.0]]],
+		[&"crakeside", "Crakeside", 700.0, -200.0, 400.0], [&"lowtown", "Lowtown", -800.0, -100.0, 450.0],
+		[&"haberjack_bunker", "the Haberjack bunker", 60.0, 40.0, 30.0]]],
 	[&"halfrise", "Halfrise", 400.0, "walls on the Rim", [[&"citadel", "the citadel", 0.0, 0.0, 200.0]]],
 	[&"sister", "Sister", 300.0, "the temple's dome",
 		[[&"temple", "Mother Cistern's temple", 0.0, 0.0, 80.0], [&"basin", "the basin", 20.0, 10.0, 10.0],
@@ -31,6 +31,8 @@ const LANDMARKS := [
 	[&"observatory", "the observatory", 3000.0, "the tower over the volcano",
 		[[&"tower", "the elevator stub's tower", 0.0, 0.0, 40.0], [&"vent_cap", "the vent cap", 0.0, 0.0, 120.0]]],
 ]
+## Parts by the ids older profiles counted them by (session 5's renames).
+const RENAMED := {&"kesselside": &"crakeside", &"okafor_bunker": &"haberjack_bunker"}
 ## Where they stand, by rule (defaults): angles from the point under Tu,
 ## degrees, or distances from the landmark placed before, m.
 const HALLORAN := Vector2(3.0, 5.0)
@@ -78,17 +80,25 @@ const ROWS := [
 	# A day's walk apart on the artery: 20 minutes at a walk, about 2.2 km.
 	{"kind": &"caravanserai", "carries": PathNetwork.ROAD, "era": Eras.SECOND, "every": 2200.0, "side": [30.0, 55.0],
 		"paths": [&"artery"]},
+	# A freighter's lifeboats, down on the port's approach: off its roads,
+	# only within "near" of it, m.
+	{"kind": &"lifeboat", "carries": PathNetwork.ROAD, "era": Eras.COLONIAL, "every": 2500.0, "side": [30.0, 90.0],
+		"paths": [&"artery", &"spoke", &"spur"], "near": [&"port_morgan", 16000.0]},
+	# The Knights' hoppers, down along the crusade's road to Port Morgan.
+	{"kind": &"hopper", "carries": PathNetwork.ROAD, "era": Eras.SECOND, "every": 6000.0, "side": [30.0, 90.0],
+		"paths": [&"artery"]},
 ]
 ## What each kind of settlement is made of: its era, radius m, and members
 ## as [kind, least, most]. Defaults.
 const MEMBERS := {
-	&"frontier_town": [Eras.COLONIAL, 260.0, [[&"hab_pod", 4, 9], [&"relay_mast", 1, 1], [&"pump_station", 0, 1]]],
+	&"frontier_town": [Eras.COLONIAL, 260.0, [[&"hab_pod", 4, 9], [&"relay_mast", 1, 1], [&"pump_station", 0, 1],
+		[&"freight_pod", 0, 1]]],
 	&"pump_station": [Eras.COLONIAL, 60.0, [[&"pump_station", 1, 1], [&"hab_pod", 0, 2]]],
 	&"farm_dome": [Eras.COLONIAL, 200.0, [[&"farm_dome", 2, 4], [&"hab_pod", 1, 2]]],
 	&"vent_station": [Eras.COLONIAL, 90.0, [[&"vent_station", 1, 1], [&"pipeline_segment", 2, 4]]],
 	&"skimmer_camp": [Eras.SKIMMER, 130.0, [[&"fuel_bladder", 1, 3], [&"dugout", 1, 2], [&"wreck_hull", 0, 1]]],
-	&"checkpoint": [Eras.SKIMMER, 50.0, [[&"checkpoint", 1, 1], [&"dugout", 0, 1]]],
-	&"wreck_field": [Eras.SKIMMER, 150.0, [[&"wreck_hull", 2, 5], [&"fuel_bladder", 0, 2]]],
+	&"checkpoint": [Eras.SKIMMER, 50.0, [[&"checkpoint", 1, 1], [&"dugout", 0, 1], [&"tithe_hauler", 0, 1]]],
+	&"wreck_field": [Eras.SKIMMER, 150.0, [[&"wreck_hull", 2, 5], [&"fuel_bladder", 0, 2], [&"tithe_hauler", 0, 1]]],
 	&"first_town": [Eras.FIRST, 230.0, [[&"pipe_wall_hut", 3, 7], [&"low_wall", 1, 3], [&"generator_shrine", 0, 1],
 		[&"cistern", 0, 1]]],
 	&"cistern": [Eras.FIRST, 60.0, [[&"cistern", 1, 1], [&"low_wall", 0, 2]]],
@@ -99,7 +109,7 @@ const MEMBERS := {
 		[&"ration_gate", 0, 1], [&"watchtower", 0, 1]]],
 	&"salvage_town": [Eras.SECOND, 280.0, [[&"house_ruin", 3, 6], [&"watchtower", 1, 1], [&"stepwell", 0, 1]]],
 	&"battlefield": [Eras.SECOND, 300.0, [[&"earthwork", 3, 6], [&"watchtower", 0, 1]]],
-	&"bunker": [Eras.SECOND, 60.0, [[&"bunker", 1, 1]]],
+	&"bunker": [Eras.SECOND, 60.0, [[&"bunker", 1, 1], [&"hopper", 0, 1]]],
 }
 ## Settlements history built along paths, at full richness: [kind, every m,
 ## kept share at no richness and its rise with richness, m to the side].
@@ -122,7 +132,12 @@ const POLES := Vector3(50.0, 80.0, 0.3)
 ## How likely a cell holds a wreck field, under Tu and far from it; and a
 ## hermit, where no path or settlement reaches.
 const WRECKS := Vector2(0.02, 0.002)
+
 const HERMITS := 0.012
+## How likely a cell holds a nomads' wrecked rig, anywhere, wilds and all;
+## and one of their camps, kept and just left: the moon is presumed empty.
+const NOMAD_RIGS := 0.08
+const NOMAD_CAMPS := 0.002
 
 var run_seed: int
 var radius: float
@@ -669,6 +684,8 @@ func _along(path: PathNetwork.Path, span: Vector2, cell: int, out: Array[Diction
 			var on := path.at(s)
 			if rng.randf() >= richness(on) * path.richness:
 				continue
+			if row.has("near") and Sphere.angle(on, landmark(row.near[0]).p) * radius > row.near[1]:
+				continue
 			var side := rng.randf_range(row.side[0], row.side[1])
 			if not row.get("one_side", false) and rng.randf() < 0.5:
 				side = -side
@@ -754,6 +771,15 @@ func _off_network(cell: int, out: Array[Dictionary]) -> void:
 	var alone := _stream(["h", cell])
 	if not _cell_paths.has(cell) and not _cell_settlements.has(cell) and alone.randf() < HERMITS:
 		out.append(_site(&"pipe_wall_hut", middle, alone.randf() * TAU, alone, ["h", cell], &"hermit"))
+	# The nomads', anywhere: a wrecked rig, now and then one of their camps.
+	for nomads: Array in [[&"nomad_rig", NOMAD_RIGS, "n"], [&"nomad_camp", NOMAD_CAMPS, "nc"]]:
+		var roam := _stream([nomads[2], cell])
+		if roam.randf() >= nomads[1]:
+			continue
+		var at := Sphere.point(roam.randf_range(lerpf(lat0, lat1, 0.1), lerpf(lat0, lat1, 0.9)),
+			roam.randf_range(lerpf(lon0, lon1, 0.1), lerpf(lon0, lon1, 0.9)))
+		if cells.cell_at(at) == cell and not _in_landmark(at):
+			out.append(_site(nomads[0], at, roam.randf() * TAU, roam, [nomads[2], cell], &"nomads"))
 
 
 func _site(kind: StringName, p: Vector3, bearing: float, rng: RandomNumberGenerator, parts: Array,
@@ -761,11 +787,17 @@ func _site(kind: StringName, p: Vector3, bearing: float, rng: RandomNumberGenera
 	var era := SiteKinds.era(kind)
 	var tilt: Vector2 = Eras.TILT.get(era, Vector2.ZERO)
 	return {"id": _id(parts), "kind": kind, "era": era, "p": p, "bearing": fposmod(bearing, TAU),
-		"reach": SiteKinds.reach(kind), "depth": Eras.depth(era, rng), "tilt": deg_to_rad(rng.randf_range(tilt.x, tilt.y)),
+		"reach": SiteKinds.reach(kind), "depth": _depth(kind, rng), "tilt": deg_to_rad(rng.randf_range(tilt.x, tilt.y)),
 		"loot": hash([run_seed, parts, "loot"]), "source": source, "region": region_of(p)}
 
 
 # --- Small rules. ---
+
+## Sand over a site of a kind: its own burial where it has one, else its era's.
+func _depth(kind: StringName, rng: RandomNumberGenerator) -> float:
+	var span := SiteKinds.burial(kind)
+	return rng.randf_range(span.x, span.y)
+
 
 func _on_axis(degrees: float) -> Vector3:
 	return Sphere.toward(sub_tu, axis, deg_to_rad(degrees))

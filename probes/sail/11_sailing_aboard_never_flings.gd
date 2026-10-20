@@ -28,7 +28,7 @@ func run() -> void:
 			await _set_up(stage)
 			var bodies: Array[Node3D] = [kit[0], player]
 			if stage == &"tow":
-				bodies.append(kit[3])
+				bodies.append(_of(Chassis, 1))
 			var seen := {"jolt": 0.0, "spin": 0.0, "numbers": true, "was": bodies.map(_way)}
 			var start: Vector3 = kit[0].global_position
 			Engine.physics_ticks_per_second = ticks * 2
@@ -125,8 +125,15 @@ func _set_up(stage: StringName) -> void:
 	tending = 0.0
 	if stage == &"tow":
 		course = way
-		check(player.get_on(kit[6]), "on the board")
+		check(player.get_on(_of(Hoverboard, 0)), "on the board")
 	else:
 		course = Vector2.ZERO
-		check((kit[2] as Helm).interact(player), "at the helm")
+		check((_of(Helm, 0) as Helm).interact(player), "at the helm")
 	await physics_frames(2)
+
+
+## The scenario's n-th thing of a kind, in the order it laid them: the rig
+## before the camp.
+func _of(kind: Variant, n: int) -> Node3D:
+	var found := kit.filter(func(body: Node) -> bool: return is_instance_of(body, kind))
+	return found[n] if n < found.size() else null

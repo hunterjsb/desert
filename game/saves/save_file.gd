@@ -31,9 +31,9 @@ static func write_bytes(path: String, kind: String, version: int, bytes: PackedB
 
 
 ## {"data": the data, or {} if there's none or it's refused; "refused": why
-## not, or ""}.
+## not, or ""; "found": the version its header says, -1 if none}.
 static func read(path: String, kind: String, version: int) -> Dictionary:
-	var out := {"data": {}, "refused": ""}
+	var out := {"data": {}, "refused": "", "found": -1}
 	if not FileAccess.file_exists(path):
 		return out
 	var file := FileAccess.open(path, FileAccess.READ)
@@ -43,6 +43,7 @@ static func read(path: String, kind: String, version: int) -> Dictionary:
 		out.refused = "%s isn't a %s" % [path, kind]
 	else:
 		var found := file.get_32()
+		out.found = found
 		if found != version:
 			out.refused = "%s is %s version %d; this build reads version %d" % [path, kind, found, version]
 		else:

@@ -55,7 +55,7 @@ func _setting(history: History, start: StringName, p: Vector3, tuning: Tuning) -
 			if not lines.any(_ahead.bind(history, p, band.y)):
 				return "walking in toward Tu crosses nothing within %.0f m" % band.y
 			for site in _sites_within(history, p, tuning.start_deep_m):
-				if not site.source in [&"grid", &"wreck_field", &"hermit"]:
+				if not site.source in [&"grid", &"wreck_field", &"hermit", &"nomads"]:
 					return "a %s (%s) within %.0f m" % [site.kind, site.source, tuning.start_deep_m]
 		&"wreck_field":
 			if not _sites_within(history, p, tuning.start_wrecks_m).any(func(site: Dictionary) -> bool:

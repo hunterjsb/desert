@@ -1,10 +1,10 @@
 extends FarmProbe
-## Water probe 1: hoses carry water. A condenser held at 0 °C, with nothing in
-## its water socket but a hose, is hosed to two planters, the second hose on
-## the first's end: what it makes goes down the hoses to the emptier tank
-## first, and none of it is lost. Its power taken out and a full canister
-## fitted on the far planter's hose end, the canister tops up both tanks, the
-## emptier first, until it's empty.
+## Water probe 1: hoses carry water. A condenser held at 0 °C on a staked
+## plate with a battery, nothing in its water socket but a hose, is hosed to
+## two planters, the second hose on the first's end: what it makes goes down
+## the hoses to the emptier tank first, and none of it is lost. Its battery
+## taken off and a full canister fitted on the far planter's hose end, the
+## canister tops up both tanks, the emptier first, until it's empty.
 
 ## An hour of world time at 0 °C makes this many litres.
 const MAKES := 10.0
@@ -14,13 +14,16 @@ const TANKS := [0.0, 2.0]
 
 func run() -> void:
 	await load_storm(0.0)
-	var condenser := Catalog.device(&"condenser") as Condenser
-	world.content.add_child(condenser)
+	var plate := Catalog.device(&"chassis") as Chassis
+	world.content.add_child(plate)
 	var at := ahead(2.0)
-	condenser.global_position = Vector3(at.x, world.height_under(at) + 0.35, at.z)
-	condenser.freeze = true
+	plate.global_position = Vector3(at.x, world.height_under(at) + 0.07, at.z)
+	plate.freeze = true
+	var condenser := Catalog.device(&"condenser") as Condenser
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.0, 0.15), 0.0, condenser)
 	condenser.frame_stats["toughness"] = INF
-	fit_part(condenser, &"battery")
+	plate.frame_stats["toughness"] = INF
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.3, -0.35), 0.0, Catalog.part(&"battery"))
 	var planters: Array[Planter] = [planter_at(ahead(4.5), []), planter_at(ahead(-0.5), [])]
 	for i in 2:
 		planters[i].tank_l = TANKS[i]
@@ -33,8 +36,7 @@ func run() -> void:
 	print("made %.6f L; tanks %s" % [condenser.made_l, tanks])
 	check(condenser.made_l > 0.0 and absf(tanks[0] - TANKS[0] - condenser.made_l) < 1e-9 and tanks[1] == TANKS[1],
 		"what it made went down the hoses, all of it to the emptier tank")
-	var cell: Battery = condenser.battery()
-	condenser.take(cell.socket).free()
+	plate.unstick(plate.batteries()[0].socket).free()
 	var made := condenser.made_l
 	var can := fit_part(planters[1], &"canister") as Supply
 	await pass_time(1.0)

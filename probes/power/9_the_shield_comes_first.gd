@@ -1,9 +1,9 @@
 extends LineProbe
-## Power probe 9: the shield comes first. The run's kit crate under clear
-## skies, its shield on, its battery just above the reserve: the tray gives
-## way at the reserve and the crate settles onto the sand while the shield on
+## Power probe 9: the shield comes first. The run's kit deck under clear
+## skies, its shield on, its battery just above the reserve: the trays give
+## way at the reserve and the deck settles onto the sand while the shield on
 ## it keeps running, and the light panel brings the battery back until the
-## crate floats again.
+## deck floats again.
 
 const WARP := 120.0
 ## The most it may take, in days.
@@ -13,13 +13,13 @@ const DAYS := 3.5
 func run() -> void:
 	await load_lines()
 	var kit := Runs.kit(world)
-	var crate: Device = kit.filter(func(n: Node) -> bool: return n is Device and (n as Device).stats().lift_kg > 0.0)[0]
+	var deck: Device = kit.filter(func(n: Node) -> bool: return n is Device and (n as Device).stats().lift_kg > 0.0)[0]
 	var shield: ShieldGenerator = kit.filter(func(n: Node) -> bool: return n is ShieldGenerator)[0]
-	var cell := crate.battery()
+	var cell := deck.battery()
 	var reserve := Power.RESERVE * cell.capacity()
 	cell.charge_wh = reserve + 1.0
 	await simulate(1.0)
-	check(shield.interact(world.player) and crate.stats().hovering, "the shield on, the crate floating")
+	check(shield.interact(world.player) and deck.stats().hovering, "the shield on, the deck floating")
 	var start := world.time
 	var seen := {"dark": 0, "rested": -1.0, "rested_wh": 0.0, "rose": -1.0, "rose_wh": 0.0, "low": INF}
 	world.time_warp = WARP
@@ -27,24 +27,24 @@ func run() -> void:
 		await get_tree().physics_frame
 		seen.dark += int(not shield.running())
 		seen.low = minf(seen.low, cell.charge_wh)
-		if seen.rested < 0.0 and not crate.powered:
+		if seen.rested < 0.0 and not deck.powered:
 			seen.rested = world.time - start
 			seen.rested_wh = cell.charge_wh
-		elif seen.rested >= 0.0 and crate.powered:
+		elif seen.rested >= 0.0 and deck.powered:
 			seen.rose = world.time - start
 			seen.rose_wh = cell.charge_wh
 			break
 	world.time_warp = 1.0
-	var settled := clearance(crate)
+	var settled := clearance(deck)
 	await simulate(4.0)
 	var day := world.tuning.day_minutes * 60.0
-	print("the tray gave way at %.2f Wh after %.0f s and the crate settled %.2f m up; the shield ran on, down to %.2f Wh;"
+	print("the tray gave way at %.2f Wh after %.0f s and the deck settled %.2f m up; the shield ran on, down to %.2f Wh;"
 		% [seen.rested_wh, seen.rested, settled, seen.low]
-		+ " the panel brought it to %.2f Wh by %.2f days, and the crate floated again %.2f m up"
-		% [seen.rose_wh, seen.rose / day, clearance(crate)])
+		+ " the panel brought it to %.2f Wh by %.2f days, and the deck floated again %.2f m up"
+		% [seen.rose_wh, seen.rose / day, clearance(deck)])
 	check(seen.rested >= 0.0 and absf(seen.rested_wh - reserve) < 0.1 and settled < 0.5,
-		"running short, the tray gives way at the reserve and the crate settles on the sand")
+		"running short, the trays give way at the reserve and the deck settles on the sand")
 	check(seen.dark == 0, "the shield on it keeps its power (%d frames dark)" % seen.dark)
 	check(seen.rose > seen.rested and seen.rose_wh >= (Power.RESERVE + Power.RESTART) * cell.capacity() - 0.1
-		and absf(clearance(crate) - crate.rest_height()) < 0.2,
-		"the panel brings the battery back and the crate floats again")
+		and absf(clearance(deck) - deck.rest_height()) < 0.2,
+		"the panel brings the battery back and the deck floats again")

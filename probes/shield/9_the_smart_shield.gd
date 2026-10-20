@@ -3,7 +3,7 @@ extends WeatherProbe
 ## stands on a deck beside a shield, switched off, with a storm on its way.
 ## While the radar's front is farther than the smart shield's distance the
 ## shield stays off; once it's within it, the shield switches itself on and
-## the screen logs it. A shield off on the sand nearby, not on the deck,
+## the screen logs it. A shield off on its own plate nearby, not on the deck,
 ## stays off. Switched off from the screen's power page, it stays off while
 ## the front holds near; switched on there, it's on.
 
@@ -14,11 +14,13 @@ const WARP := 10.0
 func run() -> void:
 	await load_weather()
 	world.player.set_physics_process(false)
-	var deck := Scenarios.standing(world, &"chassis", [], [0.0, 2.5]) as Chassis
-	deck.join(Catalog.device(&"chassis") as Chassis, Scenarios._on_piece(deck, Vector2i.ZERO, &"ring", Vector2i(1, 0)), 0)
-	var made := Scenarios._stand_on(world, deck, &"console", [&"big_battery", &"screen", &"radar"], Vector2i.ZERO) as Console
-	var shield := Scenarios._stand_on(world, deck, &"shield", [&"battery"], Vector2i(1, 0)) as ShieldGenerator
-	var apart := Scenarios.standing(world, &"shield", [&"battery"], [-3.0, 2.5]) as ShieldGenerator
+	var rig := Scenarios.rig_at(world, [[&"piece", Vector2i(1, 0)],
+		[&"stick", Vector2i.ZERO, &"top", Vector2.ZERO, 180.0, [&"console", [&"screen", &"radar"]], &"console"],
+		[&"stick", Vector2i(1, 0), &"top", Vector2(-0.2, 0.2), 0.0, &"shield", &"shield"],
+		[&"stick", Vector2i(1, 0), &"top", Vector2(0.25, -0.25), 0.0, &"big_battery"]], [0.0, 2.5], false)
+	var made: Console = rig.named.console
+	var shield: ShieldGenerator = rig.named.shield
+	var apart: ShieldGenerator = Scenarios.plate(world, [&"shield", &"battery"], [-3.0, 2.5])[1]
 	var x := world.world_x(made.global_position.x)
 	var z := world.world_z(made.global_position.z)
 	var near := Tuning.current().smart_shield_auto_m

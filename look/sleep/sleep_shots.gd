@@ -2,9 +2,9 @@ extends Node
 ## Look-test: sleep, shot four ways onto one sheet. The run's own start, the
 ## Surveyor's kit round you and its bedroll carried: use on the bedroll brings
 ## up the words to choose how long, a storm due; a house ruin's sleeping
-## bench, its line "Bed"; through the storm under the crate's light shield,
-## and the summary you wake to; and the bedroll in the crate's rack in the
-## board's place, by the headlamp.
+## bench, its line "Bed"; through the storm under the camp's light shield,
+## and the summary you wake to; and the bedroll hung on the camp's upright in
+## the board's place, by the headlamp.
 ## The game's own run, on a profile and saves of its own, never the player's.
 ## Needs a GPU, not --headless; scripts/unseen.sh gives it one with no window:
 ##   scripts/unseen.sh --path . --resolution 1920x1080 res://look/sleep/sleep_shots.tscn -- sheet.png
@@ -39,12 +39,12 @@ func _ready() -> void:
 	Dev.hide_overlays()
 	var player := world.player
 	var kit: Array = world.get_meta(&"kit")
-	var crate: Device = kit.filter(func(n: Node) -> bool: return n is Device and n.has_tray())[0]
+	var deck: Chassis = kit.filter(func(n: Node) -> bool: return n is Chassis and n.has_tray())[0]
 	var shield: ShieldGenerator = kit.filter(func(n: Node) -> bool: return n is ShieldGenerator)[0]
 	var bedroll: Bedroll = player.suit.carried.filter(func(t: Node) -> bool: return t is Bedroll)[0]
-	# Beside the crate, inside its light shield's bubble once it's on, facing it.
-	var beside := crate.global_position + crate.global_basis.x * 2.2
-	_face(player, beside, crate.global_position)
+	# Beside the camp, inside its light shield's bubble once it's on, facing it.
+	var beside := deck.global_position + deck.global_basis.x * 2.2
+	_face(player, beside, deck.global_position)
 	await ticks(30)
 	print("sleep: '%s', storm due in %.0f s" % [world.sleep.refusal(), world.weather.next_change_time - world.time])
 	bedroll.interact(player)
@@ -72,7 +72,7 @@ func _ready() -> void:
 	print("ruin: use opens the words: %s" % (player.hands.interact() and main.ui.is_open()))
 	main.ui.close_top()
 
-	_face(player, beside, crate.global_position)
+	_face(player, beside, deck.global_position)
 	await ticks(30)
 	shield.interact(player)
 	await ticks(60)
@@ -87,15 +87,16 @@ func _ready() -> void:
 	await ticks(30)
 	await _shoot(2)
 
-	# The board off the rack, the bedroll on it, by the light of the headlamp.
-	var rack: Socket = crate.sockets().filter(func(s: Socket) -> bool: return s.kind == &"rack")[0]
-	var board := crate.dismount(rack)
-	board.global_position += crate.global_basis.x * -1.5
+	# The board off the upright, the bedroll hung there, by the light of the headlamp.
+	var hung: Device = deck.mounted().filter(func(d: Device) -> bool: return d is Hoverboard)[0]
+	var wall := deck.own_piece(deck.seat_of(hung))
+	var board := deck.unstick(deck.seat_of(hung))
+	board.global_position += deck.global_basis.x * -1.5
 	player.suit.carried.erase(bedroll)
 	player.suit._off_you(bedroll)
-	crate.mount(bedroll, rack)
-	_face(player, crate.global_position - crate.global_basis.x * 2.0 + crate.global_basis.z * 0.8,
-		crate.global_position - crate.global_basis.x * 0.45)
+	Stick.put(deck, wall, Chassis.TOP, Vector2(0.0, 0.12), PI / 2.0, bedroll)
+	var on_wall := deck.global_transform * wall.pose().origin
+	_face(player, on_wall + deck.global_basis.z * 2.0 + deck.global_basis.x * 0.6, on_wall)
 	player.headlamp.on = true
 	await ticks(150)
 	await _shoot(3)

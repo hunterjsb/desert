@@ -1,10 +1,10 @@
 extends LineProbe
 ## Rope & tethering probe 15: only into the sand. Standing, you take up the
-## kit's stake, the crate's line on its ring. Used at a look at the sand a few
-## steps off, out of reach, and then at the crate beside you, it stays in your
+## kit's stake, the deck's line on its ring. Used at a look at the sand a few
+## steps off, out of reach, and then at the deck beside you, it stays in your
 ## hand each time, neither driven nor at your waist, and the readout says why.
 ## A look at the sand in reach drives it there at the ground's height, and
-## looking out over the sand, use ties it at your waist to tow the crate.
+## looking out over the sand, use ties it at your waist to tow the deck.
 
 
 func run() -> void:
@@ -12,21 +12,22 @@ func run() -> void:
 	var kit := Runs.kit(world)
 	await simulate(2.0)
 	var stake: Stake = kit.filter(func(n: Node) -> bool: return n is Stake)[0]
-	var crate: Device = kit.filter(func(n: Node) -> bool: return n is Device and (n as Device).stats().lift_kg > 0.0)[0]
-	var toward := flat(crate.global_position - stake.global_position).normalized()
+	var deck: Device = kit.filter(func(n: Node) -> bool: return n is Chassis)[0]
+	var toward := flat(deck.global_position - stake.global_position).normalized()
 	_stand(stake.global_position + toward * 1.2, stake.global_position + Stake.RING * 0.5)
 	await simulate(2.0 / 60.0)
 	check(hands.grab() and hands.held == stake, "you take up the kit's stake")
 	await simulate(0.5)
 
-	var ahead := world.player.global_position - toward * 3.0
-	_stand(world.player.global_position, Vector3(ahead.x, world.height_under(ahead), ahead.z))
+	for distance: float in [3.0, 8.0]:
+		var ahead := world.player.global_position - toward * distance
+		_stand(world.player.global_position, Vector3(ahead.x, world.height_under(ahead), ahead.z))
+		await simulate(2.0 / 60.0)
+		check(_kept(), "used at sand %.0f m away, it stays in your hand and says why" % distance)
+	await walk_to(deck.global_position - toward * 1.8)
+	_stand(world.player.global_position, deck.global_position)
 	await simulate(2.0 / 60.0)
-	check(_kept(), "used at sand out of reach, it stays in your hand and says why")
-	await walk_to(crate.global_position - toward * 1.8)
-	_stand(world.player.global_position, crate.global_position)
-	await simulate(2.0 / 60.0)
-	check(_kept(), "used at the crate, it stays in your hand and says why")
+	check(_kept(), "used at the deck, it stays in your hand and says why")
 
 	var near := world.player.global_position - toward * 1.0
 	_stand(world.player.global_position, Vector3(near.x, world.height_under(near), near.z))
@@ -37,10 +38,12 @@ func run() -> void:
 	await simulate(2.0 / 60.0)
 	hands.grab()
 	await simulate(0.5)
-	_stand(world.player.global_position, world.player.global_position - toward * 10.0 + Vector3.UP * 1.6)
+	var sky := world.player.global_position - toward * 10.0
+	sky.y = world.height_under(world.player.global_position) + world.player.camera.position.y + 1.0
+	_stand(world.player.global_position, sky)
 	await simulate(2.0 / 60.0)
 	check(hands.held == stake and hands.interact() and world.player.waist.holds(stake),
-		"looking out over the sand, use ties it at your waist")
+		"looking into open sky, use ties it at your waist")
 
 
 ## Standing at a place, your eyes at their height, looking at a point.

@@ -156,7 +156,7 @@ const ROSTER := [
 ## satellite in each, each 2/8 of a lap on from the last, tilted 55°, 5 radii
 ## up, a lap in 9 minutes. Laid out so, at least two are 8° or more over the
 ## horizon everywhere on Zan at every moment, whatever the moon's turn under
-## them (searched, and radio probe 28), however the seed turns the whole. Each
+## them (searched, and radio probe 34), however the seed turns the whole. Each
 ## still has a route of its own, its plane; they share one lap, or they'd
 ## drift out of it.
 const FORMATION := {"count": 8, "phasing": 2, "inclination": 55.0, "altitude": 5.0, "minutes": 9.0}

@@ -8,7 +8,7 @@ extends MenuProbe
 func run() -> void:
 	await open_main(false)
 	await started()
-	main.ui.dev_console.run("goto port_morgan")
+	DevConsole.go_to(world, world.shape.history.landmark(&"port_morgan"))
 	await physics_frames(5)
 	var profile := get_node(^"/root/Profile")
 	var kept: Dictionary = profile.deeds().get("port_morgan", {})

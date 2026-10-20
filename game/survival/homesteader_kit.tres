@@ -17,9 +17,8 @@ carried = Dictionary[StringName, int]({
 &"stake": 3
 })
 beside = Dictionary[StringName, Vector2]({
-&"solid_shield": Vector2(0.0, 2.0),
-&"farm": Vector2(-2.0, 2.2),
-&"still": Vector2(2.0, -1.0),
+&"homestead": Vector2(0.0, 2.4),
+&"farm": Vector2(-2.4, 2.2),
 &"turbine": Vector2(2.5, -6.5),
 &"cable": Vector2(0.8, 1.0),
 &"strong_cable": Vector2(-0.8, 1.0)
@@ -37,19 +36,8 @@ assembled = Dictionary[StringName, Dictionary]({
 10: &"canister"
 }
 },
-&"solid_shield": {
-"frame": &"shield",
-"sockets": {
-0: &"big_battery"
-}
-},
-&"still": {
-"frame": &"condenser",
-"sockets": {
-0: &"canister",
-1: &"battery",
-2: &"solar_panel"
-}
+&"homestead": {
+"rig": [[&"piece", Vector2i(1, 0)], [&"stick", Vector2i(0, 0), &"top", Vector2(-0.25, 0.25), 0.0, &"shield"], [&"stick", Vector2i(0, 0), &"top", Vector2(0.27, 0.28), 0.0, &"big_battery"], [&"stick", Vector2i(0, 0), &"top", Vector2(0, -0.27), 0.0, &"solar_panel"], [&"stick", Vector2i(1, 0), &"top", Vector2(0, 0.17), 0.0, [&"condenser", [&"canister"]]], [&"stick", Vector2i(1, 0), &"top", Vector2(0.25, -0.33), 0.0, &"battery"]]
 }
 })
 charge = 0.5

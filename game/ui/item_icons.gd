@@ -15,13 +15,32 @@ const LOOKS := {
 	&"planter": {"frame": &"planter", "sockets": {0: &"root_tuber", 1: &"root_tuber", 2: &"saltbush", 3: &"vat_fungus"},
 		"turn": Vector2(25.0, 35.0)},
 	&"chassis": {"frame": &"chassis", "turn": Vector2(30.0, 40.0)},
-	&"console": {"frame": &"console", "sockets": {7: &"screen"}, "turn": Vector2(155.0, 15.0)},
+	&"console": {"frame": &"console", "sockets": {1: &"screen"}, "turn": Vector2(155.0, 15.0)},
+	&"nav_computer": {"frame": &"nav_computer", "sockets": {0: &"screen"}, "turn": Vector2(155.0, 15.0)},
 	&"turbine": {"frame": &"turbine", "turn": Vector2(30.0, 15.0)},
+	&"helm": {"frame": &"helm_seat", "turn": Vector2(150.0, 20.0)},
+	&"compass": {"part": &"compass", "turn": Vector2(0.0, 55.0)},
+	&"cutter": {"frame": &"cutter", "turn": Vector2(60.0, 25.0)},
+	&"survival_kit": {"frame": &"survival_kit", "turn": Vector2(30.0, 30.0)},
+	&"sealant": {"part": &"sealant", "turn": Vector2(30.0, 25.0)},
+	&"sand_scoop": {"part": &"sand_scoop", "turn": Vector2(35.0, 40.0)},
+	&"sieve": {"part": &"sieve", "turn": Vector2(20.0, 50.0)},
+	&"radio": {"frame": &"radio", "turn": Vector2(160.0, 15.0)},
+	&"bedroll": {"frame": &"bedroll", "turn": Vector2(40.0, 30.0)},
 }
+## How a thing as it comes is turned to be seen.
+const TURN := Vector2(30.0, 40.0)
 ## Pixels a side.
 const SIZE := 128
 
 static var _made := {}
+
+
+## A picture's thing by its id: its look, or the catalog thing as it comes.
+static func look(id: StringName) -> Dictionary:
+	if LOOKS.has(id):
+		return LOOKS[id]
+	return {("part" if Catalog.PARTS.has(id) else "frame"): id, "turn": TURN}
 
 
 static func of(tree: SceneTree, id: StringName) -> Texture2D:
@@ -40,7 +59,7 @@ static func _draw(tree: SceneTree, id: StringName, picture: ImageTexture) -> voi
 	port.own_world_3d = true
 	port.transparent_bg = true
 	port.render_target_update_mode = SubViewport.UPDATE_ONCE
-	var thing := _thing(LOOKS[id])
+	var thing := _thing(look(id))
 	port.add_child(thing)
 	var box := _bounds(thing)
 	var light := DirectionalLight3D.new()
@@ -56,7 +75,7 @@ static func _draw(tree: SceneTree, id: StringName, picture: ImageTexture) -> voi
 	var eye := Camera3D.new()
 	eye.projection = Camera3D.PROJECTION_ORTHOGONAL
 	eye.size = box.size.length() * 1.05
-	var turn: Vector2 = LOOKS[id].turn
+	var turn: Vector2 = look(id).turn
 	var back := Basis(Vector3.UP, deg_to_rad(turn.x)) * Basis(Vector3.RIGHT, -deg_to_rad(turn.y))
 	eye.transform = Transform3D(back, box.get_center() + back.z * box.size.length() * 2.0)
 	port.add_child(eye)
@@ -75,6 +94,10 @@ static func _thing(spec: Dictionary) -> Node3D:
 	var thing := Node3D.new()
 	if spec.has("part"):
 		_part(thing, spec.part, Transform3D(Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO))
+		return thing
+	if not Catalog.DEVICES.has(spec.frame):
+		# A stake: a frame with no entry of its own.
+		_mesh(thing, Dress._own(spec.frame), Transform3D.IDENTITY)
 		return thing
 	var frame: Dictionary = Catalog.DEVICES[spec.frame]
 	var size: Vector3 = frame.size

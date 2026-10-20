@@ -26,6 +26,13 @@ var ground := -1
 ## Whether a bigger site's ground takes this one's: -1 until its ground is
 ## first built.
 var yields := -1
+## Where it lies among the dunes (Exposure.dune_at), read as it's surveyed.
+var dune := 0.0
+## Sand dug off it by hand, m: what you did, kept apart from the weather's
+## function, so a storm never undoes it.
+var dug_m := 0.0
+## Of what was dug, m³ a sieve sifted (Hands).
+var sifted_m3 := 0.0
 ## The floor's top as it stands now, world height.
 var floor_y: float:
 	get:
@@ -211,6 +218,9 @@ func _stand(pad: float) -> void:
 	_pad = pad
 	_stands = true
 	planned = false
+	var shape: TerrainShape = _ctx.shape.get_ref()
+	if shape != null:
+		dune = Exposure.dune_at(shape, x, z, _ctx.tuning)
 	_grid_x = floorf(x - _reach.x)
 	_grid_z = floorf(z - _reach.y)
 	_grid_w = int(ceilf(x + _reach.x) - _grid_x) + 1
@@ -388,7 +398,7 @@ func _base_points() -> PackedFloat32Array:
 ## weather's at the world's clock (or the moment it's pinned to).
 func taken() -> float:
 	if not is_nan(pinned_at):
-		return pure_taken(pinned_at)
+		return with_dug(pure_taken(pinned_at))
 	if not is_nan(_shown):
 		return _shown
 	var t: float = _ctx.clock.call()
@@ -398,7 +408,7 @@ func taken() -> float:
 	_lock.unlock()
 	if cached:
 		return got
-	got = pure_taken(t)
+	got = with_dug(pure_taken(t))
 	_lock.lock()
 	_now_t = t
 	_now_taken = got
@@ -408,7 +418,25 @@ func taken() -> float:
 
 ## The weather's sand taken off it at a world time, m (Exposure.taken).
 func pure_taken(t: float) -> float:
-	return Exposure.taken(_ctx.field, x, z, t, _ctx.tuning, _memo)
+	return Exposure.taken(_ctx.field, x, z, t, _ctx.tuning, _memo, dune)
+
+
+## The weather's sand off it with what was dug: the dig makes up only what
+## the weather leaves short of dug out.
+func with_dug(weather: float) -> float:
+	return weather if weather >= depth or dug_m <= 0.0 else minf(weather + dug_m, depth)
+
+
+## Sand dug off it by hand, m, never past dug out: how much came off.
+func dig(m: float) -> float:
+	var by := minf(m, depth - taken())
+	if by <= 0.0:
+		return 0.0
+	dug_m += by
+	_lock.lock()
+	_now_t = NAN
+	_lock.unlock()
+	return by
 
 
 ## The same, read each frame on the main thread: the ticks either side of
@@ -419,17 +447,17 @@ func _taken_now(t: float) -> float:
 	var ticks := Vector2i(floori(slow), floori(fast))
 	if ticks != _ticks:
 		_ticks = ticks
-		_ends = Vector4(Exposure.stripped_at(_ctx.field, x, z, ticks.x - 1, _ctx.tuning, _memo),
-			Exposure.stripped_at(_ctx.field, x, z, ticks.x, _ctx.tuning, _memo),
-			Exposure.surge_at(_ctx.field, x, z, ticks.y - 1, _ctx.tuning, _memo),
-			Exposure.surge_at(_ctx.field, x, z, ticks.y, _ctx.tuning, _memo))
+		_ends = Vector4(Exposure.stripped_at(_ctx.field, x, z, ticks.x - 1, _ctx.tuning, _memo, dune),
+			Exposure.stripped_at(_ctx.field, x, z, ticks.x, _ctx.tuning, _memo, dune),
+			Exposure.surge_at(_ctx.field, x, z, ticks.y - 1, _ctx.tuning, _memo, dune),
+			Exposure.surge_at(_ctx.field, x, z, ticks.y, _ctx.tuning, _memo, dune))
 	return lerpf(_ends.x, _ends.y, slow - ticks.x) + lerpf(_ends.z, _ends.w, fast - ticks.y)
 
 
 ## The settled sand alone, m: what it would be without the storm working on it now.
 func settled() -> float:
 	var t: float = pinned_at if not is_nan(pinned_at) else _ctx.clock.call()
-	return Exposure.settled(_ctx.field, x, z, t, _ctx.tuning, _memo)
+	return Exposure.settled(_ctx.field, x, z, t, _ctx.tuning, _memo, dune)
 
 
 ## Buried, partly exposed or exposed (Exposure), now.
@@ -443,14 +471,14 @@ func level() -> float:
 
 
 ## How much further out of the sand the storm working on it has it than its
-## settled sand would, in levels: what's newly bare.
+## settled sand would, in levels: what's newly bare. What was dug isn't.
 func bared() -> float:
-	return maxf(level() - Exposure.level(depth, settled()), 0.0)
+	return maxf(level() - Exposure.level(depth, with_dug(settled())), 0.0)
 
 
 ## The same as the weather has it at world time `t`, loaded or not: what it sheds as drift.
 func bared_at(t: float) -> float:
-	var settled_then := Exposure.settled(_ctx.field, x, z, t, _ctx.tuning, _memo)
+	var settled_then := Exposure.settled(_ctx.field, x, z, t, _ctx.tuning, _memo, dune)
 	return maxf(Exposure.level(depth, pure_taken(t)) - Exposure.level(depth, settled_then), 0.0)
 
 
@@ -467,7 +495,7 @@ func forget() -> void:
 ## Its ground is first built: shown from now as the weather has it, or as
 ## a save had it held over you or your camp (`kept`, m) where that's more.
 func hold_ground(kept := NAN) -> void:
-	_shown = pure_taken(_ctx.clock.call())
+	_shown = with_dug(pure_taken(_ctx.clock.call()))
 	_held = false
 	_kept = false
 	keep(kept)
@@ -517,7 +545,7 @@ func follow(t: float, occupied: Callable) -> int:
 	var dt := maxf(t - _followed, 0.0) if not is_nan(_followed) else 0.0
 	_followed = t
 	var was := _shown
-	var pure := _taken_now(t)
+	var pure := with_dug(_taken_now(t))
 	if pure >= _shown:
 		_shown = pure
 		_held = false
@@ -605,8 +633,14 @@ func add_shapes(body: CollisionObject3D, s: int) -> void:
 		var holder := CollisionShape3D.new()
 		holder.shape = piece.shape(i)
 		holder.position = piece.boxes[i].get_center()
+		holder.basis = piece.box_turns.get(i, Basis.IDENTITY)
 		if i in piece.beds:
 			holder.set_meta(&"bed", true)
+		body.add_child(holder)
+	for fitted in piece.fitted_boxes:
+		var holder := CollisionShape3D.new()
+		holder.shape = fitted[0]
+		holder.transform = fitted[1]
 		body.add_child(holder)
 
 
@@ -700,6 +734,12 @@ func bare_glints_at(at_level: float) -> Array[Array]:
 		if bare:
 			out.append([at, lean.basis * (each[1] as Vector3), each[2], j])
 	return out
+
+
+## How it leans in its frame: about its kind's pivot, so its free end digs
+## into the sand.
+func lean_frame() -> Transform3D:
+	return _lean()
 
 
 ## How it leans, about its kind's pivot, so its free end digs into the sand.

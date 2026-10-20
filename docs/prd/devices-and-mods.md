@@ -1,34 +1,42 @@
 # PRD: Devices & mods
 
-*Draft, 2026-10-13. Answers to [the vision](../vision.md).*
+*Draft, 2026-10-13. Answers to [the vision](../vision.md). Rebuilt round the chassis, 2026-10-18.*
 
 ## Why this system exists
 
-Editing your devices is the gameplay. Every device is a frame with **sockets**, and
-every part fits a socket of its type. Fitting a hook, a hover tray, a better battery or
-a charged one is how you progress, how you adapt the camp, and how you get out of a
-pinch. So fitting and removing parts has to feel great: intuitive, reactive and
-satisfying, every single time.
+Building your camp is the gameplay. The camp is chassis: sticky squares you tile into decks,
+raise walls and shelves on with frames, and stick anything on wherever it fits, so a camp is
+laid out in stations of your own rather than filled slots (Hunter's brother, playtesting: "a
+board he could just stick things to"). Plugs, water taps and the few slots a thing has of its
+own (a planter's beds, a Console's ports, a carried thing's battery) are the other half: a
+part fits them with a magnetic tug. Moving a battery, a tray or a panel is how you progress,
+how you adapt the camp, and how you get out of a pinch, so placing and taking things has to
+feel great: intuitive, reactive and satisfying, every single time.
 
 **In the world.** Fitting is what the colony could always do, and making is what it never
-could: the moon had no fabs, so every part came from somewhere else. Each part carries its own
-maker's stamp, separate from the mark of whoever assembled the device around it. A shield
-housing might name the contractor while its core names a maker most settlers never heard of.
-Batteries are the exception and carry no stamp. See [the lore research](../lore-research.md).
+could: the moon had no fabs, so every part came from somewhere else. A found object can show
+several distinct roles: the OEM that made a component, the contractor/integrator that fitted
+it, and the company that consigned or issued it. One mark does not imply the others. Batteries
+are the exception and carry no stamp. See [the lore research](../lore-research.md).
 
 ## What the player experiences
 
-- **Magnetic snapping.** Bring a part you're holding near a device. As you approach a
-  socket it fits, you feel a tug: the part leans toward the socket, and a faint ghost
-  shows where it will sit. Keep going and it snaps home with a clunk. Pull away and the
-  tug lets go.
-- **Removing feels as good as fitting.** Look at a fitted part and grab it. The device
-  turns that side toward you, and the part slides out the way it went in, never
-  through the device. It's quick enough to swap a battery in a pinch, mid-storm.
+- **It goes where you look.** Carry something to a chassis and look at its top, its
+  underside or an upright: the thing itself is there, flat on the face, touching nothing,
+  turning as you turn it and edging to the face's edges and its neighbours so rows line up.
+  Take leaves it there with a clunk.
+- **It says when it won't.** Where it would clip, it's red and the line under your aim says
+  "blocked"; where it would sink a floating deck, amber, "too heavy".
+- **Slots tug.** A plug held near a port, a hook near a ring, a seedling near a bed: the
+  part leans toward the slot, a faint ghost shows where it will sit, and take seats it home.
+- **Removing feels as good as placing.** Look at what you want and take: that one thing
+  slides off its face, or out of its slot, the way it went in, never through anything, and
+  take again puts it straight back. It's quick enough to swap a battery in a pinch,
+  mid-storm. Dragging a deck never takes it apart.
 - **Look at something to see what it does.** A device or part shows its stats briefly
   while you look at it, with no menu.
-- **Parts change the device.** More hooks, a hover tray, a bigger battery, a solar
-  mount. Their weight adds up too, which raises the hover draw.
+- **What's on a deck changes it.** Trays lift it where they are, batteries pool for
+  everything on it, and every kilogram raises the hover draw.
 
 ## How you handle things
 
@@ -41,38 +49,39 @@ in the game. On screen, a key is always read from the live bindings and coloured
 out, never written into the text (Hunter, 2026-10-16), even before players can remap.
 **A refusal says why, and sounds** (Hunter, 2026-10-17: "we should have a way to communicate
 when a slot is full... like 'tray first'... maybe we could just make a noise"): when take or
-use can't do what you're aiming at (a slot that's full, a tray in the way, a piece that
-isn't bare, something too heavy), the readout says why in a few words and a soft "no"
-sounds, never silence. **Built** (2026-10-17): every refusal goes through one place in the
-hands, and the "no" is a dull knock cut from a Sand Game clank. Holding a part at a device
-whose sockets of its kind are all full, take keeps it in your hands and says "no free
-battery slot" (or top mount, ring, port and so on), where before it was dropped; at a
-device with no socket of its kind, take still puts it down. A tray held to a device on a
-deck says "no trays on a deck". A piece held to a deck whose free rings are all blocked
-says "no room at that ring". Having hold of a crate with its tray in beside a deck, take
-lets it go saying "take its tray off first". Use at a device with nothing to work says
-"nothing to use", a stake used off the sand says "not sand" or "out of reach", and something you can't
-shift says "it won't shift" as it slips from your hands. Take or use at nothing stays
-silent.
-- **Take** picks up, takes out, puts in and puts down. One action takes and lets go
+use can't do what you're aiming at, the readout says why in a few words and a soft "no"
+sounds, never silence. **Built** (2026-10-17, the chassis's 2026-10-18): every refusal goes
+through one place in the hands, and the "no" is a dull knock cut from a Sand Game clank.
+Where what you hold is shown red, take keeps it in your hands and says "blocked" (or "you're
+in the way"); a frame held to a wall says "frames go on a deck's top", a Console held under a
+frame "too tall for a frame", a standing device held to a wall "it stands on a deck's top",
+and incompatible physical placement says why. Holding a part at a device
+whose slots of its kind are all full says "no free battery slot" (or ring, port and so on);
+at a device with none of its kind, take still puts it down. A piece held to a deck whose free
+rings are all blocked says "no room at that ring", and aiming at a frame with walls on it
+says "take its walls off first". Use at a device with nothing to work says "nothing to use", a
+stake used off the sand says "not sand" or "out of reach", and something you can't shift says
+"it won't shift" as it slips from your hands. Take or use at nothing stays silent.
+- **Take** picks up, takes out, puts in, sticks and puts down. One action takes and lets go
   (Hunter, 2026-10-15, at the Stage 5 gate). Taking something too heavy to carry takes
   hold of it: it follows where you face and turns as you turn, as far as your strength
-  drags it, and taking again lets go. That's how you arrange a camp of floating things
-  too heavy to lift. Walk off from something you can't shift and it slips from your
-  hands.
+  drags it, and taking again lets go, or sets it where it's shown. That's how you arrange a
+  camp of floating things too heavy to lift. Walk off from something you can't shift and it
+  slips from your hands. Pressed while what you took is still coming to your hands, it acts
+  the moment it's there.
 - **Use** works what you're looking at, or uses what you hold: switch a shield, drive a
-  stake, set a crate's hover tray floating or resting (Hunter, 2026-10-16), so a camp
-  that's staying put stops spending its charge on floating. **Built** (2026-10-16): use
-  at the frame of any device with a tray, empty-handed, switches it. Resting, the tray
-  draws nothing and lets the device down onto the sand over two seconds, about 0.6 m/s
-  at most; floating again, it lifts it back the same way. It shows by where it hangs and
-  the board's soft hum falling or rising, and the switch is kept in the save.
-  Use at a shield seated on a crate still switches the shield, and a line or stake in
-  your hands keeps its own use. A planter's use is its tray's too (Hunter, 2026-10-17:
-  "it should toggle hover tray like the crate and chassis"), unless you hold a canister
-  to pour. The kit's crate starts floating. A tray out of power still lets go,
-  as before (Power).
-- **Throw** throws what you hold.
+  stake, set a deck's trays floating or resting (Hunter, 2026-10-16), so a camp that's
+  staying put stops spending its charge on floating. **Built** (2026-10-16): use at a deck,
+  or at anything stuck on it with nothing of its own to work, empty-handed, switches its
+  trays. Resting, they draw nothing and let the deck down onto the sand over two seconds,
+  about 0.6 m/s at most; floating again, they lift it back the same way. It shows by where
+  it hangs and the board's soft hum falling or rising, and the switch is kept in the save.
+  Use at a shield on a deck still switches the shield, and a line or stake in your hands
+  keeps its own use. A planter's use is its tray's too (Hunter, 2026-10-17), unless you hold
+  a canister to pour. A tray out of power still lets go, as before (Power).
+- **Throw** throws what you hold. Having hold of something, it punches it where you look
+  (the spec's "drag it while left-clicking to punch it"), a small shove for righting a
+  tipped rig: 45 N·s, the tuning's.
 - **Reel in and pay out** (Hunter, 2026-10-16): on a line, they shorten and lengthen it
   (Rope & tethering). **Bring near and push out** are their own actions (Hunter,
   2026-10-17: "switch rope scrolling to control + scroll so it doesnt conflict with object
@@ -83,11 +92,12 @@ silent.
   of the sand or anything in the way; what you have hold of goes from just clear of you
   out to your 2.5 m reach, following only as far as your strength and the slip allow.
 - **Rotate** (Hunter, 2026-10-16): held down, the mouse turns what you hold, or what you
-  have hold of, instead of your view. It's how you right a crate, a planter or a shield
-  that has tipped over: take hold of it and roll it back. While you have hold of
-  something heavy it also follows where you look up and down, not only round you, so
-  you can lift an edge, tip it, or drag it up a slope, still only as far as your
-  strength drags it.
+  have hold of, instead of your view. Shown on a face, the turn is about the face's way out,
+  settling into soft 15° detents when it's within 3.5° of one and free between them. It's
+  also how you right a deck, a planter or a shield that has tipped over: take hold of it
+  and roll it back. While you have hold of something heavy it also follows where you look
+  up and down, not only round you, so you can lift an edge, tip it, or drag it up a slope,
+  still only as far as your strength drags it.
 
 Walking into a loose thing pushes it, with the same strength. A floating thing you
 push keeps gliding, as the wind would carry it anyway; to set one down where you want
@@ -95,193 +105,253 @@ it, take hold of it, and let go.
 
 ## How things join
 
-1. **Fitted into a socket.** A battery into its slot, a hook onto a ring mount, a hover
-   tray onto the bottom mount, a panel onto the top mount, a seedling into a planter
-   slot. These are all the same mechanism with different socket types. **Once fitted,
-   a part stops being a physics object.** Its shape and weight join the device, and
-   there's nothing left to wobble.
-2. **Resting loose on top.** Put something down on something else and it just sits
-   there under plain physics. It rides along on friction, and it slides off when jolted
-   or caught by a gust. People will try carrying things this way regardless, so it's
-   allowed but **not balanced around**. If you want something to stay, fit a tray or
-   tie it down. We'll watch how it plays.
+1. **Stuck on a sticky face.** A chassis piece's whole top and underside are sticky, and
+   anything sticks anywhere it fits there: a battery, a tray, a panel, a lamp, a canister,
+   a shield, a Console. **Once stuck, a part stops being a physics object**: its shape and
+   weight join the deck's body, with nothing left to wobble. A device stays a body of its
+   own, held fast where it's stuck, touching nothing of the deck, so it works as itself,
+   and everything on one deck is one power pool.
+2. **Fitted into a slot.** The only slots left are plugs and water taps, and what's a
+   thing's own: hooks on a chassis's edge rings and a planter's, crops in a planter's beds,
+   a harvester in its mod mount, a Console's screen, instruments and radar in its ports, a
+   sail on its mast, a whole face on a frame, and a battery in what you carry or ride away
+   from a deck (the board, the radio, the heat cutter) or what stands alone (the planter
+   and the turbine, as they are). A fitted part joins the body the same way.
+3. **Resting loose on top.** Put something down on something else without sticking it and
+   it just sits there under plain physics, riding on friction and sliding off when jolted
+   or caught by a gust. It's allowed but **not balanced around**.
 
-## The chassis as the one structure (agreed, 2026-10-18 spec; not built)
+## The chassis as the one structure (built, 2026-10-18)
 
-Hunter's [chassis, kits & dune archaeology spec](../chassis-kits-dunes-2026-10-18.md), from his brother's playtest ("a board he
-could just stick things to"): the crate and nearly every slot go; the chassis becomes a sticky
-square you tile, tow by its edge rings and place anything on freely, so a camp is truly the
-player's own, laid out in stations (power, weather, workstation) rather than filled slots. It
-replaces the slot model this PRD describes below, which stays until it's built.
-- **Pieces:** a **chassis** is one 1 m square whose whole top and bottom are sticky and whose edge
-  rings join pieces and take ropes; a **deck** is chassis joined edge to edge into one rigid body; a
-  **frame** is an open cube on a chassis taking a chassis on any of its five other faces (upright, a
-  wall; raised flat, a shelf).
-- **No more slots,** no crate, no deck mount, no top slots. Anything sticks anywhere it fits; the
-  limits are space (no clipping) and the trays' lift. The only slots left are plugs and water taps;
-  battery bays only on the power box; hooks only on planters and chassis edge rings.
-- **Hover trays stick onto chassis.** A tray lifts toward the sand it faces, fully facing down and
-  less as it tips, nothing on a wall: the field pushes against the sand (the dig's own fiction).
-- **Tall devices** (Console, condenser) stick straight onto a chassis, too tall for a frame; the
-  planter and turbine stand as they are. An upper chassis can't rest on devices, only on a frame.
-  A frame's face can be a chassis, a screen, or fabric (a crude sail).
-- **Placing:** the controls stay as they are. Held, a thing snaps onto the face you aim at, flat or
-  upright, and take or letting go leaves it there; the rotate gesture turns it, settling into 15°
-  detents when near one, never forced. What you hold is the real thing, not a ghost, and passes
-  through what it touches until it's set; it tints red where it would clip, with a few words why
-  ("blocked", "too heavy"). It edges gently to faces' edges and its neighbours so rows line up.
-  Taking one thing off a cluttered deck takes that thing; dragging a deck never takes it apart.
-- **Wind on faces:** every upright and fabric face is a plate catching wind on the body it belongs
-  to, from its area and how square it stands, with occlusion along the wind and scoops by which
-  faces are filled; uprights shelter what's behind them like a small dune; fabric ripples in a
-  shader driven by the same force (Wind & storms).
-- **Balance and flipping** is a real challenge: no new balance UI; a flipped rig is righted with
-  rope or shoves, and a big badly built one in a storm may only be stripped and rebuilt.
-- **Saves:** a new format, version 2: each body with what's stuck to it by face and local pose and
-  each thing's state. Older saves are refused with a plain reason (an alpha's honest break); the
-  profile and its deeds carry on untouched.
+Hunter's [chassis, kits & dune archaeology spec](../chassis-kits-dunes-2026-10-18.md), from his
+brother's playtest ("a board he could just stick things to"): the crate and nearly every slot
+went; the chassis is the one structure, a sticky square you tile, tow by its edge rings and stick
+anything on freely, so a camp is truly the player's own, laid out in stations (power, weather,
+workstation) rather than filled slots.
 
-## The chassis
+- **A piece** is 1 m square and 12 cm thick, 9 kg, with a ring in the middle of each edge.
+  Its whole top and underside are sticky. It's painted as before: gunmetal rails round a
+  teal plate, black corner caps, hazard bands either side of each ring so a deck's outer
+  edge reads, and the consignee's stencil on top. It's a find, and the dev console's give
+  makes one by its id, `chassis`. A found one may have a tray stuck under it and a battery
+  and a panel or lamp on top, as its layer's fills say.
+- **A deck** is pieces joined edge to edge into one rigid body. A piece brought edge-on to a
+  deck's free ring is offered it the same way a slot is: the tug leans it flush beyond the
+  ring, turned the quarter turn nearest how you hold it, the ghost shows it, and take joins
+  it. Its frame and all that's on it move into the deck's body. A ring between two pieces
+  closes. A hook in the way pops off (Hunter, 2026-10-17): on either ring that closes, or on
+  a neighbouring edge facing where the piece goes, it lands on the sand just past the deck's
+  edge, its line still tied and let out if it must be to reach; a loose part lying where the
+  piece goes moves clear the same way. A device, a deck, a wall or a find still in the sand
+  there blocks. Two whole decks don't merge yet.
+- **A frame** is an open cube of rails, 1 m a side and 4 kg, that sticks square on a piece's
+  top, whatever its aim off the middle, turned to the nearest quarter. Each of its five
+  other faces takes a whole-face piece: **a chassis** (on a side, upright, a wall; on top,
+  flat, a shelf), **a screen**, or **fabric**, a crude sail (wind on faces, below). A
+  piece is offered a free face as it is a ring, and joins the deck's one body there. A wall's
+  and a shelf's faces are sticky like any piece's, their rings take hooks and ropes, and no
+  piece joins them edge to edge: an upper chassis stands only on a frame. A frame comes off
+  by hand once its faces are bare ("take its walls off first").
+- **Tall devices** (the Console and the condenser) stand straight on a piece, never under a
+  frame, and no frame goes over one: "too tall for a frame". Devices that stand (shields, the
+  Console, the condenser, the mast, the helm seat) stick only on a face facing up; the rest
+  (the board, the radio, the light panel, the bedroll, a survival kit, the heat cutter) and
+  every part stick on any face, upright on a wall included. The planter and the turbine stand
+  as they are, on the sand beside a camp.
+- **Placing** (`Stick`, the one set of rules for your hands, the kits, the scenarios and the
+  finds): a part sits on its back, standing out of the face as it would from a slot, so a
+  tray's lifting face and a panel's cells face out; a device on its foot. What you hold is
+  shown there itself, eased onto the spot in about a twelfth of a second and riding a floating
+  deck as it bobs, non-solid until it's set. Its place is under your aim, on the face or
+  through it to the face beyond, its edges coming flush with the face's edges and its
+  neighbours' when within 4 cm, or its middle in line with a neighbour's. A tray or runners
+  aimed at a top go under it. Aimed at a neighbour, it's shown where it would clip it,
+  red. Its shapes are tested 5 mm thinner, so resting against what it sits on never counts,
+  and the sand never blocks: a tray stuck under a deck on the sand lifts the deck clear.
+  "Too heavy" warns, and never refuses, since a camp resting on the sand carries anything.
+  Having hold of something too heavy to carry, it's shown the same way where you look, the
+  real thing frozen there, and back where it was when you look away.
+- **Hover trays stick onto chassis.** A tray lifts toward the sand it faces: fully facing
+  down, as much less as it tips (0.71 halfway to a wall), nothing on a wall or facing the
+  sky. A deck counts each tray's lift that way, so a tray on a wall adds weight and no lift.
+  A deck floats once its trays together lift its weight, and how it hangs is physics: a
+  deck three pieces by three, 113 kg, floats level on four corner trays 1.04 m up, and 1.00 m
+  with 221 kg; with its trays bunched along one edge it tips 26° onto the far edge, drawing
+  160 W for its 107 kg (devices probe 17). Floating, its trays draw 2 W a kilogram they hold
+  up. Use on any piece sets the whole deck floating or resting.
+- **Balance and flipping** (the spec's rule, with no new UI): where the trays are against
+  where the weight is decides whether a rig floats level, leans or tips; a rig turned over
+  holds nothing up, its trays facing the sky, and lies on the sand drawing nothing until it's
+  righted with a line, or by a few punches having hold of it. A big, badly built rig flipped
+  in a storm may only be stripped and rebuilt upright.
+- **One pool a deck.** Battery slots left the shield, the condenser and the Console:
+  batteries stick loose on a chassis, and the deck and everything stuck on it, devices and
+  loose batteries alike, are one power pool (Power). Cables and hoses are for reaching other
+  bodies, a turbine held out on the sand or a planter. The board, stuck on a deck, charges
+  from its pool as it did racked; the radio and the heat cutter keep their own batteries.
+- **Taking things off.** Take aimed at something stuck takes that one thing, whatever
+  crowds it, and it slides off its face to your hands; take again at once and it goes
+  straight back where it was, with no looking away first (Hunter's "sometimes attaching
+  doesn't work until you look away and look back": every offer is worked out afresh each tick
+  from what's free now, and a face's spot is free the moment what was there is taken). Aimed
+  at a deck's plate, take has hold of the whole deck, to drag it, unless the piece you aim at
+  is bare (nothing stuck on it, no hook) and the rest of the deck holds together without it:
+  then it comes off, out across a ring it leaves, or off the frame's face, into your hands.
+  Looking at a deck empty-handed, what take would move is highlighted, faintly in the ghost's
+  colour.
+- **Seams for what's next:** `Chassis.plates()` lists a deck's whole-face plates (walls,
+  shelves, screens, fabric), which wind on faces reads (below); a screen on a frame's face
+  is dark until something drives it.
+- **The power box (built, 2026-10-19)** is a device with battery bays that sticks like any
+  other and joins its deck's pool, its bays a slot of its own that batteries go into and come
+  out of with take, as any slot's. A light strip by each bay reads its fill and which way it
+  flows; use at a battery in a bay holds the bay to charge only. Four makes by era, each its own
+  catalog id: the colonial cabinet, the company's dock, a skimmer's rack with dead bays and a
+  temple's shrine ([Power](power.md#the-decks-pool-and-the-power-box-agreed-2026-10-18-spec-the-pool-built-2026-10-18-the-box-2026-10-19)
+  has their numbers, looks and terms, and where they're found).
+- **Saves** keep a deck's pieces as they joined, across a ring or on a frame's face, and each
+  thing stuck on each piece by its pose on that piece and the face's way out, with its own
+  state (Profile & saves).
+- **The kits** start on rigs built by `Rig` from data steps, as the scenarios, the main menu's
+  showpiece and found chassis are (Profile & saves); a hook's step can name it, as a stick's can, for
+  a line a kit lays from it. The Surveyor's: two pieces joined, a tray
+  under each set back under the weight, a frame on the second with a wall on its back, the
+  board and a compass hung on the wall, and a battery, the light shield and the light panel on
+  the first; 68 kg, floating within 2° of level.
+- **The "chassis" scenario** lays four pieces in a row with a tray before each, a spare
+  piece and a frame for a wall, two batteries, the light shield and a condenser with an empty
+  canister, clear and calm, to build a deck from; two hooks and a coil lie at your feet, and
+  the first piece's outer ring has a hook with a line to a stake short of where a piece joined
+  there goes, so that join pops it. The "afk" scenario's reference camp is a deck two by two
+  (Power).
 
-(Hunter, 2026-10-17: "a larger, flatter "chassis", a modular frame that can attach to
-*itself* horizontially to form a large flat chassis of varying dimensions... each chassis
-part needs its own hover tray so that becomes a limiter... the same port that can be used
-for rope hooks can stick chassis together... mount a crate on the chassis frame to get
-more ports".) As a camp grows, one crate isn't room enough. The chassis builds a bigger
-floater out of pieces:
+## Wind on faces (built, 2026-10-19)
 
-- **A piece** is a flat, square frame, a little wider than a crate (about 1 m across)
-  and thin. It's a find.
-- **Pieces join edge to edge by their rings.** Each edge has a ring, and a piece brought
-  edge-on to another's free ring snaps flush beside it, the same snap as fitting. Joined
-  pieces are one rigid deck, flat, in whatever shape you lay out. A ring with a hook on it
-  ties rope instead, so a deck is towed and moored like a crate. **Take on a deck always
-  takes hold of the whole deck,** to drag it (Hunter, 2026-10-17, after playing: "trying to
-  drag a chassis around disconnects whatever youre grabbing, causing you to dismantle your
-  base"). A piece comes off only when it's bare, no tray and nothing standing on it, and
-  the rest of the deck holds together without it: strip it first, as a crate's tray comes
-  off before it stands on a deck. **A loaded piece joins from your hold:** take hold of a
-  piece with a crate on it, bring its edge to a deck's free ring, and take joins it, as a
-  heavy device stands on a deck mount from your hold. Two whole decks don't merge yet.
-- **Trays lift where they are** (Hunter, 2026-10-17, replacing "every piece needs its own
-  hover tray": "we should actually use physics, so in theory a large connected chassis
-  with a light load doesnt need a tray for every chassis piece, but they will need to be
-  well distributed to keep it upright"). Each tray is its own lift, pushing up under its
-  own spot, harder the nearer the sand and never more than it can lift. A deck floats when
-  its trays together lift its weight, and how it hangs is physics: a light load rides
-  high, a heavy one sinks lower, a load over a corner with no tray under it drags that
-  corner down, and trays bunched on one side let it tip. Spread them to keep it level.
-  The same goes for anything on trays: a crate's one tray holds it level only while its
-  load sits over it. Use on the deck sets all of it floating or resting.
-- **Each piece has one deck mount on top,** which takes one device standing on it:
-  usually a crate, and a condenser, a shield or a charger fit too. A planter doesn't (too
-  long for a piece, and it floats on its own tray), and nor does a turbine, which works
-  only standing on the sand.
-  A device stands on a deck only with its own tray off (Hunter, 2026-10-17: "removing a
-  crates tray before attaching could fix that"): the deck's trays carry it, and a tray
-  under it would wedge it as it comes off.
-- **A piece has nothing else:** no battery and no port of its own. The ports come from
-  what you mount, which is why a deck usually carries crates. Everything on one deck
-  shares one power pool, and its wind catch is its pieces' and what stands on them.
+Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#wind-on-faces): every vertical and fabric
+face is a flat plate that catches the wind, as close to real as can be had cheaply: no cloth
+sim, no new bodies or joints. `Faces` does it for each deck, from `Chassis.plates()`.
 
-**As built (2026-10-17):**
-- **A piece** is 1 m square and 12 cm thick, 9 kg against a crate frame's 15, with a ring
-  in the middle of each edge, a bottom mount and a deck mount. The wind meets a deck's
-  pieces and their trays side on, as if it were level, and what stands on it as it would
-  on the sand. It's painted like the crate: gunmetal rails round a teal plate, black corner
-  caps, hazard bands either side of each ring so a deck's outer edge reads, and the
-  consignee's stencil on top. It's a find, one device in thirteen on the surface and one
-  in eleven deep (one in ten before the Console), buried on its edge like a sheet the dunes
-  half took, and the dev console's give makes one by its id, `chassis`.
-- **Joining.** With a piece in your hands, a deck's free edge ring is offered the same
-  way a socket is: the tug leans the piece flush beyond the ring, turned the quarter turn
-  nearest how you hold it, the ghost shows it, and take joins it. Its frame, its sockets
-  and whatever is in them move into the first piece's body, as a fitted part's shapes
-  do, so a deck is one rigid body, never pieces on joints. A ring between two pieces
-  closes and takes nothing. A ring isn't offered where something stands beyond it (a
-  piece joined over a crate would throw it) or for a wrecked piece. A hook in the way pops
-  off instead (Hunter, 2026-10-17: "hooks should pop off when its obstructing a chassis
-  snap"): a hook on either ring that closes, or on a neighbouring edge facing where the new
-  piece goes, comes loose as the piece snaps in, carried or joined from your hold alike.
-  It lands on the sand just past the deck's edge, facing out, where its line leads, or
-  with no line nearest where it sat, and its line stays tied to it, let out if it must be
-  to reach: taken up, the line comes with it, as with a stake, and put on a free ring it
-  ties there again, and a save keeps it so. With its line on, it doesn't go in your
-  inventory. A loose part lying where the piece goes, anything your hands carry but a
-  device, moves clear the same way as it snaps in, so a row isn't held up by the hook
-  the last join dropped (2026-10-18). A device, a deck, a wall or a find still in the sand
-  there still blocks. A piece with something standing on it is too heavy to carry, so it
-  joins from your hold: having hold of it, the free ring of a deck whose place beside it is
-  within 1.2 m of the piece is offered, with its ghost, if the piece and all on it would sit
-  clear there, and take joins it, turned the quarter turn nearest how it lies. Only a lone
-  piece joins: two whole decks don't merge yet. Joined on a slope, a deck lifts clear of the
-  sand as a crate does onto a tray. Your hands reach a deck by its nearest piece, so a long
-  deck's far end is as easy to work as its first. A deck wears as one device, as worn as its
-  most worn piece when they joined.
-- **Taking a deck apart** (2026-10-17, after Hunter's playtest). Take aimed at a deck
-  takes hold of the whole of it, to drag it, as with a crate's frame, unless the piece
-  you aim at is bare (no tray, no hook, nothing standing on it) and the rest of the deck
-  holds together without it: then it comes off, out across a ring it leaves and into
-  your hands. Strip a piece first, taking out its tray and hooks and lifting off what
-  stands on it, as a crate's tray comes off before it stands on a deck. Looking at a
-  deck empty-handed, what take would move is highlighted, faintly in the ghost's colour:
-  the bare piece alone where it comes off, else every piece of the deck. The
-  first piece joined comes off like any other: the piece beside it takes over the deck's
-  body, so nothing else on the deck moves.
-- **Floating.** A deck has no battery, so it floats on what stands on it. It floats once
-  its trays together lift its weight, wherever they're fitted, and hangs by where they
-  are (Trays lift, below): a deck three pieces by three on four trays at its corners,
-  with a crate in its middle, floats level with its middle about 1.0 m up, and a few
-  centimetres lower with 130 kg more on it; with its trays bunched along one edge it tips
-  its far edge onto the sand, about 25°. Floating, its trays draw for what they hold up,
-  so at rest a deck draws for all it floats, pieces, trays and what stands on it, 2 W a
-  kilogram as a crate's tray does, and tipped onto the sand it draws less. Use on any
-  piece, or on a crate or condenser standing on it, sets the whole deck floating or
-  resting; use at a shield on it still switches the shield.
-- **The deck mount** takes a crate frame, a condenser, either shield or a charger. A
-  shield goes on from your hands as onto a top mount. The others are too heavy to carry:
-  take hold of one beside a deck and the nearest free deck mount within 1.2 m of where it
-  would stand is offered, with its ghost, and take stands it there instead of letting go.
-  Take at it again lifts it off into your hold, and that deck offers nothing until it's
-  clear. Standing on a deck, a device keeps its own sockets: batteries, top mounts, rings
-  and a port all fit and come out by hand, a line on its hook pulls the deck, and a
-  shield seated on a crate's top mount there still comes off whole. Having hold of one
-  with its own tray in, no deck mount is offered and the readout says "take its tray off
-  first"; standing on a deck, it takes no tray. One an older save left standing there
-  with a tray still lifts off clear of the deck, never wedged in it. Everything on a deck
-  is one power pool, and the deck's wind catch counts what stands on it.
-- **Saves** keep a deck's pieces each after one it sits beside, as they joined or as
-  they stand once pieces have come off, each with its place on the first piece's grid,
-  its turn and all that's in it; older saves load as before.
-- **Trays lift where they are** (2026-10-17). Each tray reads the sand under its face,
-  on average, and pushes straight up at the face's four corners, each harder the nearer
-  it is to that sand, like a cushion: all it lifts, 80 kg, with its face 0.84 m up or
-  nearer, and higher up a share that falls by e every 6 cm. Nearer still, its push no
-  longer grows but gathers at its lowest corners, so it still rights what it holds.
-  Every load bobs at the same rate, about twice a second, and settles in about half a
-  second. A light load rides a few centimetres higher than a heavy one: the kit's crate,
-  46 kg, with its middle 1.20 m up, a crate with only a tray and a battery at 1.24 m, a
-  deck three by three on four trays 1.03 m up with a crate on it and 0.99 m with 130 kg
-  more; over its lift a tray sinks to the sand. Only where the trays are keeps a device
-  upright: a crate's tray holds it level while its load sits over the tray, and an
-  off-centre load leans it: a big battery in its back slot about 5°, the kit's crate
-  4.5° toward the board on its rack, the planter 3.5° toward its battery. One tray
-  rights its device toward level even over a dune's face, so a crate towed 2 km over the
-  dunes stays within 3° of level; a deck's trays, far apart, follow the dunes under them.
-  A tray pushes only while it faces the sand, so a device on its side stays there until
-  you right it. Set resting, a tray's all-lifting height sinks just under the sand, so
-  its device is down before the tray stops, still about 0.6 m/s at most. Its trays draw
-  for what they hold up (Power). The same goes for every device on trays; the board has
-  its own hover.
-- **The "chassis" scenario** lays four pieces in a row in front of you with a tray
-  before each, a crate frame with two charged batteries and a condenser with a battery
-  and an empty canister, clear and calm, to build a deck from. Two hooks and a coil lie
-  at your feet, and the first piece's outer ring has a hook with a line to a stake short
-  of where a piece joined there goes, so that join pops it (Hunter, 2026-10-18: "there
-  are no hooks in this scenario"). The "afk" scenario's
-  reference camp stands on a deck two by two (Power); it floats about 1.5° down toward its
-  two crates, and in a 20 m/s storm with gusts and its bubble down it stays within 2.2°
-  of level, moored.
+- **A face is a flat plate.** Each whole face on a frame (a wall, a shelf, a screen, fabric)
+  is pushed square to itself by the world's catch (`wind_catch_per_m2`, 0.5 N per m² per
+  (m/s)², as a loose body's biggest face), its area, the air's speed and its speed square to
+  the face: a flat plate's normal force. A 1 m wall broadside takes 72 N in a 12 m/s wind,
+  200 N at 20 and 288 N at 24; edge-on, nothing but its edge's share of the deck's loose
+  catch; at 45°, as much across the wind as down it, which is the side force a reach needs
+  (probe 35). The push acts at the face's middle, into the deck's one body, and the air it
+  meets there is the felt wind less the deck's own motion at that spot, so a deck turning
+  through the air is slowed by its faces as much as it's driven. A shelf, level, meets a
+  level wind edge-on, and catches only as its deck tips.
+- **One face behind another catches a fraction.** Sorted along the wind, a face with another
+  just upwind across its footprint catches a tenth (`face_shaded`) of what it would alone,
+  as much less as the one in front covers it as the wind sees them, fading back to all of it
+  as a lee does, from two heights of the face in front to seven. Side by side across the
+  wind, faces don't shade each other (probe 36). No ray casts: the boxes are compared along
+  the wind's way in the deck's frame, worked out again only when that way turns 3°.
+- **Scoops.** A frame open on a side with its back closed is a scoop, judged by which of
+  its faces are filled and where its open side points. Open into the wind, its back catches
+  up to 1.3 times (`face_cup`) a flat face's, a parachute's cup against a plate, as much
+  more as its sides round about are closed (the floor always is); open away from the wind,
+  its back meets the wind as any wall and its lee shelters the inside (probe 37).
+- **Fabric is a crude sail,** on any face of a frame, but weak: it can't belly into lift or
+  be trimmed, so it pushes as a flat plate, 44 N in a 10 m/s wind square on, a sixth of the
+  268 N the sail on the same floating deck draws running before the same wind (probe 38).
+  Across the wind it gives as much side force as drag at best. A real sail stays the
+  upgrade.
+- **Fabric shows its load.** Its canvas is a cloth of its own (`fabric.gdshader`), its hem and
+  grommets as before, drawn by the very push the physics makes: its load is that push
+  across it over what 12 m/s square on would put there, so it's slack under a third of
+  that, flutters in the air going past, faster and harder the more of it, and from a load
+  of one it's taut, bellied up to 10 cm at its middle the way the air presses, the lacing
+  holding its edges. Edge-on it bears nothing and flutters hardest in a gale (probe 39).
+  Taken off a frame it hangs slack. The sail keeps its own cloth.
+- **The rest of the deck,** its pieces' edges, what's stuck on them and the devices on it,
+  still catches the wind at the deck's middle, less what its own walls' lee keeps from what
+  stands behind them. A line holding the deck and the wind that carries it off while you
+  sleep count all of it: its faces at the wind's way now and the rest.
+- **Its walls shelter what's behind them,** as a small dune does, through the felt weather
+  ([Wind & storms](wind-and-storms.md#a-walls-lee-built-2026-10-19)).
+- **Balance and flipping** (measured 2026-10-19, storm gusts half the wind). The sand holds
+  a resting body by half its weight (World probe 11), so a resting camp left loose slides
+  only in a strong wind: the Surveyor's, 70 kg, holds at 15 m/s with its wall broadside,
+  creeps half a metre in ten seconds at 20 and slides off at 24; with no wall it holds to 20
+  and slides from 22. Moored as it starts, by its line to a stake 4 m upwind, its wall
+  broadside upwind is a windbreak that holds: in a 24 m/s storm it leans 14°, at 30 m/s 21°
+  with its line peaking at 1,600 N, and at 36 m/s 24°, its line holding, the wall's lee
+  keeping half the wind off the rest of the camp. The same wall to leeward shelters nothing
+  on it: it holds at 24 m/s, leaning 18°; at 30 it leans 22° to 31° and went over once in
+  four tries, and at 36 its line parts and it goes over three times in four. Floating
+  moored, the Surveyor's leans 2° at 15 m/s and 11° at 30. A light deck (one piece on one
+  tray, a frame and a wall, 34 kg) moored leans 5° to 15 m/s, 10° at 30 and 18° in 36 m/s
+  gusts, and goes over once its line parts in a steady 50; adrift it trips where it runs up
+  the next dune at 18 m/s, going over in 30 m/s gusts as in 36. A tall wall is the real
+  risk: a second storey on the Surveyor's (a shelf on the frame, a frame on that and a wall,
+  2 m of wall in all) leans 9° moored in 10 m/s and flips at 15; on a lone piece it won't
+  float upright even in still air, and resting moored it leans 30° to 36° at 15 m/s and 52°
+  to 64° at 24, held short of going over.
+- **Cost** (the dev machine, someone playing): a camp of six faces takes about 18 µs a tick,
+  the felt wind it reads included; a rig of 45 (a deck three by three, a frame on each piece
+  with three walls, fabric and a shelf) about 50 µs. Turning, its shading and lee are worked
+  out again at most every tenth of a second: about 0.2 ms for six faces, 0.75 ms for 45. A
+  read of the walls' lee costs about 2 µs near a camp's walls, 1 µs elsewhere. On the dev
+  overlay, `faces` is what the wind on decks' faces took last tick.
+
+## Mast mounts, the streamer and the crow's nest (built, 2026-10-19)
+
+Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#sails-and-nomad-gear): "things should mount on the
+sail's mast, generically (with top slots gone, that's a sticky spot on the mast). Heavy things up high
+raise the centre of mass," and a crow's nest, "a mast mount you climb into. It counts as a seat and
+gives a long view for spotting glints, plumes and storm fronts." Found with the [nomads' gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19).
+
+- **A standing mast is sticky** (`Mast.face_frame`), as a chassis's faces are, through the same
+  `Stick` rules for your hands, the kits and the finds: the four sides of its upper pole, from 1.4 m
+  over the deck to its head at 4.4 m, and its head. A thing sits on a side by its base, a part on its
+  back and a device on its foot, centred on the pole at the height you aim; things that stand go only
+  on its head. Nothing tall goes on a mast, no frame and no mast ("too big for a mast"), and only while
+  it stands on a camp ("stand the mast on a deck first"). Your hands meet its upper pole while it
+  stands (an `Area3D` for them alone, so what the sand and anything round the mast meet is still the
+  stowed pole, as before). A mast with something on it stays on its deck ("take what's on it off
+  first"); saves keep what's stuck on it as a piece's.
+- **What's high on a camp raises its middle.** A device stuck on another adds its weight to its host
+  where its own middle is, not where its foot is (`Device._recompute`), so what's on a mast's pole
+  weighs on the camp up there, and a seated device's own low or high middle (a Console's heavy foot)
+  counts. A 9 kg big battery 3.2 m up the pole of a mast on a floating deck two by two stands the
+  camp's middle 0.376 m higher than the same battery on its deck, what its weight there says, and the
+  same push heels it 4.3° against 3.6° (probe 40). Nothing seated touches anything of what carries it,
+  all the way down.
+- **The wind streamer** (`streamer`, 0.2 kg, `Streamer`): a strip of rust-dyed cloth on a saltbush wand
+  whipped with cord, a brass ring at its tip, a bone toggle at its foot. It streams downwind of the air
+  it feels, that air less its own way, as a telltale does, and flaps as a wave runs down it: hanging in
+  still air, standing out from about 4 m/s, flapping faster and wider the harder it blows. In your hand
+  it's the air where you are; in your suit too, drawn as it streams (the inventory's picture from
+  behind and above, your way ahead up it, redrawn as it flaps); stuck on a deck or a mast, the air its
+  camp goes through, so on a sailing rig it shows the trim. The anemometer stays the one that gives
+  numbers. Measured (probe 42): hanging straight down in still air; in 5 m/s level, 2° off downwind,
+  its end flapping 0.06 m wide 2.8 times a second; in 16 m/s level, 5° off, 0.18 m wide 7.8 times a
+  second; on a deck going 4 m/s through still air, straight aft; in your suit, 5.0 m/s from the wind's
+  own way.
+- **The crow's nest** (`crows_nest`, 12 kg, `CrowsNest`, a `Helm`): a lookout's basket of wooden posts
+  and bent pipe on a plank floor, cloth wound round its lower rail, its rope ladder hung 3.4 m down
+  the mast's front. It goes on a standing mast's head and nowhere else ("it goes on a mast's head").
+  Holding it and aiming at the standing pole from the deck previews it on the head; the readout
+  names the masthead and take fits it there, without jumping.
+  Loose or carried, its ladder is folded: only the basket rests on the sand. On a standing mast,
+  the ladder deploys with its reachable rungs, so its stowed shape never floats the basket above a floor.
+  Use on it, on its ladder from the deck, climbs you in: a seat as the helm is, steering nothing. You
+  stand in it, your eyes 6.2 m over the deck; your weight and its are the camp's, up there: on a bare
+  deck of four pieces you stand its middle 2.59 m higher, so a hard gust heels it further. Ride or use
+  again climbs you down off the deck's side. Its first sit teaches what it is (`CrowsNest.NEST_HOW_TO`).
+- **The view is height alone.** Nothing draws farther from up there and no lens closes in: the dunes
+  are what hide what's far off, and over the crests round you more of the ground shows, and what
+  stands on it. Round the probe's deck, 25% of the ground out to 2.5 km is in sight from the nest against
+  19% from the deck (probe 41). A glint the crests hid from the deck, a plume's foot, a front's sand
+  under its wall: each is there or not by the same sightlines the Glint deed reads. Why not more: a
+  farther haze or skyline from up there would be a rule the ground doesn't keep, and the sightline
+  already rewards height.
+- **Probes:** 40, a heavy thing up the mast raises the camp's middle by its weight and heels it
+  further; nothing tall on a mast, and a mast with something on it stays on its deck. 41, the crow's
+  nest goes only on a mast's head, seats you from its ladder, your eyes and weight high, and more of
+  the ground shows from it. 42, the streamer hangs, streams and flaps by the wind, shows a moving
+  deck's air, and reads in your suit.
 
 ## The Console (proposed; first version built)
 
@@ -309,23 +379,11 @@ shield smart (below).
   makes one power pool of what stands on it. This makes it one data system as well. A deck mount
   takes one device, so two Consoles take two pieces.
 
-Against the crate, from what the session gives:
-
-| Socket | Crate frame, as built | Console, from the session |
-|---|---|---|
-| Battery slot | 2 | "Don't remove battery slots" |
-| Ring mount | 4 in `catalog.gd` (2 in the table below) | "Only one or two rope hooks" |
-| Bottom mount | 1 | A hover tray, like a crate |
-| Top mount | 2 | 1 regular |
-| Computer-mod top | none | 1 |
-| Computer-mod port | none | "Plenty" |
-| Screen port | none | One side, the full face |
-| Port, rack | 1 each | Not said |
-
-**The layout is due for a rework,** so this table is a starting point, not a spec. One rule from
-the session carries over whatever the layout becomes: "Sockets save by list index, so add new ones
-at the end of any existing frame." The crate's rack and the planter's water socket are already
-last in their lists for that reason.
+**The chassis settled the layout** (2026-10-18): the Console's battery slots, rings, tray mount
+and top mount went to the deck it stands on, as every device's did, and it keeps only what's its
+own, its electronic ports: the screen port, six computer-mod ports, the computer-mod top and a
+power port, read as the spec's plugs. Its batteries stick loose on the deck, its radio stands on
+the deck beside it, and a line ties to the deck's rings.
 
 **Smart devices.** A device seated on a Console, a shield first, reports its data to the screen
 and can be controlled from it. What it can do depends on the Console's gear. [The smart
@@ -349,30 +407,22 @@ device already stays a body of its own on the host's power pool.
   of their computer-mod ports, a back panel with the fitter's tag over a fan, and on its front
   bolted rack ears either side of the screen, a bezel bar over it and a hazard strip along the
   plinth. Nothing else is on the front, so the screen can't clip anything.
-- **Its sockets** are the same list, in the same order and count, so a save from the crate-shaped
-  Console loads into the rack. The screen port is the whole front, the six computer-mod ports
-  run down its sides, three a side, the batteries sit low on its back with the two rings beside
-  them and the port between, and both top mounts are on its top, the regular one over the back
-  half and the computer-mod top over the front.
-- **It stands upright.** A tall body on one tray tips easily, since each tray pushes at its own
-  corners, so its weight is kept low and over its tray: the frame is heaviest at its foot, the
-  batteries are low, and its tray mount sits 12 cm back, under the batteries' weight, rather than
-  under the middle of the box. Its rings are low too, beside the batteries and near its weight,
-  so a line pulls it along rather than over. On its one tray, as heavy as it's ever found, it
-  floats leaning 1.2° back. Moored by one line in a 24 m/s gusting storm, it tilts 2° at most
-  alone on its tray, and 6.4° at most standing on a deck of two pieces moored by the deck's own
-  ring. A small deck moored from the rack's own ring instead can rock over in a storm: moor a
-  deck by its own rings.
+- **Its ports** (2026-10-18): the screen port is the whole front, the six computer-mod ports
+  run down its sides, three a side, the computer-mod top over the front of its top, and its
+  power port low on its back.
+- **It stands upright on a deck.** A tall device, it sticks straight on a piece's top and
+  never under a frame. Its frame is heaviest at its foot, so a deck carrying it rides steady:
+  moored by the deck's own ring, a deck rides a storm with it.
 - **What it draws.** 4 W itself, the screen 3 W more, and each instrument its own: the radar
-  6 W, the particle sensor 1.5 W, the anemometer 0.5 W, the hygrometer 0.3 W and the barometer
-  0.2 W. With the full set that's about 16 W, from its batteries or its deck's pool. Running
-  short, it gives way before a shield, as a crate's tray does. Dark, its screen goes black and
+  6 W, the ground radar 4 W, the particle sensor 1.5 W, the anemometer 0.5 W, the hygrometer 0.3 W
+  and the barometer 0.2 W. With the full set that's about 16 W, from its deck's pool. Running short, it gives
+  way before a shield, as a deck's trays do. Dark, its screen goes black and
   its instruments stop reading.
 - **Where it comes from.** It's a find in the deep layer only, at the same weight as the chassis
   piece. A found one carries what the deep layer fills a screen port, computer-mod ports and a
   computer-mod top with: a screen, instruments and a radar. The screen and the instruments come
   only in found Consoles for now; none lies loose. The heaviest Console that can be found, 49.7
-  kg, is under the heaviest crate, so any find still drags by hand. The dev console's give makes
+  kg, still drags by hand. The dev console's give makes
   one by its id, `console`, and its parts by theirs: `screen`, `anemometer`, `barometer`,
   `hygrometer`, `particle_sensor` and `radar`.
 - **The radar first** (Hunter, 2026-10-18, after playing it: "the console is kind of
@@ -416,13 +466,24 @@ device already stays a body of its own on the host's power pool.
     the top, each source with what it makes now, and their total under OUTPUT ("what makes power
     says output", Hunter, 2026-10-18). The batteries sit on it, with
     their charge as a share, a bar and Wh, the net flow, and how long until they're empty or full
-    at it. What draws hangs off it below, each device with what it draws now, a dark one marked,
+    at it. A power box on the deck sits on the line above them (2026-10-19), mirroring it exactly:
+    its row with its charge, then each bay as a cell, its strip as a bar in the charge lights'
+    colours, an arrow up as it charges or down as it supplies, its share and its watts; held to
+    charge it reads blue, and a dead or empty bay says so. The bank is then what supplies. What
+    draws hangs off it below, each device with what it draws now, a dark one marked,
     and their total. Under each device that can be worked is a row of switches, the one lit saying
     how it stands, and use on one works the device through its own use: a shield off, on or smart;
     a radio's own controls, off or on, a sweep to the next carrier as its use does, and its
     volume down or up (the dial in [Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built));
-    a tray floating or resting, the deck's, or a Console's alone on its own; and a device's lamps
+    the deck's trays floating or resting; and a device's lamps
     on or off. Each switch logs what it did ("SHIELD SMART", "RADIO 262 KHZ", "DECK REST"). A device's lamps are switched only from here.
+    As far as the deck's power box allows (Power): each draw is numbered where it's served, 1 the
+    first, with PRI + and PRI - to rank it, and one without a switch of its own (a condenser, a
+    board charging) gets ON and OFF, switching it off as a draw the pool skips ("CONDENSER OFF",
+    "CONDENSER PRI 1"); a cabinet's bays are keys that hold them to charge or let them supply
+    ("CABINET BAY 6 CHARGE"). A Console never switches itself off. These join a device's row of
+    switches where there's room. When the draws are more than the page holds, a key at its foot
+    pages to the rest, then back to the top.
   - **Log:** the last lines logged, each under its time; the sender shows only when it isn't a
     Console.
 - **The gyro is a compass too** (Hunter, 2026-10-18: "show both the wind direction and mag with a
@@ -468,7 +529,7 @@ device already stays a body of its own on the host's power pool.
   Power, Log. The one you're on is marked, the one you aim at lights up, and use there goes to its
   page. Use on a switch on the power page works it, and use anywhere else on the screen does
   nothing. A page that wants gear joins the tabs once it's built, the bar sharing its width among
-  them: a survey of what's under the sand. Use at the frame sets its tray floating or resting.
+  them: a survey of what's under the sand. Use at the frame sets its deck's trays floating or resting.
   Dark, use on the screen says "no power". Take aimed at the screen takes it out, like any part.
   Saved pages keep their numbers, the Shield page's being Power's now, so an older save on the
   Shield page opens on Power.
@@ -495,22 +556,76 @@ device already stays a body of its own on the host's power pool.
 - **Its messages** go out through [the terminal output
   system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built), and a radio
   seated anywhere in the system sounds its tones as a line prints: that's the Console's audio.
+- **Its battery, aloud** (Hunter: "...unless you have a speaker'd or radio'd Console on its
+  chassis, then we should use the Valve 'battery low' voicebit"): with a radio in its system, the
+  Console logs its pool running out and, after its tones, says "Battery low." and then "Battery
+  critical." in the radio's voice ([Radio](radio-sound-and-atmosphere.md)), from the radio, at its
+  knob, on or off and whatever it's tuned to. Each is said once as what's left to run the Console
+  on falls past 20% and 5% (`console_battery_low`, `console_battery_critical`), and again once it's
+  back 2 points over. What's left is measured from where the Console goes dark: the pool's empty
+  batteries, or with a shield in the pool its 25% reserve, below which the Console and the radio
+  give way to the shield ([Power](power.md)); so there "low" comes at 40% of the bank and
+  "critical" at 29%. The Radio voice switch in Options silences it; without a radio there's no
+  voice.
 - **Saves** keep its page and its log, and its parts and anything seated on it as any device's;
   a shield keeps its smart switch, and a device whether its lamps are on. Older saves load as
   before, their shields smart: the Console's old auto switch isn't read.
 - **The "console" scenario** stands a Console on a deck of two pieces floating on a tray each,
-  moored by the deck's ring to a stake upwind. The Console holds two big batteries, its screen,
-  the four side instruments, the radar and a radio on its top, with its screen facing you at
-  your eyes. The base shield
-  stands on the other piece with a battery, switched off. A storm is due in four to six
+  moored by the deck's ring to a stake upwind. The Console holds its screen, the four side
+  instruments and the radar, its screen facing you at your eyes; two big batteries and a radio
+  are stuck behind it, and the base shield on the other piece beside a battery, switched off. A storm is due in four to six
   minutes, so the radar sees the front coming, the shield switches itself on, and the storm
   arrives while you watch.
 - **What's under the sand gets its own page** when mods detect it (Hunter, 2026-10-18): old
   lines and buried structures, as the dev map draws them, on a Survey page among the tabs, not
-  over the weather radar. Not built.
+  over the weather radar. Built 2026-10-19 with the ground radar (below).
+- **The navigation computer** (2026-10-19, `nav_computer`, a give id): a Console of the Varran
+  empire's make, the Varran settler's, out of place and heavy on his minimal rig (Profile & saves). The
+  Console's rack in an armoured case, imperial blue under ivory corners with chrome handles, 30 kg, its
+  weight at its foot; its radar under a dome on its head and an anemometer's cups beside it. Its five
+  weather instruments are built into its frame, so it reads the wind, the pressure, the humidity and
+  the sand with nothing fitted, and its radar reaches 9 km, half again a Console's: its map is 24
+  cells across, 9 km each way, with its screen alone. It draws 14 W, the screen 3 more. Its screen port and power
+  port are the Console's, with two computer-mod ports for more; a built-in instrument counts as fitted
+  everywhere a Console counts its gear (`Console._fitted`). It's new make, not found: no lineage marks.
 - **Still proposed:** the final layout, any part on the computer-mod top besides the radar (an
-  antenna), the survey mod and its page, god modules, other makers' Consoles, a Console linked by cable,
-  and devices other than shields made smart.
+  antenna), god modules, makers' Consoles past the Varrans', a Console linked by cable, and devices
+  other than shields made smart.
+
+### The ground radar and the sieve (built 2026-10-19)
+
+Dune archaeology's setup ([Wind & storms](wind-and-storms.md#dune-archaeology-agreed-2026-10-18-spec-built-2026-10-19)):
+a ground radar fitted to a Console, a sand scoop and a sieve, all on one deck.
+- **The ground radar** (`ground_radar`) is a computer mod for a side port, as the other sensors are:
+  a sealed survey set, its antenna's face turned down to the sand, the contractor's amber band, 1.4 kg,
+  4 W. It reads 300 m round its Console **(default)**: the old lines under the sand (history's paths),
+  every structure on the ground or under it, and each big dune's ruin, built or still a seed, its place
+  looked over whatever your pace while it runs. `GROUND RADAR ONLINE` goes to the log as it's fitted,
+  and the stats page adds how many it finds and how many a storm is baring. It doesn't sharpen the
+  storm map: it reads the sand, not the weather.
+- **The Survey page** joins the tabs while the system has a ground radar: a map round the Console out to
+  the radar's reach, north up, rings every 100 m, the old lines faint, a structure a square and a dune's
+  ruin a triangle, an outline while the sand is over it, amber while a storm lays it bare
+  (`sites.newly_exposed`), solid once it's out. Under it the nearest five, each its name, how far and which
+  way, and a row under that: the sand over it, "bared" or "dug out".
+- **The chart, and the Walker** (built 2026-10-19, the Walker's quest in
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+  a Console with a radio in its system tuned to the Walker notes each contact its log reads whole, and
+  its **Chart** page joins the tabs once it has noted one or the Walker's taught: the moon round it north
+  up, each bearing a line, three crossing a fix. It keeps evidence of each anomaly tell its system
+  witnesses (a compass stuck on its deck, a radio on it, a shield on it read against its particle
+  sensor), and its port plugged into the Walker's by a cable uploads it, teaching the Walker with all
+  three. Taught, its radar map and chart show the anomalies near. A save keeps its evidence and its
+  bearings (`Chart`, `game/devices/chart.gd`).
+- **The sieve** (`sieve`), a saltwood hoop rimmed in steel with a worn steel mesh, half a metre across,
+  1.2 kg. Nothing takes it; it sticks on a deck. Carried, or set down or stuck on a deck within 4 m of
+  where you dig, it sifts what a scoop digs off a ruin (Salvage & ruins).
+- **Where they come from.** Dune ruins hold them: sieves on their shelves and in their caches, a ground
+  radar most often in their deepest cache; a relay mast's cabinet now and then holds a ground radar.
+- **Assembled** (Field Kit, Profile & saves): a Console with a ground radar fitted, a scoop and a sieve
+  stuck on one deck, recorded as a piece joins or something sticks, and as the radar comes online.
+- **The give and the creative menu** make both by their ids, `ground_radar` among the devices and `sieve`
+  among the tools.
 
 **Ending-linked Console pieces (endings session; proposed, not built).** The endings give the
 Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
@@ -523,9 +638,13 @@ Console two late uses ([the vision](../vision.md#landmarks-and-endings)):
   device the size of a crate.
 - **Teaching and taking the Walker** (agreed, 2026-10-18, [spec](../storms-signals-sailing-2026-10-18.md)).
   The Walker is a legged survey robot that exists only to understand Zan's weather, indifferent to
-  its flock; the nomads followed it for centuries until it walked them into the anomaly. Survive
-  an anomaly recording your own sensor logs, plug your Console into the Walker and upload them,
-  and from then anomalies show on your map and its moon-wide feed flags them, for anyone
+  its flock; the nomads followed it for centuries until it walked them into the anomaly, and then they
+  abandoned it (Hunter, 2026-10-18: it walks alone, and they still listen and pray). Teaching it takes
+  evidence for each of the anomaly's tells (the compass drift, the radio's crackle, the shield's load; Hunter,
+  2026-10-18, after session 5). Your own sensor logs, recorded through an anomaly and uploaded by plugging
+  your Console into the Walker, are one form of that evidence, and a singing stone
+  ([below](#the-singing-stone-agreed-session-5-not-built)) is another, "at least those two things, probably
+  more." Once it is taught, anomalies show on your map and its moon-wide feed flags them, for anyone
   listening. It doesn't mind its chassis being taken as long as it keeps roaming and surveying;
   kept still too long it goes bad (its feed degrades, its draw rises, its logs turn subtly wrong).
   Taken before the nomads' line is done, they may go on pilgrimage and find their god gone, and
@@ -552,6 +671,12 @@ what a Console's full-face screen shows, and a god module is a part of the compu
 modules](#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)). A Walker taken whole is
 still the Console with weather sensing built in, above.
 
+**One map, with filters (Hunter, 2026-10-19; agreed, not built).** "Instead of more tabs im
+thinking one map tab with filters: weather, archeology, and navigation." The Console keeps one Map
+page. What used to want its own page lays over it as a filter you switch on and off: weather (the
+radar, fronts, anomalies once the Walker is taught), archaeology (the ground radar's Survey) and
+navigation (bearings, the Walker's contacts, the course and the sail's ideal).
+
 ## The patrol board as a superchassis (proposed, not built)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)). Direction, not a spec:
@@ -561,24 +686,12 @@ special-cased slots," and says this "also generalises the existing board."
 [Movement](movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built) has the
 board's side: the kit, its weakness of few slots, and the clash with "It tows nothing."
 
-Against what is built, as readings and not in the session:
-- **It is a rule this PRD already has.** A device's abilities come from its parts (rule 4), and a
-  frame is a list of sockets. The built board is a frame with one battery slot and one port, and it
-  fits a crate's rack (the frames table). A superchassis is a frame with more sockets of the same
-  kinds, and "a chassis rather than special-cased slots" is the existing no-one-off-exceptions line.
-- **Most of its gear has a socket kind already.** A battery goes in a battery slot, a radio on a
-  top mount, a shield on a top mount or a deck mount, and a condenser on a deck mount (a crate-sized
-  one stands on one now; a "tiny condenser" is a smaller one, which the session doesn't describe).
-  A tow is a ring mount with a hook, which already ties rope, so it needs no new kind. A bedroll
-  shares the crate's rack in the sleep proposal ([Survival](survival.md#sleep-proposed)), so it
-  wants a rack-like mount here, the one thing the socket table doesn't have.
-- **Few slots is a count, not a kind.** The rack, the deck mounts and the rest are sized for a
-  crate or a 1 m piece. A 1.3 m board carrying a shield, a battery, a radio, a condenser and a
-  bedroll is a question of size the session doesn't answer.
-- **Sockets save by list index,** so any new socket goes at the end of the frame's list, the
-  Console session's rule.
-- **A new frame beside the board, or the board's frame with more sockets,** is the session's
-  "generalises" and is not said. Either way the kit's board, racked on a crate, is unchanged.
+Against what is built, as readings and not in the session: the chassis (2026-10-18) is the
+"chassis rather than special-cased slots" the note asks for. A shield, a battery, a radio, a
+bedroll and a small condenser all stick on a sticky face, and a tow is a hook on an edge ring. A
+patrol board read as a chassis is a board whose top is sticky, which the session doesn't size: a
+1.3 m board carrying a shield, a battery, a radio, a condenser and a bedroll is still a question of
+room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
 
 ## What Sand Game taught us
 
@@ -592,17 +705,17 @@ Against what is built, as readings and not in the session:
 
 ## Rules
 
-1. **Snapping needs intent.** Only a part you're holding snaps, only into a free
-   socket of its type, and only when you take it home: the tug leans it in and shows the
-   spot, and take seats it (Hunter, 2026-10-15: "add a little more player agency").
-   Nothing snaps by being bumped, or by drifting close.
-2. **Sockets are defined spots,** with a position and a facing. A fitted part sits
-   exactly there.
-3. **A fitted part is part of the device.** Its collision and weight merge into the
-   device's body. There are never joints between a device and its parts.
-4. **A device's abilities come from its parts.** Capacity, lift, hooks, protection,
-   wind catch and weight are all computed from what's fitted. Change the parts and the
-   device changes.
+1. **Sticking and snapping need intent.** Only what you're holding, or have hold of,
+   sticks or snaps, only where it fits, and only when you take it home: it's shown
+   there, or the tug leans it in, and take sets it (Hunter, 2026-10-15: "add a little more
+   player agency"). Nothing sticks or snaps by being bumped, or by drifting close.
+2. **Slots are defined spots,** with a position and a facing, and a fitted part sits
+   exactly there. A stuck thing sits exactly where you set it, its base on the face.
+3. **A fitted or stuck part is part of the body.** Its collision and weight merge into
+   it. There are never joints between a deck and what's on it.
+4. **A body's abilities come from what's on it.** Capacity, lift, hooks, protection,
+   wind catch and weight are all computed from what's fitted and stuck. Change them and
+   the deck changes.
 5. **Parts come out the way they went in.** Removing a part never passes it through the
    device. Last on, first off: aimed at a hook with a line tied to it, take unties the line,
    and the hook once it's bare (Hunter, 2026-10-15: untying kept taking the hook).
@@ -630,78 +743,37 @@ Against what is built, as readings and not in the session:
   at. Among several small things together, the one nearest your aim wins, and it doesn't
   flicker between them as your aim wavers. Picking from a tight cluster is still open.
 
-**As built in the skeleton (2026-10-14):**
+**As built in the skeleton (2026-10-14), slots since the chassis (2026-10-18):**
 - **The tug follows your aim, not the part's position.** A part held at arm's length
-  can never get within 30 cm of a socket on a crate sitting on the sand. So a free
-  socket tugs when your line of sight passes within reach of where the part would sit,
+  can never get within 30 cm of a slot on something sitting on the sand. So a free
+  slot tugs when your line of sight passes within reach of where the part would sit,
   and you're on its open side.
 - **No crouching to fit** (Hunter, 2026-10-16: "im also having to crouch for a lot of
   mods, like the hover tray and hooks"). Looking at a device with a part in hand, or
-  within 40 cm of its frame, offers the free socket that part fits, standing: the only
+  within 40 cm of its frame, offers the free slot that part fits, standing: the only
   one of its kind wherever on the device you look, or of several the one nearest where
-  you aim among those facing you. Aiming right at a free socket's spot, on any device,
-  still wins. An offered socket leans the part partway in with the hum, the
-  ghost shows where it goes, and take seats it; nothing fits until you take. On the
-  device's far side, the ghost doesn't show through it (2026-10-17); a tray's under it
-  still does. A device seated on another counts as part of it, so looking at the shield
-  on a crate offers the crate's sockets, and a held shield is offered a top mount the
-  same way. Just after a part comes out, its device offers nothing until you look off
-  it, so take puts the part down rather than straight back in. Taking out: with empty
-  hands, the part you look straight at comes out. A tray, out of sight under its device
-  when you stand, comes out as easily (2026-10-17): a look at the frame's lower edge, or
-  just under it, within 15 cm of the tray, is a look at the tray, and use there still
-  sets it floating or resting; the rest of the frame still takes hold of the device. On
-  the frame itself that's only its lowest 15 cm, and never more than its lower half
-  (Hunter, 2026-10-17: "its hard to select a chassis, it almost always selects its hover
-  tray"), so a chassis piece, 12 cm thick, is the piece by its top and the upper half of
-  its edges, and its tray by a look at its lowest 6 cm or just under it. With a
-  part in hand, take near a device with a free socket of its kind fits it there, so to
-  set a part down, look at the sand clear of the device.
-- **Sliding a tray under a resting device** works from a standing look at it, from any
-  side, and lifts the device onto it.
+  you aim among those facing you. Aiming right at a free slot's spot, on any device,
+  still wins over a sticky face; a sticky face your look meets wins over a slot only
+  offered. An offered slot leans the part partway in with the hum, the ghost shows where
+  it goes, and take seats it; nothing fits until you take. On the device's far side, the
+  ghost doesn't show through it (2026-10-17). A device stuck on a deck keeps its own
+  slots. Taking out: with empty hands, the part you look straight at comes out, and take
+  again puts it straight back. A tray, out of sight under its deck when you stand, comes
+  out as easily (2026-10-17): a look at the plate's lower edge, or just under it, within
+  15 cm of the tray, is a look at the tray, and use there still sets the deck floating or
+  resting; a chassis piece, 12 cm thick, is the piece by its top and the upper half of its
+  edges, and its tray by a look at its lowest 6 cm or just under it.
+- **A tray aimed at a top goes under it,** and a deck lying on the sand lifts clear onto it.
 - **The device doesn't turn toward you on removal yet;** it holds still while the part
   slides out.
 - **A hook adds a socket** (2026-10-15): a tie socket on its ring while it's fitted,
   where a line's end snaps on. Taking the hook out takes the line's end off first.
-- **A small device can fit a socket** (2026-10-16, Hunter: "can we make the shield
-  snappable to the crate like lights are? so we can mount and charge it and drag it
-  around?"). The shield generator fits a top mount the way a lamp does: the tug leans it
-  in, upright, and take seats it. Seated, it stays a body of its own, held fast on the
-  device and touching nothing of it, so it carries on working as itself and the camp
-  stays fully simulated: it rides with the device, adds its weight, shares the device's
-  power pool through Power's own pooling, and use still switches it. It's the lamp's
-  top mount, tug and take; any device with a socket kind to fit would seat the same way.
-  Take lifts it straight off, whole, whatever of it you aim at. Its own sockets wait
-  until it's off again.
-- **The crate frame has more sockets** (2026-10-16, Hunter: "i feel like the crate
-  should have more slots"): a battery slot front and back, a ring mount on every side
-  (front and back only since 2026-10-17, below), a bottom mount, two top mounts side by
-  side and a port. The solar panel is 0.8 × 0.4 m now, half the crate's top, so a panel
-  rides beside a lamp, a shield or a second panel. Fitted out with two big batteries, a
-  hook on each ring, a tray, a panel and a shield, a crate weighs 55 kg, under a tray's
-  80 kg of lift, and floating draws 110 W.
-- **The crate frame has a rack** (2026-10-16, Hunter: "i like a rack"), along the top of
-  its left side, where the hoverboard seats as the shield does on a top mount: the tug
-  leans it in and take seats it, it stays a body of its own held fast on its seat, and
-  take lifts it off whole. The board is longer than the crate, so it overhangs 25 cm at
-  each end, and it stands 17 cm proud of the top, which cleared the ring mount that side
-  had until 2026-10-17. On a crate with every socket filled, a big battery in
-  each slot, a hook and a line's end on every ring, the tray, the light shield and light
-  panel on top and a plug in the port, it clears everything by 1 cm at least, nearest
-  the crate's own side (survival probe 9 checks it by their bounds). The charge light
-  stays on the right side, where the board doesn't cover it. Racked, the kit's crate
-  weighs 45.5 kg and floating draws 91 W.
-- **The crate keeps its front and back rings only** (2026-10-17, Hunter: "i say we shave
-  2 hook slots off the crate now that we have the chassis"). Its side rings are gone; a
-  camp that needs more lines rides a chassis, whose pieces have a ring on every edge.
-  Older saves still resume (Profile & saves): a save now says how it numbers a frame's
-  sockets, and one from before the change has every part and seated device put back in
-  its own socket. A hook from a side ring goes on the free front or back ring nearest
-  where it was, its line still on it and let out to reach it there if it must be: held
-  to its length, the line would yank the crate (it was slung 5 m in a test). With both
-  taken, it comes out beside the crate the
-  way your hands take a hook out: its line's end comes off loose first, still tied at
-  its other end, then the hook.
+- **A device stuck on a deck stays a body of its own** (2026-10-16, Hunter: "can we make the
+  shield snappable to the crate like lights are? so we can mount and charge it and drag it
+  around?"), held fast on the deck and touching nothing of it, so it carries on working as
+  itself and the camp stays fully simulated: it rides with the deck, adds its weight, shares
+  its power pool, and use still switches it. Take lifts it straight off its face, whole,
+  whatever of it you aim at, unless you aim at a part in a slot of its own.
 - **Keys on screen come from the bindings** (2026-10-16). The keys list and its hint,
   the inventory view and the dev console read each action's key from the live bindings
   and draw it in one colour. Rebinding an action changes all of them, and a mouse button
@@ -712,11 +784,9 @@ Against what is built, as readings and not in the session:
   comes back the moment you let go. The near side follows the mouse: across turns it
   about the vertical, and up or down tips it about your view's right, so pushing up
   rolls the face toward you up over the top. A held part or shield turns in your hands,
-  and you put it down the way it now faces. Something you have hold of is turned as
-  hard as your strength allows: a crate or planter on its side rolls back upright and
-  stands within a degree of level once let go, a 40 kg crate still rolls, and a 100 kg
-  one doesn't. A thing lying with its top to one side takes a turn across, then one
-  up. Nothing rights itself, beyond a running tray holding its device up while it
+  and you put it down, or stick it, the way it now faces. Something you have hold of is
+  turned as hard as your strength allows, so a planter or a lone piece on its side rolls
+  back upright. Nothing rights itself, beyond a running tray holding its deck up while it
   faces the sand.
 - **Take-hold keeps its tilt and follows your look up and down** (2026-10-16). What you
   have hold of keeps the tilt it had when you took it, not only its heading, and its
@@ -724,9 +794,7 @@ Against what is built, as readings and not in the session:
   about an edge, lifting its own weight. It rises and sinks as you look, at the reach
   you took it at, but never higher than a little above your eyes. Your hands only lift
   and never press down, so its own weight lets it down, and dragging is no harder for
-  looking at your feet. Looking up 30° lifts a bare 15 kg crate 0.76 m, about 20 cm
-  short of where you look, since nothing holds its whole weight up. A 60 kg one, more
-  than your strength lifts, stays on the sand.
+  looking at your feet. More than your strength lifts stays on the sand.
 
 ## Where parts come from, and how they wear
 
@@ -807,8 +875,8 @@ is in [Salvage & ruins](salvage-and-ruins.md#the-dark-age-as-a-lineage-rule-agre
 Readings, not in the session:
 - **Lineage is a short list on the part,** an original era and then each remake: colonial made it, the
   First Kingdoms kept or marked it, the Dark Age remade it. A part that never left its era has a list of
-  one. It sits beside the maker (who made it) and the layer a find came from (where it lay), which are
-  separate things already in the data.
+  one. Its colonial role mark (OEM, contractor or consignor) and the layer a find came from (where it
+  lay) are separate pieces of provenance.
 - **It drives the look and nothing else.** "Visual only; no stat effect required." The stats come from the
   era of the frame (frames by era above), so a Dark Age remade crate is a second-age frame whose marks read
   three deep.
@@ -830,12 +898,18 @@ today there is one crate frame.* "Multiple manufacturers make crates with differ
 crate's maker tells you its era and its job; the slot mix is the variety axis." This sits beside
 frames by era above: the era sets a frame's trade-off between efficiency and repair, and the maker sets what it is for.
 
-| Maker | Era | Character |
+| Maker / issuer | Era | Character |
 |---|---|---|
-| Tilg & Standard | Colonial | Standard logistics all-rounder, most common |
+| TILG (issuer) | Colonial | Standard logistics frame, most common; OEM is unassigned |
 | Halloran Isotope | Colonial / skimmer | Industrial, rugged, heat-tolerant, few planter slots |
 | Frontier Ag | Colonial | Purpose-built grow crates with deep beds and integrated misters; rare and fragile |
 | First Kingdoms / second age (hand-built) | First Kingdoms, second age | Crude, heavy, odd slot layouts; the Sisters' versions built for water storage |
+
+This is a proposed roster, not gear in the current build. TILG is the pre-war company and the
+colonial crates carry its name. **Tilg & Standard** is a separate successor formed when TILG and
+Standard Freight merged thousands of years after the war; it is the Surveyor's present-day
+contractor and issuer, not the colonial crate maker. The current standard crate has not yet been
+split into maker-specific frame variants.
 
 Readings, not in the session:
 - **A maker's crate is a frame, and a frame is data.** A frame is a list of sockets (rule 4), so a
@@ -851,11 +925,12 @@ Readings, not in the session:
 - **"Crate" is the planter's word here.** A grow crate with deep beds is a planter variant: the
   built planter is a frame of its own, with plant slots, and a crate has none
   ([Farming](farming.md#planter-sizes-as-socket-kinds-agreed)).
-- **"Tilg & Standard" and the colonial row.** The merger was no later than the war
-  ([lore research](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)), after
-  the colonial era, and the colonial crate's stencil is the acronym TILG (art direction). The session
-  writes the maker as the company is known; read as the same company. One word to change if
-  colonial crates should read Tilg.
+- **TILG and Tilg & Standard are separate companies.** TILG is the colonial-era issuer and its
+  consignment stencil remains on old gear; it is not the crate's OEM. Tilg & Standard formed
+  thousands of years after the war by merging TILG and Standard Freight, and is the Surveyor's current contractor/issuer
+  ([lore research](../lore-research.md#factions-agreed-session-3)). The table's colonial row is
+  therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
+  are built.
 
 ## The burner and the humidifier (proposed, not built)
 
@@ -1014,6 +1089,60 @@ Proposed, in this PRD's terms:
   off-centre." A captive one refuses. It needs a placed change to the ground (open questions) and a count
   or a recharge (the session's own open question).
 
+## The singing stone (Agreed, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Singing stones." Direction, not a
+spec; nothing is built. The lore is in [the lore research](../lore-research.md#shoemaker-and-the-singing-stones-agreed-session-5).*
+Fragments of Shoemaker, black, glassy and scored with melted grooves, warm and strongly magnetic.
+- **The item:** low tech, no attachments, mountable on a chassis.
+- **What it tells you.** Wind plays its grooves like a flute, so its note follows the open wind even when
+  you are sheltered behind a dune. Because it is magnetic, it sings slightly off-key before an anomaly, while
+  compass drift is starting.
+- **A quest piece.** The Walker can't sense anomalies and a stone can, so delivering one teaches the Walker
+  the anomaly tell, tying into its quest line ([Console](#the-console-proposed-first-version-built)).
+  **Ruled (Hunter, 2026-10-18):** teaching takes one piece of evidence for each tell, and the stone and your
+  own sensor logs are two forms of it, "at least those two things, probably more." Which form gives which
+  tell is not said; the stone's off-key note is the compass drift's, a reading.
+
+Readings, not in the session:
+- **It is one more tell,** beside the compass drift, the odd static and the shield's particle load
+  ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)), and it is audio. The off-key note
+  reads the same hidden term the other tells do; the plain note is the wind's.
+- **"No attachments" means no sockets,** so it is a typed part with nothing seated on it, mounted like a
+  wind streamer ([nomad gear](salvage-and-ruins.md#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19)).
+- **Not said:** the note's pitch and loudness, whether several stones change it, how far ahead of an anomaly
+  the off-key note is, and where stones are found beyond the black stones in the sand, Halfrise's cradles and
+  Sister's stone.
+
+## Mitchell as a module (Idea, session 5; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Player era: the undead god" and "Relationships
+and module interactions." The core is **Agreed**: Mitchell's core is silent but intact, and it can be revived
+and carried as a console module, like the other non-stationary gods. What it does is the session's "likely
+mechanic (not designed yet)," so it is an Idea. The lore is in [the lore
+research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
+- **Idea:** it heals or makes medicine on credit, and starts quietly charging in water or salvage if you
+  fall too far behind. **Ruled (Hunter, 2026-10-18):** the player crafts nothing. The module would
+  auto-craft its recipes, turning resources into health or healing on its own. Still an Idea.
+- **Beside the Quartermaster:** the Quartermaster grants Mitchell clearance it gives no one else (Idea:
+  perhaps unlocking military med-tech recipes), and Mitchell immediately opens a tab on the Quartermaster.
+- **Beside the Ledger:** they won't get on. **Beside Mother Cistern:** carrying it costs you her, at least
+  while it is on the cart. With the three linked, the Quartermaster might broker peace (left open).
+- **Its voice** is its formatting and word choice ([the terminal output
+  system](#the-terminal-output-system-proposed-session-4-part-5-first-piece-built)): it greets you by name,
+  says "your little balance" and never "debt," never threatens and only remembers out loud, and calls itself
+  "a full-service institution."
+
+Readings, not in the session:
+- **It is a god module like the others** (a typed part found at its landmark, its state saved with it), so
+  the table above grows a fifth row; the session gives it no innate powers beyond the Idea.
+- **A tab is a number on the part,** printed on the terminal, and charging is the same move as the
+  Quartermaster's requisitioned power and the Almanac's royalty: a god takes a cut. Health already mends
+  with rest ([Survival](survival.md)), so "heals" is a faster mend, and the auto-crafted healing turns
+  resources (water, salvage, food) into it.
+- **The Clerk's field synthesiser** is a found device in the second age's ruins; the session says players
+  find "working Clerk synthesisers" and not what one does.
+
 ## Dispatch items (proposed, session 4, part 5; not built)
 
 *[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 13 and step 8: "Dispatch items: sealed
@@ -1035,61 +1164,68 @@ Proposed, in this PRD's terms:
 - **The Eye keeps what it is given.** Each of the Stoker's packets the player delivers changes the
   Eye's state; how many are needed is not said.
 
-## Socket types to start
+## Slots and sticky faces
 
-| Socket | Takes | Owned by |
+Since the chassis (2026-10-18) the only slots are plugs and water taps and what a thing has of
+its own; everything else sticks on a chassis's sticky faces.
+
+| Slot | Takes | Owned by |
 |---|---|---|
-| Battery slot | Batteries | Power |
-| Ring mount | Rope hooks; on a chassis piece, another piece's edge | Rope & tethering |
-| Bottom mount | Hover trays, or runners: skates and a board plate (2026-10-18), never both on one device or deck; a keel counts as a tray (2026-10-18) | Bubble shield & camp, Movement |
-| Top mount | Solar panels, instruments such as the radio, lamps, the shield generator, the mast (2026-10-18) | Power and others |
-| Rack | The hoverboard, seated along a crate's side, riding and charging with it (Hunter, 2026-10-16); or a bedroll in its place (2026-10-18) | Movement, Survival |
-| Plant slot (small, large) | Seedlings | Farming |
-| Plant slot (small pot, standard planter, deep bed) | Crops by the size they declare. Proposed (session 4, part 4); new kinds are appended to a frame, never inserted | Farming |
+| Sticky face | Anything that isn't for a slot only, anywhere it fits on a chassis piece's top or underside, a wall's or a shelf's: batteries, trays, runners, a keel, panels, lamps, canisters, frames, and every device that sticks. A socket is made where a thing sticks, its pose its own | Devices & mods |
+| Battery slot | Batteries, in what works away from a deck: the board, the radio, the heat cutter, the planter and the turbine | Power |
+| Battery bay | Batteries, in a power box's bays; a skimmer rack's dead bays take nothing (2026-10-19) | Power |
+| Ring | Rope hooks, on a chassis piece's edges and a planter's; on a grid piece, another piece's edge | Rope & tethering |
+| Port | A cable's plug | Power |
 | Water socket | A canister or a hose's end, one at a time (2026-10-17) | Survival, Farming |
-| Deck mount | One device standing on a chassis piece: a crate, a condenser, a shield, a charger (2026-10-17), a mast, a helm seat (2026-10-18) | Devices & mods |
+| Bottom mount | The planter's own hover tray | Farming |
+| Plant slot (small pot, standard planter, deep bed) | Crops by the size they declare; a planter's and a survival kit's | Farming |
+| Mod mount, food slot | A harvester; a ration, in a survival kit | Farming, Survival |
 | Sail mount | A sail, on its boom, low on a mast; seated, it adds a tie at the boom's end for the sheet (2026-10-18) | Movement |
-| Computer-mod port | Computer mods, on a Console: the anemometer, barometer, hygrometer and particle sensor. Built (2026-10-17), a kind of its own, not the planter's mod mount | Devices & mods |
-| Computer-mod top | Antennas, radar and the like, on a Console's top. Built (2026-10-17) with the radar; an antenna is still proposed | Devices & mods, Wind & storms |
-| Screen port | A full-face screen, the whole front of a Console. Built (2026-10-17) | Devices & mods |
+| Frame face | A whole face on a frame: a chassis piece (a wall or a shelf), a screen or fabric | Devices & mods |
+| Computer-mod port, computer-mod top, screen port | A Console's own electronic ports: its instruments, its radar, its screen (2026-10-17) | Devices & mods, Wind & storms |
 
-**As built, what each frame has** (2026-10-16; the chassis 2026-10-17):
+**As built, what each thing has** (2026-10-18):
 
-| Frame | Battery | Ring | Bottom | Top | Port | Other |
-|---|---|---|---|---|---|---|
-| Crate frame | 2 | 2 | 1 | 2 | 1 | a rack; stands on a deck mount; rings front and back only (Hunter, 2026-10-17: "shave 2 hook slots off the crate now that we have the chassis") |
-| Planter | 1 | 2 | 1 | | 1 | 3 small and 1 large plant slot, a mod mount, a water socket (2026-10-17) |
-| Charger | 1 | | | 1 | 1 | stands on a deck mount |
-| Wind turbine | 1 | | | | 1 | |
-| Condenser | 1 | 1 | 1 | 1 | 1 | a water socket; stands on a deck mount |
-| Shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
-| Light shield generator | 1 | 1 | 1 | | 1 | fits a top mount or a deck mount itself |
-| Chassis piece | | 4 | 1 | | | a deck mount; its rings join other pieces |
-| Console | 2 | 2 | 1 | 1 | 1 | a rack (2026-10-18): a computer-mod top, a screen port the whole front and six computer-mod ports; stands on a deck mount |
-| Mast | | | | | | a sail mount; fits a top mount or a deck mount itself (2026-10-18) |
-| Light solar panel | | | | | 1 | |
-| Hoverboard | 1 | | | | 1 | fits a rack itself |
-| Radio | 1 | | | | 1 | fits a top mount itself |
-| Bedroll | | | | | | fits a rack itself; use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) |
-| Helm seat | | | | | | stands on a deck mount; use on it sits you at the helm ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)) |
-| Survival kit | | | | | | a water and a food socket, 2 small and 1 large plant slot |
+| Thing | Battery | Ring | Port | Other | Sticks |
+|---|---|---|---|---|---|
+| Chassis piece | | 4 | | sticky top and underside; its rings join other pieces | joins by its rings or a frame's face |
+| Frame | | | | five faces | square on a top |
+| Planter | 1 | 2 | 1 | its tray's bottom mount, 3 standard and 1 pot slot, a mod mount, a water socket | stands as it is |
+| Wind turbine | 1 | | 1 | | stands as it is |
+| Condenser | | | 1 | a water socket | stands, tall |
+| Shield generator, light shield | | | 1 | | stands |
+| Console | | | 1 | a computer-mod top, a screen port the whole front and six computer-mod ports | stands, tall |
+| Mast | | | | a sail mount | stands |
+| Helm seat | | | | use on it sits you at the helm ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)) | stands |
+| Light solar panel | | | 1 | | any face |
+| Hoverboard | 1 | | 1 | | any face; charges from a deck's pool |
+| Radio | 1 | | 1 | | any face |
+| Heat cutter | 1 | | | | any face |
+| Bedroll | | | | use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) | any face |
+| Survival kit | | | | a water and a food socket, 2 standard and 1 pot slot | any face |
+| Power cabinet | 8 bays | | 1 | a readout | stands, tall |
+| Power box (company issue) | 4 bays | | 1 | | any face |
+| Battery rack | 12 bays, 3 dead | | 1 | | stands, tall |
+| Power shrine | 3 bays | | 1 | | stands |
+
+The crate and the charger are gone: a chassis does what the crate did, and a battery stuck on a
+deck with a panel charges as the charger did.
 
 **Carried, a device works as anywhere else** (Hunter, 2026-10-17): a carryable device goes
 in with what the suit carries whole and works on its own battery, riding on you (Survival).
 There's no flag for it: no device is an exception.
 
-**Runners and the mast** (2026-10-18). A bottom mount takes a hover tray or runners: skates or a
-board plate, which ride the sand on their blades, slide along their length and grip across it. A
-device or a deck carries one or the other, never both, and each mixing refuses with "runners and
-trays don't mix"; standing on a deck, a device takes neither. The mast seats on a top mount or
-stands on a deck mount as the shield does, and its sail fits its sail mount. How they sail is in
-[Movement](movement.md#sailing-the-camp-hunter-2026-10-17).
+**Runners and the mast** (2026-10-18). Runners stick under a deck as a tray does: skates or a
+board plate, which ride the sand on their blades, slide along their length and grip across it,
+lengthwise the way they're stuck. The former category ban on mixing runners and hover
+parts is superseded by the mixed-carriage decision below. The mast stands on a deck, and its sail fits its sail mount.
+How they sail is in [Movement](movement.md#sailing-the-camp-hunter-2026-10-17).
 
-**The keel and the helm seat** (2026-10-18). The keel fits a bottom mount as a tray does and lifts
-like one, less; floating, it holds its camp across the wind. The helm seat stands on a deck mount.
-Each one's behaviour is its own, found by what it is (the keel by its grip, the seat by being one),
-never by the socket it's in, so they go wherever a camp takes them once fitting changes. How they
-sail is in [Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built).
+**The keel and the helm seat** (2026-10-18). The keel sticks where a tray would and lifts like
+one, less; floating, it holds its camp across the wind. The helm seat stands on a deck. Each one's
+behaviour is its own, found by what it is (the keel by its grip, the seat by being one), never by
+where it's stuck. How they sail is in
+[Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built).
 
 Some parts **add sockets of their own**. An extra-hook mod fits a mount and provides a
 hook. That's how found mods expand a device. A hose's end fitted in a water socket offers
@@ -1121,111 +1257,114 @@ a water socket of its own on top, so a canister or another hose goes on there to
 
 ## Probes
 
-1. **No accidental snaps.** Drop, throw and drag parts against devices thousands of
-   times. Nothing snaps unless it's held and aimed. Standing by a crate on the sand,
-   looking at it offers a held tray its bottom mount, a hook the ring on your side or,
-   from a side where neither ring faces you, the one nearer your aim, and a shield the
-   nearer top mount; each waits for take. A fitted part still comes out to an empty hand.
-2. **Fitted is rigid.** A fully fitted device gets thrown around, towed through gusts
-   and floated. Its parts never move relative to it.
-3. **Weight adds up.** A device's weight is its frame plus its parts, and its hover draw
-   follows.
-4. **The snap lands exactly.** A fitted part sits precisely at its socket.
-5. **Out the way it went in.** Remove every part from every angle. No part ever passes
-   through its device on the way out.
-6. **Loose stacks are stable.** A stack of loose objects on a floating device in still
-   air for ten minutes shows no jitter, no creeping and no explosions. Outside the
-   shield, a gust knocks them off cleanly.
-7. **Origin shifts are invisible.** Fitted parts and loose stacks come through a shift
-   untouched.
-8. **Nothing falls through.** No device or part ever ends up under the sand.
-9. **Arranging by hand.** Walking into a floating device pushes it no faster than you
-   walk. Taking hold of one, it follows as you back away and swings round as you turn,
-   and let go it stops rather than flies. One too heavy to drag barely moves and slips
+1. **No accidental snaps or sticks.** Drop, throw and drag parts against slots and sticky
+   faces thousands of times, and let go mid-tug or while shown where they'd stick: nothing
+   goes on unless it's held, aimed and taken. Standing by a chassis, a held tray is shown
+   under it, a hook offered the near ring, a shield shown on its top; at a planter, the ring
+   nearer your aim; each waits for take.
+2. **Stuck and fitted are rigid.** A chassis with parts stuck all over it and a full
+   planter, thrown and gusted, keep every part exactly in place: no loose bodies, no joints.
+3. **Weight adds up.** A chassis's weight is its own plus what's stuck and fitted, through
+   sticking, fitting and taking off at random; a known push agrees, and its trays draw for it.
+4. **It lands exactly.** A part sits precisely at its slot, or at its pose on a face, top
+   or underside.
+5. **Off the way it went on.** Every part on a loaded floating chassis and a planter comes
+   off from eight directions, straight out of its slot or off its face, never through the
+   body, and goes back on through the hands at the same spot.
+6. **Loose stacks are stable.** A loose stack on a floating chassis stays still ten
+   minutes, then a gust knocks it all off cleanly.
+7. **Origin shifts are invisible.** Stuck parts and a loose stack come through a shift untouched.
+8. **Nothing falls through.** A dying floating chassis, chassis dropped from 3 m, thrown
+   parts, a cable popping off a drifting chassis, a battery under a falling planter: none
+   ends up under the sand.
+9. **Arranging by hand.** Walking into a floating planter pushes it no faster than you walk;
+   taken hold of, it follows and swings round, and let go it stops; a 200 kg condenser slips
    from your hands.
-10. **Small things come easy.** Aim at the sand beside a small loose thing and it's the
-    one you'd take; between two, a wavering aim settles on one. Nothing is taken through
+10. **Small things come easy.** Aim at the sand beside a small loose thing and it's the one
+    you'd take; between two, a wavering aim settles on one; nothing is taken through
     something in the way.
-11. **Keys come from the bindings.** Rebind an action and every key shown for it
-    follows, a mouse button too, and the new key works.
-12. **Turned by hand.** Holding rotate, the mouse turns what you hold and not your view;
-    let go, it looks again. A crate and a planter on their sides, taken hold of, roll
-    back upright and stand once let go. A shield lying on its side is turned in your
-    hands and set down standing. Having hold of a crate, looking up lifts it, unless
-    it's too heavy for your strength.
-13. **Use rests a tray.** Use at the kit crate's frame sets it resting: it settles
-    gently on the sand and its tray draws nothing, while use at the shield seated on it
-    switches the shield and leaves the tray be. Use again and it floats, drawing as
-    before. Saved resting, it resumes resting.
-14. **Trays come out standing.** Standing by a floating crate, a look at its frame's lower
-    edge or just under it is a look at its tray: use there still sets the crate resting,
-    and take takes the tray out. A look at the frame's middle still takes hold of it. A
-    standing look at a chassis piece's top or edge is the piece, not its tray.
-15. **The ghost in sight.** A socket offered on a crate's far side shows no ghost through
-    the crate; walk round and it does, and a tray's shows under it.
-16. **One rigid deck.** Five pieces joined by hand into a long L sit flush on the grid,
-    square to each other; a ring with a crate standing beyond it isn't offered. Floating
-    with trays and a crate in a gusting storm for two minutes, moored by one line at its
-    far end as a tow would hold it, its pieces never move against each other, and it
-    stays level, with no jitter and nothing flung.
-17. **Trays lift where they are** (replacing "every piece needs its tray"). A deck three
-    pieces by three with a crate in its middle floats level on four trays at its corners.
-    Loaded heavier it rides lower, still level; too heavy for four, it rests drawing
-    nothing, and a tray under every piece floats it again, drawing for all it holds up.
-    Use sets the whole deck resting and floating. Light again, its trays bunched along one
-    edge, it tips its far edge onto the sand and draws for less than its weight.
-18. **A crate on a deck.** Having hold of a crate beside a deck with its own tray in, no
-    deck mount is offered and the readout says why; tray out, its
-    nearer deck mount is offered and take stands it there. It takes a battery into its own
-    slot by hand, a light shield goes onto the other piece, and the deck floats on the
-    crate's batteries while the shield runs on them, one pool. Take has the crate off into
-    your hold, clear of the deck, even with a tray an older save left in it.
-19. **Only a bare piece comes off** (replacing "any outer piece comes off", 2026-10-17).
-    Three pieces in a row, a hook on the first and a crate on the last: aimed at the
-    middle, at the first and at the last, every piece is highlighted, and take has hold
-    of all of it, nothing coming off. Its hook out, the first is bare: it's highlighted
-    alone, and take has it off into your hands, never through the deck.
-20. **A load off centre leans.** A crate on its one tray with a panel on each top mount
-    floats level; one with a big battery in its back slot leans toward it and floats on,
-    still, nowhere near tipping.
-21. **A loaded piece joins from your hold.** A piece with a crate standing on it lies just
-    beyond a deck's far ring. Taken hold of, that ring is offered with its ghost, and take
-    joins it there, the crate standing on the deck now, in its pool.
-22. **A refusal says why.** A battery held to a crate whose slots are full stays in your
-    hands; a crate with its tray in, taken hold of beside a deck, is let go; a piece held
-    to one with a crate standing beyond every ring, its hooked one too, stays in your
-    hands; use at a bare crate frame has nothing to work. Each time the readout says why
-    in five words at most and the knock sounds.
-24. **Consoles on a deck are one system** (2026-10-17). Two Consoles on a deck, one with an
-    anemometer and one with a barometer, each show both readings; a third on the sand beside
-    them shows only its own and lends them nothing. A radar on each of the two, both draw one
-    map, finer than one radar alone would. Lifted off the deck, each keeps only its own.
-25. **Instruments add detail** (2026-10-18, replacing "an instrument shows only when it's
-    fitted"). A Console with a battery and a screen reads nothing and has no map. Fitted one by
-    one, each instrument puts its own reading on the stats page and no other's, a radio on its
-    top the forecast, and the map comes with the first and grows finer with each: estimated
-    before the radar, swept by it after. Taken off in turn, each takes its reading, and the map
-    coarsens but stays until the last is gone.
-26. **The rack rides upright** (2026-10-18). A Console as heavy as one is ever found floats on
-    its one tray leaning only a little, then rides two minutes of a gusting storm moored by one
-    line from its back ring, upright, never rocking over. Standing on a deck of two pieces on
-    their trays beside a shield, the deck moored by its own ring, it rides as steady.
-27. **A hook in the way pops off** (2026-10-18). A piece with a hook on its east and west
-    rings, each with a line to a stake beyond: a piece carried to the east ring is offered
-    it and joins, and a piece with a crate on it joins at the west from your hold. Each
-    hook lies loose on the sand clear of the deck, its line still tied to it, and still
-    does once saved and resumed; taken up and put on a free ring, its line ties the deck
-    again. A third piece carried to where the east hook landed joins there, and the hook
-    moves clear again, still tied.
-28. **Switched from the screen** (2026-10-18). A Console with a radio on its top, a shield and a
-    crate with a lamp stand on a floating deck of three pieces. Use on the screen's power tab
-    opens the power page, and its switches, pressed where they're drawn, work each device as its
-    own use would: the shield on and off, the radio's switch, sweep and volume, the lamp off, the deck's trays
-    resting. What the panel says is drawn is what the pool's devices draw, and its bank what
-    they hold.
-29. **The gyro points Tu-ward** (2026-10-18). A Console with an anemometer, carried round the
-    moon: on the near side, the Rim and the far side, its gyro's Tu-ward mark is the way Tu
-    stands in the sky there, or would past the horizon, to within a degree.
+11. **Keys come from the bindings.** Rebind an action and every key shown for it follows, a
+    mouse button too, and the new key works.
+12. **Turned by hand.** Holding rotate turns what you hold and not your view; a condenser and
+    a planter on their sides roll upright; a shield is set down standing; looking up lifts a
+    light condenser but not a heavy one.
+13. **Use rests a deck.** Use at the Surveyor's deck sets it resting, settling gently and
+    drawing nothing, and floating again; use at the shield on it switches only the shield;
+    saved resting, it resumes resting.
+14. **Trays come out standing.** A look at a floating planter's lower edge is a look at its
+    tray; a standing look at a chassis's top or edge is the piece, not the tray under it.
+15. **The ghost in sight.** A slot offered on a planter's far side shows no ghost through it;
+    walk round and it does; a tray's shows under it.
+16. **One rigid deck.** Five pieces joined by hand into an L sit flush and square; a
+    condenser beyond a ring blocks it; with trays, a condenser and batteries the deck rides a
+    gusting storm moored, its pieces never moving against each other.
+17. **Trays lift where they are,** so a balanced rig floats and a lopsided one tips. A deck
+    three by three floats level on four corner trays, rides lower loaded, rests too heavy and
+    floats again on a tray under every piece; with its trays bunched along one edge it tips
+    its far edge onto the sand.
+18. **A condenser onto a deck.** Having hold of one and looking at a deck, the condenser
+    itself is shown there, touching nothing, and back in your hold when you look away; take
+    sticks it; a loose battery on the deck runs it and a shield as one pool; taken off again
+    it drags away and the deck stays.
+19. **Take takes what you aim at.** One battery taken out of a crowd comes off alone and goes
+    straight back on with take again, the aim never leaving, and a radio's own battery the
+    same; aimed at a deck's plate, take has hold of the whole deck; only a bare piece comes
+    off, out across its ring.
+20. **A load off centre leans.** A piece with its load over its one tray floats level; with a
+    big battery at its back edge it leans 3 to 20° and stays still.
+21. **A loaded piece joins from your hold,** the real piece shown at the ring, its condenser
+    in the deck's pool once it joins.
+22. **A refusal says why,** with a knock: a full battery slot, a condenser shown where a
+    shield stands, a piece with something beyond every ring, use at a bare chassis.
+23. **A device freed under it.** A shield stuck on a floating chassis freed outright: the
+    chassis runs on and another shield sticks in the same place.
+24. **Consoles on a deck are one system.** Two on a deck pool their readings, one on its own
+    plate doesn't; two radars draw a finer map; moved off, each keeps only its own.
+25. **Instruments add detail.** A Console on a plate gains a reading per instrument and a
+    radio stuck beside it the forecast; its map grows finer with each and coarsens as they go.
+26. **The Console rides upright.** The heaviest Console, stuck on a two-piece deck with a
+    shield and big batteries, floats leaning only a little and rides a gusting storm upright,
+    moored by the deck's ring.
+27. **A hook in the way pops off,** keeping its line through a save; the piece that joins from
+    your hold carries a condenser.
+28. **Switched from the screen.** The power page switches the shield, the radio, the deck's
+    lamp and its trays; its watts and bank are the pool's.
+29. **The gyro points Tu-ward** from a Console on a plate, round the moon.
+30. **The Console says its battery is low** (2026-10-18). A Console with a radio on its deck
+    logs and says "Battery low." from the radio as its deck's pool falls past the low line, once
+    until it's back over, then "Battery critical."; with the Radio voice off, it only logs it.
+31. **It sticks on every face.** Held to a piece's top a battery is shown there itself and
+    take sticks it flat where you aim; a tray aimed at the top goes under, facing the sand;
+    a frame stands square; pieces join a frame as a wall and a shelf; the board sticks on the
+    wall's outer face, batteries on the shelf and the wall's inner face, fabric on the frame.
+32. **Blocked shows red.** Where another stands it's red and "blocked", and take keeps it with
+    a knock; clear, it sticks. Past a floating piece's lift it's amber, "too heavy", sticks
+    all the same, and the piece no longer floats.
+33. **A tray lifts the way it faces:** fully under, 0.71 tipped halfway, nothing on a wall
+    (and the deck counts none), nothing flipped over, drawing nothing.
+34. **Frames take walls and shelves,** and go only on a top; a Console never under one nor a
+    frame over it; a chassis never sticks; a shelf's rings take hooks but no piece; a frame
+    with walls on won't come off.
+35. **Broadside, not edge-on** (2026-10-19). A wall broadside to a steady wind is pushed
+    downwind as a flat face its size; edge-on, next to nothing; at 45°, off the wind as well
+    as down it.
+36. **One face shades another.** Two frames side by side across a steady wind, walled front
+    and back: each wall upwind takes what a lone one would, and each behind a fraction.
+37. **A scoop open upwind catches more.** A frame walled on its back, sides and top is pushed
+    harder with the wind blowing into its open side than with the same wind on its back.
+38. **Fabric pulls weakly.** Fabric facing aft on a floating deck draws it downwind with the
+    sail furled, but at under a quarter of the sail's pull in the same wind.
+39. **The cloth shows its load.** Its load goes as its push, the same share of it in a breeze
+    as in a fresh wind; slack in the breeze, taut in a gale, bellied the other way with the
+    wind round, and bearing nothing edge-on while the air stirs it.
+40. **A heavy thing up the mast.** Stuck high on a standing mast, a big battery stands its camp's
+    middle higher by what its weight there says, and the same push heels it further; nothing tall
+    goes on a mast, and a mast with something on it stays on its deck.
+41. **The crow's nest.** It goes only on a mast's head; its ladder climbs you in, seated, your
+    eyes over 5 m above the deck and your weight high on it; more of the ground shows from up there.
+42. **The streamer.** It hangs in still air, streams downwind in a breeze and stands out level in a
+    gale, flapping wider and faster; stuck on a moving deck it streams aft; in your suit it reads the
+    air where you are.
 
 ## Out of scope
 
@@ -1340,10 +1479,11 @@ in the living docs, so this PRD follows it as direction and says so on each line
   logic." *Follows the session.* Not said which built slot is which kind. Sockets save by list index,
   so the built slots keep their places and the new kinds are appended
   ([Farming](farming.md#open-questions)).
-- **Maker, era and the one crate frame.** Here: one crate frame, and "frames by era" as the only
-  second axis. The session adds the maker as a third, with four makers. *Follows the session.* Not
-  said which maker's crate the kit's is, or whether "Tilg & Standard" in the colonial row is the
-  colonial crate (stencilled TILG).
+- **Maker, issuer and the one crate frame.** Here: one crate frame, and "frames by era" as the only
+  second axis. The session adds maker/provenance as a third axis with four proposed entries.
+  Hunter's 2026-10-20 clarification resolves the colonial naming: TILG is the consignor, and
+  Tilg & Standard is the much later successor issuer. The live Surveyor frame has not yet been
+  assigned a maker-specific variant.
 - **The burner against the heavy generator.** Here ([Power](power.md#sources)): a "heavy generator"
   that "rides on caterpillar tracks, slows the camp, and burns fuel." The session: a burner or
   generator that is a "crate part." Not said whether they are one device or two.
@@ -1392,3 +1532,147 @@ it as direction and says so on each line.
 - **What a god module draws.** Here: "Instruments, farming gear and tools draw small amounts" (Power).
   The session gives a module no draw. Not said whether a Quartermaster's hardening, a Walker's sensing or
   a Cistern's forecasts cost power, or whether a god module can be left without any.
+
+Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) raised
+the following. Hunter ruled on the first three afterwards (2026-10-18), and the rulings replace the old
+wording above; the last is still open. Each clash is in the session's [Clashes
+note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
+
+- **Eight gods against seven. Ruled:** Mitchell is a dead god who can be revived to become an eighth. It is
+  a fifth mountable module beside the four above; the seven stay seven.
+- **Medicine, a tab and recipes against "crafting, for now" out of scope. Ruled:** no player crafting. A
+  device such as Mitchell's module would auto-craft its recipes, turning resources into health or healing on
+  its own (Idea). Crafting stays out of scope for the player.
+- **A stone against the sensor logs. Ruled:** both. Teaching the Walker takes evidence for each tell of the
+  anomaly, and a singing stone and your own sensor logs are two forms of it.
+- **A module that costs you another god.** The session: carrying Mitchell "costs you" Mother Cistern. Here:
+  nothing but a module's own draw ("What a god module draws," above). Not said how the loss is counted, or
+  how it sits with the Cistern axis, which wants her restored and linked.
+
+## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
+
+The streamer is "one of my fav items" and "helps a lot"; keep its readable wind response. The crow's nest is inaccessible to place: "cant hop up high enough." Holding a nest and aiming at an accessible part of a standing mast should target the masthead for fitting, with an understandable placement preview; jumping is not required. The resulting seat stays on the head and still respects blocked placement, weight, climbing and dismounting. The sail scenario should also offer readable sailing notes; mechanics and the open multiple-line design are recorded in Movement.
+
+**Built:** `Stick.face_for` redirects a held nest aimed at a standing mast to its head; the normal placement preview, collision refusal and weight rules still apply. Devices probe 41 now fits it with eyes below 2 m over the deck, refuses a second nest on the occupied head, and retains the measured 6.2 m eye height and 2.59 m centre-of-mass rise when climbed into.
+
+**Moving sheet-ring follow-up (2026-10-19).** A loaded Varran GPU capture measured the cosmetic mast sheet ring 0.102 m behind its freshly computed chassis anchor after a rendered frame, compared with the visible ring's 0.065 m outer radius; refreshing it reduced the error below 0.01 mm. Keep that visible anchor on the current chassis during the render pass before pinning the drawn inboard sheet. Rope forces and their physics attachment remain unchanged.
+
+Final buffered loaded/turn recordings cover 210 rendered frames: maximum ring-anchor error 0.016 mm, top-surface error 0.001 mm, and zero error at either drawn inboard endpoint. Actual capture cadence was approximately 60–61 FPS with variable intervals; this is not evidence of 144 Hz playback.
+
+### Battery-warning silence observation (2026-10-19)
+
+A low-battery warning is spoken once until rearmed. Its previous clip finishing is not a
+second announcement. Devices probe 30 observes new active reader playback instances during
+each read window, while keeping the existing expected-clip, radio-bus and log-once checks.
+This preserves the silence requirement without assuming the audio backend finishes its
+previous voice on the physics clock. No Console or radio behaviour changes.
+
+Measured on Linux with Godot 4.7.2: the original check passed normally. An external diagnostic
+slowed only the reader's voice to expose a prior clip tail across read windows: the low warning
+was still playing at 0.493 s into its clip, with no queued phrases, when the original silence
+assertion failed. The same happened after the critical warning. The revised focused probe
+passed (25 s), and the slow-tail diagnostic passed without clearing or stopping the old voice.
+Injecting a second `radio.announce` without a new log failed specifically at the silence check;
+the committed probe contains no injected announcement.
+Native macOS verification is still required; this reproduction demonstrates the observation
+error without claiming to measure the failed runner's audio backend schedule.
+
+### Depleted hover shutdown (2026-10-19; agreed and built)
+
+A starter deck with its battery drained, hover still switched on and the deck already
+on the sand rose 0.376 m at up to 0.425 m/s when hover was switched off. Turning it off
+removes its demand; Power can then mark the free load powered again. Its remaining
+full-height lift ramp briefly raises the grounded deck before lowering it again.
+When asked to rest while not currently hovering, finish its lift ramp at zero before
+changing the demand. A powered floating deck keeps the existing gentle descent.
+Do not reset linear or angular velocity, move collision shapes or change ground support.
+
+With that change, aiming at the depleted starter deck and using it registered the deck
+as the target, switched it off, and raised it less than 0.000001 m over five seconds
+(upward speed below 0.000001 m/s). The powered baseline descended at up to 0.631 m/s
+without rising. These are physics-frame measurements in still air, not a rendered
+capture. The fix writes only the remaining lift share; existing velocity is preserved.
+
+Existing focused devices probes 13 and 17 pass: powered gentle settling and lift-off,
+rested save/resume, and large balanced, overloaded and lopsided deck behavior remain.
+
+### Supported sailing sheet eye (Hunter correction, 2026-10-19)
+
+Hunter identified the cosmetic ring beside the mast as an impossible placement, not
+motion jitter. The old projection inset its centre by the rope's 24 mm radius although
+the ring extends 65 mm: up to 41 mm overhang, with no mast-foot/equipment clearance.
+Its flat torus also sat above the recessed visible panel, whose top is 20 mm below the
+nominal collision plane. Actual captures of sail, sail_tow, yacht and Varran show this
+unsupported hardware; their measured render-anchor errors were below 0.006 mm.
+
+Use a visibly bolted upright sheet eye on a real panel. Its complete base must fit
+inside that panel, clear the mast foot and fitted equipment, and sit on the visible
+panel surface rather than a collision-height approximation. Choose a supported clear
+place nearest the former visual routing point, cached in deck coordinates until the
+layout changes. Keep its complete hardware inside the deck edge. The drawn inboard
+sheet terminates at the visible eye opening. This is a correction to the visual route:
+retain the boom, sheet trim/forces, line strength and physical torque model unchanged.
+Do not invent floating hardware if a custom layout has no free supported mounting
+place; the cosmetic inboard eye requires a real seat.
+
+**As built:** the upright steel eye has cast feet and four visible bolts on a
+180 × 140 mm base, seated on the inset panel itself. Panel inset/drop dimensions are
+shared with the chassis look. The full mounting volume, rather than the ring centre,
+stays inside the panel and avoids raised ribs, mast foot and fitted equipment. A cached
+seat is recomputed only when the carrier/layout changes. A custom deck with no supported
+clear seat draws no fictional floating eye; this does not detach its physical sheet.
+
+The Varran eye moved from the edge cap to deck coordinates (0.320, 0.117, 1.340) m:
+its complete foot stays 10 mm inside the panel boundary, 90 mm inside the deck edge,
+and clears the mast collar by 20 mm. The base touches the visible panel at 0.040 m
+above the deck origin; the opening is 77 mm above its base. All four actual layouts
+(sail, sail_tow, yacht and the normal Varran kit) show supported hardware in inspected
+close and wide GPU frames, furled and raised. The nearest boom/sail remains well above
+the hardware. Across 480 rendered frames, the maximum opening/anchor error was below
+0.008 mm and the drawn inboard endpoint error was zero. The original force attachment
+and trim model are unchanged; this relocates only the cosmetic routing endpoint.
+
+Sailing 15 now checks the complete base against the visible panel and retains
+riding/reeling/resuming and endpoint checks (passed, 8 s). Sailing 3's force/trim and
+sheet-hauling checks also pass (21 s). The uncached placement search averaged about
+0.23–0.24 ms on the Varran layout; it is not repeated for the camp's motion each render frame.
+
+## Survey receiver device (agreed and built 2026-10-20)
+
+A battery-powered survey receiver is a normal carryable, stickable device using radio
+input handling. It reads a strength meter and plays pulses rather than displaying a
+precise bearing. Its directional loop follows its actual world orientation, including
+when worn in the carry view or mounted to a turning chassis. The procedural model and
+original switch/tuning/pulse sounds distinguish it from the full radio; no radio carrier
+or god framework is added. Receiver target and acquired-from distance survive a save.
+
+
+As built: catalog `survey_receiver` weighs 1.4 kg and uses a 0.36 × 0.50 ×
+0.26 m case with a rear battery socket. Shallow device salvage has weight 2
+in the existing weighted pool; creative Devices and the receiver scenario also
+offer it. No Surveyor starter equipment or normal ruin beacon plan changes.
+The optional Finds beacon reach argument leaves full-radio callers unchanged.
+Snapshot adds only acquired-from distance and pending acquisition to inherited
+Radio state. Carry view redraws only on coarse needle interval changes.
+Actual input/save/empty-cell/arrival and mounted direction measurements are
+recorded in the radio PRD; no local whole suite or new repository probe was added.
+
+## Mixed runners and hover parts (agreed and built 2026-10-20)
+
+Skates, hover trays and the hover keel may share a deck when their actual shapes fit.
+The same rule applies while fitting a bottom socket, sticking on a face, previewing
+placement, and joining already equipped pieces. Remove the category refusal rather
+than inventing a new mixed-carriage mode. Keep overlap, mounting orientation, pooled
+mass, available lift and electrical power checks. A hybrid can be too heavy to float.
+
+Runner blades support and resist motion only through their existing ground-contact
+load. The skate statistic named `keel` is blade penetration, not hover-fin grip: only
+a part with positive lift and a keel statistic contributes an airborne hover keel.
+No assembly action, binding, force limit, part statistic or new deed is introduced.
+
+As built, the obsolete device-level carriage/refusal API and its duplicated hands
+and sticking checks are removed. The per-part underside routing remains. Existing
+face-placement and overlap/overload probes (devices 31 and 32) pass unchanged; the
+new mixed-deck fixture joins an equipped skate piece through the hands and sticks
+a true hover keel to a separate clear underside. Restoring the category ban makes
+that actual hand join fail. Mass recomputation, power demand and geometry are unchanged.

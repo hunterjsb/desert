@@ -19,7 +19,6 @@ func run() -> void:
 	var tuning := Tuning.current()
 	tuning.salvage = true
 	var shape := TerrainShape.new(SEED, tuning)
-	var field := WeatherField.new(SEED, tuning)
 	shape.sites.follow(32.0, 32.0, 0.0, 0.0, 1.0, tuning.history_lay_m)
 	var under := 0
 	var drawn := [0, 0, 0]
@@ -34,8 +33,8 @@ func run() -> void:
 		for n in EACH:
 			var site := _standing(shape, kind, k)
 			k += 1
-			var t := _stripped_moment(field, site, tuning)
-			var taken := Exposure.taken(field, site.x, site.z, t, tuning)
+			var t := _stripped_moment(site, tuning)
+			var taken := site.pure_taken(t)
 			# As deep as makes each state, and between a deep socket's depth and past it.
 			for state in 3:
 				site.depth = [taken * 4.0, taken * 1.5, taken * 0.5][state]
@@ -99,12 +98,12 @@ func _standing(shape: TerrainShape, kind: StringName, k: int) -> Structure:
 
 
 ## A moment the storms had stripped a place hard, within three days.
-func _stripped_moment(field: WeatherField, site: Site, tuning: Tuning) -> float:
+func _stripped_moment(site: Structure, tuning: Tuning) -> float:
 	var step := tuning.site_exposure_step_minutes * 60.0
 	var best := 0.0
 	var most := -1.0
 	for n in 144:
-		var taken := Exposure.taken(field, site.x, site.z, n * step, tuning)
+		var taken := site.pure_taken(n * step)
 		if taken > most:
 			most = taken
 			best = n * step

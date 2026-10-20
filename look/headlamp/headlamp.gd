@@ -2,7 +2,7 @@ extends Node
 ## Look-test: the suit's headlamp on seed 1234, deep in a storm at midnight
 ## with no wind. A walked path is shot from behind its start, the way you'd
 ## look along it, with no light but the storm's and then by the headlamp; then
-## the run's kit crate, its shield up, and a charger's lamp beside it, without
+## the run's kit camp, its shield up, and a chassis's lamp beside it, without
 ## the headlamp and with it. It prints the sand's lightness (CIE L*) 5, 10 and
 ## 15 m ahead and how much darker the steps there are, and what the headlamp
 ## costs the GPU, with and without shadows. At the fixed exposure, or with --eye
@@ -19,7 +19,7 @@ const WALK_SECONDS := 9.0
 const BACK := 2.0
 const PITCH := -5.0
 ## The camp is set down this far south of spawn, and shot from this far west
-## of its crate, m.
+## of its deck, m.
 const CAMP := 40.0
 const CAMP_BACK := 6.0
 const AHEAD := [5.0, 10.0, 15.0]
@@ -111,25 +111,20 @@ func _capture(out_dir: String) -> void:
 			await _gpu_cost(lamp)
 	tracks.clock = made
 
-	# The camp: the run's kit, its crate's shield up, and a charger's lamp beside it.
+	# The camp: the run's kit, its deck's shield up, and a chassis's lamp beside it.
 	_put(world.spawn + Vector2(0.0, CAMP), -PI * 0.5)
-	var crate: Device = Runs.kit(world).filter(func(n: Node) -> bool:
+	var deck: Device = Runs.kit(world).filter(func(n: Node) -> bool:
 		return n is Device and (n as Device).stats().lift_kg > 0.0)[0]
 	await _ticks(120)
-	for seated in crate.mounted():
+	for seated in deck.mounted():
 		if seated is ShieldGenerator:
 			seated.interact(player)
-	var charger := Catalog.device(&"charger")
-	world.content.add_child(charger)
-	var by := crate.global_position + Vector3(-1.2, 0.0, -1.6)
-	charger.global_position = Vector3(by.x, world.height_under(by) + 0.2, by.z)
-	for id: StringName in [&"battery", &"lamp"]:
-		var part := Catalog.part(id)
-		world.content.add_child(part)
-		charger.fit(part, charger.sockets().filter(func(s: Socket) -> bool: return s.kind == part.kind)[0])
-	charger.battery().charge_wh = charger.battery().capacity()
-	world.power.wake(charger)
-	_stand(crate.global_position + Vector3(-CAMP_BACK, 0.0, 0.0), Vector3.RIGHT)
+	var lit_by := Rig.build(world.content, [[&"stick", Vector2i.ZERO, &"top", Vector2(-0.2, 0.2), 0.0, &"battery"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.2, -0.2), 0.0, &"lamp"]]).deck
+	var by := deck.global_position + Vector3(-1.2, 0.0, -1.6)
+	lit_by.global_position = Vector3(by.x, world.height_under(by) + Chassis.THICK * 0.5 + 0.02, by.z)
+	world.power.wake(lit_by)
+	_stand(deck.global_position + Vector3(-CAMP_BACK, 0.0, 0.0), Vector3.RIGHT)
 	for i in 240:
 		await get_tree().process_frame
 	for lit in [false, true]:

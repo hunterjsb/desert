@@ -1,7 +1,9 @@
 extends WorldProbe
 ## World & terrain probe 3: 20 km, half straight and half wandering, dropping boxes
 ## every kilometre. Nothing ends up below the ground, chunks stay bounded, and
-## memory stays flat as the boxes are left behind and forgotten.
+## memory stays flat as the boxes are left behind and forgotten. Memory is
+## compared back at the same settled ground, after warming up, so the extra
+## chunks and collision kept behind a turn don't count as a leak.
 
 const STEP := 32.0
 
@@ -12,6 +14,7 @@ func run() -> void:
 	var most_chunks := (2 * tuning.view_radius + 3) ** 2
 	var x := world.player_world_x()
 	var z := world.player_world_z()
+	var anchor := Vector2(x, z)
 	var heading := 0.0
 	var walked := 0.0
 	var next_drop := 1000.0
@@ -42,8 +45,12 @@ func run() -> void:
 			for box in dropped:
 				check(clearance(box) > 0.1, "box dropped at %.0f m rests on the sand" % walked)
 		if baseline_objects == 0 and walked >= 2000.0:
+			await _back_at(anchor)
 			baseline_objects = int(Performance.get_monitor(Performance.OBJECT_COUNT))
 			baseline_memory = Performance.get_monitor(Performance.MEMORY_STATIC)
+			teleport(x, z)
+			await settle(true)
+	await _back_at(anchor)
 	var objects := int(Performance.get_monitor(Performance.OBJECT_COUNT))
 	var memory := Performance.get_monitor(Performance.MEMORY_STATIC)
 	print("chunks <= %d, boxes <= %d, objects %d -> %d, memory %.1f -> %.1f MB, lowest player clearance %.3f m"
@@ -54,3 +61,9 @@ func run() -> void:
 	check(most_boxes <= 12, "left-behind boxes are forgotten (most at once %d)" % most_boxes)
 	check(objects < baseline_objects * 1.1, "object count stays flat (%d -> %d)" % [baseline_objects, objects])
 	check(memory < baseline_memory + 64.0 * 1048576.0, "memory stays flat")
+
+
+func _back_at(anchor: Vector2) -> void:
+	teleport(anchor.x, anchor.y)
+	await settle()
+	await physics_frames(2)

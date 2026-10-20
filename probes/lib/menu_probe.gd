@@ -35,7 +35,8 @@ func open_every_start() -> void:
 	var profile := get_node(^"/root/Profile")
 	for kit in Kit.origins():
 		if not kit.is_open_to(profile):
-			profile.unlock(kit.unlock)
+			for each in kit.unlocks():
+				profile.unlock(each)
 
 
 ## The game's saves, in the probe's own folder.
@@ -51,6 +52,42 @@ func press(action: StringName) -> void:
 	event = event.duplicate()
 	event.pressed = false
 	get_viewport().push_input(event)
+
+
+## Each character typed, as its key pressed and let go.
+func type(text: String) -> void:
+	for c in text:
+		var key := InputEventKey.new()
+		key.keycode = KEY_SPACE if c == " " else OS.find_keycode_from_string(c.to_upper())
+		key.physical_keycode = key.keycode
+		key.unicode = c.unicode_at(0)
+		key.pressed = true
+		get_viewport().push_input(key)
+		key = key.duplicate()
+		key.pressed = false
+		get_viewport().push_input(key)
+
+
+## The pointer pressed at one place on the screen, moved to another and let go.
+func drag(from: Vector2, to: Vector2) -> void:
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.button_mask = MOUSE_BUTTON_MASK_LEFT
+	press.pressed = true
+	press.position = from
+	press.global_position = from
+	get_viewport().push_input(press)
+	var move := InputEventMouseMotion.new()
+	move.button_mask = MOUSE_BUTTON_MASK_LEFT
+	move.position = to
+	move.global_position = to
+	move.relative = to - from
+	get_viewport().push_input(move)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.position = to
+	release.global_position = to
+	get_viewport().push_input(release)
 
 
 ## Waits for the screen to come back from black into a run, or onto the menu.

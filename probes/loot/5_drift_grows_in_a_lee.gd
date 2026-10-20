@@ -58,6 +58,8 @@ func run() -> void:
 func _through_a_storm(at: Vector2, across: Vector2) -> void:
 	var tuning := Tuning.current()
 	tuning.drift_per_m_hour *= THICK
+	# What the line catches alone, not what the lee lets fall round you with no line (loot probe 8).
+	tuning.drift_lee_fall = 0.0
 	world.time_warp = 0.0
 	teleport(at.x, at.y)
 	await settle(true)

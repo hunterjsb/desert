@@ -1,9 +1,9 @@
 extends DeckProbe
 ## Devices & mods probe 16: one rigid deck. Five chassis pieces, joined
 ## through your hands into a long L, sit flush on the grid, each exactly a
-## piece's width from its neighbour and square to it; a ring with a crate
-## standing beyond it isn't offered. Trays under all five and a crate on
-## top, the deck floats in a gusting storm for two minutes, moored by one
+## piece's width from its neighbour and square to it; a ring with a condenser
+## standing beyond it isn't offered. Trays under all five and a condenser and
+## batteries on top, the deck floats in a gusting storm for two minutes, moored by one
 ## line at its far end as a tow would hold it, the line pulling down on that
 ## end: its pieces never move against each other, and it stays level, with
 ## no jitter and nothing flung.
@@ -40,29 +40,27 @@ func run() -> void:
 
 	# Something standing beyond a free ring, where a piece would go: no piece goes there.
 	var west := ring(deck, Vector2i.ZERO, Vector2i(-1, 0))
-	var crate_beyond := device(&"crate_frame", deck.global_position, 0.0)
-	crate_beyond.global_position = deck.global_transform * Vector3(-1.0, 0.0, 0.0)
-	crate_beyond.freeze = true
+	var beyond := device(&"condenser", deck.global_position, 0.0)
+	beyond.global_position = deck.global_transform * Vector3(-1.0, 0.0, 0.0)
+	beyond.freeze = true
 	await simulate(0.5)
 	var blocked := piece(spot(-3.0, -1.0))
 	var joined := await join_by_hand(deck, blocked, west)
-	check(not joined, "a ring with a crate standing beyond it isn't offered")
-	crate_beyond.free()
+	check(not joined, "a ring with a condenser standing beyond it isn't offered")
+	beyond.free()
 	if joined:
 		return
 	blocked.free()
 
 	for i in 5:
 		fit_part(deck, &"hover_tray")
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	fit_part(crate, &"battery")
-	fit_part(crate, &"battery")
-	deck.mount(crate, socket_on(deck, Vector2i(1, 0), &"deck"))
+	Stick.put(deck, Rig.piece(deck, Vector2i(1, 0)), Chassis.TOP, Vector2.ZERO, 0.0, Catalog.device(&"condenser"))
+	fit_part(deck, &"battery")
+	fit_part(deck, &"battery")
 	deck.fit(Catalog.part(&"hook"), west)
 	await simulate(5.0)
 	check(deck.stats().hovering and absf(clearance(deck) - deck.rest_height()) < 0.15,
-		"trays under all five and a crate on top, it floats")
+		"trays under all five and a condenser and batteries on top, it floats")
 	var tie := deck.free_tie(west.global_position)
 	var at := tie.global_position + Vector3(-3.0, 0.0, 0.0)
 	Line.between(world, tie, driven_stake(Vector3(at.x, world.height_under(at), at.z)).free_tie(tie.global_position), 0.3)

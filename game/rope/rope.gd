@@ -6,7 +6,9 @@ extends RefCounted
 ## a spring defined by how fast it springs back and how much it bounces takes
 ## over. Solved from both ends' masses with Catto's soft step, so it can only
 ## take energy out. A hard stop sits at max_stretch. Tension pulls both ends
-## equally, at the attachment points.
+## equally, at the attachment points. It never pulls past its strength: asked
+## for more, it gives at that and stretches, and asked for more long enough,
+## it parts.
 
 ## The hard stop's own softness: stiff enough to read as a wall, soft enough
 ## that hitting it never kicks back.
@@ -20,6 +22,10 @@ const CLOSING_SPEED := 3.0
 ## Drooping this far short of its length, as a share of it, a line pulls
 ## nothing: its weight lies on the sand or hangs off its ends.
 const SLACK_SHARE := 0.1
+## Pulled apart past its strength for this share of the last moments
+## (Tuning rope_load_seconds), it parts: a snatch it rides out, an overload
+## it can't.
+const STRAINED := 0.7
 
 var a: RopeEnd
 var b: RopeEnd
@@ -54,10 +60,19 @@ var gives := Callable()
 ## whatever owns it takes some of the line in another way, as a sheet hauls
 ## its sail in; returns what's left of the step for the line itself.
 var hauls := Callable()
+## While it takes the line in that way: what that pulls against, N, and how
+## much of it lies gathered on you from there, m.
+var haul_n := 0.0
+var haul_gathered := 0.0
 
-## Pull this tick, and the load sustained long enough to break things, N.
+## Pull this tick, never past breaking; what holding would have taken; and
+## its pull sustained long enough to break things, N. How much of the last
+## moments its ends have been pulling apart past its strength, 0 to 1: held
+## there long enough, it parts.
 var tension := 0.0
+var asked := 0.0
 var sustained := 0.0
+var straining := 0.0
 var strand: RopeStrand
 var creak: AudioStreamPlayer3D
 ## How strained the creak sounds, 0 to 1, eased toward the strain.
@@ -91,6 +106,9 @@ var _turn_b := Vector3.ZERO
 var _turn_p := Vector3.ZERO
 var _mass := 0.0
 var _beyond := 0.0
+## How far apart its ends were last tick, and whether they're further now.
+var _was_apart := NAN
+var opening := false
 var _h := 1.0 / 60.0
 var _soft := Vector3.ZERO
 var _stop := Vector3.ZERO
@@ -121,6 +139,11 @@ func share() -> float:
 	return sustained / breaking
 
 
+## Whether it parts: pulled apart at its strength long enough, asked for more.
+func parts() -> bool:
+	return straining > STRAINED or sustained > breaking
+
+
 func prepare(h: float, gravity: float) -> void:
 	point_a = (at_a if at_a != null else a).global_position
 	point_b = (at_b if at_b != null else b).global_position
@@ -141,6 +164,9 @@ func prepare(h: float, gravity: float) -> void:
 		normal = along / distance if distance > 1e-5 else Vector3.UP
 		normal_b = normal
 	_beyond = distance - length * (1.0 + max_stretch)
+	asked = 0.0
+	opening = is_finite(_was_apart) and distance > _was_apart
+	_was_apart = distance
 	var arm_a := _ra.cross(normal)
 	var arm_b := _rb.cross(normal_b)
 	_turn_a = body_a.inv_inertia * arm_a
@@ -236,6 +262,15 @@ func solve() -> void:
 		var eased := minf(over, stop)
 		stop -= eased
 		spring = maxf(0.0, spring - (over - eased))
+		change = spring - spring_impulse + stop - stop_impulse
+	asked = (spring + stop) / _h
+	var most_pull := breaking * _h
+	if spring + stop > most_pull:
+		# Past its strength it gives at that, the stop first.
+		var past := spring + stop - most_pull
+		var given := minf(past, stop)
+		stop -= given
+		spring -= past - given
 		change = spring - spring_impulse + stop - stop_impulse
 	spring_impulse = spring
 	stop_impulse = stop

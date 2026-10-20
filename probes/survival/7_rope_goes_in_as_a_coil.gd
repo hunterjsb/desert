@@ -1,6 +1,7 @@
 extends LineProbe
 ## Survival probe 7: rope goes in as a coil. The run's kit is set down beside
-## you. A cable between its crate and its board, plugged in at one end,
+## you. A cable between its light panel and its board, both on its deck,
+## plugged in at one end,
 ## stays out of what you carry; plugged into nothing, it goes in whole and
 ## comes out whole, its other plug following, and a strong cable the same,
 ## and a hose, which stays out too while its other end is in a water socket.
@@ -23,10 +24,10 @@ var suit: Suit
 func run() -> void:
 	await load_lines(1234, true)
 	suit = world.player.suit
-	# A cable from the kit's crate to its board.
+	# A cable from the kit's light panel to its board.
 	var ports: Array[Socket] = []
 	for node in Runs.kit(world):
-		if node is Device and ((node as Device).stats().lift_kg > 0.0 or node is Hoverboard):
+		if node is Hoverboard or node is Device and node.get_meta(&"catalog", &"") == &"light_panel":
 			ports.append_array((node as Device).sockets().filter(func(s: Socket) -> bool: return s.kind == &"port"))
 	var cable := Catalog.cable(world, world.player.global_position + Vector3(-1.0, 0.1, -1.0))
 	for k in 2:

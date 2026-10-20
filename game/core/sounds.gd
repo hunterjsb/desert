@@ -14,8 +14,9 @@ const UI := &"UI"
 ## The radio's, through World: a small speaker's, everything under
 ## radio_highpass_hz cut. Made in code the first time a radio asks for it.
 const RADIO := &"Radio"
-## Far booms, and a vent's roar, each through its own low-pass, which takes
-## more of the high end the further off it is, then muffled with the weather.
+## Far booms and their rolls, and a vent's roar and build, each through its
+## own low-pass, which takes more of the high end the further off it is, then
+## muffled with the weather.
 const BOOMS := &"Booms"
 const VENTS := &"Vents"
 
@@ -51,7 +52,25 @@ const LANDING := preload("res://assets/audio/impact.ogg")
 const HOVER := preload("res://assets/audio/hover.ogg")
 const BOARD_ON := preload("res://assets/audio/board_on.ogg")
 const BOARD_OFF := preload("res://assets/audio/board_off.ogg")
-const LOW_TICK := preload("res://assets/audio/low_tick.ogg")
+# The ride, made here (make_board_sounds.py): a carve's hiss, the wind's
+# rush, a pop off a lip, a landing and a hard one, a crash's knock, a skid
+# biting again, and each make's hum, the issue's the hover's own; the
+# battery's two cues, low and then critical; and two of your body hitting the
+# sand as you tumble.
+const BOARD_CARVE := preload("res://assets/audio/board_carve.wav")
+const BOARD_RUSH := preload("res://assets/audio/board_rush.wav")
+const BOARD_POP := preload("res://assets/audio/board_pop.wav")
+const BOARD_LAND := preload("res://assets/audio/board_land.wav")
+const BOARD_SLAM := preload("res://assets/audio/board_slam.wav")
+const BOARD_KNOCK := preload("res://assets/audio/board_knock.wav")
+const BOARD_BITE := preload("res://assets/audio/board_bite.wav")
+const BOARD_HUMS := {&"board": HOVER, &"racer_board": preload("res://assets/audio/hum_racer.wav"),
+	&"patrol_board": preload("res://assets/audio/hum_patrol.wav"),
+	&"temple_board": preload("res://assets/audio/hum_temple.wav")}
+const BATTERY_LOW := preload("res://assets/audio/battery_low.wav")
+const BATTERY_CRITICAL := preload("res://assets/audio/battery_critical.wav")
+const TUMBLE: Array[AudioStream] = [preload("res://assets/audio/tumble_a.wav"),
+	preload("res://assets/audio/tumble_b.wav")]
 # Devices.
 const SHIELD_BOOT := preload("res://assets/audio/shield_boot.ogg")
 const SHIELD_HUM := preload("res://assets/audio/shield_hum.ogg")
@@ -69,6 +88,10 @@ const RADIO_NIGHT := preload("res://assets/audio/radio_night.ogg")
 const RADIO_STATIC := preload("res://assets/audio/radio_static.ogg")
 const RADIO_TUNE := preload("res://assets/audio/radio_tune.ogg")
 const RADIO_PING := preload("res://assets/audio/radio_ping.ogg")
+# The field receiver: detents, a switch latch and a quiet contact pulse.
+const RECEIVER_SWITCH := preload("res://assets/audio/receiver_switch.wav")
+const RECEIVER_TICK := preload("res://assets/audio/receiver_tick.wav")
+const RECEIVER_PULSE := preload("res://assets/audio/receiver_pulse.wav")
 const RADIO_TONES := preload("res://assets/audio/radio_tones.ogg")
 # The weather station's hold music while there's nothing to report, and the
 # Stoker's furnace song on its frequency.
@@ -80,23 +103,58 @@ const RADIO_EYE_TUNNEL := preload("res://assets/audio/radio_eye_tunnel.ogg")
 # The satellites' own tracks, gonkhub's (the rest still play placeholders).
 const RADIO_SAT_CINDER := preload("res://assets/audio/radio_sat_cinder.ogg")
 const RADIO_SAT_METRONOME := preload("res://assets/audio/radio_sat_metronome.ogg")
+# The living city's chatter, made here (make_city_motifs.py): five motifs of
+# reed tones, by what each tells.
+const CITY_MOTIFS := {&"storm": preload("res://assets/audio/city_storm.wav"),
+	&"tether": preload("res://assets/audio/city_tether.wav"), &"moving": preload("res://assets/audio/city_moving.wav"),
+	&"clear": preload("res://assets/audio/city_clear.wav"), &"position": preload("res://assets/audio/city_position.wav")}
+# Scrapping a wreck, made here (make_scrap_sounds.py): the heat cutter's
+# roar, a plate coming free and landing, a live capacitor bank's crackle and
+# its shock, a breached store's hiss, the scoop and the sealant.
+const CUTTER := preload("res://assets/audio/cutter.wav")
+const PLATE_FREE := preload("res://assets/audio/plate_free.wav")
+const PLATE_LAND := preload("res://assets/audio/plate_land.wav")
+const ARC_LOOP := preload("res://assets/audio/arc_loop.wav")
+const ZAP := preload("res://assets/audio/zap.wav")
+const HISS_LOOP := preload("res://assets/audio/hiss_loop.wav")
+const SCOOP := preload("res://assets/audio/scoop.wav")
+const SEAL := preload("res://assets/audio/seal.wav")
 # Weather.
 const STORM := preload("res://assets/audio/storm.ogg")
 const WIND := preload("res://assets/audio/wind.ogg")
 # What a storm has just laid bare, banging on the wind.
 const CLANG := preload("res://assets/audio/clang.ogg")
-# The ground: a burst's or a pocket's boom, and a live vent's roar.
+# The ground: a burst's or a pocket's boom and the low roll it rolls on with,
+# a live vent's roar, and its deep build as a burst nears.
 const BOOM := preload("res://assets/audio/boom.ogg")
+const BOOM_ROLL := preload("res://assets/audio/boom_roll.ogg")
 const VENT_ROAR := preload("res://assets/audio/vent_roar.ogg")
+const VENT_BUILD := preload("res://assets/audio/vent_build.ogg")
 # Menus: very quiet.
 const MENU_MOVE := preload("res://assets/audio/menu_move.ogg")
 const MENU_CONFIRM := preload("res://assets/audio/menu_confirm.ogg")
 const MENU_BACK := preload("res://assets/audio/menu_back.ogg")
 # The main menu's theme, "Salt", over its silent desert.
 const MENU_THEME := preload("res://assets/audio/menu_theme.ogg")
+# A deed done, made here (make_deed_sound.py): three soft bell notes rising.
+const DEED := preload("res://assets/audio/deed.wav")
 
 ## Small things are heard at their level from this far, m, and fade past it.
 const NEAR := 2.0
+
+static var _loops := {}
+
+
+## A WAV made to loop: the same sound, repeating from its start for as long
+## as it plays. One copy for each, made the first time it's asked for.
+static func looping(stream: AudioStreamWAV) -> AudioStreamWAV:
+	if not _loops.has(stream):
+		var made := stream.duplicate() as AudioStreamWAV
+		made.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		made.loop_begin = 0
+		made.loop_end = int(stream.get_length() * stream.mix_rate)
+		_loops[stream] = made
+	return _loops[stream]
 
 
 ## The radio's bus, made with its high-pass the first time it's asked for.
@@ -122,6 +180,15 @@ static func play(owner: Node, stream: AudioStream, bus := WORLD, db := 0.0) -> v
 	voice.autoplay = true
 	voice.finished.connect(voice.queue_free)
 	owner.add_child.call_deferred(voice)
+
+
+## A battery running low, "do-doo", from beside `owner`; and critical, lower.
+static func battery_low(owner: Node) -> void:
+	play(owner, BATTERY_LOW)
+
+
+static func battery_critical(owner: Node) -> void:
+	play(owner, BATTERY_CRITICAL)
 
 
 ## Heard from a point in the world, and from `owner` as it moves.

@@ -6,8 +6,9 @@ extends Node
 ## dev console's forget_deeds(). Every unlock goes through unlock() and every
 ## deed through deed(), so cloud sync and achievements attach there and
 ## nowhere else. Beside them it keeps the origin you last came as, whose kit
-## the main menu shows. A profile from another version is refused with a
-## reason and left untouched on disk.
+## the main menu shows, and what's new for the menu to mark until you've
+## looked. A profile from another version is refused with a reason and left
+## untouched on disk.
 
 signal unlocked(id: String)
 signal discovered(kind: String)
@@ -36,6 +37,9 @@ var _deeds := {}
 var _toward := {}
 ## For a deed that's a number to reach, the best so far, across every run.
 var _best := {}
+## Not looked at yet: each deed done, by its id, and each start a deed
+## opened, by start().
+var _new := {}
 var _origin := ""
 ## The frequencies you've marked on the radio, low to high: {khz, name, color
 ## (as html)}. Kept across runs, as what you've learned of the dial.
@@ -125,7 +129,13 @@ func deed(id: String, run := {}) -> bool:
 		return false
 	var record := run.duplicate()
 	record["at"] = Time.get_unix_time_from_system()
+	var opens := Deeds.opens(id).filter(func(kit: Kit) -> bool: return not kit.is_open_to(self))
 	_deeds[id] = record
+	_new[id] = true
+	# A start waiting on more deeds than this one isn't opened by it yet.
+	for kit: Kit in opens:
+		if kit.is_open_to(self):
+			_new[start(kit.id)] = true
 	_write()
 	deed_done.emit(id)
 	return true
@@ -180,7 +190,26 @@ func forget_deeds() -> void:
 	_deeds.clear()
 	_toward.clear()
 	_best.clear()
+	_new.clear()
 	_write()
+
+
+## A deed done, or a start a deed opened (start()), not looked at yet.
+func is_new(key: String) -> bool:
+	_load()
+	return _new.has(key)
+
+
+## Looked at, so no longer new.
+func seen(key: String) -> void:
+	_load()
+	if _new.erase(key):
+		_write()
+
+
+## A start's key for is_new() and seen(), by its id.
+static func start(id: StringName) -> String:
+	return "start/" + str(id)
 
 
 ## Unlocked, a deed done, or a kind found.
@@ -219,6 +248,7 @@ func reset() -> void:
 	_deeds.clear()
 	_toward.clear()
 	_best.clear()
+	_new.clear()
 	_origin = ""
 	_marks.clear()
 	_loaded = true
@@ -238,7 +268,16 @@ func _load() -> void:
 	_taught = data.get("taught", {})
 	_deeds = data.get("deeds", {})
 	_toward = data.get("toward", {})
+	# A place counted under an id since renamed counts under the new one.
+	for id: String in _toward:
+		var counted: Dictionary = _toward[id]
+		for part: String in counted.keys():
+			var now := str(History.RENAMED.get(StringName(part), part))
+			if now != part:
+				counted[now] = counted.get(now, counted[part])
+				counted.erase(part)
 	_best = data.get("best", {})
+	_new = data.get("new", {})
 	_origin = str(data.get("origin", ""))
 	_marks = data.get("marks", [])
 
@@ -246,4 +285,4 @@ func _load() -> void:
 func _write() -> void:
 	if refused == "":
 		SaveFile.write(path(), KIND, VERSION, {"unlocks": _unlocks, "found": _found, "taught": _taught,
-			"deeds": _deeds, "toward": _toward, "best": _best, "origin": _origin, "marks": _marks})
+			"deeds": _deeds, "toward": _toward, "best": _best, "new": _new, "origin": _origin, "marks": _marks})

@@ -32,7 +32,7 @@ func load_sailing(run_seed := 1234) -> void:
 ## A deck two pieces by two at a place, facing `heading` (engine x, z), on
 ## `carried` under every piece (skates, a board plate or hover trays), a mast
 ## with its sail on the front piece to `windward` (1 its left, -1 its right),
-## a crate with two batteries behind it, and unless `cleated` is false the
+## two big batteries and a battery in a frame behind it, and unless `cleated` is false the
 ## sheet made fast on the deck's own hook, so it holds its trim: a camp left
 ## to sail itself.
 func rig(at: Vector3, heading: Vector2, carried := &"skates", windward := 1, cleated := true) -> Chassis:
@@ -45,15 +45,14 @@ func rig(at: Vector3, heading: Vector2, carried := &"skates", windward := 1, cle
 		deck.join(Catalog.device(&"chassis") as Chassis, ring(deck, each[0], each[1]), 0)
 	for i in 4:
 		fit_part(deck, carried)
-	mast = Catalog.device(&"mast") as Mast
-	world.content.add_child(mast)
-	fit_part(mast, &"sail")
-	deck.mount(mast, socket_on(deck, Vector2i(left, 0), &"deck"))
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	fit_part(crate, &"battery")
-	fit_part(crate, &"battery")
-	deck.mount(crate, socket_on(deck, Vector2i(left, 1), &"deck"))
+	mast = Rig.make([&"mast", [&"sail"]]) as Mast
+	# Its boom swung back over the deck, as a sail mount's always had it.
+	Stick.put(deck, Rig.piece(deck, Vector2i(left, 0)), Chassis.TOP, Vector2.ZERO, PI, mast)
+	# The ballast in an open frame, where the crate stood and catching the wind as it did.
+	var behind := Rig.piece(deck, Vector2i(left, 1))
+	Stick.put(deck, behind, Chassis.TOP, Vector2.ZERO, 0.0, Catalog.part(&"frame"))
+	for place: Vector2 in [Vector2(-0.25, 0.0), Vector2(0.0, 0.0), Vector2(0.25, 0.0)]:
+		Stick.put(deck, behind, Chassis.TOP, place, 0.0, Catalog.part(&"battery" if place.x == 0.0 else &"big_battery"))
 	if cleated:
 		fit_part(deck, &"hook")
 		Line.between(world, mast._tie(), deck.free_tie(deck.global_position), 6.0)
@@ -125,16 +124,16 @@ static func ground(way: Vector2) -> Vector3:
 ## it sails where its rig takes it.
 var course := Vector2.ZERO
 var helm := 300.0
-## Tending the sheet as a sailor would, reeling the sail to meet the wind at
-## this angle of attack, rad, and easing it as the camp starts to heel; 0
-## leaves the trim be.
+## Tending the sheet as a sailor would, easing or hauling it by how far the
+## sail meets the wind past this angle of attack, rad, and easing it as the
+## camp starts to heel; 0 leaves the trim be.
 var tending := 0.0
 
 
 func _steer() -> void:
 	if tending > 0.0 and is_instance_valid(mast) and mast.sail() != null:
 		var meet := tending * clampf(1.0 - (roll() - 2.0) / 4.0, 0.0, 1.0)
-		var want := clampf(absf(mast.boom) + absf(mast.attack) - meet, 0.0, Mast.MOST)
+		var want := clampf(mast.trimmed_to() + absf(mast.attack) - meet, 0.0, Mast.MOST)
 		mast.trim = lerpf(mast.trim, 2.0 * Mast.BOOM * sin(want * 0.5), 0.05)
 	if course == Vector2.ZERO or deck == null:
 		return
@@ -176,3 +175,51 @@ func roll() -> float:
 ## (1) or right (-1), turned `off` degrees toward the wind.
 func heading(windward := 1, off := 0.0) -> Vector2:
 	return (across * windward).rotated(-deg_to_rad(off) * windward)
+
+
+## The Varran settler's rig as his kit builds it, floating downwind of you
+## toward `way` and lying across its lines as it flies, its sail up: a bow
+## line from each of its bow hooks and its sheet at your waist, laid as the
+## kit lays them, and you on a board facing `way`, still. It's turned to lie
+## with the hook on its side `windward` names nearer you (1, the wind on
+## your left). The lines: that bow line, the sheet, the other bow line.
+## An outboard passing lane lets overrun probes test rope loads without
+## racing into the mast; its ends are laid there, never teleported.
+func varran(way: Vector2, windward := 1, passing_lane := 0.0) -> Array[Line]:
+	var kit := Kit.named(&"varran")
+	var built := Rig.build(world.content, kit.assembled.rig.rig, 1.0)
+	deck = built.deck
+	mast = built.named.mast
+	var toward := downwind.rotated(signf(downwind.cross(way)) * deg_to_rad(45.0))
+	deck.global_transform = Transform3D(Basis(Vector3.UP, atan2(toward.x, toward.y) - windward * PI * 0.5),
+		open + Vector3.UP)
+	set_down(deck)
+	var player := world.player
+	var at := open - ground(toward) * 7.0
+	if passing_lane != 0.0:
+		var side := way.orthogonal()
+		if (-toward).dot(side) < 0.0:
+			side = -side
+		at += ground(side) * passing_lane
+	at.y = world.height_under(at) + 0.1
+	world.teleport(player, Transform3D(Basis(Vector3.UP, atan2(-way.x, -way.y)), at))
+	player.velocity = Vector3.ZERO
+	await physics_frames(10)
+	var board := Catalog.device(&"board")
+	world.content.add_child(board)
+	fit_part(board, &"battery")
+	board.global_position = player.global_position + Vector3.UP * 0.2
+	await physics_frames(2)
+	var hooks: Array[Socket] = []
+	for socket in deck.sockets():
+		if socket.kind == &"tie" and socket.part == null:
+			hooks.append(socket)
+	hooks.sort_custom(func(a: Socket, b: Socket) -> bool:
+		return deck.to_local(a.global_position).x < deck.to_local(b.global_position).x)
+	var lines: Array[Line] = [Line.to_waist(world, hooks[0] if windward > 0 else hooks[-1], kit.waist[&"bow"]),
+		Line.to_waist(world, mast._tie(), kit.waist[&"mast"]),
+		Line.to_waist(world, hooks[-1] if windward > 0 else hooks[0], kit.waist[&"bow_right"])]
+	player.get_on(board)
+	await physics_frames(2)
+	hoist(20.0)
+	return lines

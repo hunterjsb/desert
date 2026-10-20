@@ -1,9 +1,9 @@
 extends DeviceProbe
 ## Water probe 2: a hose holds, until it pops. A floating planter hosed to a
-## staked condenser stays on the end of its hose in a 15 m/s wind. In a 40 m/s
+## condenser on a staked plate stays on the end of its hose in a 15 m/s wind. In a 40 m/s
 ## storm wind the same hose pops an end out of a water socket rather than
-## snapping, and the planter blows away; a rope beside it, under the same
-## pull, holds its planter.
+## snapping, and the planter blows away; a rope beside it, tied to its
+## plate, under the same pull, holds its planter.
 
 const MODERATE := 15.0
 const STORM := 40.0
@@ -63,22 +63,25 @@ func _blown(seconds: float, hosed: Dictionary, roped: Dictionary) -> Dictionary:
 	return seen
 
 
-## A staked condenser and a floating planter 3 m downwind of it, on a hose
-## from water socket to water socket, or tied hook to hook instead if `tied`.
+## A condenser on a staked plate and a floating planter 3 m downwind of it,
+## on a hose from water socket to water socket, or tied from the plate's
+## hook to the planter's instead if `tied`.
 func _rig(tied: bool, offset: Vector3, downwind: Vector3) -> Dictionary:
-	var condenser := spawn_device(&"condenser", 0.0, 0.35, false)
-	condenser.global_position += offset
-	condenser.freeze = true
+	var plate := spawn_device(&"chassis", 0.0, 0.07, false) as Chassis
+	plate.global_position += offset
+	plate.freeze = true
+	var condenser := Catalog.device(&"condenser") as Device
+	Stick.put(plate, plate, Chassis.TOP, Vector2.ZERO, 0.0, condenser)
 	var planter := spawn_device(&"planter", 0.0, 1.2, false)
 	planter.global_position = condenser.global_position + downwind * 3.0 + Vector3.UP * 1.2
 	fit_part(planter, &"hover_tray")
 	fit_part(planter, &"battery")
 	var out := {"condenser": condenser, "planter": planter}
 	if tied:
-		fit_part(condenser, &"hook")
+		fit_part(plate, &"hook")
 		fit_part(planter, &"hook")
 		var a := planter.free_tie(condenser.global_position)
-		out.line = Line.between(world, a, condenser.free_tie(a.global_position), 0.3)
+		out.line = Line.between(world, a, plate.free_tie(a.global_position), 0.3)
 	else:
 		out.hose = Scenarios.plumb(world, condenser, planter)
 	return out

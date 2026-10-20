@@ -75,7 +75,7 @@ Power boxes come in sizes and era models. Nomads have none; they use whatever ol
 
 | Era | Character |
 | --- | --- |
-| Colonial (Tilg/RMC) | Big clean industrial cabinet, many bays, precise readouts, full Console integration; rare and heavy |
+| Colonial (TILG consignment; legacy RMC contractor mark) | Big clean industrial cabinet, many bays, precise readouts, full Console integration; rare and heavy |
 | Skimmer | Bodged rack of mismatched bays, some dead; high capacity, shared pool only, no priority control |
 | Second age | Temple-made, few bays, ornate casing; works, but crudely |
 | Modern (company issue) | Small, light, about four bays, clean but built to a budget |

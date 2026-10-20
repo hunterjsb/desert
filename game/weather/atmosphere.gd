@@ -18,6 +18,8 @@ const OPEN_HZ := 20000.0
 ## easing in and out over about this many seconds.
 const HUSH := 0.45
 const HUSH_SECONDS := 2.0
+## Stood in a plume's dust, its grit is this share of a storm's, and its parcels.
+const PLUME_GRIT := Vector2(0.7, 0.5)
 
 var _streamers: GPUParticles3D
 var _grit: GPUParticles3D
@@ -55,12 +57,12 @@ func _exit_tree() -> void:
 ## Called each tick. wind is the open air's at the player, slowed in a
 ## dune's lee but not by a bubble;
 ## sheltered is 1 when the camera is inside a bubble; seen is how far into the
-## storm's dust the camera is (0 to 1), as if no bubble stood; near is how
-## close the nearest face is (0 far, 1 here); light is what the dust grains
-## catch; sigma the storm's extinction round the camera; running is false
-## while the clock is stopped.
+## storm's dust the camera is (0 to 1), as if no bubble stood; plume how far
+## into a plume's; near is how close the nearest face is (0 far, 1 here);
+## light is what the dust grains catch; sigma the dust's extinction round the
+## camera; running is false while the clock is stopped.
 func show_weather(camera: Camera3D, ground: float, wind: Vector3, sheltered: float, seen: float,
-		near: float, light: Vector3, sigma: float, running: bool, delta: float) -> void:
+		plume: float, near: float, light: Vector3, sigma: float, running: bool, delta: float) -> void:
 	var p := camera.global_position
 	var blow := wind.length()
 	var heading := wind / blow if blow > 0.01 else Vector3.FORWARD
@@ -81,9 +83,11 @@ func show_weather(camera: Camera3D, ground: float, wind: Vector3, sheltered: flo
 	_grit.global_position = p - heading * blow * _grit.lifetime * 0.5
 	_puffs.global_position = p - heading * blow * _puffs.lifetime * 0.5
 	_ratio(_streamers, smoothstep(0.1, 0.5, near) * (1.0 - 0.6 * seen))
-	# Grit rides every strong wind a little, thickens as a face nears, fills a storm.
-	_ratio(_grit, maxf(maxf(seen, 0.1 * smoothstep(0.55, 0.95, near)), clampf((blow - 6.0) / 60.0, 0.0, 0.1)))
-	_ratio(_puffs, seen)
+	# Grit rides every strong wind a little, thickens as a face nears, fills a
+	# storm, and a plume's dust as you stand in it, its parcels tearing past.
+	_ratio(_grit, maxf(maxf(maxf(seen, PLUME_GRIT.x * plume), 0.1 * smoothstep(0.55, 0.95, near)),
+		clampf((blow - 6.0) / 60.0, 0.0, 0.1)))
+	_ratio(_puffs, maxf(seen, PLUME_GRIT.y * plume))
 	# The roar grows as a face nears and fills everything once inside. A
 	# shell takes its edge off at once: inside is a place.
 	var through := lerpf(1.0, MUFFLED_GAIN, sheltered)

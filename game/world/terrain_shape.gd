@@ -163,6 +163,12 @@ func dunes(x: float, z: float) -> float:
 	return land * _land_height + _ridges(u, v, _sand_on(x, z, land))
 
 
+## The run's long-term wind, which the dunes face: downwind, a unit vector in
+## world x and z.
+func downwind() -> Vector2:
+	return _down
+
+
 ## How much sand lies here, 0 to 1: dune seas where it's high.
 func sand_at(x: float, z: float) -> float:
 	return _sand_on(x, z, _land.get_noise_2d(x, z))
@@ -204,6 +210,50 @@ func _ridge_set(u: float, v: float, meander: FastNoiseLite, rise: float, bare: f
 	# so the period's wrap is seamless. Rounding shrinks with the ridge, so
 	# ridges fading out leave no step behind.
 	return _rounded_max0(maxf(crest, -span * t * _slip), _toe_round * clampf(rise / 0.05, 0.02, 1.0))
+
+
+## The dunes' shading at a world point standing at `ground`, m, which the
+## sand shader reads per vertex (CUSTOM0), baked as its ground is built: x,
+## its height over its dunes' mean, m, so crests read lighter and hollows
+## darker; y and z, the tangents of the horizon the crests either side make
+## for it, looking up the wind and down it across them, which shade it and
+## hide its sky; w, how far those crests turn from the dunes' downwind,
+## radians. Read from the ridges as _ridges lays them, each set's period
+## taken as repeating here, its crests as high as this one's.
+func shade(x: float, z: float, ground: float) -> Vector4:
+	var land := _land.get_noise_2d(x, z)
+	var u := x * _down.x + z * _down.y
+	var v := z * _down.x - x * _down.y
+	var sand := _sand_on(x, z, land)
+	var saddle := 1.0 - SADDLE_DEPTH + SADDLE_DEPTH * _saddle.get_noise_2d(u * WANDER_STRETCH, v)
+	var bare := lerpf(BARE.x, BARE.y, sand)
+	var h := ground - land * _land_height
+	var s := _crests(u, v, _meander, _rise * sand * saddle, bare, h)
+	var fork := smoothstep(0.05, 0.45, _fork_patch.get_noise_2d(u, v)) * sand
+	if fork > 0.0:
+		var f := _crests(u + 0.5 * _spacing, v, _fork_meander, _rise * fork * saddle, bare, h)
+		s = Vector4(maxf(s.x, f.x), maxf(s.y, f.y), maxf(s.z, f.z), s.w)
+	# A ridge's mean over its period: the triangle of ramp and slip face.
+	return Vector4(h - 0.5 * (1.0 - bare) * maxf(s.x, 0.0), s.y, s.z, s.w)
+
+
+## One ridge set's crest height here, and the tangents of the crests either
+## side as seen from height h, up the wind and down it, along the crests'
+## normal; and that normal's turn from downwind. As _ridge_set lays them.
+func _crests(u: float, v: float, meander: FastNoiseLite, rise: float, bare: float, h: float) -> Vector4:
+	var su := u * WANDER_STRETCH
+	var w := meander.get_noise_2d(su, v) * _wander
+	var wu := 1.0 + meander.get_noise_2d(su + WANDER_STRETCH, v) * _wander - w
+	var wv := meander.get_noise_2d(su, v + 1.0) * _wander - w
+	var span := _spacing / sqrt(wu * wu + wv * wv)
+	var p := (u + w) / _spacing
+	var t := p - floorf(p)
+	# Where the windward ramp meets the slip face, and how high, rounded.
+	var crest := (_slip + bare * rise) / (rise + _slip)
+	var top := span * (crest - bare) * rise - _crest_round * 0.25
+	var behind := t - crest + (1.0 if t < crest else 0.0)
+	var ahead := crest - t + (1.0 if t >= crest else 0.0)
+	return Vector4(top, (top - h) / maxf(behind * span, 1.0), (top - h) / maxf(ahead * span, 1.0), atan2(wv, wu))
 
 
 ## min, and max with 0, with the corner rounded over k: a blend of the two

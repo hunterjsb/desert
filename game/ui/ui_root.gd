@@ -22,12 +22,15 @@ var main: Main
 var dev_console: DevConsole
 ## Open menus, the topmost last.
 var _menus: Array[Words] = []
+## The exact word, card or search field to return to after the console.
+var _console_focus: WeakRef
 var _fade: Panel
 var _fading := false
 var _note: Label
 var _note_fading: Tween
 var _how_to: RichTextLabel
 var _how_to_fading: Tween
+var _badge: DeedBadge
 
 
 func _enter_tree() -> void:
@@ -65,11 +68,21 @@ func _ready() -> void:
 	_how_to.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_how_to.modulate.a = 0.0
 	add_child(_how_to)
+	_badge = DeedBadge.new()
+	add_child(_badge)
+	# The deeds' and the creative menu's pictures drawn now, before the world:
+	# drawn later in a session they come out as slivers.
+	for id: StringName in ItemIcons.LOOKS.keys() + CreativeGrid.ids():
+		ItemIcons.of(get_tree(), CreativeGrid.ROLLED.get(id, id))
 	dev_console = DevConsole.new()
 	dev_console.ui = self
 	add_child(dev_console)
 	add_child(_fade)
 
+
+func _process(_delta: float) -> void:
+	# Teaching belongs to the run; covered hints compete with a page's title.
+	_how_to.visible = not holds_input()
 
 func is_open() -> bool:
 	return not _menus.is_empty()
@@ -85,6 +98,11 @@ func holds_input() -> bool:
 func note(text: String) -> void:
 	_note.text = text
 	_note_fading = _shown_for(_note, _note_fading, NOTE_SECONDS)
+
+
+## A deed just done, its badge shown a moment, after any still showing.
+func badge(id: StringName) -> void:
+	_badge.add(id)
 
 
 ## A how-to, the first time this profile meets what it's about and never
@@ -109,24 +127,64 @@ func _shown_for(words: Control, fading: Tween, seconds: float) -> Tween:
 	return tween
 
 
-## The console over a run with nothing else open, or over the main menu
-## alone for what needs no world: typing goes to it, over every menu.
+## The console over any menu or the run: typing goes to it alone.
 func open_dev_console() -> void:
-	if main == null or (is_open() if main.in_run() else not (_menus.size() == 1 and top().root)):
+	if main == null or _fading or dev_console.visible:
 		return
+	var focused := get_viewport().gui_get_focus_owner()
+	_console_focus = weakref(focused) if focused != null else null
+	if is_open():
+		top().cover()
 	move_child(dev_console, -1)
 	move_child(_fade, -1)
 	dev_console.open()
 	Controls.free_mouse(true)
 
 
+## The creative menu over a run, in place of the console if it's up. Opening
+## it makes the run a dev run, whose deeds never count, and the first time it
+## says so under its grid.
+func open_creative() -> void:
+	var world := main.world() if main != null else null
+	if world == null or is_open():
+		return
+	var was := world.counts_deeds
+	world.counts_deeds = false
+	open(creative(world, DevConsole.DEV_RUN if was else ""))
+
+
+## Every part and device by group, to take straight into your hands.
+func creative(world: World, line := "") -> Words:
+	var menu := _menu("Creative")
+	menu.set_meta(&"creative", true)
+	CreativeGrid.fill(menu, world, close_top).say(line)
+	return menu
+
+
 ## Back to the run, or to the menu it was opened over.
 func close_dev_console() -> void:
 	dev_console.close()
 	if is_open():
-		top().highlight()
+		if top().has_meta(&"origins"):
+			# Profile commands can unlock starts while their list is covered.
+			var old := _menus.pop_back() as Words
+			var at := old._was
+			remove_child(old)
+			old.queue_free()
+			var menu := origins()
+			menu.open_on(at)
+			_menus.append(menu)
+			add_child(menu)
+			move_child(menu, _fade.get_index())
+			top().highlight()
+		else:
+			top().uncover()
+			var focused := _console_focus.get_ref() as Control if _console_focus != null else null
+			if is_instance_valid(focused) and focused.is_visible_in_tree():
+				focused.grab_focus()
 	elif main != null and main.in_run():
 		Controls.free_mouse(false)
+	_console_focus = null
 
 
 func is_fading() -> bool:
@@ -162,9 +220,11 @@ func close_top() -> void:
 		Controls.free_mouse(false)
 
 
-## Everything open, the console too: the run is changing over, or is over.
+## Everything open, the console too, and any deed's badge: the run is
+## changing over, or is over.
 func close_all() -> void:
 	dev_console.close()
+	_badge.clear()
 	while not _menus.is_empty():
 		var menu: Words = _menus.pop_back()
 		remove_child(menu)
@@ -204,7 +264,13 @@ func fade(to_black: bool) -> void:
 func _input(event: InputEvent) -> void:
 	if _fading:
 		get_viewport().set_input_as_handled()
-	elif dev_console.visible and (event.is_action_pressed(&"console") or event.is_action_pressed(&"ui_cancel")):
+	elif event.is_action_pressed(&"console"):
+		if dev_console.visible:
+			close_dev_console()
+		else:
+			open_dev_console()
+		get_viewport().set_input_as_handled()
+	elif dev_console.visible and event.is_action_pressed(&"ui_cancel"):
 		back()
 		get_viewport().set_input_as_handled()
 
@@ -213,8 +279,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"ui_cancel"):
 		back()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed(&"console") and not dev_console.visible:
-		open_dev_console()
+	elif event.is_action_pressed(&"creative") and not dev_console.visible:
+		if is_open() and top().has_meta(&"creative"):
+			close_top()
+		else:
+			open_creative()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"fullscreen"):
 		# The same switch as Options', so either shows how it stands.
@@ -226,7 +295,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## The title, and Resume (with a save), New game, Deeds, Options, Quit, over
-## the live desert, and the music's switch in the bottom left.
+## the live desert, and the music's switch in the bottom left. Deeds is
+## marked while a deed done hasn't been looked at there.
 func show_main_menu(note := "") -> void:
 	close_all()
 	Dev.show_hint(false)
@@ -238,7 +308,7 @@ func show_main_menu(note := "") -> void:
 	if main.has_save():
 		menu.add("Resume", func() -> void: open(resume_view()))
 	menu.add("New game", _new_game)
-	menu.add("Deeds", _deeds)
+	menu.mark_new(menu.add("Deeds", _deeds), func() -> bool: return not Deeds.unseen(main.profile()).is_empty())
 	menu.add("Options", func() -> void: open(options()))
 	menu.add("Quit", main.quit)
 	menu.add_corner(func() -> bool: return Settings.music, func() -> void:
@@ -320,22 +390,30 @@ func system_menu() -> Words:
 ## Who the new run comes as, down the left, the origin last played
 ## highlighted, so the piece on show stays as it stands aside; each with a
 ## few words under it, and one still locked shown as ????. The piece aside
-## and the gear under it follow the highlight.
+## and the gear under it follow the highlight. A start a deed has opened is
+## marked until it's been highlighted.
 func origins() -> Words:
 	var menu := _menu()
+	menu.set_meta(&"origins", true)
 	var all := Kit.origins()
+	var profile := main.profile()
 	menu.open_on(all.find(main.last_kit()))
 	for kit in all:
 		# The Surveyor is the game as meant; the starts deeds open are variations on it.
 		if kit != all[0]:
 			menu.set_apart()
-		if kit.is_open_to(main.profile()):
-			menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)
+		if kit.is_open_to(profile):
+			var word := menu.add(kit.label, func() -> void: open(modes(kit)), Callable(), kit.about)
+			if profile != null:
+				menu.mark_new(word, profile.is_new.bind(profile.start(kit.id)))
 		else:
 			menu.add("????", Callable())
 	menu.moved.connect(func(at: int) -> void:
 		menu.shows = all[at].id
-		menu.set_aside(gear(all[at])))
+		menu.set_aside(gear(all[at]))
+		if profile != null:
+			profile.seen(profile.start(all[at].id))
+		menu.refresh())
 	return menu
 
 
@@ -369,6 +447,8 @@ func options() -> Words:
 	var menu := _menu("Options")
 	menu.add(func() -> String: return "Volume   %d%%" % roundi(Settings.volume * 100.0),
 		_change.bind(1, &"volume", true), _change.bind(&"volume", false))
+	menu.add(func() -> String: return "Radio voice   %s" % _on(Settings.radio_voice),
+		_change.bind(1, &"radio_voice", true), _change.bind(&"radio_voice", false))
 	menu.add(func() -> String: return "Fullscreen   %s" % _on(Settings.fullscreen),
 		_change.bind(1, &"fullscreen", true), _change.bind(&"fullscreen", false))
 	menu.add(func() -> String: return "Vsync   %s" % _on(Settings.vsync),
@@ -432,6 +512,8 @@ func _change(by: int, what: StringName, wrap: bool) -> void:
 			Settings.volume = (0.0 if to > 1.0 else to) if wrap else clampf(to, 0.0, 1.0)
 		&"fullscreen":
 			Settings.fullscreen = not Settings.fullscreen
+		&"radio_voice":
+			Settings.radio_voice = not Settings.radio_voice
 		&"vsync":
 			Settings.vsync = not Settings.vsync
 		&"render_scale":

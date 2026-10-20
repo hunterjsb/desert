@@ -44,6 +44,7 @@ var length: float
 var a: Node3D
 var b: Node3D
 var points := PackedVector3Array()
+var _previous := PackedVector3Array()
 var _velocity := PackedVector3Array()
 var _ground := PackedFloat32Array()
 var _slope := PackedVector2Array()
@@ -136,11 +137,23 @@ func set_length(to: float) -> void:
 
 ## Draws both ends exactly at their rings this frame; a line hanging as its
 ## rope says is hung again between them. Drawn only: the next tick steps on
-## from its own points, since how many frames fall between ticks depends on
-## the machine, and a snap leaves its loose ends where those points are.
-func pin_ends(at_a: Vector3, at_b: Vector3) -> void:
+## from its own points. Slack links interpolate between ticks and follow
+## the ends' displayed poses; a snap still uses the simulation's positions.
+func pin_ends(at_a: Vector3, at_b: Vector3, fraction := 1.0) -> void:
 	var shown := points.duplicate()
 	var last := shown.size() - 1
+	if not _hanging and _previous.size() == shown.size():
+		for i in shown.size():
+			shown[i] = _previous[i].lerp(points[i], fraction)
+		# Both ends follow their visible rings; carry that correction along
+		# the chain without changing any of the solver's positions.
+		var move_a := at_a - shown[0]
+		var move_b := at_b - shown[last]
+		for i in range(1, last):
+			shown[i] += move_a.lerp(move_b, float(i) / last)
+			var floor_y := _floor(i, shown[i])
+			if is_finite(floor_y):
+				shown[i].y = maxf(shown[i].y, floor_y)
 	shown[0] = at_a
 	shown[last] = at_b
 	if _hanging:
@@ -148,7 +161,61 @@ func pin_ends(at_a: Vector3, at_b: Vector3) -> void:
 			var p := _hung(at_a, at_b, _bow, float(i) / last)
 			p.y = maxf(p.y, _floor(i, p))
 			shown[i] = p
+	else:
+		shown = _keep_arc(shown)
 	_upload(shown, _bulges(shown))
+
+
+## Blending two bent chains can shorten their arc. Adjust only the bend,
+## not the visible rings or the physical chain, to keep this tick's length.
+func _keep_arc(shown: PackedVector3Array) -> PackedVector3Array:
+	if shown == points:
+		return shown
+	var target := maxf(_arc(points), shown[0].distance_to(shown[-1]))
+	var arc := _arc(shown)
+	if absf(arc - target) < 1e-4:
+		return shown
+	var low := 0.0
+	var high := 1.0
+	var candidate := shown.duplicate()
+	if arc < target:
+		for i in 4:
+			high *= 2.0
+			_bend(shown, high, candidate)
+			if _arc(candidate) >= target:
+				break
+		# A perfectly straight interpolated chain has no bend to enlarge.
+		if _arc(candidate) < target:
+			return shown
+	for i in 12:
+		var middle := (low + high) * 0.5
+		_bend(shown, middle, candidate)
+		var length_here := _arc(candidate)
+		if absf(length_here - target) < 1e-4:
+			break
+		if length_here < target:
+			low = middle
+		else:
+			high = middle
+	return candidate
+
+
+func _bend(through: PackedVector3Array, scale_by: float, bent: PackedVector3Array) -> void:
+	var last := bent.size() - 1
+	for i in range(1, last):
+		var chord := through[0].lerp(through[last], float(i) / last)
+		var at := chord + (through[i] - chord) * scale_by
+		var floor_y := _floor(i, at)
+		if is_finite(floor_y):
+			at.y = maxf(at.y, floor_y)
+		bent[i] = at
+
+
+static func _arc(through: PackedVector3Array) -> float:
+	var arc := 0.0
+	for i in through.size() - 1:
+		arc += through[i].distance_to(through[i + 1])
+	return arc
 
 
 func let_go(end: Node3D) -> void:
@@ -163,6 +230,8 @@ func shift(by: Vector3) -> void:
 	_bulged_through.clear()
 	for i in points.size():
 		points[i] += by
+		if _previous.size() == points.size():
+			_previous[i] += by
 		# The ground read under a point stays where it was in the world.
 		_sampled[i] += Vector2(by.x, by.z)
 
@@ -184,6 +253,7 @@ func drawn_length() -> float:
 ## One physics tick: wind is the felt wind at the strand, sag how far its rope
 ## says its middle hangs (NAN: by its length alone).
 func step(h: float, wind: Vector3, sag := NAN) -> void:
+	_previous = points.duplicate()
 	_age += h
 	var t := _age
 	var n := points.size()
@@ -389,6 +459,7 @@ func _floor(i: int, p: Vector3) -> float:
 
 func _fit() -> void:
 	var n := points.size()
+	_previous = points.duplicate()
 	_rest = length / (n - 1)
 	_velocity.resize(n)
 	_ground.resize(n)

@@ -150,6 +150,12 @@ has them, along the line toward Tu, and the terrain is generated around them, hi
 ([World generation by layers](#world-generation-by-layers-agreed-session-4-part-4-not-built)). The
 exception to unloading stays: what you changed in one is kept whatever the distance.
 
+**Session 5's places (Agreed and Idea).** [Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)
+adds no landmark to the eight. It puts the Counting House in Crakeside, in Port Morgan's ruins; a sketch of
+Wow deep under a place not yet chosen (not Facility 4: Hunter's ruling); and Halfrise's walls ringed with singing-stone cradles, with
+Sister's stone ([Salvage & ruins](salvage-and-ruins.md#session-5s-finds-and-places-agreed-and-idea-not-built)
+has them). Whether the Counting House is a part of Port Morgan or a landmark of its own is open.
+
 ## World generation by layers (Agreed, session 4, part 4; not built)
 
 *Designed whole in [the world system](../world-system.md), which is the contract for building it. Its
@@ -407,6 +413,71 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   64 MB of its memory. Streaming stayed within its line in `look/stream` (1.54 ms
   against 2.0; under the same load master's own run went over it, at 3.6).
 
+### Trail relief follow-up (2026-10-19; candidate built)
+
+Hunter approved the current sand and asked for trails of the same quality. The
+[art brief](../art-direction.md#playtest-follow-up-hunter-2026-10-19-agreed-in-progress)
+calls for compressed floors, loose rims, nearby relief and stable marks in motion.
+The map, fill clock, world anchoring and authoritative ground remain the same.
+
+- **The floor and lip have a signed height for shading.** A full boot mark is drawn
+  8 cm deep; only pressure above a full step gets the board's extra depression,
+  reaching 24 cm at the deepest sideways skid. A loose lip rises up to 3 cm round
+  ordinary marks and 5 cm round deep skids. Soft stamp curvature reaches a full lip
+  at `track_rim_shape` (0.08). These values live in Tuning's Tracks group.
+- **Nearby relief is bounded.** One view-ray lookup shifts the sampled floor within
+  8 m, fading from 2 m, capped at one map texel so a grazing view stays beside objects
+  resting on the unchanged physical ground. It does not move the physical floor or
+  the rendered silhouette. A resting board crossing a deep skid is in `look/tracks`.
+- **The walls receive light as walls.** Central differences of the signed profile
+  shape both sides of a loose rim. Local wall horizons shade the floor from a low sun;
+  their hidden sky replaces a blanket darkening over a wide floor. Compacted sand loses
+  up to 16% of its colour, rather than 32%. Shallow hover wakes retain more ripples;
+  full footsteps and deep skids flatten them. Aged marks keep their trodden shading.
+- **Detail costs only near marks.** Eight extra cached map reads shape the rim, four
+  wider reads find a skid's walls, and one reads the shifted floor; these are gated
+  to nearby marked ground. Bare sand skips them. The map stays 64 MB, and stamping,
+  filling, residency and collision are unchanged.
+
+**Checks.** The focused tracks and origin-shift probes pass. Paired captures against
+accepted sand commit `5e67998` cover fresh and storm-aged walking, hover wakes, a
+cross-lit controlled board skid and dragging, in low sun, clear day and a storm-night
+lamp. The skid includes a resting board for contact checks. Bare sand in a 500×350 px
+foreground region matches exactly in the fully filled before/after frames at low sun
+and clear day. The helper supports `--before`, light/subject filters, scalar `--try`
+profiles and a quick `--skid-only` mode.
+
+**GPU cost against the accepted sand**, at 1920×1080 on an RTX 3070, from nine paired
+rounds of 60 measured frames after 30 settling frames, reversing the order each round:
+
+| View | Before, mean | Candidate, mean | Median paired difference |
+| --- | ---: | ---: | ---: |
+| Walking path, clear day | 5.319 ms | 5.629 ms | +0.195 ms |
+| Cross-lit skid, clear day | 5.382 ms | 5.687 ms | +0.159 ms |
+
+Individual round differences were noisy (-0.153 to +1.821 ms walking, -0.225 to
++1.889 ms at the skid).
+
+**Combined sand/trail budget**, measured directly against shader `14cb3d0` in the
+same skid view rather than adding results from different cameras:
+
+| View | Before volume/trails, mean | Candidate, mean | Median paired difference | Round range |
+| --- | ---: | ---: | ---: | ---: |
+| Clear day, cross-lit skid | 5.264 ms | 5.625 ms | +0.204 ms | -0.136 to +1.596 ms |
+| Low sun, cross-lit skid | 5.342 ms | 5.801 ms | +0.365 ms | +0.033 to +0.934 ms |
+
+Both scene means and median additions stay within the approximate 0.8 ms additional
+rendering budget. The low-sun check used the same nine-round method and warmed both
+pipelines for 60 physics frames before measuring. Individual rounds still contain
+outliers; the process diagnostic also counted other Godot processes in the low run.
+These are representative view costs, not a bound on every frame. The low-sun lateral
+sequence keeps the resting board seated and the rim attached to the surrounding sand;
+no grid facets or edge jumps appeared. A final focused tracks probe on the combined
+candidate again passes ground/collision invariance and filling/lifetime checks.
+
+The quarter-metre map still limits boot detail; true contact silhouettes would require
+a finer mesh patch. No map expansion or separate patch is added here.
+
 ## Skeleton version
 
 This is the minimum that makes the whole game loop possible. Every item gets built.
@@ -425,7 +496,7 @@ This is the minimum that makes the whole game loop possible. Every item gets bui
   heightmap's edge is a real edge to Jolt, and a small body riding a centimetre into
   the sand hit the next one's like a step: a rope's loose end dragged across a seam at
   13 m/s came out at 3, against 10.7 mid-chunk. With the lip it comes out at 9.8, what
-  the slope costs it there. Rope probe 5's loose end had been snagging on a seam, not
+  the slope costs it there; 8.3 since the sand holds by its full friction (2026-10-19). Rope probe 5's loose end had been snagging on a seam, not
   the dune face it was laid for.)*
 - A **crude far ring**: low-detail ground, visual only, reaching a few kilometres
   out. It proves early that the far view is cheap and stays separate from collision
@@ -550,6 +621,11 @@ All of these run without a window, use a fixed seed, and assert:
     faster than calm, a 500 m walk back through a storm still reads after three
     minutes more of it, and `height_at` and the collision under the path are exactly
     as they were.
+11. **The sand holds what grip says.** A crate resting on the sand, pushed sideways by a
+    force rising slowly, starts to slide at `sand_friction` of its weight (0.53 measured
+    against 0.5), as `World.grip`, the sleep's drift and the wind's balance count on.
+    Godot's Jolt takes the lesser of two frictions, not their mean: the sand's own number
+    against every body's 1.0. Squared, as it was, it held them by 0.27.
 
 Every probe gets checked against a deliberately broken build first, to prove it can
 fail.
@@ -560,7 +636,7 @@ fail.
 - Digging, or changing the ground's shape or collision. When storms "uncover" finds,
   that's done by placing things, not by reshaping loaded sand (rule 2). Tracks are drawn
   on the surface and never touch the shape (Tracks).
-- Caves, water and anything underground.
+- Caves, water and anything underground, bar Wow's resting place (Hunter, 2026-10-18, after session 5).
 - Multiplayer.
 
 ## Open questions

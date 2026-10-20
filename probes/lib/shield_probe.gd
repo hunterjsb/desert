@@ -4,11 +4,11 @@ extends DeviceProbe
 ## shield generators set down in it, and a camp of catalog devices.
 
 ## The camp, as [catalog id, metres east, metres south of its middle, parts]:
-## a floating crate, a planter, a charger with its panel, a planted turbine.
+## a floating chassis, a planter, a chassis with its panel, a planted turbine.
 const CAMP := [
-	[&"crate_frame", 2.6, 0.0, [&"battery", &"hover_tray", &"hook"]],
+	[&"chassis", 2.6, 0.0, [&"battery", &"hover_tray", &"hook"]],
 	[&"planter", -2.6, 0.6, [&"battery", &"root_tuber", &"root_tuber", &"vat_fungus"]],
-	[&"charger", 0.4, 2.8, [&"battery", &"solar_panel"]],
+	[&"chassis", 0.4, 2.8, [&"battery", &"solar_panel"]],
 	[&"turbine", 0.2, -2.8, [&"battery"]],
 ]
 
@@ -49,13 +49,15 @@ func weather_everywhere(intensity: float, wind := 0.0) -> void:
 		world.weather.field = WeatherField.new(world.run_seed, tuning)
 
 
-## A shield generator on the sand at a place, a full battery fitted, standing
-## open at once if `running`.
-func shield_at(at: Vector3, running := true) -> ShieldGenerator:
-	var made := Catalog.device(&"shield") as ShieldGenerator
-	world.content.add_child(made)
-	made.global_position = Vector3(at.x, world.height_under(at) + 0.22, at.z)
-	fit_part(made, &"battery")
+## A shield generator on a plate on the sand at a place, a chassis with a
+## full battery stuck beside it, standing open at once if `running`.
+func shield_at(at: Vector3, running := true, kind := &"shield") -> ShieldGenerator:
+	var plate := Catalog.device(&"chassis") as Chassis
+	world.content.add_child(plate)
+	plate.global_position = Vector3(at.x, world.height_under(at) + Chassis.THICK * 0.5 + 0.01, at.z)
+	var made := Catalog.device(kind) as ShieldGenerator
+	Stick.put(plate, plate, Chassis.TOP, Vector2.ZERO, 0.0, made)
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.32, 0.32), 0.0, Catalog.part(&"battery"))
 	if running:
 		made.stand(true)
 	return made

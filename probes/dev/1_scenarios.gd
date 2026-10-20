@@ -1,23 +1,30 @@
 extends WeatherProbe
-## Dev probe 1: every scenario drops you where it says. A storm 100 m away is
-## 100 m upwind and you face it; deep is deep; dusk is dusk; the test kit lands
-## in front of you; going looking stands you before a ruin's door with finds
-## round it; the farm stands in front of you growing; a charged board lies at
-## your feet by a small camp; a radio and a shield stand in front of you with a
-## beacon in reach; the reference camp stands round you on its deck,
-## running; the lee
+## Dev probe 1: every scenario starts, as the console starts it, where it
+## says, and lays what it stages without an error. A storm 100 m away is 100 m
+## upwind and you face it; deep is deep; dusk is dusk; going looking stands you
+## before a ruin's door with finds round it; the farm stands in front of you
+## growing; a board of every make lies charged at your feet by a small camp; a
+## radio and a shield on its plate stand in front of you with a beacon in
+## reach; the reference camp stands round you on its deck, running; the lee
 ## stands you under a tall slip face, facing up it into the wind over its
-## crest, the wind on you cut and a storm due; chassis pieces, their trays,
-## a charged crate, a condenser, hooks and a coil lie in front of you, one
-## piece's hook moored to a stake; a Console on a
-## floating deck shows its finest map and every reading, the storm coming, its
-## shield smart and off; the anomaly stands you where its heart comes over
-## minutes after its wall, by a camp built for wind, and is found on other
-## seeds' weather too; the eclipse faces Tu
-## just before the sun goes behind it; the far side has no Tu. Checked against
+## crest, the wind on you cut and a storm due; chassis pieces, their trays, a
+## frame and a spare piece, charged batteries, a light shield, a condenser,
+## hooks and a coil lie in front of you, one piece's hook moored to a stake; a
+## Console on a floating deck shows its finest map and every reading, the
+## storm coming, its shield smart and off; the anomaly stands you where its
+## heart comes over minutes after its wall, by a camp built for wind, and is
+## found on other seeds' weather too; scrapping stands every wreck in a fan
+## ahead of you, dug out, with what strips them at your feet; the still camp
+## lets you sleep at dusk; the vent's plume stands ahead of you a minute
+## before it bursts; the eclipse faces Tu just before the sun goes behind it;
+## the far side has no Tu; the Walker comes at you on its route, a Console
+## holding three tells beside you, its plug in your hands. Checked against
 ## the field itself and against what the game then shows.
 
 const SLACK := 1.0
+
+## The ruin the scenario stood you by.
+var _ruin: Ruin
 
 
 func run() -> void:
@@ -47,7 +54,7 @@ func run() -> void:
 			"spawn":
 				check(at.distance_to(world.spawn) < 0.01 and t == 0.0,
 					"spawn: where and when the run began")
-			"clear", "kit", "ruin":
+			"clear", "ruin":
 				if scenario.has("due"):
 					var due := field.next_change(at.x, at.y, t, 600.0, 5.0)
 					check(not stormy and due >= scenario.due[0] - 10.0 and due <= scenario.due[1] + 10.0,
@@ -55,36 +62,16 @@ func run() -> void:
 				else:
 					check(not stormy and field.next_change(at.x, at.y, t, 600.0, 5.0) == INF,
 						"%s: no storm for 10 minutes" % what)
+				if scenario.has("calm"):
+					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "%s: a calm spell" % what)
 				if scenario.kind == "ruin":
-					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "ruin: a calm spell")
-					await _ruin_ahead(at, ahead)
-				if scenario.kind == "kit":
-					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "kit: a calm spell")
-					await _kit_lands_near_you()
-				if scenario.get("survive", false):
-					await _survival_starts()
-				if scenario.get("farm", false):
-					await _farm_lands()
-				if scenario.get("board", false):
-					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "board: a calm spell")
-					await _board_lands()
-				if scenario.get("afk", false):
-					await _afk_lands()
-				if scenario.get("chassis", false):
-					check(field.wind_at(at.x, at.y, t).length() < scenario.calm, "chassis: a calm spell")
-					await _chassis_lands()
-				if scenario.get("console", false):
-					await _console_lands()
+					_ruin_ahead(at, ahead)
 			"front", "back":
 				check(stormy == (scenario.kind == "back"), "%s: on the right side of the edge" % what)
 				check(ahead.dot(upwind) > 0.999, "%s: facing upwind, where it comes from" % what)
 				var edge := _edge(at, upwind, t, stormy)
 				check(absf(edge - scenario.distance) < SLACK,
 					"%s: the edge is %.0f m upwind (%.2f m)" % [what, scenario.distance, edge])
-				if scenario.get("camp", false):
-					await _camp_lands()
-				if scenario.get("radio", false):
-					await _radio_lands()
 			"lee":
 				var due := field.next_change(at.x, at.y, t, 600.0, 5.0)
 				check(not stormy and due >= scenario.due[0] - 10.0 and due <= scenario.due[1] + 10.0,
@@ -98,7 +85,6 @@ func run() -> void:
 				var cut := 1.0 - world.weather.wind.length() / world.weather.field_wind(world.player.global_position).length()
 				check(cut >= Scenarios.LEE_SHARE * Tuning.current().lee_wind and Dev.read("weather/lee") != "-",
 					"lee: the wind on you is cut by its lee, and the overlay says so (%.2f)" % cut)
-				await _catch_line_lands(upwind)
 			"anomaly":
 				var due := field.next_change(at.x, at.y, t, 600.0, 5.0)
 				check(not stormy and due >= scenario.due[0] - 10.0 and due <= scenario.due[1] + 10.0,
@@ -110,7 +96,12 @@ func run() -> void:
 					s += 5.0
 				check(full - due <= Scenarios.ANOMALY_WALL + 10.0 and ahead.dot(upwind) > 0.999,
 					"anomaly: facing upwind, its heart over you within %d s of the wall (%.0f s)" % [Scenarios.ANOMALY_WALL, full - due])
-				await _anomaly_camp_lands()
+			"vent":
+				var vent: Dictionary = world.shape.history.geology.live()[0]
+				var burst := world.shape.history.geology.next_burst(vent, t) - t
+				check(not stormy and absf(burst - Scenarios.VENT_LEAD) < 1.0
+					and world.weather.day.sun_shown(t + burst) == 1.0,
+					"vent: clear, the vent bursting in sunlight in %d s (%.0f s)" % [Scenarios.VENT_LEAD, burst])
 			"deep":
 				check(field.storm_at(at.x, at.y, t) == 1.0, "deep: full storm")
 				check(_edge(at, upwind, t, true) > 250.0 and _edge(at, -upwind, t, true) > 250.0,
@@ -130,6 +121,28 @@ func run() -> void:
 		if scenario.has("moon"):
 			check(is_equal_approx(rad_to_deg(world.moon.latitude), scenario.moon[0]) and tu.y < -sin(day.tu_radius()),
 				"%s: %d° north, where Tu never rises" % [what, scenario.moon[0]])
+		if scenario.get("lays") == &"survive":
+			_hurt_and_burdened()
+		var dropped := await Scenarios.lay(world, scenario, place)
+		check(dropped.is_empty() != scenario.has("lays"), "%s: lays what it stages, %d things" % [what, dropped.size()])
+		match scenario.get("lays", &""):
+			&"yours": await _ruin_finds(dropped)
+			&"survive": await _survival_starts(dropped)
+			&"farm": await _farm_lands(dropped)
+			&"board": await _board_lands(dropped)
+			&"radio": await _radio_lands(dropped)
+			&"afk": await _afk_lands(dropped)
+			&"catch_line": _catch_line_lands(dropped, upwind)
+			&"chassis": await _chassis_lands(dropped)
+			&"console": await _console_lands(dropped)
+			&"anomaly_camp": await _anomaly_camp_lands(dropped)
+			&"walker_camp": await _walker_camp_lands(dropped)
+			&"wrecks": _wrecks_stand(dropped)
+			&"sleep": await _sleep_comes(dropped, upwind)
+			&"vent": await _plume_ahead(ahead)
+		# Cleared as the next scenario would, and gone before it lays its own.
+		Scenarios._clear(world, &"scenario_kit", false)
+		await physics_frames(2)
 
 
 ## The anomaly's search finds one on the weather of seeds where it once came
@@ -154,63 +167,69 @@ func _edge(from: Vector2, along: Vector2, t: float, inside: bool) -> float:
 
 
 ## A radio stands in front of you, a full battery in it, switched
-## off, by a charged shield generator, switched off; tuned to the beacon
+## off, by a charged shield on its plate, switched off; tuned to the beacon
 ## there, it hears one.
-func _radio_lands() -> void:
-	await settle(true)
-	var dropped := Scenarios.radio(world)
+func _radio_lands(dropped: Array[Node3D]) -> void:
 	await physics_frames(30)
 	var player := world.player
 	var radio: Radio = dropped[0]
-	var shield: ShieldGenerator = dropped[1]
+	var shield: ShieldGenerator = _first(dropped, ShieldGenerator)
 	var off := radio.global_position - player.global_position
 	check(off.dot(-player.global_basis.z) > 0.5 and Vector2(off.x, off.z).length() < 3.0 and radio.channel == Radio.OFF
 		and radio.battery() != null and radio.charge_share() >= 1.0, "radio: in front of you, charged and off")
-	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(), "radio: a charged shield beside it")
+	check(not shield.on and _charged(shield), "radio: a charged shield beside it, on its plate")
 	while radio.channel != Radio.BEACON:
 		radio.interact(player)
 	check(not radio.target.is_empty(), "radio: a beacon in reach from there")
-	for body in dropped:
-		body.free()
 
 
 ## The camp built for wind stands round you: its deck moored to a driven
 ## stake, its shield running on one battery, the turbine out beyond the
 ## bubble in the same pool, a Console reading wind and sand, the radio on
-## its top playing; a compass in your suit.
-func _anomaly_camp_lands() -> void:
-	await settle(true)
-	var dropped := Scenarios.anomaly_camp(world)
+## the deck playing; a compass in your suit.
+func _anomaly_camp_lands(dropped: Array[Node3D]) -> void:
 	await physics_frames(60)
 	var deck: Chassis = dropped[0]
-	var console: Console = dropped[1]
-	var radio: Radio = dropped[2]
-	var shield: ShieldGenerator = dropped[3]
-	var turbine: Device = dropped[7]
-	check(deck.pieces().size() == 4 and (dropped[5] as Stake).driven and shield.running()
-		and shield.batteries().size() == 1 and world.power.pool_wh(turbine) == world.power.pool_wh(shield)
+	var console: Console = _first(dropped, Console)
+	var radio: Radio = _first(dropped, Radio)
+	var shield: ShieldGenerator = _first(dropped, ShieldGenerator)
+	var stake: Stake = _first(dropped, Stake)
+	var turbine: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.stats().turbine_w > 0.0)[0]
+	check(deck.pieces().size() == 4 and stake.driven and shield.running() and shield.host() == deck
+		and deck.batteries().size() == 1 and world.power.pool_wh(turbine) == world.power.pool_wh(shield)
 		and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5,
 		"anomaly: a moored deck, its shield running on one battery, the turbine beyond the bubble in its pool")
 	check(console.running() and console.gear().has("anemometer") and console.gear().has("particle_sensor")
 		and radio.playing() and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Compass),
 		"anomaly: a Console reading wind and sand, the radio playing, a compass in your suit")
-	for body in dropped:
-		if is_instance_valid(body):
-			body.free()
+
+
+## Beside the Walker: it walks toward you along its route, and its Console
+## holds all three tells, a cable in its port and the other plug in your hands.
+func _walker_camp_lands(dropped: Array[Node3D]) -> void:
+	await physics_frames(10)
+	var walker: Walker = get_tree().get_nodes_in_group(&"walker")[0]
+	var console: Console = _first(dropped, Console)
+	var plug := world.player.hands.held as Part
+	var off := walker.global_position - world.player.global_position
+	check(walker.visible and Vector2(off.x, off.z).length() < Scenarios.WALKER_AHEAD + 5.0
+		and Vector2(off.x, off.z).normalized().dot(Vector2(-world.player.global_basis.z.x, -world.player.global_basis.z.z).normalized()) > 0.9,
+		"walker: the Walker ahead of you, coming (%.0f m)" % Vector2(off.x, off.z).length())
+	check(console.running() and console.evidence.size() == Deeds.TELLS.size() and plug != null and plug.kind == &"port"
+		and console.parts().any(func(p: Part) -> bool: return p.kind == &"port"), "walker: a Console holding three tells, its plug in your hands")
 
 
 ## The reference camp stands round you, running, on its deck: a tray under
-## every piece floats the deck level, the condenser, the shield and two
-## crates standing on it, their own trays off; it and the turbine are one
-## pool, its bank full; the bubble takes you, the deck and the planters, the
+## every piece floats the deck level, the condenser, the shield and the
+## light panel stuck on it among the bank's batteries and the panels; it and
+## the turbine are one pool, its bank full and 210 W of panels; the bubble
+## takes you, the deck and the planters, the
 ## turbine out beyond it on its strong cable; the deck is moored to a driven
 ## stake and each planter to its own; the planters float, sown, watered and
 ## harvesting, near enough to drop food onto you, on hoses from the
 ## condenser; you're fed and watered, carrying canisters, spare stakes, a
 ## coil and a hose, and no food.
-func _afk_lands() -> void:
-	await settle(true)
-	var dropped := Scenarios.afk(world)
+func _afk_lands(dropped: Array[Node3D]) -> void:
 	await physics_frames(60)
 	var player := world.player
 	var deck: Chassis = dropped.filter(func(b: Node) -> bool: return b is Chassis)[0]
@@ -219,21 +238,21 @@ func _afk_lands() -> void:
 	var turbine: Device = dropped.filter(func(b: Node) -> bool: return b is Device and b.stats().turbine_w > 0.0)[0]
 	var condenser: Condenser = dropped.filter(func(b: Node) -> bool: return b is Condenser)[0]
 	var standing := deck.mounted()
-	var crates := standing.filter(func(d: Device) -> bool: return d.label == "Crate frame")
 	var tilt := rad_to_deg(deck.global_basis.y.normalized().angle_to(Vector3.UP))
 	check(deck.pieces().size() == 4 and deck.stats().lift_kg >= 4.0 * 80.0 and deck.stats().hovering and tilt < 2.5
-		and standing.size() == 4 and crates.size() == 2 and standing.has(shield) and standing.has(condenser)
-		and not standing.any(func(d: Device) -> bool: return d.has_tray()),
-		"afk: a tray under every piece floats the deck level (%.1f°), four devices standing on it, their trays off" % tilt)
+		and standing.size() == 3 and standing.has(shield) and standing.has(condenser),
+		"afk: a tray under every piece floats the deck level (%.1f°), the shield, condenser and light panel stuck on it" % tilt)
 	var room := 0.0
-	for device: Device in standing + [turbine]:
+	for device: Device in [deck, turbine]:
 		for cell in device.batteries():
 			room += cell.capacity()
 	var bank := world.power.pool_wh(deck)
 	var pooled := standing.all(func(d: Device) -> bool: return world.power.pool_wh(d) == bank)
-	var panelled := func(c: Device) -> bool: return c.stats().solar_w > 0.0 and c.mounted().any(func(d: Device) -> bool: return d.stats().solar_w > 0.0)
-	check(pooled and bank == world.power.pool_wh(turbine) and absf(bank - room) < 1e-6 and crates.any(panelled),
-		"afk: the deck, all on it and the turbine share one full bank, a crate with two panels (%.0f Wh)" % bank)
+	var panels: float = deck.stats().solar_w
+	for device in standing:
+		panels += device.stats().solar_w
+	check(pooled and bank == world.power.pool_wh(turbine) and absf(bank - room) < 1e-6 and is_equal_approx(panels, 210.0),
+		"afk: the deck, all on it and the turbine share one full bank (%.0f Wh), 210 W of panels (%.0f W)" % [bank, panels])
 	var inside := func(b: Node3D) -> bool: return b.global_position.distance_to(shield.global_position) < shield.size - 0.5
 	check(shield.running() and inside.call(player) and planters.all(inside)
 		and turbine.global_position.distance_to(shield.global_position) > shield.size + 0.5 and clearance(turbine) < 0.3,
@@ -256,62 +275,55 @@ func _afk_lands() -> void:
 		and carried.count("Rope coil") == 1 and carried.count("Hose") == 1
 		and carried.size() == Scenarios.AFK_CANISTERS + Scenarios.AFK_STAKES + 2,
 		"afk: you start fed and watered, carrying water, spare stakes, a coil and a hose (%s)" % ", ".join(carried))
-	for body in dropped:
-		if is_instance_valid(body):
-			body.free()
 
 
 ## Chassis pieces lie flat on the sand in front of you, a tray before each,
-## with a crate frame holding two charged batteries, a condenser with a
-## battery and an empty canister, and two hooks and a coil, all within a few
-## steps. All the pieces are bare but the first, whose hook is moored to a
-## stake, and another piece is offered that ring with room to join there.
-func _chassis_lands() -> void:
-	await settle(true)
-	var dropped := Scenarios.chassis(world)
+## a spare piece and a frame for a wall, two charged batteries, the light
+## shield, a condenser with an empty canister, and two hooks and a coil, all
+## within a few steps. All the pieces are bare but the first, whose hook is
+## moored to a stake, and another piece is offered that ring with room to
+## join there.
+func _chassis_lands(dropped: Array[Node3D]) -> void:
 	await physics_frames(60)
 	var player := world.player
 	var near := func(b: Node3D) -> bool:
 		var off := b.global_position - player.global_position
-		return off.dot(-player.global_basis.z) > 1.0 and Vector2(off.x, off.z).length() < 5.0 and clearance(b) < 0.6
+		return off.dot(-player.global_basis.z) > 1.0 and Vector2(off.x, off.z).length() < 6.5 and clearance(b) < 0.6
 	var pieces := dropped.filter(func(b: Node3D) -> bool: return b is Chassis)
 	var trays := dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"bottom")
-	check(pieces.size() == Scenarios.CHASSIS_PIECES.size() and trays.size() == pieces.size()
+	check(pieces.size() == Scenarios.CHASSIS_PIECES.size() + 1 and trays.size() == Scenarios.CHASSIS_PIECES.size()
 		and pieces.all(func(p: Chassis) -> bool: return p.global_basis.y.dot(Vector3.UP) > 0.99)
 		and pieces.slice(1).all(func(p: Chassis) -> bool: return p.parts().is_empty()),
-		"chassis: pieces lying flat, a tray for each, all bare but the first")
+		"chassis: pieces lying flat, a tray for each of the row and a spare, all bare but the first")
 	var stake: Stake = dropped.filter(func(b: Node3D) -> bool: return b is Stake)[0]
 	var first: Chassis = pieces[0]
-	var outer := Scenarios._on_piece(first, Vector2i.ZERO, &"ring", Vector2i(-1, 0))
+	var outer := Rig.ring_of(first, Vector2i.ZERO, Vector2i(-1, 0))
 	check(world.ropes.ropes.any(func(r: Rope) -> bool: return [r.a.holder, r.b.holder] in [[first, stake], [stake, first]])
 		and pieces[1].fits_in(outer)
 		and first.room_for(pieces[1], first.global_transform * first._pose_at(outer, 0)),
 		"chassis: the first piece's hook moored to a stake, a piece offered its ring and room there")
 	check(dropped.filter(func(b: Node3D) -> bool: return b is Part and b.kind == &"ring").size() == 2
 		and dropped.any(func(b: Node3D) -> bool: return b is Part and b.kind == &"coil"), "chassis: two hooks and a coil")
-	var crate: Device = dropped.filter(func(b: Node3D) -> bool: return b is Device and b.label == "Crate frame")[0]
-	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
-	check(crate.batteries().size() == 2 and crate.charge_share() >= 1.0 and condenser.battery() != null
-		and condenser.canister() != null, "chassis: a crate with two charged batteries, and a condenser")
-	check(dropped.all(near), "chassis: all of it on the sand within 5 m in front of you")
-	for body in dropped:
-		if is_instance_valid(body):
-			body.free()
+	var cells := dropped.filter(func(b: Node3D) -> bool: return b is Battery and b.charge_wh >= b.capacity())
+	var condenser: Condenser = _first(dropped, Condenser)
+	check(cells.size() == 2 and dropped.any(func(b: Node3D) -> bool: return b is Frame)
+		and dropped.any(func(b: Node3D) -> bool: return b is ShieldGenerator)
+		and condenser.canister() != null and condenser.canister().amount == 0.0,
+		"chassis: a frame, two charged batteries, the light shield and a condenser with an empty canister")
+	check(dropped.all(near), "chassis: all of it on the sand within a few steps in front of you")
 
 
 ## A Console stands on a two-piece deck floating in front of you, its screen
-## to you at about your eyes, every instrument and a radio in it, and a
-## shield on the other piece, switched off and smart from it; the deck moored
+## to you at about your eyes, every instrument in it and a radio behind it,
+## and a shield on the other piece, switched off and smart from it; the deck moored
 ## to a driven stake; its map at its finest for one Console, its stats every
 ## reading, the storm on its way.
-func _console_lands() -> void:
-	await settle(true)
-	var dropped := Scenarios.console(world)
+func _console_lands(dropped: Array[Node3D]) -> void:
 	await physics_frames(120)
 	var player := world.player
 	var deck: Chassis = dropped[0]
-	var made: Console = dropped[1]
-	var shield: ShieldGenerator = dropped[3]
+	var made: Console = _first(dropped, Console)
+	var shield: ShieldGenerator = _first(dropped, ShieldGenerator)
 	var screen := made.global_basis * Vector3.FORWARD
 	var eyes := player.camera.global_position.y - made.global_position.y
 	check(made.on_deck() and made.host() == deck and shield.host() == deck and not shield.on and shield.smart
@@ -323,53 +335,71 @@ func _console_lands() -> void:
 	var full := Tuning.current().storm_map_radar_cells + 5 * Tuning.current().storm_map_cells_per_instrument
 	check(shown and made.map_cells() == full and made._map.size() == full * full,
 		"console: every reading on its stats, and its map at %d cells across:\n%s" % [made.map_cells(), stats])
-	check(made.pooled_readings().forecast.change < INF and (dropped[4] as Stake).driven and world.ropes.ropes.size() == 1,
+	check(made.pooled_readings().forecast.change < INF and (_first(dropped, Stake) as Stake).driven and world.ropes.ropes.size() == 1,
 		"console: the storm on its way, the deck moored")
-	for body in dropped:
-		if is_instance_valid(body):
-			body.free()
 
 
-## A hoverboard lies at your feet in front of you, nose ahead, a full battery
-## in it, and the ride action takes you onto it; beside you stand a charged
-## shield generator, switched off, and a crate frame: the camp the range
-## warnings watch, with none of them warning yet.
-func _board_lands() -> void:
-	await settle(true)
-	var dropped := Scenarios.board(world)
+## Every wreck kind stands ahead of you within reach of a walk, dug out, its
+## way in turned to you, and at your feet a charged heat cutter, a scoop, two
+## sealant canisters, two stakes and a med kit.
+func _wrecks_stand(dropped: Array[Node3D]) -> void:
+	var me := Vector2(world.player_world_x(), world.player_world_z())
+	var kinds := {}
+	for unit in world.shape.sites.units():
+		for site in unit.sites:
+			if site is Structure and site.source == &"hand" and site.piece.wreck != null and site.stands() \
+					and site.distance_to(me.x, me.y) < 160.0:
+				kinds[site.kind] = site
+	var all := StructureKit.kinds().filter(func(k: StringName) -> bool: return StructureKit.piece(k).wreck != null)
+	check(kinds.size() == all.size(), "wreck: every kind stands ahead of you (%d of %d: %s)" % [kinds.size(), all.size(),
+		", ".join(kinds.keys())])
+	var ids := dropped.map(func(b: Node3D) -> StringName: return b.get_meta(&"catalog", &"stake" if b is Stake else &""))
+	var cutter := dropped.filter(func(b: Node3D) -> bool: return b is Cutter)
+	check(not cutter.is_empty() and (cutter[0] as Cutter).battery() != null
+		and ids.count(&"sand_scoop") == 1 and ids.count(&"sealant") == 2 and ids.count(&"med_kit") == 1
+		and dropped.filter(func(b: Node3D) -> bool: return b is Stake).size() == 2,
+		"wreck: a charged cutter, a scoop, two sealants, two stakes and a med kit at your feet")
+	var near := dropped.all(func(b: Node3D) -> bool: return b.global_position.distance_to(world.player.global_position) < 3.0)
+	check(near, "wreck: all of it at your feet")
+
+
+## A board of each make lies at your feet in front of you, nose ahead, the
+## issue nearest, each with a full battery, and the ride action takes you onto
+## the issue; beside you a deck of two rests on the sand, a charged shield on
+## it switched off: the camp the range warnings watch, with none of them
+## warning yet.
+func _board_lands(dropped: Array[Node3D]) -> void:
 	await physics_frames(60)
 	var player := world.player
 	var ahead := -player.global_basis.z
+	var boards := dropped.filter(func(b: Node3D) -> bool: return b is Hoverboard)
 	var board: Hoverboard = dropped[0]
 	var off := board.global_position - player.global_position
-	check(off.dot(ahead) > 0.5 and Vector2(off.x, off.z).length() < 2.0 and clearance(board) < 0.2,
-		"board: lying at your feet in front of you (%.1f m)" % Vector2(off.x, off.z).length())
-	check(board.battery() != null and board.battery().charge_wh >= board.battery().capacity() and board.can_run(),
-		"board: charged, ready to ride")
-	var shield: ShieldGenerator = dropped[1]
-	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity()
-		and dropped[2].label == "Crate frame" and dropped.all(func(b: Node3D) -> bool:
-			return b.global_position.distance_to(player.global_position) < 6.0),
-		"board: a small camp beside you, a charged shield and a crate")
-	check(player.camp_range.camp().size() == dropped.size() and player.camp_range.told == 0,
+	check(BoardMakes.make_of(board) == BoardMakes.ISSUE and off.dot(ahead) > 0.5 and Vector2(off.x, off.z).length() < 2.0
+		and clearance(board) < 0.2, "board: the issue lying at your feet in front of you (%.1f m)" % Vector2(off.x, off.z).length())
+	check(boards.map(BoardMakes.make_of) == BoardMakes.ALL and boards.all(func(b: Hoverboard) -> bool:
+			return b.battery() != null and b.battery().charge_wh >= b.battery().capacity() and b.can_run()),
+		"board: one of each make, charged, ready to ride")
+	var shield: ShieldGenerator = _first(dropped, ShieldGenerator)
+	var deck: Chassis = _first(dropped, Chassis)
+	check(not shield.on and _charged(shield) and shield.host() == deck and deck.pieces().size() == 2 and deck.resting
+		and dropped.all(func(b: Node3D) -> bool: return b.global_position.distance_to(player.global_position) < 6.0),
+		"board: a small camp beside you, a charged shield on a deck of two resting on the sand")
+	var standing := dropped.filter(func(b: Node3D) -> bool: return (b as Device).host() == null)
+	check(player.camp_range.camp().size() == standing.size() and player.camp_range.told == 0,
 		"board: the range warnings watch it, quiet so near")
-	check(player.toggle_board() and player.board == board, "board: the ride action takes you onto it")
+	check(player.toggle_board() and player.board == board, "board: the ride action takes you onto the issue")
 	player.step_off()
-	for body in dropped:
-		if is_instance_valid(body):
-			body.free()
 
 
 ## Two planters float in front of you, each on its line to a driven stake,
 ## sown and part grown, one with a harvester and a full tank, the other's
 ## half full and a saltbush in it, their root-tubers growing in the clear and
 ## the saltbush's leaves open with the storm still minutes off; a charged
-## shield generator stands between them, switched off, near enough for its
+## shield on its plate stands between them, switched off, near enough for its
 ## bubble to take them, with a full canister by your feet and a spare
 ## root-tuber carried. In the wind, nothing slides off or drifts past its line.
-func _farm_lands() -> void:
-	await settle(true)
-	var dropped := Scenarios.farm(world)
+func _farm_lands(dropped: Array[Node3D]) -> void:
 	var set_down := dropped.map(func(b: Node3D) -> Vector3: return b.global_position)
 	world.time_warp = 1.0
 	await physics_frames(180)
@@ -397,142 +427,121 @@ func _farm_lands() -> void:
 		and tanks.has(1.0) and tanks.has(0.5), "farm: two planters, one with a harvester, tanks full and half (%s)" % [tanks])
 	check(growing == 5, "farm: the root-tubers are growing in the clear (%d)" % growing)
 	check(open == 1, "farm: a saltbush, its leaves open with the storm minutes off")
-	check(not shield.on and shield.battery().charge_wh >= shield.battery().capacity(),
-		"farm: a charged shield generator, switched off")
+	check(not shield.on and _charged(shield), "farm: a charged shield on its plate, switched off")
 	var loose := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"water" and b.amount >= 2.0)
 	check(loose.size() == 1 and world.player.suit.carried.any(func(p: RigidBody3D) -> bool: return p is Plant),
 		"farm: a full canister, and a spare root-tuber carried")
-	for body in dropped:
-		if is_instance_valid(body):
-			body.free()
 
 
-## A ruin's front door stands in front of you, finds lie round it, one on
-## its floor a device with parts to strip, and your own bare frame lands
-## beside you.
+## A ruin's front door stands in front of you.
 func _ruin_ahead(at: Vector2, ahead: Vector2) -> void:
 	var ruin := world.shape.sites.query(Rect2(at.x - 30.0, at.y - 30.0, 60.0, 60.0), false).filter(
 		func(s: Site) -> bool: return s is Ruin and world.shape.sites.covering(s.x, s.z) == s)
 	check(not ruin.is_empty(), "ruin: a ruin stands near you")
-	if ruin.is_empty():
+	_ruin = null if ruin.is_empty() else ruin[0]
+	if _ruin == null:
 		return
-	var first: Ruin = ruin[0]
-	var door := first.to_world(Ruin.DOORS[0][0]) - at
+	var door := _ruin.to_world(Ruin.DOORS[0][0]) - at
 	check(ahead.dot(door.normalized()) > 0.999 and door.length() < 20.0,
 		"ruin: its front door is in front of you (%.1f m)" % door.length())
-	await settle(true)
+
+
+## Finds lie round the ruin, one on its floor a device with parts to strip,
+## and your own bare chassis lands beside you.
+func _ruin_finds(mine: Array[Node3D]) -> void:
 	for i in 600:
 		if world.salvage.is_idle():
 			break
 		await get_tree().process_frame
-	var mine := Scenarios.yours(world)
+	if _ruin == null:
+		return
 	var finds := world.salvage.finds()
 	var on_floor := finds.filter(func(b: Node) -> bool:
-		return b.get_meta(&"find").size() > 2 and b.get_meta(&"find")[2] == first.id)
+		return b.get_meta(&"find").size() > 2 and b.get_meta(&"find")[2] == _ruin.id)
 	var strippable := on_floor.filter(func(b: Node) -> bool: return b is Device and not (b as Device).parts().is_empty())
 	check(finds.size() >= 5 and on_floor.size() >= 3 and not strippable.is_empty(),
 		"ruin: finds lie round you (%d), on its floor (%d), a device among them with parts to strip"
 		% [finds.size(), on_floor.size()])
-	check(mine.size() == 1 and mine[0] is Device and (mine[0] as Device).parts().is_empty() and clearance(mine[0]) < 0.6,
-		"ruin: your own bare frame lands beside you")
-	for body in mine:
-		body.free()
+	check(mine.size() == 1 and mine[0] is Chassis and (mine[0] as Device).parts().is_empty() and clearance(mine[0]) < 0.6,
+		"ruin: your own bare chassis lands beside you")
 
 
 ## Two stakes driven a few steps ahead with a line strung between them,
 ## across the wind: a catch line for the drift.
-func _catch_line_lands(upwind: Vector2) -> void:
-	await settle(true)
-	var dropped := Scenarios.catch_line(world)
-	await physics_frames(2)
+func _catch_line_lands(dropped: Array[Node3D], upwind: Vector2) -> void:
 	var lines := Drift.lines(world)
-	check(lines.size() == 1 and absf((lines[0][2] - lines[0][1]).normalized().dot(upwind)) < 0.05,
+	check(dropped.size() == 3 and lines.size() == 1 and absf((lines[0][2] - lines[0][1]).normalized().dot(upwind)) < 0.05,
 		"lee: a catch line strung across the wind")
-	# Its line goes with its stakes.
-	for body in dropped:
-		if body is Stake:
-			body.free()
 
 
-## Two devices and every kit part land on the sand in front of you, within a
-## few steps. Light parts may then slide off on the wind, which is real.
-func _kit_lands_near_you() -> void:
-	await settle(true)
-	var kit := Scenarios.kit(world)
-	await physics_frames(30)
-	var player := world.player
-	var ahead := -player.global_basis.z
-	var devices := 0
-	var parts := 0
-	var strays := PackedStringArray()
-	for body in kit:
-		if body is Cable:
-			continue
-		var off := body.global_position - player.global_position
-		var c := clearance(body)
-		devices += 1 if body is Device else 0
-		parts += 1 if body is Part else 0
-		if off.dot(ahead) < 1.0 or Vector2(off.x, off.z).length() > 5.0 or c < -0.05 or c > 0.6:
-			strays.append("%s %.1fm %.2fm up" % [body.get("label"), Vector2(off.x, off.z).length(), c])
-	# Every part and coil, plus both cables' plugs and the hose's ends; stakes are devices.
-	check(devices == Scenarios.KIT_DEVICES.size() + Scenarios.KIT_STAKES.size()
-		and parts == Scenarios.KIT_PARTS.size() + Scenarios.KIT_COILS.size() + 6,
-		"kit: every device, part, stake and coil dropped")
-	check(strays.is_empty(), "kit: all of it on the sand within 5 m in front of you (%s)" % ", ".join(strays))
-	for body in kit:
-		body.free()
+## Hurt, thirsty and carrying a battery, as a fresh start mustn't leave you.
+func _hurt_and_burdened() -> void:
+	world.player.vitals.health = 10.0
+	world.player.vitals.thirst = 90.0
+	world.player.suit.carried.append(Catalog.part(&"battery"))
 
 
 ## You start over on sealed water: fed, watered and whole with a fresh suit's
-## kit, a condenser in front of you making water into its empty canister, a
-## charged shield generator beside it, and spare rations.
-func _survival_starts() -> void:
-	await settle(true)
+## kit, a deck in front of you with a condenser making water into its empty
+## canister on the deck's panel and batteries, a charged shield beside it,
+## and spare rations.
+func _survival_starts(dropped: Array[Node3D]) -> void:
 	var vitals := world.player.vitals
-	vitals.health = 10.0
-	vitals.thirst = 90.0
-	world.player.suit.carried.append(Catalog.part(&"battery"))
-	var dropped := Scenarios.survive(world)
 	world.time_warp = 1.0
 	await physics_frames(60)
 	world.time_warp = 0.0
 	var condenser: Condenser = dropped.filter(func(b: Node3D) -> bool: return b is Condenser)[0]
-	var shields := dropped.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and b.battery() != null \
-		and b.battery().charge_wh >= b.battery().capacity())
+	var shields := dropped.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and _charged(b))
 	var rations := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"food")
 	var carried := world.player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
 	check(vitals.health > 99.0 and vitals.hunger > 99.0 and vitals.thirst > 99.0
-		and carried == ["Water canister", "Ration", "Bedroll"] and world.player.suit.supply(&"water").amount > 1.99,
+		and carried == ["Water canister", "Ration", "Bedroll", "Surveyor's Guide"] and world.player.suit.supply(&"water").amount > 1.99,
 		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(carried))
 	check(condenser.powered and condenser.canister().amount > 0.0 and condenser.canister().amount < 0.01
-		and condenser.stats().solar_w > 0.0, "survive: the condenser is filling its empty canister (%.4f L)"
+		and condenser.host().stats().solar_w > 0.0 and condenser.host() == _first(dropped, ShieldGenerator).host(),
+		"survive: the condenser is filling its empty canister on its deck's panel, beside the shield (%.4f L)"
 		% condenser.canister().amount)
 	check(shields.size() == 1 and rations.size() == Scenarios.SURVIVE_RATIONS.size(),
-		"survive: a charged shield generator and spare rations")
-	for body in dropped:
-		if is_instance_valid(body):
-			body.free()
+		"survive: a charged shield and spare rations")
 
 
-## The camp floats in front of you, each piece on a line to a driven stake
-## upwind, with a charged shield, spare stakes and coils at your feet.
-func _camp_lands() -> void:
-	await settle(true)
-	var camp := Scenarios.camp(world)
-	await physics_frames(180)
-	var floating := camp.filter(func(b: Node3D) -> bool: return b is Device and not b is Stake \
-		and b.stats().hovering and clearance(b) > 0.8)
-	var driven := camp.filter(func(b: Node3D) -> bool: return b is Stake and b.driven)
-	var lines := world.ropes.ropes.size()
-	var spares := camp.filter(func(b: Node3D) -> bool: return (b is Stake and not b.driven) or b.has_meta(&"line"))
-	check(floating.size() == Scenarios.CAMP_DEVICES.size() and driven.size() == floating.size() and lines == floating.size(),
-		"camp: each piece floats on its line to a driven stake (%d floating, %d driven, %d lines)"
-		% [floating.size(), driven.size(), lines])
-	check(spares.size() == Scenarios.CAMP_STAKES.size() + Scenarios.CAMP_COILS.size(),
-		"camp: spare stakes and coils at your feet")
-	var shields := camp.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and b.battery() != null \
-		and b.battery().charge_wh >= b.battery().capacity())
-	check(shields.size() == 1, "camp: a charged shield generator to switch on")
-	for body in camp:
-		if is_instance_valid(body):
-			body.free()
+## At dusk by the still camp you can sleep: its deck rests on the sand, the
+## shield on it running and its bubble round you, the bedroll stuck on it, a
+## wall on its frame facing upwind, and the radio playing the weather station.
+func _sleep_comes(dropped: Array[Node3D], upwind: Vector2) -> void:
+	await physics_frames(60)
+	var deck: Chassis = dropped[0]
+	var shield: ShieldGenerator = _first(dropped, ShieldGenerator)
+	var radio: Radio = _first(dropped, Radio)
+	var walls := deck.plates().filter(func(p: Array) -> bool:
+		var out := deck.global_basis * (p[1] as Vector3)
+		return Vector2(out.x, out.z).normalized().dot(upwind) > 0.99)
+	check(deck.resting and _first(dropped, Bedroll) != null and _first(dropped, Bedroll).host() == deck
+		and walls.size() == 1 and radio.playing(), "sleep: a bedroll on a deck resting on the sand, a wall to windward, the station on")
+	check(shield.running() and world.player.global_position.distance_to(shield.global_position) < shield.size - 0.5
+		and world.sleep.refusal() == "", "sleep: the shield running round you, and you can sleep (%s)" % world.sleep.refusal())
+
+
+## The vent's plume stands ahead of you, drawn.
+func _plume_ahead(ahead: Vector2) -> void:
+	var plume := world.weather.plume_for(world.shape.history.geology.live()[0].id)
+	for i in 10:
+		await get_tree().process_frame
+	var to := Vector2(plume.root.x - world.player_world_x(), plume.root.z - world.player_world_z())
+	check(plume.visible and ahead.dot(to.normalized()) > 0.99 and absf(to.length() - Scenarios.VENT_OFF) < 300.0,
+		"vent: its plume ahead of you, %.0f m off" % to.length())
+
+
+## The first of a kind among what a scenario dropped, or null.
+static func _first(dropped: Array, kind: Variant) -> Node:
+	for body: Node in dropped:
+		if is_instance_of(body, kind):
+			return body
+	return null
+
+
+## Whether a shield's deck holds batteries all but full: what else is on the
+## deck may have drawn a little since.
+static func _charged(shield: ShieldGenerator) -> bool:
+	var deck := shield.host()
+	return deck != null and not deck.batteries().is_empty() and deck.charge_share() >= 0.99

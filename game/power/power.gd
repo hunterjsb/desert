@@ -4,16 +4,20 @@ extends Node
 ## never changes a charge and F5 speeds charging like everything else. Devices
 ## joined by cables share one pool: what they make feeds what they draw, then
 ## fills their batteries; a pool that can't meet its draw goes dark. A device
-## seated on another, like a shield on a crate, shares its pool. Running short,
-## a pool's lower-ranked devices give way first, like a crate's tray to the
-## shield on it, or a board racked on it charging. A ledger proves no energy
-## appears from nowhere. A pool making more than the tuning's deed asks is a deed.
+## on a deck, like a shield stuck on one, shares its pool. Running short, a
+## pool's lower-ranked devices give way first, like a deck's tray to the
+## shield on it, or a board on it charging. A power box in a pool may let a
+## Console rank who's served and switch draws off; a bay held to charge only
+## takes. A ledger proves no energy appears from nowhere. A pool making more
+## than the tuning's deed asks is a deed.
 
 ## A dark pool waits until its batteries hold this share before it tries again.
 const RESTART := 0.05
 ## A device ranked below the highest in its pool stops drawing once the pool's
 ## batteries are down to this share, kept for the higher ones, unless the
-## sources alone carry everything; it runs again once they hold RESTART more.
+## sources alone carry it and everything above it; it runs again once they
+## hold RESTART more. Between the lowest and the highest, each rank gives way
+## at its own share of it, so the last served goes first.
 const RESERVE := 0.25
 
 ## Energy in, Wh, since the run began, and where it all went.
@@ -77,26 +81,33 @@ func _devices() -> Array[Device]:
 
 
 ## One tick, with every source reading the weather at the tick's own time,
-## however many ticks a frame holds.
+## however many ticks a frame holds. Every battery in a pool takes a share of
+## what's spare; only those that supply give.
 func _tick(seconds: float, t: float) -> void:
 	for pool in _pools():
 		var made := 0.0
 		var wants := {}
 		var cells: Array[Battery] = []
+		var givers: Array[Battery] = []
 		for device: Device in pool:
 			made += device.production_w(t) * seconds / 3600.0
 			wants[device] = device.demand_w(t) * seconds / 3600.0
 			cells.append_array(device.pooled())
+			givers.append_array(device.supplies())
 		generated_wh += made
 		if _world.counts_deeds:
 			Deeds.measure(_world, &"power", made * 3600.0 / seconds)
-		var running := _running(pool, wants, made, _fraction(cells))
+		var before := PackedFloat64Array()
+		for cell in cells:
+			before.append(cell.charge_wh)
+		var share := _fraction(givers)
+		var running := _running(pool, wants, made, share)
 		var wanted := 0.0
 		for device: Device in running:
 			wanted += wants[device]
 		var on := true
 		if not running.all(func(d: Device) -> bool: return d.powered) and made < wanted \
-				and _fraction(cells) < RESTART:
+				and share < RESTART:
 			# Dark stays dark, with nothing running, until there's enough to restart:
 			# everything made goes into the batteries meanwhile.
 			spilled_wh += _share(made, cells, true)
@@ -106,7 +117,7 @@ func _tick(seconds: float, t: float) -> void:
 			spilled_wh += _share(made - wanted, cells, true)
 		else:
 			var short := wanted - made
-			var given := _share(short, cells, false)
+			var given := _share(short, givers, false)
 			if given >= short - 1e-12:
 				used_wh += wanted
 			else:
@@ -118,23 +129,77 @@ func _tick(seconds: float, t: float) -> void:
 			device.set_powered(runs)
 			if runs:
 				used_wh -= device.work(seconds, t)
-			if device.charge_light != null:
-				ChargeLight.paint(device.charge_light, device.charge_share())
-		for cell in cells:
-			cell.show_charge()
+		for i in cells.size():
+			cells[i].flow_w = (cells[i].charge_wh - before[i]) * 3600.0 / seconds
+			cells[i].show_charge()
+		for device: Device in pool:
+			device.show_charge()
 
 
 ## The devices in a pool that draw this tick, `wants` what each would draw:
-## all but the lower ranks that give way to the highest while it runs short.
+## all but those switched off, and the lower ranks giving way to the higher
+## while it runs short.
 func _running(pool: Array, wants: Dictionary, made: float, share: float) -> Array:
-	var top: int = pool[0].rank
-	var all := 0.0
-	for device: Device in pool:
-		top = maxi(top, device.rank)
-		all += wants[device]
+	var ranks := _ranks(pool)
+	var levels := _levels(ranks)
+	# What each rank and every rank over it would draw.
+	var over := {}
+	for level: int in levels:
+		over[level] = 0.0
+		for device: Device in ranks:
+			if ranks[device] >= level:
+				over[level] += wants[device]
 	return pool.filter(func(d: Device) -> bool:
-		return d.rank >= top or wants[d] <= 0.0 or made >= all \
-			or share > RESERVE + (0.0 if d.powered else RESTART))
+		if not ranks.has(d):
+			return false
+		var level: int = ranks[d]
+		return level == levels[0] or wants[d] <= 0.0 or made >= over[level] \
+			or share > _gives_way(levels, level) + (0.0 if d.powered else RESTART))
+
+
+## What a pool's power boxes let a Console do: rank who's served first, and
+## switch draws off. Nothing without a box.
+func control(pool: Array) -> Dictionary:
+	var can := {"ranks": false, "switches": false}
+	for device: Device in pool:
+		var box := device as PowerBox
+		if box != null and not box.wrecked():
+			can.ranks = can.ranks or box.model().get("ranks", false)
+			can.switches = can.switches or box.model().get("switches", false)
+	return can
+
+
+## Each device in a pool that isn't switched off, by its rank there.
+func _ranks(pool: Array) -> Dictionary:
+	var can := control(pool)
+	var ranks := {}
+	for device: Device in pool:
+		if not (can.switches and device.switched_off):
+			ranks[device] = rank_in(device, can)
+	return ranks
+
+
+## A device's rank as its pool's boxes allow: its own, or its kind's.
+static func rank_in(device: Device, can: Dictionary) -> int:
+	return device.priority if can.ranks and device.priority >= 0 else device.rank
+
+
+## The ranks present, highest first.
+static func _levels(ranks: Dictionary) -> Array[int]:
+	var levels: Array[int] = []
+	for device: Device in ranks:
+		if not levels.has(ranks[device]):
+			levels.append(ranks[device])
+	levels.sort()
+	levels.reverse()
+	return levels
+
+
+## The share of its pool's charge a rank gives way at: none for the highest,
+## the reserve for the lowest, evenly between.
+static func _gives_way(levels: Array[int], level: int) -> float:
+	var at := levels.find(level)
+	return RESERVE * at / (levels.size() - 1) if at > 0 else 0.0
 
 
 func _fraction(cells: Array[Battery]) -> float:
@@ -177,25 +242,40 @@ func wake(device: Device) -> void:
 		var made := 0.0
 		var wanted := 0.0
 		var wants := {}
-		var cells: Array[Battery] = []
+		var givers: Array[Battery] = []
 		for each: Device in pool:
 			made += each.production_w()
 			wants[each] = each.demand_w()
 			wanted += wants[each]
-			cells.append_array(each.pooled())
-		if made >= wanted or _fraction(cells) >= RESTART:
-			for each: Device in _running(pool, wants, made, _fraction(cells)):
+			givers.append_array(each.supplies())
+		if made >= wanted or _fraction(givers) >= RESTART:
+			for each: Device in _running(pool, wants, made, _fraction(givers)):
 				each.set_powered(true)
 		return
 
 
-## What the batteries in a device's pool hold now, Wh: all it could draw on.
+## What the batteries in a device's pool can give now, Wh: all it could draw on.
 func pool_wh(device: Device) -> float:
 	var held := 0.0
 	for each: Device in pool_of(device):
-		for cell in each.pooled():
+		for cell in each.supplies():
 			held += cell.charge_wh
 	return held
+
+
+## How full the batteries its pool draws on are together, 0 to 1; NAN with none.
+func pool_share(device: Device) -> float:
+	var cells: Array[Battery] = []
+	for each: Device in pool_of(device):
+		cells.append_array(each.supplies())
+	return _fraction(cells) if not cells.is_empty() else NAN
+
+
+## The share of its pool's charge a device gives way at as the pool runs
+## short: its rank's part of the reserve kept for those above it, else none.
+func gives_way_at(device: Device) -> float:
+	var ranks := _ranks(pool_of(device))
+	return _gives_way(_levels(ranks), ranks[device]) if ranks.has(device) else 0.0
 
 
 ## The devices sharing a device's pool; none for a wrecked one.

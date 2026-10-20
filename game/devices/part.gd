@@ -16,7 +16,7 @@ var socket: Socket
 
 
 ## Loose, the wind grabs a part by its size, so a seedling doesn't blow away in
-## a breeze that leaves a crate be.
+## a breeze that leaves a deck be.
 func _ready() -> void:
 	if not has_meta(&"wind_catch"):
 		set_meta(&"wind_catch", Tuning.current().wind_catch_per_m2 * Weather.biggest_face(self))

@@ -6,7 +6,8 @@ extends SailProbe
 ## towing you alone, where as the link you'd bear the camp's pull twice over.
 ## Carving out to windward bears the rig away, to leeward heads it up,
 ## against the same start with no carve. Braced off its way with the camp
-## moored, you're the fulcrum the line bends round, and it hurts you.
+## moored, you're the fulcrum the line bends round, and it hurts you; looking
+## along the rig there, reeling hauls its sheet and leaves the camp's line be.
 
 ## The point of sail, degrees off a beam reach (Scenarios' heading), the
 ## carve, rad off the rig's way, and how hard the edge digs in.
@@ -29,9 +30,9 @@ func run() -> void:
 	for carve: Array in [[&"alone", [], 0.0], [&"none", [], 0.0], [&"windward", ["move_left", "move_back"], -CARVE],
 			[&"leeward", ["move_right", "move_back"], CARVE]]:
 		await _set_up(carve[0] == &"alone")
-		var rig: Chassis = kit[0]
-		var camp: Chassis = kit[3]
-		var sheet: Line = kit[7]
+		var rig: Chassis = _of(Chassis, 0)
+		var camp: Chassis = _of(Chassis, 1)
+		var sheet: Line = _of(Line, 0)
 		var seen := {"t": 0, "sheet": 0.0, "tow": 0.0, "body": 0.0, "camp": 0.0, "carve": 0.0}
 		var each := func() -> void:
 			_steer()
@@ -71,7 +72,7 @@ func run() -> void:
 		turned[&"leeward"], turned[&"none"]])
 	await _set_up(false)
 	player.step_off()
-	(kit[3] as Chassis).freeze = true
+	(_of(Chassis, 1) as Chassis).freeze = true
 	player.set_physics_process(false)
 	player.global_position += ground(-downwind) * 4.0
 	var bent := {"most": 0.0}
@@ -83,6 +84,17 @@ func run() -> void:
 	check(bent.most > world.tuning.fulcrum_n and player.vitals.health < Vitals.FULL and player.vitals.health >= 1.0,
 		"as the fulcrum you're hurt (%.0f health)" % player.vitals.health)
 	check(ropes.hidden != null and ropes.ropes.size() == 2, "and below their breaking the lines hold")
+	tending = 0.0
+	var sheet: Rope = (_of(Line, 0) as Line).rope
+	var carried: Rope = (_of(Line, 1) as Line).rope
+	var was := [mast.trim, carried.length]
+	look(eye(), Line._tip((_of(Line, 0) as Line).ends[0]).global_position)
+	hands.reel.choose((_of(Line, 0) as Line).ends[1])
+	check(hands.reel.line() == sheet and hands.reel.notch(2), "choosing the sheet, the reel works it")
+	await simulate(1.0, _steer)
+	check(absf(was[0] - mast.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(carried.length - was[1]) < 0.01 and ropes.hidden != null,
+		"two notches haul its inboard in half a metre, the camp's line and the hidden one let be (%.2f m, %.2f m)" % [
+		was[0] - mast.trim, carried.length - was[1]])
 	speed_up(1)
 
 
@@ -123,15 +135,22 @@ func _set_up(alone: bool) -> void:
 	world.teleport(player, Transform3D(Basis(Vector3.UP, atan2(-way.x, -way.y)), open + Vector3.UP * 0.1))
 	await physics_frames(5)
 	kit = Scenarios.sail_tow(world)
-	deck = kit[0]
-	mast = kit[1]
+	deck = _of(Chassis, 0)
+	mast = _of(Mast, 0)
 	if alone:
-		var line: Line = kit[8]
+		var line: Line = _of(Line, 1)
 		player.waist.untie(line.ends[1])
 	await physics_frames(10)
 	blow(downwind * 10.0)
 	hoist(60.0)
 	course = way
 	tending = deg_to_rad(15.0)
-	check(player.get_on(kit[6]), "you step onto the board, your lines still tied")
+	check(player.get_on(_of(Hoverboard, 0)), "you step onto the board, your lines still tied")
 	await physics_frames(2)
+
+
+## The scenario's n-th thing of a kind, in the order it laid them: the rig
+## before the camp, the sheet before the camp's line.
+func _of(kind: Variant, n: int) -> Node3D:
+	var found := kit.filter(func(body: Node) -> bool: return is_instance_of(body, kind))
+	return found[n] if n < found.size() else null

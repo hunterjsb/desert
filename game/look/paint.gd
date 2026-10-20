@@ -30,7 +30,7 @@ const WEATHERED := 0.8
 ## the marks later hands put over them, the atlas's bottom row: the houses'
 ## crests and the sign of Tu.
 enum Mark { CONTRACTOR, SHIELD_MAKER, WIND_MAKER, CONSIGNMENT, SKIMMER_CREW, MEMBER_STATE,
-	OKAFOR, KESSEL, ARKWRIGHT, VANTE, TU }
+	HABERJACK, PELLICOTT, CRAKE, VONATELLI, TU }
 ## A scratch is cut through the paint to the metal.
 enum Ink { DARK, PALE, SCRATCH }
 ## Each era's row of the atlas: the hands its marks were put on by.
@@ -40,19 +40,19 @@ const MARKS := preload("res://game/look/marks.png")
 ## A lineage's look (Eras.lineage). How worn its paint starts by its last
 ## hands' era, as ERA does by a find's layer: colonial gear sealed away, the
 ## First Kingdoms' kept clean, the skimmer era's worn hard, the second age's
-## out in the weather. Its maker's stamp is from its first hands' row: later
-## hands add their marks over it and never paint it out.
+## out in the weather. Its first provenance mark is from its first hands' row:
+## later hands add their marks over it and never paint it out.
 const AGE_BY_ERA := {Eras.COLONIAL: 0.05, Eras.FIRST: 0.1, Eras.SKIMMER: 0.3, Eras.SECOND: 0.45, Eras.NEW: 0.15}
 const ROW_BY_ERA := {Eras.COLONIAL: 2, Eras.SKIMMER: 2, Eras.NEW: 0}
 ## A part has no soundness of its own yet: it looks this sound.
 const PART_SOUND := 0.8
 ## The houses' heraldry: its crest, its band's enamel and its plaque's (the
-## houses' colours, deep red, ochre and teal, part 5; Vante's pairing is a
-## default).
-const HOUSE := {&"okafor": [Mark.OKAFOR, Color(0.48, 0.08, 0.07), Color(0.48, 0.08, 0.07)],
-	&"kessel": [Mark.KESSEL, Color(0.74, 0.5, 0.14), Color(0.74, 0.5, 0.14)],
-	&"arkwright": [Mark.ARKWRIGHT, Color(0.04, 0.4, 0.38), Color(0.04, 0.4, 0.38)],
-	&"vante": [Mark.VANTE, Color(0.74, 0.5, 0.14), Color(0.48, 0.08, 0.07)]}
+## houses' colours, deep red, ochre and teal, part 5; the Vonatellis' pairing
+## is a default).
+const HOUSE := {&"haberjack": [Mark.HABERJACK, Color(0.48, 0.08, 0.07), Color(0.48, 0.08, 0.07)],
+	&"pellicott": [Mark.PELLICOTT, Color(0.74, 0.5, 0.14), Color(0.74, 0.5, 0.14)],
+	&"crake": [Mark.CRAKE, Color(0.04, 0.4, 0.38), Color(0.04, 0.4, 0.38)],
+	&"vonatelli": [Mark.VONATELLI, Color(0.74, 0.5, 0.14), Color(0.48, 0.08, 0.07)]}
 ## The ages after's materials (part 5): brass fittings; fern cord, salt-glazed
 ## ceramic, saltbush wood, limewash, sand-glass, a dyed leather tassel, and
 ## the Cistern's deep water-blue glaze. A plate off something else is in

@@ -1,9 +1,9 @@
 extends ShieldProbe
-## Bubble shield probe 6: fast boot. Deep in the worst storm, F on a shield
-## generator blooms its bubble open, and within the boot time,
-## shield_bloom_seconds, it protects a crate 5 m off and its own far edge: the
-## crate stops wearing. It grows there, rather than appearing whole. And with
-## no battery to run on, F won't start it at all.
+## Bubble shield probe 6: fast boot. Deep in the worst storm, use on a
+## shield on its plate blooms its bubble open, and within the boot time,
+## shield_bloom_seconds, it protects a chassis 5 m off and its own far edge:
+## the chassis stops wearing. It grows there, rather than appearing whole. And
+## alone on the sand, with no battery to run on, use won't start one at all.
 
 const WIND := 18.0
 
@@ -12,12 +12,12 @@ func run() -> void:
 	await load_storm(1.0, WIND)
 	var boot := Tuning.current().shield_bloom_seconds
 	var generator := shield_at(ahead(4.0), false)
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
+	var piece := Catalog.device(&"chassis")
+	world.content.add_child(piece)
 	var spot := generator.global_position + Vector3(0.0, 0.0, 5.0)
-	crate.global_position = Vector3(spot.x, world.height_under(spot) + 0.26, spot.z)
+	piece.global_position = Vector3(spot.x, world.height_under(spot) + 0.07, spot.z)
 	# Staked, so it can't slide in or out on its own.
-	crate.freeze = true
+	piece.freeze = true
 	var dud := Catalog.device(&"shield") as ShieldGenerator
 	world.content.add_child(dud)
 	dud.global_position = ahead(-30.0) + Vector3.UP * 0.22
@@ -27,7 +27,7 @@ func run() -> void:
 	world.time_warp = 1.0
 	check(generator.interact(world.player) and generator.on, "use switches it on")
 	check(dud.interact(world.player), "use on one with no battery does something: it fizzles")
-	var crate_at := INF
+	var piece_at := INF
 	var edge_at := INF
 	var first_edge := true
 	var worn := 0.0
@@ -36,18 +36,18 @@ func run() -> void:
 		var seconds := (tick + 1) / float(Engine.physics_ticks_per_second)
 		if tick == 0:
 			first_edge = _protected(edge)
-		if crate_at == INF and _protected(crate.global_position):
-			crate_at = seconds
-			worn = crate.durability
+		if piece_at == INF and _protected(piece.global_position):
+			piece_at = seconds
+			worn = piece.durability
 		if edge_at == INF and _protected(edge):
 			edge_at = seconds
 	world.time_warp = 0.0
-	print("boot %.2f s: crate protected at %.3f s, the far edge at %.3f s" % [boot, crate_at, edge_at])
-	check(crate_at <= boot and edge_at <= boot + 0.5 / Engine.physics_ticks_per_second,
-		"protecting within the boot time (crate %.3f s, edge %.3f s)" % [crate_at, edge_at])
+	print("boot %.2f s: chassis protected at %.3f s, the far edge at %.3f s" % [boot, piece_at, edge_at])
+	check(piece_at <= boot and edge_at <= boot + 0.5 / Engine.physics_ticks_per_second,
+		"protecting within the boot time (chassis %.3f s, edge %.3f s)" % [piece_at, edge_at])
 	check(not first_edge, "the bubble grows to its edge rather than appearing whole")
-	check(crate.durability == worn and crate.durability < 1.0,
-		"the crate wore until the bubble reached it, then never again (%.6f)" % crate.durability)
+	check(piece.durability == worn and piece.durability < 1.0,
+		"the chassis wore until the bubble reached it, then never again (%.6f)" % piece.durability)
 	check(not dud.on and not dud.running() and dud.shelter.radius == 0.0, "with no battery it never started")
 
 

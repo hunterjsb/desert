@@ -1,9 +1,10 @@
 extends LineProbe
-## Profile & saves probe 16: a Console resumes. A Console on the sand with its
-## screen, three instruments and a radio on its top, its screen turned to its
-## power page, the number its shield page had, is saved and resumed into a
-## fresh world on the same seed: the same parts in the same sockets, the same
-## page and the same log, and it reads on.
+## Profile & saves probe 16: a Console resumes. A Console on a plate with a
+## battery and a radio stuck beside it, its screen and three instruments in
+## its ports, its screen turned to its power page, the number its shield
+## page had, is saved and resumed into a fresh world on the same seed: the
+## same parts in the same ports, the radio on its deck, the same page and the
+## same log, and it reads on.
 
 var saves: Node
 
@@ -11,13 +12,14 @@ var saves: Node
 func run() -> void:
 	saves = get_node(^"/root/Saves")
 	await load_lines()
-	var made := device(&"console", spot(0.0, 3.0), 0.26) as Console
-	for id: StringName in [&"battery", &"screen", &"anemometer", &"barometer", &"radar"]:
+	var plate := device(&"chassis", spot(0.0, 3.0), Chassis.THICK * 0.5 + 0.01) as Chassis
+	var made := Rig.make(&"console") as Console
+	Stick.put(plate, plate, Chassis.TOP, Vector2(-0.1, 0.0), 0.0, made)
+	# Fitted running, so it logs each one coming online.
+	for id: StringName in [&"screen", &"anemometer", &"barometer", &"radar"]:
 		fit_part(made, id)
-	var radio := Catalog.device(&"radio")
-	world.content.add_child(radio)
-	fit_part(radio, &"battery")
-	made.mount(radio, Scenarios._free(made, &"top"))
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.37, 0.3), 0.0, Catalog.part(&"battery"))
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.32, -0.3), 0.0, Rig.make([&"radio", [&"battery"]]))
 	made.page = Console.Page.POWER
 	await simulate(2.0)
 	var before := _reading(made)
@@ -25,7 +27,7 @@ func run() -> void:
 	check(before.log.size() >= 3 and saves.save(world), "saved, its log written")
 
 	check(await resume(), "resumed")
-	var found := world.content.get_children().filter(func(n: Node) -> bool: return n is Console)
+	var found := world.devices().filter(func(n: Node) -> bool: return n is Console)
 	check(found.size() == 1, "one Console came back")
 	if found.is_empty():
 		return
@@ -47,5 +49,6 @@ func _reading(made: Console) -> Dictionary:
 			fitted.append(str(socket.mounted.get_meta(&"catalog")))
 		else:
 			fitted.append("")
-	return {"fitted": fitted, "page": made.page,
+	return {"fitted": fitted, "page": made.page, "beside": made._system().map(func(d: Device) -> String:
+			return str(d.get_meta(&"catalog"))),
 		"log": made.log_lines.map(func(l: Dictionary) -> String: return "%s %s" % [l.at, l.text])}

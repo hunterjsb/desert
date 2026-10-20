@@ -1,9 +1,9 @@
 class_name ShieldGenerator
 extends Device
-## The bubble shield: a small generator you carry, set down or seat on a top
-## mount, and switch with use. Running, it holds a Shelter centred on itself, so
+## The bubble shield: a small generator you carry, set down or stick on a
+## deck, and switch with use. Running, it holds a Shelter centred on itself, so
 ## the bubble goes wherever it does, carried or not, and keeps out what the
-## shelter blocks. Seated on a crate, it runs on the crate's power too. It
+## shelter blocks. On a deck, it runs on the deck's power too. It
 ## draws by what it's doing: a sip in the clear, the most while it holds back
 ## a storm. Low on power its hum sags and its shell flickers; flat, the bubble
 ## collapses for everything at once, and blooms again once there's power.
@@ -254,6 +254,9 @@ func _show() -> void:
 		# Holding back more than a full storm's sand, it strains up in pitch.
 		var strain := clampf((particle_load() - 1.0) / (_tuning.anomaly_particles - 1.0), 0.0, 1.0)
 		hum.pitch_scale = lerpf(lerpf(HUM_PITCH, STRAIN_PITCH, strain), SAG_PITCH, low)
+		# Heard straining from inside its bubble: an anomaly's tell.
+		if strain > 0.0 and world.player.global_position.distance_to(global_position) < shelter.radius:
+			Deeds.done(world, &"tells", &"load")
 		if low > 0.0 and randf() < 0.1 + 0.4 * low:
 			glow *= FLICKER
 	elif hum.playing:
