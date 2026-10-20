@@ -286,7 +286,7 @@ nothing (0.00 and 0.03).
 
 ## Maker's marks
 
-*2026-10-16, mapped onto [session 3](lore-session-2026-10-16.md) the same day. Loose, not
+*2026-10-16, mapped onto session 3 the same day. Loose, not
 canon: the names are the lore's, and every design is a rough placeholder.*
 
 Six rough marks on a few things: a contractor's tag, a member state's seal, two OEM signs,
@@ -297,12 +297,12 @@ ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 
 | Mark | What it stands for | Carried by |
 |---|---|---|
-| **Legacy contractor tag:** "RMC" on a notched plate | Placeholder lettering still in the build. Current lore names Moonco as the prime contractor and Geologix, ProvWorks, GHe3, United Biotech and Teresa among its specialists. Which organization marked or installed each surviving device is not settled ([colonial contractors](lore-research.md#colonial-contractors-moonco-and-its-network-agreed-2026-10-20)). | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
-| **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
-| **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
-| **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
-| **Consignment label,** by era | The label says who ordered or shipped the gear; it does not identify the OEM. The colonial label is TILG, the pre-war shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)). Tilg & Standard is its distinct successor, formed with Standard Freight thousands of years after the war ([lore research](lore-research.md#factions-agreed-session-3)). | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework); the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
-| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The skimmer racer's tail, which is what shows when it's found nose-down; a new one, the Salvager's, is plain (2026-10-18: the patch was on every board until the boards by make) |
+| **Legacy contractor tag:** "RMC" on a notched plate | Placeholder lettering still in the build. Current lore names Moonco as the prime contractor and Geologix, ProvWorks, GHe3, United Biotech and Teresa among its specialists. Which organization marked or installed each surviving device is not settled ([colonial contractors](world/lore-research.md#colonial-contractors-moonco-and-its-network-agreed-2026-10-20)). | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
+| **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](world/lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
+| **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder (part 2 §3) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
+| **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's (part 2 §4) | The turbine |
+| **Consignment label,** by era | The label says who ordered or shipped the gear; it does not identify the OEM. The colonial label is TILG, the pre-war shipping line that registered Zan as a temporary transshipment hub ([session 3](world/lore-research.md#factions-agreed-session-3)). Tilg & Standard is its distinct successor, formed with Standard Freight thousands of years after the war ([lore research](world/lore-research.md#factions-agreed-session-3)). | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework); the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
+| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](world/lore-research.md#13-open-questions-for-hunter)) | The skimmer racer's tail, which is what shows when it's found nose-down; a new one, the Salvager's, is plain (2026-10-18: the patch was on every board until the boards by make) |
 
 **What the build currently attributes.** These are equipment and marks already represented in
 the game; the marks' letterforms and designs remain placeholders for the planned logo redesign.
@@ -321,16 +321,16 @@ makers in planned designs, not logos on current gear.
 session 3's early markings that don't match: a contractor-placeholder tag and number beside a
 member state's seal, in two hands' paint. The same contractor's tag on the devices found in the
 sand lets the player tie them to the buildings. Its build-out is the overbuilt colonial tech
-([part 1 §6](lore-session-2026-10-14.md#6-history-runs-backwards-in-the-ground)), and corporate tech lies deepest
-([session 3](lore-research.md#the-surface-today-agreed-session-3)). The two shields show issuer
+(part 1 §6), and corporate tech lies deepest
+([session 3](world/lore-research.md#the-surface-today-agreed-session-3)). The two shields show issuer
 against maker. The light shield was bought new, so it carries only its maker's sign. A found
 one carries the legacy RMC placeholder on its housing, with the maker's sign small on the core
 inside. This does not yet identify which Moonco specialist installed it. The crate is the lore's
 own example of the box and its label. The current Moonco/specialist network does not yet specify
 this gear's acceptance, installation or OEM marks.
 
-**Left blank on purpose.** Batteries and the other commodity parts carry no mark ([part 2
-§4](lore-session-2026-10-14-part-2.md#4-power)). So does the survival kit (and so did the charger, until it went), since the lore doesn't say who made
+**Left blank on purpose.** Batteries and the other commodity parts carry no mark (part 2
+§4). So does the survival kit (and so did the charger, until it went), since the lore doesn't say who made
 them, and inventing an issuer would be making canon. The next candidates were left out to keep
 this to a few:
 
@@ -345,13 +345,13 @@ deep. A found device takes its layer's row. So far the consignment label, a chas
 since the crate went, is the mark that changes most from row to row:
 
 - **Deep:** "TILG" over "XN 0217", Tilg's consignment stencil in the acronym's capitals (it
-  hasn't worn into "Tilg" yet: [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)),
+  hasn't worn into "Tilg" yet: [the names](world/lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)),
   crisp, routed by the system's official code. The X form is old and official
-  ([names](lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
+  ([names](world/lore-research.md#hierarchy-and-the-name-decay-agreed-session-3)).
 - **Surface:** "ZN" daubed back on by hand in rust red: a copy from memory, on the way from XN
   to Zan, with the X said and written as a Z. It's late, a Dark Age or second-age form (a
   reading: hands that no longer read the code, where the First Kingdoms kept their archives; [the
-  lore](lore-research.md#era-names-again-agreed-session-4-part-4-corrected-in-part-5) restores the
+  lore](world/lore-research.md#era-names-again-agreed-session-4-part-4-corrected-in-part-5) restores the
   Dark Age),
   and session 3 dates ruins by which form appears. **Decided (session 4, part 2, 2026-10-17):
   the Z stays.** "The hand-daubed 'ZN' consignment mark is intentional drift from XN."
@@ -405,7 +405,7 @@ a surface crate side by side.
 
 ## Shape by era
 
-*Hunter, 2026-10-17 ([notes](session-notes-2026-10-17.md)); asked for, not drawn.* "Device models
+*Hunter, 2026-10-17 (notes); asked for, not drawn.* "Device models
 should differ by era in shape, not just maker's marks. The shield comes first."
 
 Today an era shows in paint and marks only. Wear "does half the work" (B, above), the atlas has
@@ -417,7 +417,7 @@ any era's shield looks like. The built light shield is round and bone white, and
 flat ([Bubble shield & camp](prd/bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)).
 
 **The table (Agreed, session 4, part 5; named, not drawn).** [Session 4, part
-5](gods-gear-farside-2026-10-17.md) answers it, section 4, for three eras. It supersedes the notes'
+5](briefs/gods-gear-farside-2026-10-17.md) answers it, section 4, for three eras. It supersedes the notes'
 "light, cheap and fragile" skimmer-era crate and "practical to drag" first-age crate as the story of
 the shapes; the stats are in [Devices & mods](prd/devices-and-mods.md#frames-by-era-agreed-session-4-part-5-not-built).
 
@@ -449,7 +449,7 @@ Readings, not in the session:
 
 ## Marks by era after the collapse
 
-*Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
+*Session 4, part 2 (lore session); named, not drawn, and
 none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
 names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
 - **First Kingdoms** gear carries heraldry and guild stamps (houses such as Haberjack, Pellicott,
@@ -457,17 +457,17 @@ names what the ages after the collapse would carry, to be drawn when there is a 
 - **Second-age** gear carries religious symbols (the faith of Tu).
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
-  worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
-- **Session 5 (named, not drawn)** ([lore session](lore-session-2026-10-18-mitchell-wow-shoemaker.md)): the
+  worn names (Zan, Tu, Han, Mon, Aitch): [the names](world/lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
+- **Session 5 (named, not drawn)** (lore session): the
   Tabbed's **tab-stone**, carved with what a family owes and is owed, and the Ashwalkers' pendant ones;
   the **Mitchells**, stamped company scrip whose brand outlived its meaning; and the **singing stone**, black and
   glassy, scored with melted grooves, warm to the touch
-  ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). A tab-stone is a second-age
+  ([the lore](world/lore-research.md#mitchell-the-dead-god-agreed-session-5)). A tab-stone is a second-age
   thing and a Mitchell a First Kingdoms one, so each fits the layered marks below.
 
 ### Layered marks (Agreed, session 4, part 5; named, not drawn)
 
-*[Session 4, part 5](gods-gear-farside-2026-10-17.md), section 3; none of it is in the atlas.* The
+*[Session 4, part 5](briefs/gods-gear-farside-2026-10-17.md), section 3; none of it is in the atlas.* The
 Dark Age made the second age's gear by remaking older gear, so a remade item can wear all its past:
 "a colonial maker's stamp, First Kingdoms heraldry scratched over it, Dark Age repair work holding it
 together. Visual only; no stat effect required." They are "readable without text," and they come from the
@@ -485,7 +485,7 @@ Readings, not in the session:
   wrote it; the Dark Age is where the knowledge is lost.
 - **The Dark Age leaves no mark of its own on buildings,** only on things: it has no structures.
 
-**As drawn** (2026-10-18; [the world system](world-system.md#the-marks)). A thing's lineage stacks its
+**As drawn** (2026-10-18; [the world system](world/world-system.md#the-marks)). A thing's lineage stacks its
 marks over its own look, each layer added as pieces in the paint pass, not repainted:
 - **The maker's stamp** is the look's own, from its first hands' row: colonial gear the colonial row, the
   company's issue the new one.
@@ -508,8 +508,8 @@ meshes: `look/lineage/shoot.sh` shoots the sheet once the GPU is back.
 
 ## Tu and the sky
 
-*2026-10-17, from [the Tu spec](tu-and-day-2026-10-17.md): the behaviour is in [the
-moon](the-moon.md#day-length). Provisional.*
+*2026-10-17, from [the Tu spec](briefs/tu-and-day-2026-10-17.md): the behaviour is in [the
+moon](world/the-moon.md#day-length). Provisional.*
 
 **How it's drawn.** Tu is part of the sky, not a thing in the world: a disc found by its
 direction, a sphere hit by each pixel's ray, so it never shifts as you move, never clips,
@@ -572,7 +572,7 @@ look-test `look/sky/shoot.sh <dir>` shoots the three sizes at the same moments; 
 at the low detail red spot every night pulls you out of it."*
 
 **It turns.** The whole cloud field turns about Tu's pole, true to scale: 6.8 turns a day
-seen from Zan at 9°, one each 2 minutes 57 ([the moon](the-moon.md#day-length)). `DayCycle.tu_turn`
+seen from Zan at 9°, one each 2 minutes 57 ([the moon](world/the-moon.md#day-length)). `DayCycle.tu_turn`
 is the one account of how far it has turned; SkyView hands it to the sky as `tu_spin`, and the
 compass's sway reads the same. The clouds are laid round Tu's own longitude, so nothing in them
 has a seam as it comes into view. At 9° the clouds at the middle of the face move about 2 pixels
@@ -727,7 +727,7 @@ so its reflection map is kept at the smallest size and costs next to nothing to 
 
 ## Sand and wind: one wind texture (agreed direction, 2026-10-18)
 
-From the [sand and wind techniques research](sand-and-wind-techniques-2026-10-18.md) Hunter
+From the [sand and wind techniques research](briefs/sand-and-wind-techniques-2026-10-18.md) Hunter
 brought: wind is a field, not an event, so one player-centred texture baked on the GPU (wind on
 the ground, lee shelter, and how hard the wind moves sand there) feeds the streamers, the sand's
 shading and the tracks' healing alike, and they stay consistent. Its roadmap, in order:
@@ -1041,7 +1041,7 @@ night, the headlamp, storm, a walked track, and close ripples. The look-test can
   session: "The Z on surface crates stays. The hand-daubed 'ZN' consignment mark is intentional
   drift from XN." That settles the notes' "Open: the XN-to-Z crate label. Hunter's first
   reaction was that it should read XN; it may stay as story," and the lore's "writing kept the X
-  for centuries" ([the names](lore-research.md#names-the-ug-catalog-and-the-moon)) reads as the
+  for centuries" ([the names](world/lore-research.md#names-the-ug-catalog-and-the-moon)) reads as the
   copyist's drift, not a rule. The atlas reads "ZN" as it did, and nothing was changed.
 - **Era shapes against the skimmer era.** Part 5's shape table has colonial, First Kingdoms and second
   age, and no skimmer era; the notes' "light, cheap and fragile" is the only word on its gear. Not said

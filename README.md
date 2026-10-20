@@ -3,7 +3,8 @@
 A cozy survival game on a dead desert moon. Working title.
 
 Docs first: [docs/vision.md](docs/vision.md) says what the game is, each system has a PRD
-in `docs/prd/`, and [docs/skeleton-plan.md](docs/skeleton-plan.md) is the build order.
+in `docs/prd/`, and [docs/README.md](docs/README.md) maps the full documentation set.
+[docs/skeleton-plan.md](docs/skeleton-plan.md) records the original build order.
 Sand Game, the prototype this replaces, lives on the
 [`archive`](https://github.com/hunterjsb/desert/tree/archive) branch.
 
@@ -68,5 +69,5 @@ game/      the game, one folder per system
 probes/    headless probes, one folder per PRD (lib/ is the framework)
 look/      look-tests, judged by eye
 assets/    only what's in use, copied from the archive branch
-docs/      vision, PRDs, the moon, the skeleton plan
+docs/      vision and PRDs, with world references and supporting briefs grouped by topic
 ```

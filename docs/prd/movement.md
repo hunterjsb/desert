@@ -34,7 +34,7 @@ outrun,** at least until the late-game haulers arrive.
   gravity. Crouching makes you smaller to the wind, so you brace against a storm.
 - **Your feet sink when you haul** (decided 2026-10-15). Walking or sprinting against a
   heavy pull on a line, you dig in: you sink a little, slow down and tire faster.
-- **Auto-walk** (Hunter, [2026-10-18 spec](../storms-signals-sailing-2026-10-18.md)). It holds
+- **Auto-walk** (Hunter, [2026-10-18 spec](../briefs/storms-signals-sailing-2026-10-18.md)). It holds
   your heading while you steer by the compass or other instruments, so a storm still lets you
   make long-range progress.
 - **The body feels it:** sway as you walk, a spring in the step, a dip when you land,
@@ -360,7 +360,7 @@ feature. just make it clear youre really tumbling."
 
 ### Dig and carve (agreed, 2026-10-18 spec; built)
 
-From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). The board's feel stays (never sinks, gets
+From Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-2026-10-18.md). The board's feel stays (never sinks, gets
 air, crouch pumps, kick, carving, the drift); move back becomes the **dig**: one edge drops so the
 hover field bites the sand, trading speed for sideways grip with a big spray. Moving back while
 steering digs into the carve; alone it swings the board sideways to a hockey stop. Digging past
@@ -426,7 +426,7 @@ both answered below.
 
 ### The patrol board: a superchassis (Agreed, session 4, part 3; not built)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); a novelty start's
+*Session 4, part 3 (lore session); a novelty start's
 centrepiece, proposed, and none of it is built.* The Daventry patrol board is a "heavily modded
 military hoverboard: a camp in a board, its own bespoke superchassis" ([the
 kit](../vision.md#player-origins-and-kits)). It carries a strong but narrow shield that "can
@@ -447,7 +447,7 @@ superseded by Hunter's 2026-10-19 powered-board decision):
 - **It would be the first board that tows,** against "It tows nothing" above, which keeps the
   board fun and out of the camp's way. The patrol board's camp is its own, so it may not compete
   with a real one, but the session doesn't say ([the
-  clash](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
+  clash](../world/lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)).
 - **A shield that stays on while riding** is a bubble moving at board speed. It has a precedent:
   the light shield is meant to be "light enough to carry, switched on, while you walk or board" ([Bubble shield
   & camp](bubble-shield-and-camp.md#the-carried-light-shield-and-the-starts-not-built)). The
@@ -655,7 +655,7 @@ your own camp's parts rather than found whole:
 
 Sailing is how hybrid play travels fast enough that storms are worth avoiding; the strongest wind
 is a storm's, so the fastest move is running just ahead of a front on its wind
-([spec](../storms-signals-sailing-2026-10-18.md)):
+([spec](../briefs/storms-signals-sailing-2026-10-18.md)):
 1. **Kitesurf, early:** a minimal camp (chassis, shield, sail as one unit) ahead of you on the
    board, a light control line to the sail, carving with the board's dug edge.
 2. **A larger camp:** sail in front, you in the middle, the camp close behind in the shield; a
@@ -832,7 +832,7 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
 
 ### The dune sailboat (Agreed, session 4, part 3; superseded)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); the Varran settler's
+*Session 4, part 3 (lore session); the Varran settler's
 centrepiece, proposed. The chassis spec (2026-10-18) made his craft a minimal fast sailing rig
 instead, built (above), and Storm Runner, not a sailboat built and used, opens his start.* "Dune sailboat: slow hauler for hybrid play." It
 is "a wind-driven slow hauler that reads the wind vector already in the world," with "tow capacity

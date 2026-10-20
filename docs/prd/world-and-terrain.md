@@ -110,11 +110,11 @@ can achieve. A real sphere this small would put the horizon about 300 m away. We
 the ground flat precisely so the big views stay possible.
 
 **The sky follows your point on the moon** (2026-10-17, [the Tu
-spec](../tu-and-day-2026-10-17.md)). Local time follows longitude, so walking east brings
+spec](../briefs/tu-and-day-2026-10-17.md)). Local time follows longitude, so walking east brings
 sunset sooner. Tu hangs fixed over the near side at a height and bearing set by where you
 are, about a degree for every 420 m toward or away from the point under it, so it's a
 landmark: on the far side it's never seen, and the stars, whose pole stands at your latitude,
-take over. How it all looks is in [the moon](../the-moon.md#day-length).
+take over. How it all looks is in [the moon](../world/the-moon.md#day-length).
 
 The dunes don't need to wrap, because they're stateless and shifting anyway. What
 wraps is everything fixed: the coordinates, the underlying topography and climate by
@@ -126,7 +126,7 @@ always as rich as the land behind.
 
 ### Landmarks
 
-*Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and
+*Agreed, session 4, part 2 (lore session); loose, and
 not built.* Landmarks are one general system: a small class of prefab sites at fixed coordinates
 on the planet grid, the same in every run, that persist the player's changes. They're the only
 fixed things on a shifting moon, and **the one exception to unloading out-of-range content.** The
@@ -148,12 +148,12 @@ It bends two things here and leaves the rest alone:
 Rules 1 to 3, 5 and 6 are untouched: the ground is still one function, and a landmark is placed
 into it, never dug or moved.
 
-**Sister (Agreed, session 4, part 3).** Session 4, part 3 ([lore
-session](../lore-session-2026-10-17-part-3.md)) gives the first landmark a description: "a
+**Sister (Agreed, session 4, part 3).** Session 4, part 3 (lore
+session) gives the first landmark a description: "a
 fixed-coordinate prefab landmark: half-buried temple, dormant terminal, basin that refills slowly.
 Restoration and linking can wait for the endings work." It is Mother Cistern's temple city, near
 Halfrise on the Rim ([Salvage & ruins](salvage-and-ruins.md#landmarks) has the site, [the
-lore](../lore-research.md#mother-cistern-and-her-order-agreed-session-4-part-3) the story).
+lore](../world/lore-research.md#mother-cistern-and-her-order-agreed-session-4-part-3) the story).
 Readings, not in the session:
 - **Where it stands is a longitude question.** The Rim is a region of the sky's map, Tu half-risen
   on the horizon, and the game has only latitude. Sister's coordinates wait for the regions
@@ -173,7 +173,7 @@ has them, along the line toward Tu, and the terrain is generated around them, hi
 ([World generation by layers](#world-generation-by-layers-agreed-session-4-part-4-not-built)). The
 exception to unloading stays: what you changed in one is kept whatever the distance.
 
-**Session 5's places (Agreed and Idea).** [Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)
+**Session 5's places (Agreed and Idea).** Session 5
 adds no landmark to the eight. It puts the Counting House in Crakeside, in Port Morgan's ruins; a sketch of
 Wow deep under a place not yet chosen (not Facility 4: Hunter's ruling); and Halfrise's walls ringed with singing-stone cradles, with
 Sister's stone ([Salvage & ruins](salvage-and-ruins.md#session-5s-finds-and-places-agreed-and-idea-not-built)
@@ -181,11 +181,11 @@ has them). Whether the Counting House is a part of Port Morgan or a landmark of 
 
 ## World generation by layers (Agreed, session 4, part 4; not built)
 
-*Designed whole in [the world system](../world-system.md), which is the contract for building it. Its
+*Designed whole in [the world system](../world/world-system.md), which is the contract for building it. Its
 spine is built (2026-10-17): the history pass per seed on the sphere, the eight landmarks, the path
 network and the site index, laid onto the ground near you by moon cells.*
 
-*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
+*[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md), with its labels as given: **Agreed** is
 settled direction, **Idea** is proposed and not confirmed, **Back burner** is liked and not to be
 built yet, and anything under its open questions is undecided and not to be hard-coded. None of it is
 built. Its scope warning: "the game has no structures and no terrain generation yet. Lore here is
@@ -253,7 +253,7 @@ launch site; Sister; Halfrise. (**Part 5 replaces the orbital launch site** with
 [below](#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built).) The
 session corrects two places on the way: the black site sits on the
 main artery, not an isolated spoke, and Starcom and the orbital launch site are separate places
-([the lore](../lore-research.md#corrections-and-places-agreed-session-4-part-4)).
+([the lore](../world/lore-research.md#corrections-and-places-agreed-session-4-part-4)).
 
 ### Keeping a huge moon interesting (Agreed)
 
@@ -302,7 +302,7 @@ The early game for everyone: **find an artery and follow it.** Spawn position de
 - **The ring is the Rim's band, a reading.** "The ring" is new to the docs. Spokes "run outward to
   the ring," the black site is "inside the ring," and the hot zone, dark zone and ring band are
   regions with their own plants. They fit the sky's three regions: hot zone under Tu, ring band the
-  Rim, dark zone the far side ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
+  Rim, dark zone the far side ([the lore](../world/lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)).
 - **Scale.** The Rim to the point under Tu is a quarter of a lap, about 37 km, the same as equator
   to pole here, a walk of several hours. Caravanserais "at day-long intervals on the artery" would
   be about 1.7 km apart if a day is the game's 20 minutes on foot, so about twenty of them along the
@@ -313,9 +313,9 @@ The early game for everyone: **find an artery and follow it.** Spawn position de
 
 ## The Rim depot, the twin fires and the elevator stub (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../gods-gear-farside-2026-10-17.md), section 6, labels as given (everything is
+*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 6, labels as given (everything is
 **Agreed** unless marked). None of it is built. The lore is in [the lore
-research](../lore-research.md#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5).* "Part 4's
+research](../world/lore-research.md#the-rim-depot-and-the-twin-fires-agreed-session-4-part-5).* "Part 4's
 'orbital launch site' landmark is **replaced** by two things: the Rim depot and the far-side elevator
 stub, which is also the observatory."
 
@@ -352,7 +352,7 @@ Readings, not in the session:
 - **The twin fires are two regions of one rule.** Volcanic ground is heat, vents and ash; the sub-Tu
   and anti-Tu points each get it, and the ground between is the Rim's and the cold. The rift valley is
   the first, and the second has no description beyond the volcano and its tower.
-  *Built 2026-10-18: the world system's [Geology](../world-system.md#geology) holds the rift's line and
+  *Built 2026-10-18: the world system's [Geology](../world/world-system.md#geology) holds the rift's line and
   its vents, and the plumes are in [Wind & storms](wind-and-storms.md#plumes).*
 
 ## Ambient life: sand beetles (Agreed, session 4, part 4; not built)
@@ -733,7 +733,7 @@ in the living docs, so this PRD follows it where it can, and says so on each lin
   ([Salvage & ruins](salvage-and-ruins.md#landmarks)). Not said whether the launch site is those pads
   or a separate place.
 
-Session 4, part 5 (2026-10-17, [the gods session](../gods-gear-farside-2026-10-17.md)) adds the
+Session 4, part 5 (2026-10-17, [the gods session](../briefs/gods-gear-farside-2026-10-17.md)) adds the
 following. Each is quoted old and new. The newest session wins in the living docs, so this PRD follows
 it as direction and says so on each line.
 
@@ -756,7 +756,7 @@ it as direction and says so on each line.
 - **The tidal heating at both bulges.** Here (the moon): a fading, rounding orbit with the vents going
   quiet. The session: the heat peaks at two points and the volcano at the far one is a vent cap that
   still matters at the end. Not said where the First Kingdoms' vents went, or whether they went to the far
-  side ([the lore, section 19](../lore-research.md#19-open-after-session-4-part-5)).
+  side ([the lore, section 19](../world/lore-research.md#19-open-after-session-4-part-5)).
 
 ## Marked camp preparation (2026-10-20)
 

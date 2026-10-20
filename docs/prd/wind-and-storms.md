@@ -140,7 +140,7 @@ downwind unless it's tied down. That's what rope is for.
 
 ### Instruments and the Console screen (proposed; first version built)
 
-*Hunter, 2026-10-17 ([session](../console-sensors-sleep-2026-10-17.md)). Direction, not a final
+*Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)). Direction, not a final
 spec. A first version is built (As built, below).* Weather sensing is "multifaceted: each instrument adds its own
 stats, and the screen shows every stat available." The screen is [the
 Console's](devices-and-mods.md#the-console-proposed-first-version-built). It turns the instruments named
@@ -213,7 +213,7 @@ second of world time.
   m/s WNW", its angle off the bow and its steady part under it, and the true wind too while the
   deck moves.
 - **Barometer:** pressure from the field. It's 310 hPa, the moon's thin air ([the
-  moon](../the-moon.md)), where the field sits at its threshold, and it falls 8 hPa for each unit
+  moon](../world/the-moon.md)), where the field sits at its threshold, and it falls 8 hPa for each unit
   the field rises, so it falls as a storm comes. It shows the pressure and its trend per minute
   over the last two minutes. While the field here is rising toward its threshold, that trend
   carried on gives a rough time until the storm, and under 15 minutes it warns, a row in amber:
@@ -261,11 +261,11 @@ second of world time.
 
 ### Feral plants: the free barometer (Agreed, session 4, part 3; not built)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); the first piece of its
+*Session 4, part 3 (lore session); the first piece of its
 build order, and none of it is built.* Feral scrub "closes up or turns its leaves before a storm."
 It is "a free, slotless, low-tech barometer for players without weather consoles, and the
 knowledge nomads would have had by heart" ([the
-lore](../lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). It sits beside the
+lore](../world/lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). It sits beside the
 instruments above as their cheapest form: the barometer row's "rough warning of an incoming
 storm," with no device, no slot and no power. The session's build note: "A plant prop whose pose
 (open → closed / leaves turning) is driven by the storm intensity curve with some lead time.
@@ -314,7 +314,7 @@ It can be built whenever the plant prop exists, and it needs nothing from sleep.
 
 ## Storms as planning sessions (Agreed, session 4, part 4; not built)
 
-*[Session 4, part 4](../plants-worldgen-ruins-2026-10-17.md); labels as the session gives them (Agreed,
+*[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md); labels as the session gives them (Agreed,
 Idea, Back burner, and anything under its open questions undecided). None of it is built.*
 
 "A storm can last 20-40 minutes, a whole play session. It becomes the reflective half of the loop;
@@ -356,7 +356,7 @@ Deferred in the same list: feral plants as a weather sign, landmark interiors an
 
 ## Storms with a payoff (agreed, 2026-10-18 spec)
 
-From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md):
+From Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-2026-10-18.md):
 - **Storms expose and rebury ruins.** Big shifting dunes lay bare ancient structures and the best
   loot mid-storm, for the active player willing to go out; the storm can bury them again, so a ruin
   seen mid-storm may be gone by morning (the desert ate it, which makes a chunk dropping out canon).
@@ -452,7 +452,7 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
 
 ## Dune archaeology (agreed, 2026-10-18 spec; built 2026-10-19)
 
-From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): the lee, drift and exposure systems talk to each other, so camping
+From the [chassis spec](../briefs/chassis-kits-dunes-2026-10-18.md): the lee, drift and exposure systems talk to each other, so camping
 by a big dune becomes a way to play: let the ruins come to you.
 - **Exposure gets a dune term:** more stripping on a windward face and crest, more burial in the
   lee, still stateless.
@@ -478,7 +478,7 @@ caught on a line between stakes, five times as much in a lee, from nowhere in pa
 showed bare metal by a site's state and went out in any storm. Nothing was "newly" exposed, nothing
 clanged, and no site shed anything.
 
-**As built (2026-10-18)**, the first two bullets ([the world system](../world-system.md#what-storms-do-to-sites-now)
+**As built (2026-10-18)**, the first two bullets ([the world system](../world/world-system.md#what-storms-do-to-sites-now)
 has the detail):
 - **A storm works the site it sits on.** Its heart moves sand a minute at a time where its big dunes move,
   off a site or onto it, in patches 400 m across that change over 15 minutes, and what it moved comes back
@@ -503,7 +503,7 @@ has the detail):
   laid bare near a place; the ground radar pins them on a Console's survey page (below).
 - **Probes:** kits 3 and 4, loot 7, sightlines 4, saves 23.
 
-**As built (2026-10-19), the rest** ([the world system](../world-system.md#what-storms-do-to-sites-now) has
+**As built (2026-10-19), the rest** ([the world system](../world/world-system.md#what-storms-do-to-sites-now) has
 the detail):
 - **The dune term.** Where a site lies among the dunes weighs its exposure (`Exposure.dune_at`), -1 to 1,
   read from the bare dunes along the run's long-term wind, which they face: toward 1 on a windward face or a
@@ -649,7 +649,7 @@ turbine.
 
 ### A wall's lee (built, 2026-10-19)
 
-Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#wind-on-faces): a camp's upright faces
+Hunter's [spec](../briefs/chassis-kits-dunes-2026-10-18.md#wind-on-faces): a camp's upright faces
 catch the wind and shelter what's behind them like a small dune, edge-on to travel and
 broadside as a windbreak when camped. Each deck's faces standing across the wind and still
 in it (a wall, a screen, fabric; Devices & mods, wind on faces) cast a lee, through the same
@@ -678,13 +678,13 @@ devices' wear, loose things, ropes, the turbine and other decks' faces.
 ## Plumes
 
 *Built 2026-10-18, on the `plumes` branch, from Hunter's brief ([geology and
-plumes](../geology-and-plumes-2026-10-18.md)), a second round after he played it ("vent is cool, nice
+plumes](../briefs/geology-and-plumes-2026-10-18.md)), a second round after he played it ("vent is cool, nice
 and ashy... i did see the smoke change... works. but i want these epic, distance plumes with booms
 too!"), and a third, the look as it is now, when the smoke didn't sit right: "the plumes kinda take me
 out of it too. they dont look great, just like the smoke is weird. i know performant smoke is hard to
 do, thats why i was thinking its mostly emitting gas at this point so its just massive sand plumes that
 are epic from a distance but really just blend into the storm and or the haze when up close cuz theyres
-so big". The vents and the gas pockets are the world system's ([Geology](../world-system.md#geology)),
+so big". The vents and the gas pockets are the world system's ([Geology](../world/world-system.md#geology)),
 and so are the brief's ten questions, answered there; the booms are [Radio, sound &
 atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)'s.*
 
@@ -887,9 +887,9 @@ mix and the rumble's own buses, for the meter.
 
 ## Hooks from the sky (proposed, not settled)
 
-*Proposal, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)). Not settled
+*Proposal, session 4, part 2 (lore session). Not settled
 and not built; whether either goes in is an open question.* Tu hangs fixed in the near side's
-sky ([the lore](../lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)),
+sky ([the lore](../world/lore-research.md#tu-the-tidal-lock-and-the-water-agreed-session-4-part-2)),
 and the session proposes two weather hooks from it:
 - **An eclipse squall:** air rushing toward Tu's noon shadow.
 - **A slow storm season:** when Zan swings closest and Tu looks visibly larger.
@@ -897,13 +897,13 @@ and the session proposes two weather hooks from it:
 Readings, not in the session:
 - Neither would be a new kind of weather. The squall would be a time-of-day term in `wind_at` on
   the near side, pointing at the shadow's centre at the noon eclipse, a clock the game already
-  keeps ([the moon](../the-moon.md#day-length)). The season would be a slow swing in `storm_at`'s
+  keeps ([the moon](../world/the-moon.md#day-length)). The season would be a slow swing in `storm_at`'s
   strength or coverage by orbital phase. Either stays deterministic and forecastable like the
   rest of the field, and designed, not simulated air (out of scope below).
 - Both need what the game doesn't have yet. The squall needs a near side, and the game has only
   latitude. The season needs an orbital phase and a visible swing in Tu's size, against an orbit
   that is "rounding out," and Tu's size is itself under trial
-  ([the body research](../body-research.md#tus-size-under-trial)).
+  ([the body research](../briefs/body-research.md#tus-size-under-trial)).
 
 ## Skeleton version
 
@@ -966,7 +966,7 @@ All run without a window, with a fixed seed.
    windward slope and out on open sand it isn't cut at all. With the wind from the
    other side the same foot is exposed, and so is the foot of the windward slope. A box
    resting at the foot stays put where the same box on open sand slides off downwind.
-10. **Tu stays put** ([the moon](../the-moon.md#day-length)). Through a day where a run
+10. **Tu stays put** ([the moon](../world/the-moon.md#day-length)). Through a day where a run
     begins, the Tu the sky draws strays no further than its daily nod while the sun goes
     round the sky. On the far side it never rises and casts no light.
 11. **The eclipse.** At each size under trial the sun goes behind Tu once a day and
@@ -1022,7 +1022,7 @@ All run without a window, with a fixed seed.
 
 ## Tu and the storms
 
-([The Tu spec](../tu-and-day-2026-10-17.md), 2026-10-17.) On the near side Tu is the
+([The Tu spec](../briefs/tu-and-day-2026-10-17.md), 2026-10-17.) On the near side Tu is the
 landmark, and storms blot it out, so you lose it exactly when it matters. The walls are drawn
 over the sky, so a wall between you and Tu hides it, and inside a storm's dust it's gone. At
 night a wall is lit by Tu's light as the open ground is, and during the eclipse it goes dark
@@ -1043,7 +1043,7 @@ with everything else.
 - **Do the eclipse squall and the storm season go in?** Proposed, not settled (above). If they
   do, the squall is a near-side term in the wind and the season a slow swing in the storm
   field. The sky now gives both what they'd read: the near and far side by Tu's height, and the
-  orbital phase (`DayCycle`, [the moon](../the-moon.md#day-length)). Tu's shadow is far wider
+  orbital phase (`DayCycle`, [the moon](../world/the-moon.md#day-length)). Tu's shadow is far wider
   than Zan, so the whole near side is in it at once; its "centre" is the point under Tu, where
   the sun stood highest and the eclipse's chill is deepest, so a squall would point there.
 

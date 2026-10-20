@@ -14,7 +14,7 @@ PRD sets the systems and stays loose on the art.
 local models that drifted. The far end of the lane, if it is ever heard at all, is one very
 rare, coherent, unanswering frequency, unlike the drifting oracles, and its purpose is never
 stated or confirmed in-game (a standing rule from the lore session). See [the lore
-research](../lore-research.md).
+research](../world/lore-research.md).
 
 ## The radio
 
@@ -38,7 +38,7 @@ range still to tune. Better radios and antenna mods hear more clearly. Tune it, 
   broadcast strange, fragmentary material. Taken as scripture it's noise. Decoded, it's
   real information, like planting timing or storm precursors, so **decoding the signal is
   a skill.** Rule 1 still holds: what decodes is true to the real systems. See
-  [the lore session](../lore-session-2026-10-14.md).
+  the lore session.
 - **Maybe a voice.** One of the hints that someone might still be out there (Salvage &
   ruins). It's never confirmed.
 
@@ -556,7 +556,7 @@ scrapped by gonkhub, 2026-10-19: every god still sounds the same tones, pitched 
 
 ### Stations: the Walker and the living city (agreed, 2026-10-18 spec)
 
-From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
+From Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-2026-10-18.md). A station is a node with a place, a
 frequency, a range and what it says; its signal falls off with distance.
 - **The Walker's survey feed:** moon-wide, the strongest after the Ledger's; a dry log of bearings,
   wind readings and terrain, the planet's weather hard to read but very useful. Found by scanning.
@@ -578,7 +578,7 @@ frequency, a range and what it says; its signal falls off with distance.
 The Walker and the Stoker remain friends from Halloran's survey work. Reports of reachable-in-principle
 heat torment the Stoker because it cannot build the pipelines needed to meet its accumulated quotas.
 The Walker does not intend that harm. The far-side heat connects this history to the Eye and the
-existing destruction ending; [the lore](../lore-research.md#the-walker-and-the-stoker-surveys-of-unreachable-heat-agreed-2026-10-20)
+existing destruction ending; [the lore](../world/lore-research.md#the-walker-and-the-stoker-surveys-of-unreachable-heat-agreed-2026-10-20)
 separates the accepted relationship from the proposed dispatch progression.
 
 The proposed quest starts with observations and develops into the Eye adopting the Stoker's
@@ -591,7 +591,7 @@ connect to that route is still open. Do not fold this into the built anomaly-tea
 ### The Walker's quest and the living city (agreed 2026-10-19; built 2026-10-19)
 
 Hunter approved this design on 2026-10-19 ("perfect"). It is the second pass on the stations
-above, and the Walker's quest line from the [storms spec](../storms-signals-sailing-2026-10-18.md).
+above, and the Walker's quest line from the [storms spec](../briefs/storms-signals-sailing-2026-10-18.md).
 It follows the rulings that the Walker walks alone, that finding it must never happen early, and
 that teaching it takes evidence for each tell.
 - **Finding the Walker.** It is a legged survey robot, partly broken, on its fixed route round the
@@ -751,7 +751,7 @@ that teaching it takes evidence for each tell.
 
 ### The nomads' tones follow a thief (Agreed, session 5; not built)
 
-*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md), "Nomad reputation." The whole
+*Session 5, "Nomad reputation." The whole
 relationship with the nomads runs through gifts, shrines and radio tones, so they stay secret
 ([the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)).* Steal from them and **their
 short-range radio tones follow you around, getting ruder.**
@@ -767,11 +767,11 @@ Readings, not in the session:
 
 ### The ghost relay
 
-*Agreed, session 4, part 2 ([lore session](../lore-session-2026-10-17-part-2.md)); loose, and not
+*Agreed, session 4, part 2 (lore session); loose, and not
 built.* A nomad radio relay still broadcasts storm and water reports in Zan-Han-Mon slang on
 automatic, a ghost station long after its builders died. The waymarks, caches and camp scars the
 player finds belong to the same dead tribes ([the
-lore](../lore-research.md#the-decline-nomads-and-the-moving-city-agreed-session-4-part-2)).
+lore](../world/lore-research.md#the-decline-nomads-and-the-moving-city-agreed-session-4-part-2)).
 
 Readings, not in the session:
 - It fits the radio as built: another automated station beside the weather broadcast. Rule 1
@@ -787,9 +787,9 @@ last town" ([the vision](../vision.md#landmarks-and-endings)). It isn't designed
 
 ### Second-age broadcasts (Agreed and Idea, endings session; not built)
 
-*The endings session ([endings and radio](../endings-and-radio-2026-10-17.md)); loose, and none of
+*The endings session ([endings and radio](../briefs/endings-and-radio-2026-10-17.md)); loose, and none of
 it is built. Each item keeps the session's own label ([the
-lore](../lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)).*
+lore](../world/lore-research.md#second-age-radio-and-its-priests-agreed-and-idea-endings-session)).*
 - **Agreed.** Getting transmissions working is genuinely hard. With no manuals, second-age people
   cobbled together an arcane, mythological understanding of the transmitters: how to run,
   interpret and debug them. **Debugging is ritual, kept word for word.**
@@ -823,10 +823,10 @@ Readings, not in the session:
 
 ### Offstage states on the air (Agreed, session 4, part 3; not built)
 
-*Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); loose, and none of it is
+*Session 4, part 3 (lore session); loose, and none of it is
 built.* The session's hard rule is no NPCs, no dialogue and no exposition, and "galaxy lore stays
 offstage until the endings." The war, Varran and Daventry appear in normal play only as faint
-radio ([the lore](../lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
+radio ([the lore](../world/lore-research.md#the-wars-end-the-wall-and-the-states-of-the-players-time-agreed-session-4-part-3)).
 - **Varran** is heard only from the orbital station: above the storms the antenna hears Varran
   broadcasts, the pathfinder's second step. The Varran settler's own radio is "tuned to home
   frequencies it can't hear from the surface."
@@ -884,7 +884,7 @@ Everything that matters can be heard, so you can read the world by ear:
 ### Distant phenomena (agreed, 2026-10-18 spec)
 
 Gas-pocket dust plumes and far volcano plumes stay distant spectacles, never close enough to hurt
-([spec](../storms-signals-sailing-2026-10-18.md)): a gentle rumble by distance and no camera shake, arriving after you see it as
+([spec](../briefs/storms-signals-sailing-2026-10-18.md)): a gentle rumble by distance and no camera shake, arriving after you see it as
 thunder does after lightning (the delay sells the scale), losing its high end with distance, and
 a big plume marking a vent's direction to steer by.
 
@@ -930,7 +930,7 @@ plumes are [Wind & storms](wind-and-storms.md#plumes)'):
   warm inside it, and the radio crackles.
 - **The day:** a 20-minute cycle of scorching noon, long shadows, a freezing night under
   the stars, and frost glittering at dawn (see the water rhythm in Survival). On the near
-  side Tu hangs over it all, and once a day it eclipses the sun ([the moon](../the-moon.md#day-length)).
+  side Tu hangs over it all, and once a day it eclipses the sun ([the moon](../world/the-moon.md#day-length)).
   The day and night music follow the sun where you are, so they change at your local
   sunrise and sunset, and the eclipse's dark is still the day.
 
@@ -995,7 +995,7 @@ standing.
   voice or are just tones and numbers." Here: "Maybe a voice" is never confirmed, voice acting is out of scope, and the
   skeleton sounds a station's tones with one line of words. The ghost relay is automatic too. The
   lore: the AI gods "speak only through terminals," and it asks whether they ever broadcast
-  ([section 16](../lore-research.md#16-open-after-session-4-part-2), item 8). Not said which a
+  ([section 16](../world/lore-research.md#16-open-after-session-4-part-2), item 8). Not said which a
   second-age broadcast is. The skeleton's tones and a line already read as "tones and numbers."
   A voice would be the maybe-voice, which the game never confirms.
 - **When the broadcasts air.** The session: "second-era religious broadcasts still air at
@@ -1025,7 +1025,7 @@ left standing.
   route, rare storm radio windows that catch "fragments of gods arguing" (back burner), and the player
   carrying a dispatch. Part 5 also amends "speak only through terminals": machines may talk through
   terminals, and whether a god is ever heard as a voice is still this PRD's open question
-  ([the lore](../lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
+  ([the lore](../world/lore-research.md#dispatches-how-gods-talk-agreed-session-4-part-5)).*
   *Session 5, ruled by Hunter (2026-10-18): the gods do have links. Mother Cistern can switch Mitchell off,
   so "no link" is read as "most links lost."*
 - **Ritual text against rule 1.** Here: "Broadcasts read the real systems" and "never makes things
