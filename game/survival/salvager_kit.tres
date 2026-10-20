@@ -15,17 +15,12 @@ carried = Dictionary[StringName, int]({
 &"ration": 1,
 &"sand_scoop": 1,
 &"sealant": 1,
-&"med_kit": 1
+&"med_kit": 1,
+&"personal_shield": 1
 })
 beside = Dictionary[StringName, Vector2]({
 &"racer_board": Vector2(0.0, 1.4),
-&"plate": Vector2(1.4, 2.0),
 &"cutter": Vector2(-1.0, 1.6)
-})
-assembled = Dictionary[StringName, Dictionary]({
-&"plate": {
-"rig": [[&"stick", Vector2i(0, 0), &"top", Vector2(-0.2, 0.15), 0.0, &"light_shield"], [&"stick", Vector2i(0, 0), &"top", Vector2(0.25, -0.2), 0.0, &"battery"]]
-}
 })
 charge = 1.0
 shown = &"racer_board"

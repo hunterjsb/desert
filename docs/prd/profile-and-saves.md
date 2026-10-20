@@ -734,3 +734,17 @@ living docs, so this PRD follows it as direction.
   changes are read as "a record keyed by the landmark," kept whatever the distance. The session places
   each landmark per seed, so a record is keyed by the landmark in this run's world, which is another
   reason it lives in the run save and not the profile.
+
+## Salvager personal kit (Hunter, 2026-10-19; agreed correction)
+
+The Salvager carries a personal shield with its own full battery instead of starting
+with a light shield on a chassis plate. The racer board and cutter remain nearby;
+the existing carried supplies and tools remain. The first chassis/home is found in
+salvage. Keep the existing deed unlock and generated wreck-field start. The existing
+personal shield trades a smaller bubble and higher storm draw for portability; its
+tuning is unchanged. Existing saves keep their current equipment.
+
+As built, `salvager_kit.tres` puts `personal_shield` in carried gear and removes the
+plate assembly. Suit.restock fits its battery using the kit's existing full-charge
+setting. The existing origin-showpiece/gear-list/new-run/save check (menus9) passes
+in9s with no assertion changes; other origin resources and the unlock are unchanged.
