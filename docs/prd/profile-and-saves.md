@@ -4,6 +4,14 @@
 same day, written in another session; this PRD takes it on and fits it to the game as
 built.*
 
+## Halloran's first fire (agreed, 2026-10-20)
+
+**First Fire**, hidden in Far, is recorded when a preserved coalcane bundle is physically consumed
+by the Stoker. The run saves Halloran's stock taken, fuel consumed, burn expiry, service-door
+release and cache items claimed. Missing state in older saves means an untouched encounter.
+These values survive site unloading and reprojection, independently of the transient Structure.
+
+
 ## Why this system exists
 
 Two kinds of thing outlast a sitting. **A run** is one life on one moon: it can be set
@@ -287,7 +295,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 52 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 53 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:

@@ -32,6 +32,9 @@ var moon: MoonPosition
 var origin_chunk := Vector2i.ZERO
 ## Seconds since the run began. Weather and the day are pure functions of it.
 var time := 0.0
+## Halloran survives streaming and a whole circuit of the moon.
+var stoker_state: Dictionary = {}
+var stoker: Stoker
 ## How many seconds the clock moves per second; 0 stops it.
 var time_warp := 1.0
 ## The clock when the run began, its day 1: a start looks days on for its
@@ -109,6 +112,8 @@ func _ready() -> void:
 	_set_scene()
 	add_child(Walker.new())
 	add_child(CityLights.new())
+	stoker = Stoker.new()
+	add_child(stoker)
 	spawn = Starts.ground(shape, tuning, kit.start if kit != null else &"", start)
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()

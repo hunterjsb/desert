@@ -13,7 +13,7 @@ extends VBoxContainer
 ## the order they show.
 const GROUPS := [
 	["Chassis and frames", [&"chassis", &"frame", &"fabric", &"hover_tray", &"skates", &"board_plate"]],
-	["Power", [&"battery", &"big_battery", &"power_box", &"power_cabinet", &"power_rack", &"power_shrine", &"solar_panel", &"light_panel", &"turbine", &"cable", &"strong_cable"]],
+	["Power", [&"coalcane_bundle", &"battery", &"big_battery", &"power_box", &"power_cabinet", &"power_rack", &"power_shrine", &"solar_panel", &"light_panel", &"turbine", &"cable", &"strong_cable"]],
 	["Devices", [&"shield", &"light_shield", &"personal_shield", &"condenser", &"console", &"nav_computer", &"screen",
 		&"anemometer", &"barometer", &"hygrometer", &"particle_sensor", &"radar", &"ground_radar", &"radio", &"survey_receiver", &"lamp",
 		&"planter", &"harvester", &"bedroll", &"survival_kit"]],

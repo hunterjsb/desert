@@ -11,6 +11,7 @@ extends RefCounted
 ## of its own.
 
 const KINDS := {
+	&"halloran_route": {"era": Eras.COLONIAL, "burial": Vector2(1.0, 1.0)},
 	# Colonial: the skeleton's pieces, and the colonial settlements'.
 	&"pylon_stub": {"era": Eras.COLONIAL},
 	&"pipeline_segment": {"era": Eras.COLONIAL},
@@ -85,6 +86,9 @@ static func kit(kind: StringName) -> StructureKit.Piece:
 static func most_reach() -> float:
 	var most := 0.0
 	for kind: StringName in KINDS:
+		# Landmark units already carry their full footprint; ordinary cells stay small.
+		if kind == &"halloran_route":
+			continue
 		most = maxf(most, reach(kind))
 	return most
 

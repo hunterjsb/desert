@@ -2,6 +2,16 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Stoker's first fire (built, 2026-10-20)
+
+The first Halloran encounter consumes a preserved coalcane bundle in a stationary furnace.
+This is finite salvage fuel, not a new farming loop or a portable burner. Fuel supplies a timed
+maintenance burn, releasing a service cache; it does not generate unlimited camp power or launch
+fuel. Its duration is tuning data. A save retains the world-time expiry; unloading cannot reset
+the burn or replenish stock. The full refinery and vent reconnection remain later work. The built defaults are three bundles
+and a 30-second burn (`stoker_stock`, `stoker_burn_s` in `game/tuning.tres`).
+
+
 ## Why this system exists
 
 Power turns the stuff you haul into stuff that works. It keeps the shield up, the camp

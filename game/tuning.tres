@@ -208,3 +208,6 @@ vault_settle_speed = 0.1
 board_surface_rise_m = 0.18
 board_surface_shapes = 64
 board_surface_reach_m = 16.0
+
+stoker_burn_s = 30.0
+stoker_stock = 3

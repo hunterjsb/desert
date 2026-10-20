@@ -33,6 +33,8 @@ const KINDS := {
 ## line's end snaps on. A part sticks on a chassis unless its kind is one
 ## SLOT_ONLY names.
 const PARTS := {
+	&"coalcane_bundle": {"kind": &"fuel", "label": "Preserved coalcane", "mass": 3.0, "size": Vector3(0.4, 0.3, 0.65),
+		"color": Color(0.25, 0.17, 0.08), "stats": {}},
 	&"battery": {"kind": &"battery", "label": "Battery", "mass": 4.0, "size": Vector3(0.22, 0.14, 0.12),
 		"color": Color(0.2, 0.2, 0.22), "stats": {"capacity_wh": 100.0}},
 	&"big_battery": {"kind": &"battery", "label": "Big battery", "mass": 9.0, "size": Vector3(0.26, 0.18, 0.18),
