@@ -13,6 +13,7 @@ Physical sailing controls, clearer radio reception, and a first encounter at Hal
 - Fix distant stake placement, depleted-deck hover shutdown, freed rope selections,
   and frame-rate-dependent ridden-board battery use.
 - Radios gain station marks, independent sound effects and steadier carried audio.
+  Scheduled songs keep playing through mixer/world-clock drift instead of restarting under load.
   Bundled weather, god and beacon speech works without an external voice service.
 - Thirteen satellites broadcast overhead. Signal the Surveyor with a flare to call
   a cargo drop; active deliveries and used flares survive saving and loading.
