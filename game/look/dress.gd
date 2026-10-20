@@ -469,7 +469,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 					b.box(Vector3(0.16, size.y, 0.16), Vector3(x * (h.x - 0.08), 0.0, z * (h.z - 0.08)),
 						Paint.coat(Paint.BLACK, 0.7, 0.3), 0.02)
 			b.stamp(Paint.Mark.CONSIGNMENT, Vector3(0.16, h.y - 0.02, 0.31), 0.22, Basis(Vector3.RIGHT, -PI / 2.0), Paint.Ink.PALE)
-			b.box(Vector3(size.x - 0.16, 0.03, size.z - 0.16), Vector3(0.0, h.y - 0.035, 0.0), teal, 0.006)
+			b.box(Vector3(size.x - 2.0 * Chassis.PANEL_INSET, 0.03, size.z - 2.0 * Chassis.PANEL_INSET),
+				Vector3(0.0, h.y - Chassis.PANEL_DROP - 0.015, 0.0), teal, 0.006)
 			for z in [-0.2, 0.2]:
 				b.box(Vector3(size.x - 0.18, 0.006, 0.014), Vector3(0.0, h.y - 0.017, z), black, 0.002)
 			b.box(Vector3(size.x - 0.16, 0.05, 0.06), Vector3(0.0, -h.y + 0.045, 0.0), gun, 0.008)

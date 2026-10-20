@@ -149,6 +149,10 @@ var _top: MeshInstance3D
 ## The sheet's inboard as it's drawn, and its ring on the camp.
 var _inboard: RopeStrand
 var _ring: Node3D
+var _ring_on: Chassis
+var _ring_mount := Transform3D.IDENTITY
+var _ring_dirty := true
+var _ring_supported := false
 var _inboard_taut := false
 ## Its upper reach as your hands meet it, there only while it stands: the
 ## pole the sand and what's round it meet stays the stowed one, as it was.
@@ -524,9 +528,12 @@ static func _streamed(on: Device) -> bool:
 func _draw_inboard(h: float) -> void:
 	var tip: Node3D = _tie().part.get_meta(&"tip") if _sheet != null else null
 	var rigged := is_instance_valid(tip) and carrier() != null and world != null
+	if rigged:
+		_update_ring_mount()
+		rigged = _ring_supported
 	_ring.visible = rigged
 	if rigged:
-		_ring.global_position = _inboard_anchor()
+		_ring.global_transform = _ring_on.global_transform * _ring_mount
 	_inboard.visible = rigged and trim > 0.02
 	if not _inboard.visible:
 		_inboard_taut = false
@@ -547,34 +554,43 @@ func _draw_inboard(h: float) -> void:
 	_inboard_taut = slack <= 0.0
 
 
-## The sheet's deck ring needs a real piece under it. Compact rigs have
-## no tail beneath the fully hauled boom, so use their nearest top surface.
-func _inboard_anchor() -> Vector3:
+## Layout changes choose a real seat once; moving the camp only transforms it.
+func _update_ring_mount() -> void:
+	var on := carrier() as Chassis
+	if on != _ring_on:
+		if is_instance_valid(_ring_on) and _ring_on.parts_changed.is_connected(_ring_changed):
+			_ring_on.parts_changed.disconnect(_ring_changed)
+		_ring_on = on
+		if on != null:
+			on.parts_changed.connect(_ring_changed)
+		_ring_dirty = true
+	if not _ring_dirty:
+		return
+	_ring_dirty = false
+	_ring_supported = false
+	if on == null:
+		return
 	var size: Vector3 = Catalog.DEVICES[&"mast"].size
 	var want := global_transform * Vector3(0.0, -size.y * 0.5 + 0.06, -BOOM)
-	var on := carrier() as Chassis
-	if on == null:
-		return global_transform * Vector3(0.0, -size.y * 0.5 + 0.06, 0.0)
-	var closest := global_position
-	var nearest := INF
-	for piece in on.pieces():
-		var pose := on.global_transform * piece.pose()
-		var local := pose.affine_inverse() * want
-		var edge := Chassis.WIDTH * 0.5 - RopeStrand.RADIUS
-		local = Vector3(clampf(local.x, -edge, edge), Chassis.THICK * 0.5 + RopeStrand.RADIUS,
-			clampf(local.z, -edge, edge))
-		var at := pose * local
-		var apart := at.distance_squared_to(want)
-		if apart < nearest:
-			nearest = apart
-			closest = at
-	return closest
+	var seats := SheetEye.seat(on, want)
+	if not seats.is_empty():
+		_ring_mount = seats[0]
+		_ring_supported = true
+
+
+func _ring_changed() -> void:
+	_ring_dirty = true
+
+
+func _inboard_anchor() -> Vector3:
+	_update_ring_mount()
+	return (_ring_on.global_transform * _ring_mount).origin if _ring_supported else global_position
 
 
 func _process(_delta: float) -> void:
 	# The camp can advance after its physics callback, before this frame is drawn.
-	if _ring.visible and carrier() != null:
-		_ring.global_position = _inboard_anchor()
+	if _ring.visible and is_instance_valid(_ring_on):
+		_ring.global_transform = _ring_on.global_transform * _ring_mount
 	if _inboard.visible and is_instance_valid(_inboard.b):
 		_inboard.pin_ends(_ring.global_position, _inboard.b.global_position)
 
@@ -788,8 +804,10 @@ func _build_look() -> void:
 	_top.visible = false
 	add_child(_top)
 	_ring = Node3D.new()
-	_ring.position = Vector3(0.0, -size.y * 0.5 + 0.06, -BOOM)
-	_ring.add_child(RopeEnd.ring_mesh())
+	var eye := MeshInstance3D.new()
+	eye.mesh = SheetEye.mesh()
+	eye.position.y = -SheetEye.EYE_UP
+	_ring.add_child(eye)
 	_ring.visible = false
 	add_child(_ring)
 	_inboard = RopeStrand.new()

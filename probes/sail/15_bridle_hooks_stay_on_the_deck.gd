@@ -42,14 +42,15 @@ func run() -> void:
 func _supported() -> bool:
 	if not is_instance_valid(mast) or not mast._ring.visible:
 		return false
-	var at := mast._ring.global_position
+	var at := mast._ring.global_transform * (Vector3.DOWN * SheetEye.EYE_UP)
 	for piece in deck.pieces():
 		var local := (deck.global_transform * piece.pose()).affine_inverse() * at
-		if absf(local.x) < Chassis.WIDTH * 0.5 and absf(local.z) < Chassis.WIDTH * 0.5 \
-				and absf(local.y - Chassis.THICK * 0.5 - RopeStrand.RADIUS) < 0.001:
+		if absf(local.x) + SheetEye.FOOT.x * 0.5 <= Chassis.WIDTH * 0.5 - Chassis.PANEL_INSET \
+				and absf(local.z) + SheetEye.FOOT.y * 0.5 <= Chassis.WIDTH * 0.5 - Chassis.PANEL_INSET \
+				and absf(local.y - Chassis.THICK * 0.5 + Chassis.PANEL_DROP) < 0.001:
 			if mast._inboard.visible:
 				mast._process(0.0)
-				return mast._inboard.shown()[0].distance_to(at) < 0.001
+				return mast._inboard.shown()[0].distance_to(mast._ring.global_position) < 0.001
 			return true
 	return false
 

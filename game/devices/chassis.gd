@@ -19,6 +19,9 @@ extends Device
 ## how thick it is.
 const WIDTH := 1.0
 const THICK := 0.12
+## The visible inset panel sits below its surrounding rails and corner caps.
+const PANEL_INSET := 0.08
+const PANEL_DROP := 0.02
 const QUARTER := PI / 2.0
 ## What a join moves out of its way lands this far past the deck's edge, m.
 const CLEAR := 0.1

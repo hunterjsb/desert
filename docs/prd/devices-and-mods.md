@@ -1587,3 +1587,44 @@ capture. The fix writes only the remaining lift share; existing velocity is pres
 
 Existing focused devices probes 13 and 17 pass: powered gentle settling and lift-off,
 rested save/resume, and large balanced, overloaded and lopsided deck behavior remain.
+
+### Supported sailing sheet eye (Hunter correction, 2026-10-19)
+
+Hunter identified the cosmetic ring beside the mast as an impossible placement, not
+motion jitter. The old projection inset its centre by the rope's 24 mm radius although
+the ring extends 65 mm: up to 41 mm overhang, with no mast-foot/equipment clearance.
+Its flat torus also sat above the recessed visible panel, whose top is 20 mm below the
+nominal collision plane. Actual captures of sail, sail_tow, yacht and Varran show this
+unsupported hardware; their measured render-anchor errors were below 0.006 mm.
+
+Use a visibly bolted upright sheet eye on a real panel. Its complete base must fit
+inside that panel, clear the mast foot and fitted equipment, and sit on the visible
+panel surface rather than a collision-height approximation. Choose a supported clear
+place nearest the former visual routing point, cached in deck coordinates until the
+layout changes. Keep its complete hardware inside the deck edge. The drawn inboard
+sheet terminates at the visible eye opening. This is a correction to the visual route:
+retain the boom, sheet trim/forces, line strength and physical torque model unchanged.
+Do not invent floating hardware if a custom layout has no free supported mounting
+place; the cosmetic inboard eye requires a real seat.
+
+**As built:** the upright steel eye has cast feet and four visible bolts on a
+180 × 140 mm base, seated on the inset panel itself. Panel inset/drop dimensions are
+shared with the chassis look. The full mounting volume, rather than the ring centre,
+stays inside the panel and avoids raised ribs, mast foot and fitted equipment. A cached
+seat is recomputed only when the carrier/layout changes. A custom deck with no supported
+clear seat draws no fictional floating eye; this does not detach its physical sheet.
+
+The Varran eye moved from the edge cap to deck coordinates (0.320, 0.117, 1.340) m:
+its complete foot stays 10 mm inside the panel boundary, 90 mm inside the deck edge,
+and clears the mast collar by 20 mm. The base touches the visible panel at 0.040 m
+above the deck origin; the opening is 77 mm above its base. All four actual layouts
+(sail, sail_tow, yacht and the normal Varran kit) show supported hardware in inspected
+close and wide GPU frames, furled and raised. The nearest boom/sail remains well above
+the hardware. Across 480 rendered frames, the maximum opening/anchor error was below
+0.008 mm and the drawn inboard endpoint error was zero. The original force attachment
+and trim model are unchanged; this relocates only the cosmetic routing endpoint.
+
+Sailing 15 now checks the complete base against the visible panel and retains
+riding/reeling/resuming and endpoint checks (passed, 8 s). Sailing 3's force/trim and
+sheet-hauling checks also pass (21 s). The uncached placement search averaged about
+0.23–0.24 ms on the Varran layout; it is not repeated for the camp's motion each render frame.
