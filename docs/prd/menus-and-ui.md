@@ -614,3 +614,36 @@ drift anchor (6 s); Dev 8 empties/refills a held cell and empties both cells
 in a deck pool (4 s). The existing one-theme check passed (6 s), and Saves 1's
 normal round trip passed (53 s). General rope-picker labels now use the shared
 Geist UI face rather than the numeric readout face.
+## Visual sailing field notes (Hunter, 2026-10-20; built)
+
+Replace the sailing booklet's long text with at most four actual gameplay images
+and short sailing-only captions: read the streamer/start across wind, haul/ease the
+sheet, carve the board's edge, and select/route the intended line through a physical
+hook. Use the existing Geist prose at 20 px, normal Words navigation and back behavior.
+The Surveyor's Guide keeps its existing text pages through the shared reader's page
+format dispatch. Tutorial images are intentional assets under assets/tutorial/sailing;
+no invented screenshots or full-game tutorial expansion. New boom/rope physics may
+require refreshing those images after combined integration.
+
+
+As built: four single-page visual leaves replace the six long sailing chapters.
+Each caption is 12–21 words before action binding expansion. The last explains
+that one line works automatically and multiple lines are chosen in the carry view;
+it does not teach the proposed held-end bundle. Image rows dispatch to a compact
+Words layout; the Surveyor subclass's two-column text rows retain the prior reader.
+No global theme or Guide content changes. Captions use existing KeysList Geist
+prose at 20 px, not the numeric mono face.
+
+The four intentional PNG assets are actual unseen game captures with the photo
+HUD hidden. Streamer, sheet and fitted hook pictures show the higher physical
+boom/ordinary routed sheet geometry; the board picture shows a real input-driven
+carve, 3.39 m/s at capture. These pictures illustrate controls and geometry, not
+validation of the new boom's handling. Refresh them if integration changes that
+visible geometry; there are no fixed boom-angle claims in the captions.
+
+Existing Menus 19 passed unchanged (5 s). All four final reader pages were viewed
+at 1280×720: each image is 533×300 px, captions occupy two 27 px lines, and the
+normal Next/Previous/Chapters controls remain within the screen. Action macros
+render current bindings. The Surveyor Guide still has five prose pages and no
+image nodes; its first page was also viewed in the same capture. No new repository
+probe, wording pin, global UI refactor or reading deed was added.
