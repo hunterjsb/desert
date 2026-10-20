@@ -1,6 +1,6 @@
 class_name BoardMakes
 extends RefCounted
-## Boards by make (docs/prd/movement.md): each era's makers built their own,
+## Boards by make (docs/prd/movement.md): each make has its own provenance,
 ## and every one rides the one ride. A make is its catalog id, which saves
 ## already keep; its numbers are shares of the Hoverboard tuning, so tuning
 ## the ride tunes them all; its look is Dress's and its hum its own.

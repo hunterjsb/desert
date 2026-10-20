@@ -14,10 +14,10 @@ how you adapt the camp, and how you get out of a pinch, so placing and taking th
 feel great: intuitive, reactive and satisfying, every single time.
 
 **In the world.** Fitting is what the colony could always do, and making is what it never
-could: the moon had no fabs, so every part came from somewhere else. Each part carries its own
-maker's stamp, separate from the mark of whoever assembled the device around it. A shield
-housing might name the contractor while its core names a maker most settlers never heard of.
-Batteries are the exception and carry no stamp. See [the lore research](../lore-research.md).
+could: the moon had no fabs, so every part came from somewhere else. A found object can show
+several distinct roles: the OEM that made a component, the contractor/integrator that fitted
+it, and the company that consigned or issued it. One mark does not imply the others. Batteries
+are the exception and carry no stamp. See [the lore research](../lore-research.md).
 
 ## What the player experiences
 
@@ -875,8 +875,8 @@ is in [Salvage & ruins](salvage-and-ruins.md#the-dark-age-as-a-lineage-rule-agre
 Readings, not in the session:
 - **Lineage is a short list on the part,** an original era and then each remake: colonial made it, the
   First Kingdoms kept or marked it, the Dark Age remade it. A part that never left its era has a list of
-  one. It sits beside the maker (who made it) and the layer a find came from (where it lay), which are
-  separate things already in the data.
+  one. Its colonial role mark (OEM, contractor or consignor) and the layer a find came from (where it
+  lay) are separate pieces of provenance.
 - **It drives the look and nothing else.** "Visual only; no stat effect required." The stats come from the
   era of the frame (frames by era above), so a Dark Age remade crate is a second-age frame whose marks read
   three deep.
@@ -898,12 +898,18 @@ today there is one crate frame.* "Multiple manufacturers make crates with differ
 crate's maker tells you its era and its job; the slot mix is the variety axis." This sits beside
 frames by era above: the era sets a frame's trade-off between efficiency and repair, and the maker sets what it is for.
 
-| Maker | Era | Character |
+| Maker / issuer | Era | Character |
 |---|---|---|
-| Tilg & Standard | Colonial | Standard logistics all-rounder, most common |
+| TILG (issuer) | Colonial | Standard logistics frame, most common; OEM is unassigned |
 | Halloran Isotope | Colonial / skimmer | Industrial, rugged, heat-tolerant, few planter slots |
 | Frontier Ag | Colonial | Purpose-built grow crates with deep beds and integrated misters; rare and fragile |
 | First Kingdoms / second age (hand-built) | First Kingdoms, second age | Crude, heavy, odd slot layouts; the Sisters' versions built for water storage |
+
+This is a proposed roster, not gear in the current build. TILG is the pre-war company and the
+colonial crates carry its name. **Tilg & Standard** is a separate successor formed when TILG and
+Standard Freight merged thousands of years after the war; it is the Surveyor's present-day
+contractor and issuer, not the colonial crate maker. The current standard crate has not yet been
+split into maker-specific frame variants.
 
 Readings, not in the session:
 - **A maker's crate is a frame, and a frame is data.** A frame is a list of sockets (rule 4), so a
@@ -919,11 +925,12 @@ Readings, not in the session:
 - **"Crate" is the planter's word here.** A grow crate with deep beds is a planter variant: the
   built planter is a frame of its own, with plant slots, and a crate has none
   ([Farming](farming.md#planter-sizes-as-socket-kinds-agreed)).
-- **"Tilg & Standard" and the colonial row.** The merger was no later than the war
-  ([lore research](../lore-research.md#17-open-after-the-endings-session-and-session-4-part-3)), after
-  the colonial era, and the colonial crate's stencil is the acronym TILG (art direction). The session
-  writes the maker as the company is known; read as the same company. One word to change if
-  colonial crates should read Tilg.
+- **TILG and Tilg & Standard are separate companies.** TILG is the colonial-era issuer and its
+  consignment stencil remains on old gear; it is not the crate's OEM. Tilg & Standard formed
+  thousands of years after the war by merging TILG and Standard Freight, and is the Surveyor's current contractor/issuer
+  ([lore research](../lore-research.md#factions-agreed-session-3)). The table's colonial row is
+  therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
+  are built.
 
 ## The burner and the humidifier (proposed, not built)
 
@@ -1472,10 +1479,11 @@ in the living docs, so this PRD follows it as direction and says so on each line
   logic." *Follows the session.* Not said which built slot is which kind. Sockets save by list index,
   so the built slots keep their places and the new kinds are appended
   ([Farming](farming.md#open-questions)).
-- **Maker, era and the one crate frame.** Here: one crate frame, and "frames by era" as the only
-  second axis. The session adds the maker as a third, with four makers. *Follows the session.* Not
-  said which maker's crate the kit's is, or whether "Tilg & Standard" in the colonial row is the
-  colonial crate (stencilled TILG).
+- **Maker, issuer and the one crate frame.** Here: one crate frame, and "frames by era" as the only
+  second axis. The session adds maker/provenance as a third axis with four proposed entries.
+  Hunter's 2026-10-20 clarification resolves the colonial naming: TILG is the consignor, and
+  Tilg & Standard is the much later successor issuer. The live Surveyor frame has not yet been
+  assigned a maker-specific variant.
 - **The burner against the heavy generator.** Here ([Power](power.md#sources)): a "heavy generator"
   that "rides on caterpillar tracks, slows the camp, and burns fuel." The session: a burner or
   generator that is a "crate part." Not said whether they are one device or two.

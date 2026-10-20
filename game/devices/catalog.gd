@@ -196,9 +196,10 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 const SLOT_ONLY: Array[StringName] = [&"ring", &"port", &"tie", &"plant_pot", &"plant_standard", &"plant_deep",
 	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face"]
 
-## Who made each thing colonial hands made, as its stamp says (art
-## direction's maker's marks): commodity parts carry none.
-const MAKERS := {&"chassis": &"tilg", &"frame": &"tilg", &"board": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
+## The colonial entity mark on each thing (art direction): TILG is the
+## consignor; RMC is the contractor/integrator; only the shield and wind
+## marks stand for OEMs. Commodity parts carry none.
+const COLONIAL_MARKS := {&"chassis": &"tilg", &"frame": &"tilg", &"board": &"tilg", &"condenser": &"rmc", &"console": &"rmc",
 	&"shield": &"rmc", &"light_shield": &"shield_maker", &"turbine": &"wind_maker", &"power_cabinet": &"rmc"}
 ## Where a lineage's marks sit on what isn't a box: round about its top's
 ## axis, as [its radius over its half width, and the shares of its height its
@@ -726,12 +727,13 @@ static func lineal(id: StringName) -> bool:
 
 ## The loot's one call (docs/world-system.md, "What lineage does now"): a
 ## find's lineage from the site it lay in, drawn from the loot draw's seed
-## (Eras.lineage) and given it, with who made it. What it was given.
+## (Eras.lineage) and given it, with its colonial entity mark by catalog id.
+## What it was given.
 static func found_in(body: Node, era: StringName, kind: StringName, seed_value: int) -> Array:
 	var line := Eras.lineage(era, kind, seed_value)
 	var id: StringName = body.get_meta(&"catalog", &"")
-	if not line.is_empty() and line[0][0] == Eras.COLONIAL and MAKERS.has(id):
-		line[0][2] = [MAKERS[id]]
+	if not line.is_empty() and line[0][0] == Eras.COLONIAL and COLONIAL_MARKS.has(id):
+		line[0][2] = [COLONIAL_MARKS[id]]
 	inherit(body, line)
 	return body.get_meta(&"lineage", [])
 

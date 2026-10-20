@@ -289,20 +289,31 @@ nothing (0.00 and 0.03).
 *2026-10-16, mapped onto [session 3](lore-session-2026-10-16.md) the same day. Loose, not
 canon: the names are the lore's, and every design is a rough placeholder.*
 
-Six rough marks on a few things: a contractor's tag, a member state's seal, two makers' signs,
-a crate's label and a crew's patch. Each is painted where its lore says it belongs, so a mark
+Six rough marks on a few things: a contractor's tag, a member state's seal, two OEM signs,
+a consignment label and a crew's patch. Each is painted where its lore says it belongs, so a mark
 means something wherever it appears. They're stencilled or stamped on with the paint, so the
 same wear chips, scours and dusts them: a deep find's mark is crisp, and a surface one's is
 ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 
 | Mark | What it stands for | Carried by |
 |---|---|---|
-| **Contractor's tag:** "RMC" on a notched plate | A corporate builder of the colonial era: the Remote Moon Contractor, who built the hub's infrastructure and fitted what was bought in ([part 1 §4](lore-session-2026-10-14.md#4-whos-there-the-entity-stack), [part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)) | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
+| **Contractor's tag:** "RMC" on a notched plate | The Remote Moon Contractor: a colonial-era contractor and integrator that built and maintained infrastructure and fitted imported equipment. It is not the equipment's OEM ([part 1 §4](lore-session-2026-10-14.md#4-whos-there-the-entity-stack), [part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)) | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
 | **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
-| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework); the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
+| **Consignment label,** by era | The label says who ordered or shipped the gear; it does not identify the OEM. The colonial label is TILG, the pre-war shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)). Tilg & Standard is its distinct successor, formed with Standard Freight thousands of years after the war ([lore research](lore-research.md#factions-agreed-session-3)). | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework); the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
 | **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The skimmer racer's tail, which is what shows when it's found nose-down; a new one, the Salvager's, is plain (2026-10-18: the patch was on every board until the boards by make) |
+
+**What the build currently attributes.** These are equipment and marks already represented in
+the game; the marks' letterforms and designs remain placeholders for the planned logo redesign.
+TILG's colonial consignment and Tilg & Standard's present-day company issue are different
+provenances. The Skimmer racer carries a crew patch, which identifies a crew/culture rather than
+a single Skimmers corporation or manufacturer. The Knights Requisitioner have a patrol board
+and a hopper; Mother Cistern's temple has a temple board. First Kingdoms house heraldry (Haberjack,
+Pellicott, Crake and Vonatelli) can appear as a layer on older gear, and Second Age religious
+marks can bless reused gear: neither makes those houses or orders the original OEM. Gear placed
+in the Provisional's tithe hauler and black site is military/Provisional-associated salvage.
+Halloran Isotope and Frontier Ag are named makers in planned designs, not logos on current gear.
 
 **Why these.** The marks go where the lore names a maker or issuer. The ruin's wall shows
 session 3's early markings that don't match: a corporate builder's tag and number beside a
@@ -320,7 +331,7 @@ them, and inventing an issuer would be making canon. The next candidates were le
 this to a few:
 
 - the planter, as ag-tech issue (session 4, part 4 names the maker: Frontier Ag, one of the main
-  remote colonial contractors, with its grow crates and its crops);
+  remote colonial contractors, with its grow crates and its crops; this remains a planned attribution);
 - the solar panels, from a big commodity OEM;
 - Standard Freight's plain, severe stamp, for when hull wreckage or war-era materiel is in the
   game.
@@ -340,7 +351,8 @@ since the crate went, is the mark that changes most from row to row:
   Dark Age),
   and session 3 dates ruins by which form appears. **Decided (session 4, part 2, 2026-10-17):
   the Z stays.** "The hand-daubed 'ZN' consignment mark is intentional drift from XN."
-- **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make. Session 4, part 2 says
+- **Yours:** a plain batch number, "LOT 3127", for the current company's issue. The Surveyor's
+  issue is Tilg & Standard, the post-war successor, not colonial TILG. Session 4, part 2 says
   the Surveyor's starting gear "is company issue, which fits the existing 'new' mark row and its
   cheap batch stencil."
 
@@ -361,7 +373,8 @@ on Zan itself), and its marks would be the war era's standardised, severe ones.
 
 **Placeholders.** Every design and ink colour is a placeholder. So are these:
 
-- "RMC," the Remote Moon Contractor, is part 1's working name. Session 3 names no builder.
+- "RMC," the Remote Moon Contractor, is part 1's working name. It names the colonial contractor/
+  integrator, not an equipment manufacturer; session 3 does not name the contractor or the OEMs.
 - The member state is unnamed, and so is its seal.
 - The shield maker and the wind maker are unnamed.
 - In "XN 0217", only XN comes from the lore; the number is invented. The moon's own

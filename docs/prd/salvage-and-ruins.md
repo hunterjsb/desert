@@ -11,11 +11,12 @@ that someone else might still be out there.
 
 **In the world.** The moon never made anything high-tech. It was an assembly-and-operations
 economy at the far end of a manufacturing chain, so after the cut it could fit and repair
-parts but never fabricate them. Stamps come at two levels: the assembler's mark on a whole
-device, and each component's own maker inside it. Why a find is rare depends on why it's on the
-moon: ordinary goods are common, goods only the hub ran on were only ever made in small
-numbers, and contraband, such as a deserter's military kit, is rare because someone carried it
-in. See [the lore research](../lore-research.md).
+parts but never fabricate them. Provenance marks can name different roles: the OEM that made a
+component, the contractor/integrator that assembled or fitted it, and the company that ordered
+or consigned it. A mark is not automatically a maker's mark. Why a find is rare depends on why
+it's on the moon: ordinary goods are common, goods only the hub ran on were only ever made in
+small numbers, and contraband, such as a deserter's military kit, is rare because someone
+carried it in. See [the lore research](../lore-research.md).
 
 ## What you find
 
@@ -28,10 +29,11 @@ in. See [the lore research](../lore-research.md).
   Seed vaults, below).
 - **Survival kits:** a common find, usually holding seeds and water.
 - **Lore:** fragments of what happened here.
-- **Maker's marks:** almost everything found carries the mark of whoever made it, such as a
-  government seal, a regulator's stamp, a shipyard logo, a contractor's tag, a comms
-  casing or an improvised skimmer-crew patch. Commodity parts such as batteries carry none,
-  so a mark means something where it appears. The player reconstructs the supply chain
+- **Provenance marks:** almost everything found carries a mark that says something about its
+  origin or history, such as a government seal, a regulator's stamp, a shipyard logo, a
+  contractor's tag, a comms casing or an improvised skimmer-crew patch. These marks can name
+  different roles; they do not all identify the maker. Commodity parts such as batteries carry
+  none, so a mark means something where it appears. The player reconstructs the supply chain
   from salvage alone, with no exposition. The entities are in
   [the lore session](../lore-session-2026-10-14.md), and the makers beneath them in
   [part 2](../lore-session-2026-10-14-part-2.md).
