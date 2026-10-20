@@ -4,6 +4,7 @@ extends Device
 ## Reading uses the normal menus, so controls and back behave as elsewhere.
 
 const PAGES := [
+	["Hoist the sail", "At the hand winch, {reel_in} hoists; {pay_out} lowers. It holds when you stop.", "res://assets/tutorial/sailing/hoist.png"],
 	["Read the wind", "The streamer points downwind. Start across the wind, with the rig ahead.", "res://assets/tutorial/sailing/wind.png"],
 	["Work the sheet", "{reel_in} hauls; {pay_out} eases. Wind swings the sail. A tighter sheet is not always faster.", "res://assets/tutorial/sailing/sheet.png"],
 	["Carve an edge", "{move_left}/{move_right} carve; {move_back} digs the edge. Steer across the pull for grip.", "res://assets/tutorial/sailing/board.png"],

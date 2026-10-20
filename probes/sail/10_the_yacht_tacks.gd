@@ -72,7 +72,7 @@ func run() -> void:
 	check(get_node(^"/root/Saves").save(world), "saved at the helm")
 	check(await resume(), "resumed")
 	var at := world.player.helm
-	check(at != null and at.carrier() != null and Runners.keels(at.carrier()).size() == 1,
+	check(at != null and at.carrier() != null and Runners.keels(at.carrier()).size() == 2,
 		"resumed at the helm of a deck with its keel")
 	speed_up(1)
 
@@ -113,7 +113,7 @@ func _clear() -> void:
 
 
 ## The "yacht" afresh, standing where it puts you facing across the wind,
-## with its keel or a tray in its place; its sail up.
+## with its keels or trays in their places; its sail up.
 func _set_up(keeled: bool) -> void:
 	await _clear()
 	var player := world.player
@@ -124,7 +124,7 @@ func _set_up(keeled: bool) -> void:
 	deck = kit[0]
 	mast = kit[1]
 	if not keeled:
-		for socket in deck.stuck():
+		for socket: Socket in deck.stuck().duplicate():
 			if socket.part != null and socket.part.stats.has("keel"):
 				# A tray stuck where the keel was, under the same piece.
 				var pose := socket.transform
@@ -132,7 +132,7 @@ func _set_up(keeled: bool) -> void:
 				var piece := deck.own_piece(socket)
 				deck.unstick(socket).free()
 				deck.stick(Catalog.part(&"hover_tray"), pose, out, piece)
-				break
+		check(Runners.keels(deck).is_empty(), "the comparison craft has no remaining keels")
 	await physics_frames(30)
 	blow(downwind * 10.0)
 	hoist(60.0)

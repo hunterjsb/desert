@@ -1760,3 +1760,11 @@ the supplied line. Generated salvage can provide the same winch so a player
 can assemble the mechanism outside a dev scenario. Refresh the illustrated
 sailing controls to include hoisting at the wheel.
 
+
+
+The authored hoists and revised layouts pass the actual aboard-motion/rate
+check (Sail 11, 70 s) and Varran handling check (Sail 13, 32 s). Each scenario
+tracks its supplied halyard for cleanup; Varran counts and saves its fourth
+line independently from the three waist lines. These checks do not establish
+unassisted straight-line handling. The yacht's keel/no-keel comparison now
+removes both physical keels rather than leaving one in its control fixture.
