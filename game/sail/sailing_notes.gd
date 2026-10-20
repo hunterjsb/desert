@@ -4,25 +4,10 @@ extends Device
 ## Reading uses the normal menus, so controls and back behave as elsewhere.
 
 const PAGES := [
-	["First run", "Your board starts beside you. The Varran carries these notes: open {inventory} and use the booklet to read. In practice, it lies beside the board. The mast streamer shows the air the rig feels. The practice rig runs on skates with one sheet at your waist. The Varran's rig floats on hover trays, with a sheet and two bow lines at your waist. The board's dug edge supplies its sideways grip.\n\n"
-		+ "Look at the mast and {interact} to raise its sail. On the Varran rig, use a bare deck piece to float it before riding. Keep the personal shield on yourself: on the rig it would shelter the sail from its wind. Look at the board and {ride} to step on. Start across the wind, with the rig ahead. {move_left} / {move_right} steer; {move_back} digs the edge. Furl at the mast before leaving the rig unattended.\n\n"
-		+ "These pages stay available: {interact} reads the booklet loose or in your hands. {ui_cancel} closes a page; close the chapter list to return to the run. The world keeps moving while you read, so read before setting sail."],
-	["Read the wind", "The streamer points downwind, away from where the air comes from. On a moving rig it shows apparent wind: the weather's wind minus the rig's movement. As you accelerate, the wind you sail through changes; trim again rather than keeping one setting forever.\n\n"
-		+ "Start with the wind coming from your side: a beam reach. Turning toward the wind is heading up; turning away is bearing away. Straight into the wind the sail cannot pull you forward. To make ground upwind, sail diagonally toward it, then cross to the other tack. A floating Varran rig needs more room off the wind than a yacht with a keel.\n\n"
-		+ "Dead downwind is not always fastest. A reach gives the sail useful lift across the apparent wind; the rig's skates, a yacht's keel, or your board's dug edge keep that sideways force from simply blowing everything downwind."],
-	["Trim the sheet", "The sheet limits how far the boom can swing out. {reel_in} shortens it; {pay_out} eases it. It does not rotate the sail directly: wind swings the boom until the sheet checks it. A tight sheet is not a throttle. Haul too far and the sail stalls; let it too far out and it luffs without useful drive.\n\n"
-		+ "Look toward the sail while reeling so you select its sheet. Start eased on a reach, then haul a little as speed builds and apparent wind moves forward. Watch the cloth and streamer, feel the pull, and compare speed after each change. The best trim follows the air you feel now, not just your compass heading.\n\n"
-		+ "Bear away before a hard turn if you have lost drive. Ease in stronger gusts to reduce load, or furl at the mast if the rig is tipping. Heavy gear high on the mast makes it easier to heel."],
-	["Steer with the board", "Your move directions steer relative to where you look. {move_left} / {move_right} carve; {move_back} with a turn digs an edge and bites across the pull. Held alone, {move_back} swings the board into a braking stop. {crouch} into a hard carve drifts instead of holding a firm edge.\n\n"
-		+ "The practice rig is steered by where you pull its sheet: ride to windward and it bears away; ride to leeward and it heads up. Keep the rig ahead and make small course corrections. Its runners resist sideways slip, but left alone it can round into the wind and stop.\n\n"
-		+ "Slack lines leave the motor free: catch up to the rig or race ahead to swing it around. Your momentum and dug edge can steer and counterbalance it. Once you pull against a loaded line, the motor has only a small towing reserve: a tiny rig crawls, while a heavy one overloads the hover, presses the board toward the sand and makes it sputter. Ease off or let the sail take the load so it can recover. Pulling also uses extra battery power."],
-	["Varran's bridle", "The Varran's floating rig has no skates or keel. Your dug board edge supplies the sideways grip; without it the rig and rider slide downwind. There are three waist lines: the sheet plus one from each bow hook. The nearer bow line loads while the far one hangs slack.\n\n"
-		+ "Steer by the course you ride and trim the sheet selected in the carry view. Before changing tack, ease off the motor and brake some speed. Bear away, then select the far bow line in the carry view and haul it to bring that side across. Hold it short until the rig crosses; then pay it out gradually as you head up onto the new course. Reversing course at full throttle can stall the motor against the old tack. Turning the board alone does not reliably bring the floating rig across.\n\n"
-		+ "Do not haul all three lines blindly. Check the actual rope and corner you select. Start in a moderate breeze on a reach, leave room to turn, and practise one crossing before trying to climb upwind."],
-	["Choose and untie lines", "With a rope end held, reeling works that line first. Otherwise open {inventory}, hover the actual rope to see its name, then click it to keep working that line. Choose the sheet running to the sail or a bow line running to its hook. Looking around never changes your choice. The readout names the line and shows its length and tension. Check it before hauling.\n\n"
-		+ "Reeling and untying choose the same waist line. Empty-handed, select its physical rope in the carry view, then check its name there. Aim clear of a device you could operate, then {interact} to untie that line into your hands; it takes a moment. {interact} with its end held ties it to your waist again. To free yourself, untie each end and put it down with {hands_grab} while aiming clear of the rig.\n\n"
-		+ "To drop every waist line together, open {inventory} and choose Release all. A progress bar counts down the normal one-second untie; all the lines stay tied and can still pull until it finishes. Closing the carry view leaves the countdown on screen. You keep your momentum when they drop. A line already in your hand stays held.\n\n"
-		+ "Several lines can pull against each other through your body even when the net pull feels small. Heavy opposing loads hurt and shake you; a rope's breaking strength is not a safe load for a person. Ease the loaded line or furl before handling a rig in stronger wind."],
+	["Read the wind", "The streamer points downwind. Start across the wind, with the rig ahead.", "res://assets/tutorial/sailing/wind.png"],
+	["Work the sheet", "{reel_in} hauls; {pay_out} eases. Wind swings the sail. A tighter sheet is not always faster.", "res://assets/tutorial/sailing/sheet.png"],
+	["Carve an edge", "{move_left}/{move_right} carve; {move_back} digs the edge. Steer across the pull for grip.", "res://assets/tutorial/sailing/board.png"],
+	["Choose the line", "One line works automatically. Choose among several in {inventory}. Hold an end and {interact} at a fitted hook to redirect it.", "res://assets/tutorial/sailing/hook.png"],
 ]
 
 
@@ -62,6 +47,8 @@ func chapters() -> Words:
 
 func page(at: int, paragraph := 0) -> Words:
 	var leaves := pages()
+	if leaves[at].size() > 2:
+		return _visual_page(at)
 	var parts: PackedStringArray = leaves[at][1].split("\n\n", false)
 	var menu := Words.new("%s · %d / %d" % [leaves[at][0], paragraph + 1, parts.size()])
 	var body := Controls.keys_label()
@@ -79,6 +66,33 @@ func page(at: int, paragraph := 0) -> Words:
 	elif at > 0:
 		var previous: PackedStringArray = leaves[at - 1][1].split("\n\n", false)
 		menu.add("Previous chapter", _turn_page.bind(at - 1, previous.size() - 1))
+	menu.add("Chapters", Controls.ui.close_top)
+	return menu
+
+
+## Visual leaves share the normal menu actions; prose-only books retain their layout.
+func _visual_page(at: int) -> Words:
+	var leaves := pages()
+	var menu := Words.new("%s · %d / %d" % [leaves[at][0], at + 1, leaves.size()])
+	menu._list.theme_type_variation = &"BookMenuList"
+	var image := TextureRect.new()
+	image.texture = load(leaves[at][2])
+	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	var tall := minf(300.0, get_viewport().get_visible_rect().size.y * 0.42)
+	image.custom_minimum_size = Vector2(tall * 16.0 / 9.0, tall)
+	image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	menu.add_body(image)
+	var caption := Controls.keys_label()
+	caption.theme_type_variation = &"KeysList"
+	caption.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	caption.custom_minimum_size.x = minf(680.0, get_viewport().get_visible_rect().size.x - 180.0)
+	caption.text = "[center]" + Controls.bbcode(leaves[at][1]) + "[/center]"
+	menu.add_body(caption)
+	if at + 1 < leaves.size():
+		menu.add("Next", _turn_page.bind(at + 1, 0))
+	if at > 0:
+		menu.add("Previous", _turn_page.bind(at - 1, 0))
 	menu.add("Chapters", Controls.ui.close_top)
 	return menu
 

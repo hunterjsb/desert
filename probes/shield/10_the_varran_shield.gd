@@ -31,6 +31,7 @@ func run() -> void:
 	await varran(way, 1)
 	check(shield.running(), "riding, it's up round you still")
 	blow(downwind * WIND)
+	driving_sheet = true
 	tending = deg_to_rad(15.0)
 	var held := cell.charge_wh
 	var t0 := world.time

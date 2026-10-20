@@ -16,6 +16,7 @@ func run() -> void:
 	hoist(60.0)
 	course = heading()
 	tending = deg_to_rad(12.0)
+	driving_sheet = true
 	# Lambdas copy what they're given: what they change lives in here.
 	var seen := {"fastest": 0.0, "jolt": 0.0, "spin": 0.0, "leaned": 0.0, "seams": 0, "shifts": 0, "sunk": -INF,
 		"was": deck.linear_velocity, "numbers": true,

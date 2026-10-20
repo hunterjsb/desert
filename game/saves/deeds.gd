@@ -128,6 +128,10 @@ const TABLE := {
 		"family": &"signals", "icon": &"survey_receiver"},
 	&"up_and_over": {"name": "Up and Over", "asks": "Vault onto a ledge",
 		"family": &"nomad", "icon": &"chassis"},
+	&"quick_haul": {"name": "Quick Haul", "asks": "Yank a loaded rope through your hands", "family": &"wind",
+		"icon": &"coil"},
+	&"fairlead": {"name": "Fairlead", "asks": "Redirect a loaded rope through a fitted hook", "family": &"wind",
+		"icon": &"hook"},
 }
 ## The hook: a deed done in this world's run, now. With a `part`, that thing
 ## counts toward it, and it's done once enough different ones have. Says

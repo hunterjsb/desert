@@ -513,18 +513,16 @@ func _get_up() -> void:
 
 
 ## What's at your waist that would hold the board back: every line but a
-## sail's sheet, a camp's line its rig tows past you, and a line from the
+## sail's sheet and a line from the
 ## sheet's own rig, which with the sheet flies it as a kite's lines do.
 func _holding_back() -> Array[RigidBody3D]:
 	var back: Array[RigidBody3D] = []
-	var towed := world.ropes.link_pair()
 	var rigs := []
 	for body in waist.tied:
 		if is_instance_valid(body) and Mast.sheet_end(body) and world.ropes.far_holder(body) != null:
 			rigs.append(world.ropes.far_holder(body))
 	for body in waist.tied:
 		if is_instance_valid(body) and not Mast.sheet_end(body) \
-				and not (towed.size() == 2 and world.ropes.line_at(body) == towed[1]) \
 				and not rigs.has(world.ropes.far_holder(body)):
 			back.append(body)
 	return back

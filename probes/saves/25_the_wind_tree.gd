@@ -31,6 +31,7 @@ func run() -> void:
 	blow(downwind * 10.0)
 	hoist(60.0)
 	check((kit[2] as Helm).interact(player), "you sit at the helm")
+	driving_sheet = true
 	tending = deg_to_rad(15.0)
 	var ticks := [0]
 	await simulate(30.0, func() -> void:

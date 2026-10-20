@@ -399,7 +399,7 @@ const DEVICES := {
 	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true,
 		"carryable": true, "on_end": true, "sticks": true, "stands": true, "stats": {"face_m2": 0.18},
 		"sockets": [
-			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
+			[&"sail", Mast.BOOM_AT + Vector3(0.0, 0.0, -0.07), Vector3.FORWARD],
 		]},
 	# A skimmer pilot's seat, stuck on a deck: use on it sits you at the helm (Helm).
 	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,
@@ -508,8 +508,8 @@ static func part(id: StringName) -> Part:
 		else (Plant.new() if spec.has("crop") \
 		else (Compass.new() if spec.kind == &"compass" \
 		else (Frame.new() if spec.kind == &"frame" \
-		else (Remedy.new() if spec.kind == &"medicine" \
-		else (Flare.new() if spec.kind == &"flare" else Part.new()))))))
+		else (Remedy.new() if spec.kind == &"medicine" else (RopeHook.new() if id == &"hook" \
+		else (RopeTip.new() if id == &"rope_end" else (Flare.new() if spec.kind == &"flare" else Part.new()))))))))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -559,6 +559,8 @@ static func part(id: StringName) -> Part:
 		made.continuous_cd = true
 	if spec.has("tie"):
 		_add_tie(made, spec.tie, Vector3.BACK)
+		if made is RopeHook:
+			made.guide = RopeEnd.make(made, spec.tie, false)
 	if spec.has("adds"):
 		var adds := Socket.new()
 		adds.kind = spec.adds[0]

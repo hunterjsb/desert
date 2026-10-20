@@ -21,7 +21,7 @@ func run() -> void:
 	var way := heading(1, -60.0)
 	# Racing past the deck's boom is a real crash, not a rope catapult.
 	# Lay the lines from an outboard lane before either end begins moving.
-	_lines = await varran(way, 1, 2.0)
+	_lines = await varran(way, 1, -2.0)
 	blow(downwind * WIND)
 	tending = deg_to_rad(15.0)
 	var seen := {"t": 0, "slack": 0, "peak": 0.0, "past": 0, "parted": 0,

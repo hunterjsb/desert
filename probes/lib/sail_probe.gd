@@ -5,6 +5,8 @@ extends DeckProbe
 
 var deck: Chassis
 var mast: Mast
+var _working_sheet: Rope
+var _outboard := 0.0
 ## Level sand across the run's long-term wind, world metres, and the ways
 ## along and across it.
 var level := Vector2.ZERO
@@ -48,14 +50,15 @@ func rig(at: Vector3, heading: Vector2, carried := &"skates", windward := 1, cle
 	mast = Rig.make([&"mast", [&"sail"]]) as Mast
 	# Its boom swung back over the deck, as a sail mount's always had it.
 	Stick.put(deck, Rig.piece(deck, Vector2i(left, 0)), Chassis.TOP, Vector2.ZERO, PI, mast)
-	# The ballast in an open frame, where the crate stood and catching the wind as it did.
+	# The raised physical gooseneck clears the original ballast frame.
 	var behind := Rig.piece(deck, Vector2i(left, 1))
 	Stick.put(deck, behind, Chassis.TOP, Vector2.ZERO, 0.0, Catalog.part(&"frame"))
 	for place: Vector2 in [Vector2(-0.25, 0.0), Vector2(0.0, 0.0), Vector2(0.25, 0.0)]:
 		Stick.put(deck, behind, Chassis.TOP, place, 0.0, Catalog.part(&"battery" if place.x == 0.0 else &"big_battery"))
 	if cleated:
 		fit_part(deck, &"hook")
-		Line.between(world, mast._tie(), deck.free_tie(deck.global_position), 6.0)
+		var sheet := Line.between(world, mast._tie(), deck.free_tie(deck.global_position), 0.0)
+		mast.rig_sheet(sheet)
 	set_down(deck)
 	return deck
 
@@ -111,7 +114,10 @@ func hoist(degrees: float) -> void:
 
 ## The sheet hauled to hold the boom within `degrees` of straight back.
 func trim(degrees: float) -> void:
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(degrees) * 0.5)
+	var sheet := mast.sheet()
+	if sheet != null:
+		sheet.length = _trim_length(degrees, _swing_side())
+		sheet.full = maxf(sheet.full, sheet.length)
 
 
 ## A heading as an engine direction on the flat.
@@ -128,13 +134,28 @@ var helm := 300.0
 ## sail meets the wind past this angle of attack, rad, and easing it as the
 ## camp starts to heel; 0 leaves the trim be.
 var tending := 0.0
+## A helmsman on a hull chooses forward drive; a free Varran tack can retain
+## its current side while its bow lines turn the rig.
+var driving_sheet := false
 
 
 func _steer() -> void:
 	if tending > 0.0 and is_instance_valid(mast) and mast.sail() != null:
-		var meet := tending * clampf(1.0 - (roll() - 2.0) / 4.0, 0.0, 1.0)
-		var want := clampf(mast.trimmed_to() + absf(mast.attack) - meet, 0.0, Mast.MOST)
-		mast.trim = lerpf(mast.trim, 2.0 * Mast.BOOM * sin(want * 0.5), 0.05)
+		var meet := tending if driving_sheet else tending * clampf(1.0 - (roll() - 2.0) / 4.0, 0.0, 1.0)
+		var air := _apparent_air()
+		if air.length() > 0.01:
+			var flow := atan2(-air.x, -air.z)
+			var one := wrapf(flow - meet, -PI, PI)
+			var two := wrapf(flow + meet, -PI, PI)
+			var want := one if absf(angle_difference(mast.boom, one)) < absf(angle_difference(mast.boom, two)) else two
+			if driving_sheet:
+				var across := mast.global_basis.y.cross(mast.global_basis * air)
+				want = one if across.dot(-deck.global_basis.z) > 0.0 else two
+			var sheet := mast.sheet()
+			if sheet != null:
+				var aimed := mast.eased_length(rad_to_deg(want), 1.0) if driving_sheet else _trim_length(rad_to_deg(want), 1.0)
+				var length := clampf(aimed, Line.SHORTEST, sheet.full)
+				sheet.length = move_toward(sheet.length, length, Reel.PACE * get_physics_process_delta_time())
 	if course == Vector2.ZERO or deck == null:
 		return
 	var ahead := -deck.global_basis.z
@@ -219,7 +240,41 @@ func varran(way: Vector2, windward := 1, passing_lane := 0.0) -> Array[Line]:
 	var lines: Array[Line] = [Line.to_waist(world, hooks[0] if windward > 0 else hooks[-1], kit.waist[&"bow"]),
 		Line.to_waist(world, mast._tie(), kit.waist[&"mast"]),
 		Line.to_waist(world, hooks[-1] if windward > 0 else hooks[0], kit.waist[&"bow_right"])]
+	for line in lines:
+		line.full = maxf(line.full, world.tuning.rope_coil_length)
+		line.rope.full = line.full
+	mast.rig_sheet(lines[1])
 	player.get_on(board)
 	await physics_frames(2)
 	hoist(20.0)
 	return lines
+
+
+func _swing_side() -> float:
+	var air := _apparent_air()
+	return -signf(air.x) if absf(air.x) > 0.01 else 1.0
+
+
+func _apparent_air() -> Vector3:
+	var centre := mast.global_transform * mast._middle_at(mast.boom)
+	var velocity := Vector3.ZERO
+	if is_instance_valid(mast._boom_body):
+		var body := mast._boom_body
+		velocity = body.linear_velocity + body.angular_velocity.cross(centre - body.global_transform * body.center_of_mass)
+	return mast.global_basis.inverse() * (world.weather.felt_wind(centre) - velocity)
+
+
+## Tend the boom leg, preserving the paid outboard reserve. Recalculating
+## the whole path from the rider's current position would winch them closer
+## on every tack and silently treat that closure as another trim allowance.
+func _trim_length(degrees: float, side: float) -> float:
+	var sheet := mast.sheet()
+	var mine: RopeEnd = mast._tie().part.get_meta(&"tip")
+	var other := sheet.b if sheet.a == mine else sheet.a
+	if not is_instance_valid(sheet.through):
+		return mast.eased_length(degrees, side)
+	var outboard := sheet.through.global_position.distance_to(other.global_position)
+	if sheet != _working_sheet:
+		_working_sheet = sheet
+		_outboard = outboard
+	return mast.eased_length(degrees, side) - outboard + _outboard

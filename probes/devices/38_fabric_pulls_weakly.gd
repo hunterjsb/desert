@@ -42,6 +42,12 @@ func run() -> void:
 	await simulate(0.5)
 	mast.raised = true
 	mast.raise = 1.0
+	# The deck turned while drifting. Sheet the real sail broadside to this wind.
+	var flow := mast.global_basis.inverse() * -aft
+	mast.boom = atan2(-flow.x, -flow.z) + PI * 0.5
+	mast.restored()
+	deck.fit(Catalog.part(&"hook"), ring(deck, Vector2i.ZERO, Vector2i(-1, 0)))
+	Line.between(world, mast._tie(), deck.free_tie(mast._tie().global_position), 0.0)
 	blow(Vector2(-aft.x, -aft.z) * WIND)
 	var sail := 0.0
 	for i in 90:

@@ -1304,6 +1304,110 @@ incorrectly yields 3.714 m/s from airborne skates alone and fails the physical
 assertion. Restored source passes sail 19 (12 s); existing ground-runner sailing
 and hover-keel tacking checks (sail 1 and 10) pass unchanged. No tuning changed.
 
+## Sailing correction: physical boom and explicit routing (agreed and built, 2026-10-20)
+
+The user's sailing playtest rejects the one-sided angular latch, diagonal-only
+control and reeling that appears to rotate a yacht magically. Boom control comes
+from actual rope forces and usable hooks. A separate rigid boom body runs on a
+free mast-axis Jolt hinge, with no motor or angular limit. Local apparent wind
+acts on the sail body; the hinge and ordinary sheet transmit its loads. Reeling
+changes actual paid length. Real contact geometry bounds movement. Rope strength,
+closing-speed protections and opposed-load injury remain unchanged.
+
+This supersedes the hidden automatic tow link. Starter sheets run through an
+actual removable fitted hook. The tow scenario has an explicit deck-to-deck
+line and an independent waisted sheet; it does not silently bypass the player
+or automatically tie a second load to them. Deliberately retying opposed loads
+still exposes the rider to the normal physical injury rules.
+
+### Geometry and loading
+
+The shared gooseneck/sail socket rises 0.5 m on the existing telescopic mast.
+The actual spar, hinge, fitted tip and cloth share that frame. Normal navigation
+computer and ballast geometry clears it; arbitrarily tall custom gear can still
+obstruct it. The original 4 kg ballast frame is retained: removing it caused a
+real gust-recovery pitch failure. Native spar contact replaces the duplicate
+analytic boom-tip ground force; the existing upper-mast ground support remains.
+
+The Varran mast moves to the front row and the navigation computer aft. Its old
+aft mast had only about 0.7 m to a supported guide, approaching a 0.1 m effective
+lever at dead centre: about 500 N sheet tension was observed against roughly
+100 N wind drive. The new supported guide sits about 1.7 m aft of the hinge,
+providing real leverage. Both bow lines retain 1.5 m departure slack; the sheet
+includes its whole routed path and eased departure swing. Starter lines retain
+a normal coil's capacity, with only the initial path paid out. A carried stake
+is included in the Varran kit.
+
+The physical sail and fitted tip total 5.3 kg, excluded from the carrier's fitted
+mass and counted once in the boom. A rectangular gathering-cloth mass surrogate
+sets its centre and inertia. The complete Varran carrier plus boom is 121.6 kg.
+Rope effective mass accounts for the actual centres of mass, combined Jacobians
+when a guide shares an endpoint's body, and coupled free-hinge response. Actual
+impulses still land only at the real attachment points; Jolt supplies the hinge
+reactions. A two-boom response diagnostic conserves linear impulse within
+6e-8 and angular impulse within 7e-7, with hinge velocity closure within 3e-8.
+
+### Resume and mounted-pose ordering
+
+A save retains the boom's complete relative transform, world linear/angular
+velocities, and its rope predictor cache by the owning mast reference. Yaw and
+relative hinge speed alone omit real constraint error and carrier motion. Final
+mass properties precede hinge configuration in its authored rest frame; saved
+body poses are explicitly committed to the physics server. The first rope step
+reads the direct inertia tensor rather than an unsynchronized node cache.
+
+A matched phase trace also isolates a mounted-pose ordering defect: the first
+wind, rope and runner impulses match, but a fresh kinematic mast then retains
+the prior world pose while its carrier advances about 0.046 m. Mast's early
+physics callback precedes the parent's normal seat refresh. `follow_mount`
+synchronizes mounted ancestor/socket poses before hinge, wind and endpoint work.
+This adds no force, damping or angular constraint. The unchanged rig-resume
+check passes; a repeated measured continuation differs by 0.0085 m after four
+seconds, within the existing 0.05 m tolerance. Origin-shift diagnostics retain
+hinge pivot error of 0.016 mm.
+
+### Physical checks and presentation
+
+The sheet check uses actual routed extension against paid length and the rope's
+declared maximum stretch, rather than an ideal angular latch. Its original
+1.5 degree/tick smoothness, movement time, positive tension, still-air payout and
+wind-return assertions remain. The isolated still-air phase stabilizes the
+carrier and verifies both bodies' actual motion before payout; relative hinge
+speed alone had concealed a moving base. It passes in 38 seconds.
+
+The yacht/tow fixture helmsman works the current complete route at normal reel
+speed: a reserve captured ashore must not remain artificial slack after sitting
+at the nearer helm. It chooses driving lift and deliberately holds its requested
+attack, rather than the fixture's old automatic roll feathering. The production
+game adds no automatic control. For a tow carve it first trims, then holds the
+paid length; automatic payout during the carve would cancel the load change.
+Normal digital braking with a 40 degree look/carve offset gives +7.4 and −17.7
+degrees relative to passive turning in 2.5 seconds, retaining both 6 degree limits.
+The following camp moves at 2.06 m/s, with 67 N on the unhurt rider. The visible
+tow check passes in 26 seconds; the unchanged yacht check passes in 28 seconds.
+
+The deliberate fulcrum phase cleats the former boom end to the rig and ties the
+tow end to the movable rider between it and a moored camp. A known 900 N rig pull
+produces 937 N opposing load and 21 health, with both lines intact. Immobilizing
+the player would absorb the first pull before the second line took strain.
+The worked line is unloaded before testing independent reeling.
+
+The overrun fixture takes a clear outboard lane instead of racing into the
+chassis. Slack, retension, staying aboard, the full 1500 N strength bound and
+forced radial overload are retained; it passes in 13 seconds. The two-tack
+runner check passes in 32 seconds and the Varran reach/tack course in 31 seconds.
+After combining the verified vault work and visual sailing notes, the same
+focused checks pass: visible tow 26 s, yacht 29 s, sheet 38 s, Varran 31 s,
+overrun 15 s and mounted hooks 9 s. Rig resume passes again in 24 s; line
+selection and single-line fallback pass in 8 s, and loaded yank in 6 s. These
+outcomes precede final combined CI and native verification.
+
+Actual rendered Varran wide and close views show the higher spar above the
+navigation computer, all three lines, and the real guide foot seated on an
+interior panel clear of the case and deck edge. At 4.53 m/s its sheet carries
+61.7 N and hinge pivot error is 0.071 mm. The field-note images use the actual
+higher boom and ordinary routed hook geometry.
+
 ## Vaulting small ledges (agreed and source built 2026-10-20)
 
 On foot, sprint into a small ledge or jump toward it to vault onto its walkable
@@ -1462,3 +1566,69 @@ along the actual plane; sand retains its original deterministic correction.
 Movement 34 passes both actual approaches (four legs, no stuck leg or snag),
 in 21 s; Movement 32 and 33 pass in 10 s each. The unchanged full Kits 2
 traversal remains the acceptance gate for every kind's openings.
+
+### Combined sailing verification repair (2026-10-20)
+
+The combined check exposed fixture helmsmen still reserving the entire outboard
+leg after approaching the helm or rig, leaving the physical sail unloaded. A
+fixture that actively tends a driving reach must work the current complete rope
+path at the normal reel speed, as the yacht and visible tow checks already do.
+Its reel increment must use the actual physics interval at every tick rate.
+This does not add production automatic trim or alter force, injury, rope strength,
+frame-rate consistency or movement acceptance bounds. Route loss and native
+frame-rate behavior remain separate measured failure modes to investigate.
+
+The multi-rate aboard check also initialized later cases with the previous case's
+wind still blowing, while the first case began calm. Each case now settles the
+hoisted articulated craft and boarded rider in calm air for three seconds before
+starting the same driving-sheet policy and selected tick rate. It passes in 70 s
+without changing the 20 m/s² jolt, 1.5 rad/s spin, full health/aboard, or 10% tow
+and 3% yacht distance bounds. This is fixture initialization and normal-rate
+control, not a new production constraint or force correction.
+
+The combined branch also changed the mass reference for every ordinary rope
+body while adding hinged assemblies. An isolated control retaining the existing
+ordinary-body reference passes the unchanged loose-plug and waist-reel checks;
+the broader change fails both. Limit the new native centre-of-mass model to
+actual hinged assemblies, where the coupled response needs it. Ordinary ropes
+retain their established mass-origin approximation; improving that approximation
+is separate work with its own contact and closing-speed evidence. The current
+3 m/s solver closing bound, 5 m/s loose-plug acceptance and waist-reel tolerance
+remain unchanged.
+
+Other combined fixtures retain their actual actions and bounds. The nomad claim
+aims at a real panel within the existing 2.5 m reach, rather than empty air in
+the old spar envelope from 2.8 m away. The fabric comparison sheets the full
+sail broadside to the same world wind with a real cleated line, accounting for
+the deck having turned during the earlier fabric drift; a freely luffing sail
+is not a matched maximum-drive comparison. The quarter-force bound is retained.
+The fitting check puts a removed hook aside before fitting a larger shield;
+strip-and-fit uses the existing edge rings for hooks, preserving panel space
+for batteries and panels. Free placement remains covered through actual hands.
+
+### Native hinge response at the sand (2026-10-20)
+
+Use the same free hinge degrees of freedom for the rope iteration's initial
+velocity and the runner's support/contact response. Aerodynamic impulses
+already on the boom contain relative motion that the native hinge will block.
+Project both current and expected virtual motion through the assembly matrix.
+The runner takes a fresh native assembly snapshot, independent of whether
+ropes exist, so untying the last line cannot change its support. Resolve
+force/torque coupling once per runner tick using six root impulse responses;
+use the whole supported mass for spring/damping coefficients. Apply native
+contact impulses only on the hull; Jolt supplies the real hinge reactions.
+Non-hinged craft retain their ordinary response and no tuning changes.
+
+Measured in isolation with the same fixed sheet: 30/60/120 Hz reaches
+2.907/2.908/2.908 m/s after 51.26/51.30/51.32 m, with roll
+0.93/0.85/0.82 degrees, within the existing rate bounds. The four-minute
+Sail 7 gust/turn/seam/origin-shift check passes in 95 s when its active
+helmsman works the full driving sheet path, as other active sailing fixtures
+already do. All motion, crossing and rate acceptance bounds remain unchanged.
+A conservative retained-side pilot crosses too few seams even over eight
+minutes; extending duration was rejected. No production auto-trim is added.
+
+Combined focused checks pass: sailing aboard (Sail 11, 71 s), visible tow
+(Sail 9, 28 s), rig save/load (Saves 16, 27 s), and mixed skates/hover
+(Sail 19, 14 s). These retain the existing motion, health, save drift and
+mixed-support bounds. Full combined CI remains the landing gate.

@@ -12,6 +12,7 @@ const HELP := [
 	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],
 		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
 		["{reel_in} / {pay_out}", "reel in, pay out; tune a radio"],
+		["{rope_yank}", "yank the worked rope"],
 		["{tune_fine_up} / {tune_fine_down}", "fine tune"], ["{volume_up} / {volume_down}", "radio volume"],
 		["{mark_frequency}", "mark or unmark a radio's frequency; then {interact} goes to the next"]]],
 	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
@@ -70,6 +71,7 @@ const KEYS := {
 const BUTTONS := {
 	"hands_throw": MOUSE_BUTTON_LEFT,
 	"hands_rotate": MOUSE_BUTTON_RIGHT,
+	"rope_yank": MOUSE_BUTTON_RIGHT,
 	"reel_in": MOUSE_BUTTON_WHEEL_UP,
 	"pay_out": MOUSE_BUTTON_WHEEL_DOWN,
 }

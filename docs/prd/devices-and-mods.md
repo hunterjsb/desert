@@ -1637,6 +1637,26 @@ riding/reeling/resuming and endpoint checks (passed, 8 s). Sailing 3's force/tri
 sheet-hauling checks also pass (21 s). The uncached placement search averaged about
 0.23–0.24 ms on the Varran layout; it is not repeated for the camp's motion each render frame.
 
+## Freely placed rope hooks (Hunter, 2026-10-20; built)
+
+The rope hook is a physical removable item, including the hook used at a mast's foot.
+Keep the existing `hook` part and its fixed ring compatibility. It can also be placed
+on suitable existing chassis and mast mounting faces through the normal Stick preview,
+clearance, rotation and removal rules; placement is not limited to fixed ring sockets.
+It does not attach to empty air or arbitrary terrain. A hook adds a real tie socket and
+physical guide point at its visible ring. A line can be tied there or passed through it;
+removing the hook carries its geometry and real guide with it rather than leaving an
+invisible attachment behind. The mast's physical hook and boom mechanics are handled
+with the sailing work, not replaced by decorative ring geometry.
+
+
+As built: `RopeHook` preserves the catalog id, ring kind and existing fixed sockets.
+It adds a guide at the same visible tie center. Stick admits this part on existing
+mounting faces; it does not add a universal terrain attachment. The unseen 720p
+interaction fixture placed one by hand on a free chassis face, confirmed a STUCK
+socket and the real deck as guide holder. Existing Devices 31 (all sticky faces)
+and Rope 12 (last on, first off) passed. The procedural hook and ring geometry is
+unchanged; no new assets or creative id were needed.
 ## Survey receiver device (agreed and built 2026-10-20)
 
 A battery-powered survey receiver is a normal carryable, stickable device using radio
@@ -1676,3 +1696,7 @@ face-placement and overlap/overload probes (devices 31 and 32) pass unchanged; t
 new mixed-deck fixture joins an equipped skate piece through the hands and sticks
 a true hover keel to a separate clear underside. Restoring the category ban makes
 that actual hand join fail. Mass recomputation, power demand and geometry are unchanged.
+
+Starter sheet guides are authored kit data: each declared guided waist sheet
+installs one ordinary removable hook. The origin gear listing counts that same
+hook; constructing the kit must not silently add unlisted equipment.

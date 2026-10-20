@@ -65,6 +65,8 @@ static var _current: Tuning
 ## Kinds of crop grown, planters towed at once, and chassis pieces in one deck.
 @export var deed_crop_kinds: int = 3
 @export var deed_planters_towed: int = 2
+@export var deed_fairlead_n: float = 10.0
+@export var deed_fairlead_seconds: float = 1.0
 @export var deed_deck_pieces: int = 6
 ## A bulk release counts the live lines actually let go together.
 @export var deed_release_lines: int = 2
@@ -682,6 +684,12 @@ static var _current: Tuning
 @export var throw_speed: float = 6.0
 ## Your strength on what you hold too heavy to carry, or walk into, N.
 @export var hand_strength: float = 400.0
+## A yank is a short reel stroke, with the same strength limit as normal hauling.
+@export var rope_yank_m: float = 0.5
+@export var rope_yank_seconds: float = 0.2
+@export var rope_yank_recover_seconds: float = 0.4
+@export var rope_yank_deed_m: float = 0.1
+@export var rope_yank_deed_n: float = 20.0
 ## Having hold of something, a throw punches it where you look instead, a
 ## small shove to right a tipped rig with, N·s.
 @export var punch_impulse: float = 45.0
@@ -1051,7 +1059,6 @@ static var _current: Tuning
 ## real life min)"; world time runs at real time); heard this far, m.
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
-@export var radio_voice_m: float = 30.0
 ## Its advisories: a sandstorm riding a prevailing wind this fast or faster,
 ## m/s, is fast; one lasting this long or longer, minutes, looked ahead this
 ## far, is large. Measured over 12 seeds and 6 hours each, the prevailing wind
@@ -1262,3 +1269,8 @@ static func current() -> Tuning:
 	if _current == null:
 		_current = load(PATH)
 	return _current
+
+## Physical sail boom: gooseneck rotational damping and the spar's collision
+## clearance round the mast, m. Sail mass remains the fitted part's mass.
+@export var boom_hinge_drag: float = 0.8
+@export var boom_root_clearance: float = 0.01

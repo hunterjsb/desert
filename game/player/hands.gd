@@ -436,6 +436,23 @@ func interact() -> bool:
 	return refuse("no use for it there") if look_device != null else false
 
 
+func _look_hook() -> RopeHook:
+	if look_part is RopeHook and (look_part as RopeHook).socket != null:
+		return look_part as RopeHook
+	var at := look_socket
+	while at != null:
+		if at.part is RopeHook:
+			return at.part as RopeHook
+		at = at.get_meta(&"socket") if at.has_meta(&"socket") else null
+	# Looking through the ring's hole meets its mounting face, not its small stem.
+	if look_device != null:
+		for seat in look_device.sockets():
+			var hook := seat.part as RopeHook
+			if hook != null and hook.guide.global_position.distance_to(look_point) <= _tuning.snap_reach:
+				return hook
+	return null
+
+
 ## Rotate held down: the mouse turns what you hold, or have hold of, instead
 ## of your view, `by` rad along and up the screen, its near side following the
 ## mouse: across turns it about the vertical, up and down about your view's
@@ -454,7 +471,8 @@ func turn(by: Vector2) -> bool:
 ## Whether rotate has the mouse: held down, with something in your hands, and
 ## the mouse looking rather than free to click.
 func rotating() -> bool:
-	return (held != null or grasp.body != null) and not Controls.mouse_free and Controls.held(&"hands_rotate")
+	return (held != null or grasp.body != null) and reel.in_hand() == null \
+		and not Controls.mouse_free and Controls.held(&"hands_rotate")
 
 
 ## Takes a body straight into your hands from wherever it is, if they're free:
@@ -567,6 +585,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and not Controls.mouse_free and punch():
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("rope_yank", false, true) and not Controls.mouse_free \
+			and grasp.body == null and (held == null or reel.in_hand() != null):
+		if reel.yank():
+			get_viewport().set_input_as_handled()
 	elif _tunes(event):
 		get_viewport().set_input_as_handled()
 	# Exactly, so bringing near or pushing out never reels a line too.
@@ -2075,6 +2097,10 @@ func _part_stats(part: Part) -> Dictionary:
 func line() -> String:
 	if notice != "":
 		return notice
+	if phase == Phase.HELD and held is Part and held.has_meta(&"line") and _look_hook() != null:
+		var laid: Line = held.get_meta(&"line")
+		return Controls.key_for(&"interact") + " · " + ("remove line from hook" if laid.rope != null \
+			and laid.rope.through == _look_hook().guide else "pass line through hook")
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
 	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \

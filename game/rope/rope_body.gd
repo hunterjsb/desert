@@ -3,6 +3,7 @@ extends RefCounted
 ## A rope end's body as the solver sees it for one tick: its mass, its velocity,
 ## and the push it expects from everything else. Static ends have no inverse mass.
 
+var articulation: WeakRef
 var node: Node3D
 var rigid: RigidBody3D
 var player: Player

@@ -113,7 +113,7 @@ func _streamers() -> void:
 	var mast: Mast = rig.named.mast
 	mast.raised = true
 	mast.raise = 1.0
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(35.0))
+	_set_sheet(mast, 70.0)
 	await ticks(120)
 	var middle := rig.deck.global_transform * rig.deck.center_of_mass
 	var down := Vector3(_down().x, 0.0, _down().y)
@@ -162,20 +162,25 @@ func _tack(windward: int) -> void:
 	player.rotation.y = atan2(-way.x, -way.y)
 	await ticks(10)
 	for id: StringName in kit.waist:
-		lines.append(Line.to_waist(world, Runs._tie_of(built.named[id], player.global_position), kit.waist[id]))
+		var line := Line.to_waist(world, Runs._tie_of(built.named[id], player.global_position), kit.waist[id])
+		if built.named[id] is Mast:
+			(built.named[id] as Mast).rig_sheet(line)
+		lines.append(line)
 	player.get_on(board)
 	var mast: Mast = built.named.mast
 	mast.raised = true
 	mast.raise = 1.0
-	mast.trim = 2.0 * Mast.BOOM * sin(deg_to_rad(10.0))
+	_set_sheet(mast, 20.0)
 	player.set_physics_process(true)
 	Input.action_press("move_forward", 1.0)
 	Input.action_press("move_back", 0.25)
 	for i in 60 * 16:
 		await ticks(1)
 		player.rotation.y = atan2(-way.x, -way.y)
-		var want := clampf(mast.trimmed_to() + absf(mast.attack) - deg_to_rad(15.0), 0.0, Mast.MOST)
-		mast.trim = lerpf(mast.trim, 2.0 * Mast.BOOM * sin(want * 0.5), 0.05)
+		var want := clampf(absf(mast.boom) + absf(mast.attack) - deg_to_rad(15.0), 0.0, deg_to_rad(85.0))
+		var sheet := mast.sheet()
+		if sheet != null:
+			sheet.length = lerpf(sheet.length, mast.eased_length(rad_to_deg(want)), 0.05)
 	Input.action_release("move_forward")
 	Input.action_release("move_back")
 	var me := player.global_position
@@ -241,3 +246,10 @@ func shoot(name: String, from: Vector3, to: Vector3) -> void:
 	if image != null:
 		image.save_png(out.path_join(name + ".png"))
 	print("nomad: shot ", name)
+
+
+func _set_sheet(mast: Mast, degrees: float) -> void:
+	var sheet := mast.sheet()
+	if sheet != null:
+		sheet.length = mast.eased_length(degrees)
+		sheet.full = maxf(sheet.full, sheet.length)
