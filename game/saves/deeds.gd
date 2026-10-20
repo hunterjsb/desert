@@ -122,6 +122,8 @@ const TABLE := {
 		"after": [&"ten_days"], "icon": &"chassis", "goal": "deed_moved_m", "unit": "m", "step": 250.0},
 	&"slept_it_off": {"name": "Slept It Off", "asks": "Sleep through a storm with nothing lost from your camp",
 		"family": &"nomad", "after": [&"ten_days"], "icon": &"bedroll"},
+	&"quick_haul": {"name": "Quick Haul", "asks": "Yank a loaded rope through your hands", "family": &"wind",
+		"icon": &"coil"},
 }
 ## The hook: a deed done in this world's run, now. With a `part`, that thing
 ## counts toward it, and it's done once enough different ones have. Says

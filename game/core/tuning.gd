@@ -667,6 +667,12 @@ static var _current: Tuning
 @export var throw_speed: float = 6.0
 ## Your strength on what you hold too heavy to carry, or walk into, N.
 @export var hand_strength: float = 400.0
+## A yank is a short reel stroke, with the same strength limit as normal hauling.
+@export var rope_yank_m: float = 0.5
+@export var rope_yank_seconds: float = 0.2
+@export var rope_yank_recover_seconds: float = 0.4
+@export var rope_yank_deed_m: float = 0.1
+@export var rope_yank_deed_n: float = 20.0
 ## Having hold of something, a throw punches it where you look instead, a
 ## small shove to right a tipped rig with, N·s.
 @export var punch_impulse: float = 45.0
