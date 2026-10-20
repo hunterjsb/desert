@@ -4,9 +4,9 @@ extends Node
 ## engulfs it, walk out into the storm and look back, switch it off and on
 ## with use for the bloom, or carry it. The storm pass, its CPU twin, the
 ## particles and the sound all carve the bubble out through Weather's
-## shelters; nothing here draws dust of its own. The generator runs on its
-## battery like anywhere else, so a long stay deep in a storm runs it flat: C
-## brings a fresh one.
+## shelters; nothing here draws dust of its own. The generator stands on a
+## plate and runs on the battery stuck beside it, so a long stay deep in a
+## storm runs it flat: C brings a fresh one.
 ##   godot --path . res://look/shield/shield.tscn
 ##   godot --path . --disable-vsync res://look/shield/shield.tscn -- --capture <dir> [--only in_deep,bloom_0.25s]
 
@@ -22,15 +22,18 @@ const KEYS := [
 ]
 ## The generator sits this far ahead of you after a jump, m.
 const AHEAD := 2.0
-## The camp round the generator, as [catalog id, metres right, metres ahead,
-## yaw degrees, parts fitted]: a crate, a floating crate, a planted planter and
-## a charger with its panel.
+## The camp round the generator on its plate, as [catalog id, metres right,
+## metres ahead, yaw degrees, parts fitted, or stuck on a chassis]: a chassis
+## with hooks, a floating chassis, a planted planter and a chassis with its
+## panel.
 const CAMP := [
-	[&"crate_frame", -2.2, 1.0, 15.0, [&"battery", &"hook", &"hook"]],
-	[&"crate_frame", -2.9, 2.6, -20.0, [&"battery", &"hover_tray", &"hook"]],
+	[&"chassis", -2.2, 1.0, 15.0, [&"battery", &"hook", &"hook"]],
+	[&"chassis", -2.9, 2.6, -20.0, [&"battery", &"hover_tray", &"hook"]],
 	[&"planter", 2.4, 0.6, -10.0, [&"battery", &"root_tuber", &"root_tuber", &"root_tuber", &"vat_fungus"]],
-	[&"charger", 1.4, -1.6, 30.0, [&"battery", &"solar_panel"]],
+	[&"chassis", 1.4, -1.6, 30.0, [&"battery", &"solar_panel"]],
 ]
+## Where things stick on a chassis's top, in turn.
+const ON_TOP := [Vector2(-0.22, 0.24), Vector2(0.12, -0.22), Vector2(0.3, 0.3)]
 ## Capture mode's shots: scenario kind, front distance, metres the camera
 ## stands back from the generator (2 is inside, by the camp), yaw from facing
 ## the front, pitch, the shield ("on", "off", "bloom:<s>" or "collapse:<s>"
@@ -56,6 +59,8 @@ const SHOTS := [
 ]
 
 var generator: ShieldGenerator
+## The chassis it stands on, its battery stuck beside it.
+var plate: Chassis
 var camp: Array[Device] = []
 ## Each camp device's catalog id, for its size.
 var _ids := {}
@@ -139,12 +144,12 @@ func camp_to_player() -> void:
 	var ahead := -player.global_basis.z
 	ahead.y = 0.0
 	place_camp(player.global_position + ahead.normalized() * AHEAD, player.global_rotation.y)
-	generator.battery().charge_wh = generator.battery().capacity()
+	plate.battery().charge_wh = plate.battery().capacity()
 
 
 func place_camp(at: Vector3, yaw: float) -> void:
 	var turn := Basis(Vector3.UP, yaw)
-	_set_down(generator, at, turn)
+	_set_down(plate, at, turn)
 	for i in CAMP.size():
 		var entry: Array = CAMP[i]
 		var spot: Vector3 = at + turn * Vector3(entry[1], 0.0, -entry[2])
@@ -166,12 +171,14 @@ func _ground() -> void:
 	var player := world.player
 	while not world.terrain.is_settled_around(world.player_world_x(), world.player_world_z()):
 		await get_tree().physics_frame
-	for device in camp + ([generator] if generator != null else []):
+	for device in camp + ([plate] if plate != null else []):
 		if is_instance_valid(device):
 			device.queue_free()
 	camp.clear()
 	_ids.clear()
-	generator = _device(&"shield", [&"battery"]) as ShieldGenerator
+	plate = _device(&"chassis", [&"battery"]) as Chassis
+	generator = Catalog.device(&"shield") as ShieldGenerator
+	Stick.put(plate, plate, Chassis.TOP, Vector2.ZERO, 0.0, generator)
 	for entry: Array in CAMP:
 		camp.append(_device(entry[0], entry[4]))
 	player.velocity = Vector3.ZERO
@@ -182,13 +189,17 @@ func _device(id: StringName, fitted: Array) -> Device:
 	world.content.add_child(made)
 	_ids[made] = id
 	made.global_position = world.player.global_position + Vector3.UP * 50.0
+	var spot := 2 if fitted.size() == 1 else 0
 	for part_id: StringName in fitted:
 		var part := Catalog.part(part_id)
 		world.content.add_child(part)
-		for socket in made.sockets():
-			if socket.kind == part.kind and socket.part == null:
-				made.fit(part, socket)
-				break
+		var fits := made.sockets().filter(func(s: Socket) -> bool: return s.kind == part.kind and s.part == null)
+		if not fits.is_empty():
+			made.fit(part, fits[0])
+		elif made is Chassis:
+			var under := Device.carries(part) != &""
+			Stick.put(made, made, Chassis.BOTTOM if under else Chassis.TOP, Vector2.ZERO if under else ON_TOP[spot], 0.0, part)
+			spot += 0 if under else 1
 	return made
 
 
@@ -196,7 +207,7 @@ func _readout() -> String:
 	var weather := world.weather
 	var eye := world.player.camera.global_position
 	var shell := eye.distance_to(generator.shelter.global_position) - generator.shelter.radius
-	var cell := generator.battery()
+	var cell := plate.battery()
 	var shield := "shield %s %d Wh" % ["on" if generator.running() else "off", floori(cell.charge_wh) if cell != null else 0]
 	var where := "inside" if weather.shelter_at(eye, &"storm") > 0.0 else "%d m out" % roundi(shell) \
 		if generator.shelter.radius > 0.0 else "-"

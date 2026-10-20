@@ -67,13 +67,13 @@ static func of(device: Device) -> Array:
 	return found
 
 
-## The keels fitted to a device, as [the middle of its face, its length's
+## The hover fins fitted to a device, as [the middle of its face, its length's
 ## way, keel, keel_drag], in its device's frame, turned along its length as
-## runners are.
+## runners are. A runner's own keel stat measures blade penetration, not hover grip.
 static func keels(device: Device) -> Array:
 	var found: Array = []
 	for socket in device.sockets():
-		if socket.part == null or not socket.part.stats.has("keel"):
+		if socket.part == null or socket.part.stats.get("lift_kg", 0.0) <= 0.0 or not socket.part.stats.has("keel"):
 			continue
 		var shape := _lengthwise(socket)
 		if shape == null:

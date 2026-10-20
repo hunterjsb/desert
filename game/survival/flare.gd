@@ -108,6 +108,7 @@ func _physics_process(delta: float) -> void:
 	if not called and world != null and is_inside_tree() and Airdrop.overhead(world, global_position):
 		called = true
 		Airdrop.fire(world, global_position)
+		Deeds.done(world, &"care_package")
 
 
 func _go_out() -> void:

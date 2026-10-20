@@ -7,8 +7,8 @@ extends "res://look/style/style.gd"
 
 ## Finds in the camp's frame: catalog id, layer, soundness, x, z, buried.
 const LAID := [
-	[&"charger", &"surface", 0.4, -0.75, 2.55, 0.55],
-	[&"charger", &"deep", 0.95, 0.75, 2.7, 0.55],
+	[&"chassis", &"surface", 0.4, -0.75, 2.55, 0.55],
+	[&"chassis", &"deep", 0.95, 0.75, 2.7, 0.55],
 	[&"battery", &"surface", 0.4, -0.35, 3.15, 0.0],
 	[&"hook", &"deep", 0.95, 0.35, 3.2, 0.0],
 ]
@@ -24,7 +24,8 @@ func _dress() -> void:
 		var spec := {"id": entry[0], "device": device, "layer": entry[1], "sound": entry[2], "charge": 0.6,
 			"x": at.x, "z": at.y, "yaw": _yaw + 0.5, "lean": 0.3, "lean_by": 0.15, "bury": entry[5], "fill": []}
 		if device:
-			spec.fill = [[0, &"battery", 0.6]]
+			# A battery stuck on its top, at its spot for one.
+			spec.fill = [[Finds.holds(entry[0]).find(&"battery"), &"battery", 0.6]]
 		var body := Finds.make(spec)
 		var pose := Finds.pose(body, spec, world.height_at)
 		world.content.add_child(body)
@@ -69,8 +70,8 @@ func _shots() -> Array:
 		["camp8_morning", "morning", Vector3(1.6, 1.7, 8.0), Vector3(0.0, 0.5, 0.0)],
 		["camp8_noon", "noon", Vector3(1.6, 1.7, 8.0), Vector3(0.0, 0.5, 0.0)],
 		["camp8_dusk", "dusk", Vector3(1.6, 1.7, 8.0), Vector3(0.0, 0.5, 0.0)],
-		["crate", "midmorning", Vector3(-2.5, 1.12, 2.05), Vector3(-1.9, 1.08, 0.6)],
-		["crate5", "midmorning", Vector3(-3.65, 1.7, 5.3), Vector3(-1.9, 1.1, 0.6)],
+		["floater", "midmorning", Vector3(-2.5, 1.12, 2.05), Vector3(-1.9, 1.08, 0.6)],
+		["floater5", "midmorning", Vector3(-3.65, 1.7, 5.3), Vector3(-1.9, 1.1, 0.6)],
 		["finds", "midmorning", Vector3(0.0, 0.75, 3.95), Vector3(0.0, 0.05, 2.85)],
 		["ruin_noon", "noon", eye, Vector3(c.x, 1.4, c.y)],
 		["ruin_dusk", "dusk", eye, Vector3(c.x, 1.4, c.y)],

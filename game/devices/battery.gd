@@ -4,6 +4,9 @@ extends Part
 ## carrying stored power by hand. Its light shows how full it is.
 
 var charge_wh := 0.0
+## What went in (plus) or out over the last power tick, W: which way it's
+## flowing, for a power box's strip.
+var flow_w := 0.0
 ## The strip of light on its case; it moves into a device with the rest of it.
 var light: MeshInstance3D
 

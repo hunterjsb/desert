@@ -38,8 +38,8 @@ func _ready() -> void:
 			break
 	var kit: Array = world.get_meta(&"scenario_kit")
 	var deck: Chassis = kit[0]
-	var mast: Mast = kit[1]
-	var board: Hoverboard = kit[4]
+	var mast := _mast(kit)
+	var board := _board(kit)
 	var player := world.player
 	camera = Camera3D.new()
 	camera.fov = 60.0
@@ -90,9 +90,9 @@ func _ready() -> void:
 func _in_tow(player: Player) -> void:
 	var kit := await _scenario("sail_tow")
 	var rig: Chassis = kit[0]
-	var mast: Mast = kit[1]
+	var mast := _mast(kit)
 	mast.raised = true
-	player.get_on(kit[6])
+	player.get_on(_board(kit))
 	var wind := world.weather.field_wind(rig.global_position).normalized()
 	var flat := Vector3(wind.x, 0.0, wind.z).normalized()
 	# Borne away 30° from across the wind, on the tack it stands on.
@@ -114,7 +114,7 @@ func _in_tow(player: Player) -> void:
 func _the_yacht(player: Player) -> void:
 	var kit := await _scenario("yacht")
 	var deck: Chassis = kit[0]
-	var mast: Mast = kit[1]
+	var mast := _mast(kit)
 	mast.raised = true
 	(kit[2] as Helm).interact(player)
 	var wind := world.weather.field_wind(deck.global_position).normalized()
@@ -180,3 +180,18 @@ func shoot(n: int, from: Vector3, to: Vector3) -> void:
 	image.resize(SHOT.x, SHOT.y, Image.INTERPOLATE_LANCZOS)
 	image.convert(Image.FORMAT_RGB8)
 	shots[n] = image
+
+
+## Scenario props can grow without moving the rig's controls to another index.
+func _mast(kit: Array) -> Mast:
+	for body in kit:
+		if body is Mast:
+			return body
+	return null
+
+
+func _board(kit: Array) -> Hoverboard:
+	for body in kit:
+		if body is Hoverboard:
+			return body
+	return null

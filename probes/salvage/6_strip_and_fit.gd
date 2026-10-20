@@ -1,9 +1,10 @@
 extends SalvageProbe
 ## Salvage & ruins probe 6: strip and fit. Every kind of device the sand
-## holds is found buried with every socket a layer can fill filled. Through
-## the hands, every part comes out of it, as it lies where your eyes can reach
-## its socket, or once you've taken hold of the device and pulled it up out of
-## the sand where they can't, and goes into a device of your own. What you
+## holds is found buried with every socket and spot a layer can fill filled.
+## Through the hands, every part comes out of it, as it lies where your eyes
+## can reach it, or once you've taken hold of the device and pulled it up out
+## of the sand where they can't, and goes into a device of your own: into its
+## socket, or stuck on your own chassis. What you
 ## take from becomes yours; nothing is left in the find. A found shield
 ## generator, used as it lies, starts on that first use. A found coil, taken,
 ## gives you a line's first end to lay, and a found plug brings its cable and
@@ -27,8 +28,10 @@ func run() -> void:
 	var ids := {}
 	for layer: StringName in Finds.DEVICES:
 		for entry: Array in Finds.DEVICES[layer]:
-			# Nothing to strip from a stake or a bedroll: they have no sockets to fill.
-			if entry[0] != &"stake" and not Catalog.DEVICES[entry[0]].sockets.is_empty():
+			# Nothing to strip from a stake, a bedroll or a light panel: nothing of theirs is found filled.
+			if entry[0] != &"stake" and Finds.holds(entry[0]).any(func(kind: StringName) -> bool:
+					return Finds.FILLS[Finds.DEEP].has(kind) or Finds.FILLS[Finds.SURFACE].has(kind) \
+						or entry[0] == &"survival_kit" and Finds.SURVIVAL_KIT.has(kind)):
 				ids[entry[0]] = true
 	var tally := {"parts": 0, "out": 0, "fitted": 0, "pulled": 0, "yours": 0}
 	var k := 0
@@ -83,9 +86,9 @@ func _strip(id: StringName, k: int, tally: Dictionary) -> void:
 	var at := here + Vector2(4.0 * k - 10.0, -6.0)
 	var spec := {"index": 900 + k, "id": id, "device": true, "layer": Finds.DEEP, "x": at.x, "z": at.y,
 		"yaw": 0.4 * k, "lean": 1.0, "lean_by": 0.1, "bury": 0.35, "sound": 0.9, "charge": 0.5, "fill": []}
-	var sockets: Array = Catalog.DEVICES[id].sockets
-	for i in sockets.size():
-		var kind: StringName = sockets[i][0]
+	var holds := Finds.holds(id)
+	for i in holds.size():
+		var kind: StringName = holds[i]
 		var fills: Array = [Finds.SURVIVAL_KIT] if id == &"survival_kit" else [Finds.FILLS[Finds.DEEP], Finds.FILLS[Finds.SURFACE]]
 		for each: Dictionary in fills:
 			if each.has(kind):
@@ -103,6 +106,7 @@ func _strip(id: StringName, k: int, tally: Dictionary) -> void:
 		await simulate(1.0 / 60.0)
 		check(hands.interact() and found.running(), "a found shield generator starts on the first use")
 		hands.interact()
+	var stuck_on := 0
 	for part in parts:
 		var socket := part.socket
 		if not await _take(found, socket):
@@ -114,7 +118,13 @@ func _strip(id: StringName, k: int, tally: Dictionary) -> void:
 				printerr("%s %s: couldn't be taken out" % [found.label, socket.kind])
 				continue
 		tally.out += 1
-		if await _fit_into(mine, part):
+		var put := false
+		if mine is Chassis and Stick.sticks(part):
+			put = await _stick_into(mine as Chassis, part, stuck_on)
+			stuck_on += 1
+		else:
+			put = await _fit_into(mine, part)
+		if put:
 			tally.fitted += 1
 		else:
 			printerr("%s %s: didn't go into yours" % [found.label, part.label])
@@ -159,6 +169,21 @@ func _fit_into(mine: Device, part: Part) -> bool:
 				hands.grab()
 				await simulate(1.0 / 60.0)
 				return socket.part == part
+	return false
+
+
+## Holds a part over a place on your own chassis's top, and takes it home
+## where it's shown: a tray goes under. Whether it stuck there.
+func _stick_into(mine: Chassis, part: Part, k: int) -> bool:
+	var at: Vector2 = DeviceProbe.ON_TOP[k % DeviceProbe.ON_TOP.size()]
+	for i in 30:
+		var point := mine.global_transform * mine.face_frame(mine, Chassis.TOP) * Vector3(at.x, at.y, 0.0)
+		look(point + Vector3(0.0, 1.2, 0.9), point)
+		await simulate(1.0 / 60.0)
+		if not hands.sticking.is_empty() and hands.sticking.why == "":
+			hands.grab()
+			await simulate(1.0 / 60.0)
+			return part.socket != null and part.socket.get_parent() == mine
 	return false
 
 

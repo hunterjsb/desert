@@ -41,8 +41,10 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
+	var shades := PackedFloat32Array()
 	vertices.resize((cells + 1) * (cells + 1))
 	normals.resize(vertices.size())
+	shades.resize(4 * vertices.size())
 	for j in cells + 1:
 		for i in cells + 1:
 			var b := (j + 1) * w + (i + 1)
@@ -50,6 +52,7 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 			vertices[k] = Vector3(lo + i * step, bordered[b] - tuning.far_drop, lo + j * step)
 			normals[k] = Vector3(bordered[b - 1] - bordered[b + 1], 2.0 * step,
 				bordered[b - w] - bordered[b + w]).normalized()
+			ChunkBuild.put_shade(shades, k, shape.shade(x0 + lo + i * step, z0 + lo + j * step, bordered[b]))
 
 	var indices := PackedInt32Array()
 	for j in cells:
@@ -66,5 +69,6 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = vertices
 	arrays[Mesh.ARRAY_NORMAL] = normals
+	arrays[Mesh.ARRAY_CUSTOM0] = shades
 	arrays[Mesh.ARRAY_INDEX] = indices
 	return arrays

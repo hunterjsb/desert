@@ -35,7 +35,7 @@ func run() -> void:
 	gods.meltdown(world.time)
 	await physics_frames(8)
 	var clear := radio.music.volume_db
-	var at := radio.music.get_playback_position()
+	var playback := radio.music.get_stream_playback()
 	print("the Stoker, clear skies: on air %s at %.1f dB" % [radio.on_air(), clear])
 	check(radio.on_air() == Sounds.RADIO_STOKER and radio.music.playing, "the Stoker's frequency carries its song")
 	weather_everywhere(1.0)
@@ -43,4 +43,5 @@ func run() -> void:
 	print("the Stoker, in a storm: %.1f dB, %s" % [radio.music.volume_db, radio.said])
 	check(radio.on_air() == Sounds.RADIO_STOKER and radio.music.volume_db < clear - 3.0,
 		"a storm on the way turns it down")
-	check(radio.music.get_playback_position() > at, "without starting it over")
+	check(playback != null and radio.music.playing and radio.music.get_stream_playback() == playback,
+		"without starting it over")

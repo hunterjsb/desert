@@ -64,15 +64,14 @@ func _made(nodes: Array) -> Dictionary:
 	return out
 
 
-## What the kit says it sets down, by catalog id and how many.
+## What the kit says it sets down, by catalog id and how many: a deck, its
+## first piece, or a plain device.
 func _wanted(kit: Kit) -> Dictionary:
 	var out := {}
-	var seated := []
-	for spec: Dictionary in kit.assembled.values():
-		seated.append_array(spec.sockets.values())
 	for id: StringName in kit.beside:
-		var frame: StringName = kit.assembled.get(id, {"frame": id}).frame
-		if (Catalog.DEVICES.has(frame) or frame == &"stake") and not id in seated:
+		var spec: Dictionary = kit.assembled.get(id, {"frame": id})
+		var frame: StringName = &"chassis" if spec.has("rig") else spec.frame
+		if Catalog.DEVICES.has(frame) or frame == &"stake":
 			out[frame] = out.get(frame, 0) + 1
 	return out
 

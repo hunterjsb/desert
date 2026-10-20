@@ -3,9 +3,10 @@ extends RefCounted
 ## The seven gods on the air: old machine minds, each stuck in its job, each
 ## broadcasting in its own band from its home. Six stand still where history
 ## put them, five at their landmarks and the Almanac in Frontier Ag's farm
-## domes nearest Halfrise; the Walker walks the Rim and never stops. Each
-## one's carrier wanders inside its band, a fresh place every day from the
-## seed, so it has to be hunted for. Pure in the seed and world time.
+## domes nearest Halfrise; the Walker walks the Rim and never stops, from the
+## point on it farthest from where the run began. Each one's carrier wanders
+## inside its band, a fresh place every day from the seed, so it has to be
+## hunted for. Pure in the seed, the run's start and world time.
 
 ## Each god: id, name, band kHz, home landmark (&"" for the two placed here),
 ## and how strong it sends.
@@ -24,6 +25,8 @@ const BAND_MARGIN := 4.0
 
 var history: History
 var run_seed: int
+## The living city, whose nomads pray to the Walker and chatter on a carrier of their own.
+var city: LivingCity
 
 var _day_seconds: float
 var _radius: float
@@ -45,10 +48,12 @@ var _quiet := {}
 var meltdown_at := -INF
 ## The Walker's route, its only home: the Rim, the great circle 90° from the
 ## point under Tu that the ring road is laid along, as two axes in its plane,
-## and where on it the run began, rad.
+## and where on it it stood at world time 0, rad; and the run's start and
+## first moment it was placed for.
 var _rim_u: Vector3
 var _rim_v: Vector3
 var _walker_from: float
+var _walker_for := []
 
 
 func _init(world_history: History, seed_value: int, tuning: Tuning) -> void:
@@ -66,6 +71,7 @@ func _init(world_history: History, seed_value: int, tuning: Tuning) -> void:
 	_rim_u = (halfrise - sub * halfrise.dot(sub)).normalized()
 	_rim_v = sub.cross(_rim_u).normalized()
 	_walker_from = rng.randf() * TAU
+	city = LivingCity.new(world_history, seed_value, tuning)
 	_homes[&"almanac"] = ag_complex(history)
 	for row: Array in ROSTER:
 		if row[3] != &"":
@@ -117,6 +123,22 @@ static func in_band(khz: float) -> StringName:
 		if khz >= each[2].x and khz <= each[2].y:
 			return each[0]
 	return &""
+
+
+## Puts the Walker where a run's start keeps it far: as the run begins, at
+## the point on the Rim farthest from `start`, a quarter of the moon off or
+## more for its first three weeks, so finding it never happens early. A
+## start under Tu, where every point on the Rim is as far, keeps the seed's.
+func place_walker(start: Vector3, began: float) -> void:
+	if _walker_for == [start, began]:
+		return
+	_walker_for = [start, began]
+	var sub := history.sub_tu
+	var flat := start - sub * start.dot(sub)
+	if flat.length() < 1e-6:
+		return
+	var far := -flat.normalized()
+	_walker_from = atan2(far.dot(_rim_v), far.dot(_rim_u)) - _walk * began / _radius
 
 
 ## Where a god is on the sphere at world time t, which its signal comes

@@ -1,49 +1,39 @@
 class_name Hoverboard
 extends Device
 ## The hoverboard: a find, fast, floaty and fun to carve, for scouting and for
-## running when the shield dies. It runs on its own battery and nothing ties
-## to it, so it tows nothing. Lying on the sand it's a device like any other:
-## take it, carry it, swap its battery, cable it to charge. Racked on a crate
-## it travels with the camp and charges from it. Ridden, it leaves the
+## running when the shield dies. It runs on its own battery; sailing lines
+## load it through the rider, with too much grounding its hover. On the sand it's a device like any other:
+## take it, carry it, swap its battery, cable it to charge. Stuck on a deck,
+## hung on an upright as often as not, it travels with the camp and charges
+## from it. Ridden, it leaves the
 ## physics world for the place under your feet, where the ride moves you
 ## both. What it draws is metered tick by tick in world time, so its charge
-## comes out the same at any frame rate.
+## comes out the same at any frame rate. Its make (BoardMakes) is its catalog
+## id: how it rides, looks and sounds.
 
-## The hover's pitch at rest and at top speed, how far it sags as the
-## battery runs out over its last WARNING seconds, ticking faster as it goes,
-## and how far it drops under a dug edge's load, full from DUG_FAST m/s.
-const HUM_REST := 0.8
-const HUM_FAST := 1.4
-const HUM_SAG := 0.7
-const HUM_DUG := 0.72
-const DUG_FAST := 12.0
+## Ridden, its battery says once it's low, WARNING s from flat out of charge
+## flat out, and once more at CRITICAL s; charged past REARM times that, it
+## will again. Its hum's sag is the tell between.
 const WARNING := 60.0
-const TICK_SLOW := 2.0
-const TICK_FAST := 0.5
-## A dug edge let out this fast, m/s, from at least this deep, whooshes.
-const WHOOSH_FROM := 5.0
-const WHOOSH_DEEP := 0.5
-## Racked, it stands this far proud of the rack, m, and its underside rides
-## this far off the crate.
-const RISE := 0.07
-const GAP := 0.01
+const CRITICAL := 15.0
+const REARM := 1.5
 
 ## Whoever rides it, or null.
 var rider: Player
 ## The share of a full push this tick, 0 to 1.
 var push := 0.0
+## Electrical input for work the motor supplies against a line this tick.
+var tow_work_w := 0.0
 
 var _tuning := Tuning.current()
 ## Energy drawn riding, as [from, to, Wh] in world time for each tick the
 ## power tick hasn't yet read.
 var _drawn: Array[Array] = []
 var _layers := Vector2i.ONE
-var _hum: AudioStreamPlayer
-var _whoosh: AudioStreamPlayer
-var _tick_in := 0.0
-## The deepest the edge has been dug since it last came out, or below 0
-## once it has whooshed.
-var _dug_most := 0.0
+## Its voice while ridden.
+var _voice: RideSound
+## The battery's cues said since it was last charged: none, low, critical.
+var _warned := 0
 
 
 func _init() -> void:
@@ -57,41 +47,30 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	if _hum != null:
-		_hum.stop()
+	if _voice != null:
+		_voice.stop()
 
 
 ## Whether it would carry you now: whole, with charge to run on, its own
-## while it's racked.
+## while it's on a deck.
 func can_run() -> bool:
 	if wrecked() or world == null:
 		return false
-	var charged := charge_share() > 0.0 if racked() else world.power.pool_wh(self) > 0.0
+	var charged := charge_share() > 0.0 if on_deck() else world.power.pool_wh(self) > 0.0
 	return charged or production_w() > 0.0
 
 
-## Seated in a crate's rack.
-func racked() -> bool:
-	return host() != null
-
-
-## Racked, it stands on its edge along the rack, nose to the crate's front
-## and deck out, proud of the crate's top.
-func seat() -> Transform3D:
-	return Transform3D(Basis(Vector3.UP, Vector3.BACK, Vector3.RIGHT), Vector3(0.0, RISE, super().origin.z + GAP))
-
-
-## Racked, its battery stays its own: it charges from the crate's pool as a
+## On a deck, its battery stays its own: it charges from the deck's pool as a
 ## draw ranked below the shield, so it never takes the shield's last quarter.
 func pooled() -> Array[Battery]:
 	var none: Array[Battery] = []
-	return none if racked() else batteries()
+	return none if on_deck() else batteries()
 
 
-## Racked, what it draws to charge, W: its charge rate, or what fills it.
+## On a deck, what it draws to charge, W: its charge rate, or what fills it.
 func charge_w() -> float:
 	var cell := battery()
-	if not racked() or cell == null or wrecked():
+	if not on_deck() or cell == null or wrecked():
 		return 0.0
 	return minf(_tuning.board_charge_w, (cell.capacity() - cell.charge_wh) * 3600.0 / _tuning.power_tick)
 
@@ -106,7 +85,7 @@ func work(seconds: float, _t: float) -> float:
 
 
 ## Under your feet: out of the physics world, touching nothing. A cable in
-## its port pops out, since it tows nothing.
+## its port pops out, so a charging cable cannot trail behind it.
 func carry(by: Player) -> void:
 	for socket in sockets():
 		if socket.kind == &"port" and socket.part != null:
@@ -114,6 +93,7 @@ func carry(by: Player) -> void:
 			plug.global_position += global_basis * socket.transform.basis.z * plug.depth()
 	rider = by
 	push = 0.0
+	tow_work_w = 0.0
 	_layers = Vector2i(collision_layer, collision_mask)
 	freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 	freeze = true
@@ -121,20 +101,10 @@ func carry(by: Player) -> void:
 	collision_mask = 0
 	# Made the first time it's ridden: a find lying in the sand is laid out
 	# inside the streaming budget.
-	if _hum == null:
-		var looping := Sounds.HOVER.duplicate() as AudioStreamOggVorbis
-		looping.loop = true
-		_hum = AudioStreamPlayer.new()
-		_hum.stream = looping
-		_hum.bus = Sounds.WORLD
-		add_child(_hum)
-		_whoosh = AudioStreamPlayer.new()
-		_whoosh.stream = Sounds.THROW
-		_whoosh.bus = Sounds.WORLD
-		_whoosh.pitch_scale = 0.6
-		add_child(_whoosh)
-	_dug_most = 0.0
-	_hum.play()
+	if _voice == null:
+		_voice = RideSound.new()
+		add_child(_voice)
+	_voice.start(by)
 	Sounds.play(self, Sounds.BOARD_ON)
 
 
@@ -142,21 +112,22 @@ func carry(by: Player) -> void:
 func set_down(velocity: Vector3) -> void:
 	rider = null
 	push = 0.0
+	tow_work_w = 0.0
 	freeze = false
 	freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
 	collision_layer = _layers.x
 	collision_mask = _layers.y
 	linear_velocity = velocity
 	angular_velocity = Vector3.ZERO
-	_hum.stop()
+	_voice.stop()
 	Sounds.play(self, Sounds.BOARD_OFF)
 
 
-## What it draws riding now, W.
+## What it draws riding now, W, as its make draws.
 func draw_w() -> float:
 	if rider == null or wrecked():
 		return 0.0
-	return _tuning.board_hover_w + _tuning.board_push_w * push
+	return (_tuning.board_hover_w + _tuning.board_push_w * push + tow_work_w) * BoardMakes.of(BoardMakes.make_of(self)).draw
 
 
 ## One tick ridden: what it drew over its own `seconds`, spread over the world
@@ -167,23 +138,31 @@ func meter(from: float, to: float, seconds: float) -> void:
 		_drawn.append([from, to, wh])
 
 
-## Now, what it draws; read by a power tick ending at world time t, the mean
-## over that tick of what the ticks ridden in it drew. Racked, its charging.
+## Now, what it draws; read by a power tick starting at world time t, the mean
+## over that tick of what the ticks ridden in it drew. On a deck, its charging.
 func demand_w(t := NAN) -> float:
 	var parts_w := super(t) + charge_w()
 	if is_nan(t):
 		return parts_w + draw_w()
 	var step := _tuning.power_tick
+	var end := t + step
 	var wh := 0.0
 	var later: Array[Array] = []
 	for each: Array in _drawn:
 		var span: float = maxf(each[1] - each[0], 1e-9)
-		wh += each[2] * clampf(minf(each[1], t) - maxf(each[0], t - step), 0.0, span) / span
-		if each[1] > t:
+		wh += each[2] * clampf(minf(each[1], end) - maxf(each[0], t), 0.0, span) / span
+		if each[1] > end:
 			later.append(each)
 	# A jump back in time (a scenario) leaves ticks no power tick will reach.
 	_drawn = later if later.size() < 1000 else []
 	return parts_w + wh * 3600.0 / step
+
+
+## Seconds of riding its battery has left flat out, which only charging raises.
+func seconds_flat_out() -> float:
+	var cell := battery()
+	var most: float = (_tuning.board_hover_w + _tuning.board_push_w) * BoardMakes.of(BoardMakes.make_of(self)).draw
+	return INF if cell == null else cell.charge_wh / most * 3600.0
 
 
 ## Seconds of riding its battery has left at what it draws now.
@@ -194,30 +173,19 @@ func seconds_left() -> float:
 
 
 ## Drawn each frame where the ride draws it, between ticks.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if rider == null or rider.ride == null:
 		return
-	var ride := rider.ride
-	global_transform = ride.board_pose(true)
-	var going := ride.velocity.length()
-	var speed := going / _tuning.board_top_speed
-	var low := clampf(1.0 - seconds_left() / WARNING, 0.0, 1.0)
-	var load := ride.dig * clampf(going / DUG_FAST, 0.0, 1.0)
-	_hum.pitch_scale = lerpf(HUM_REST, HUM_FAST, clampf(speed, 0.0, 1.2)) * lerpf(1.0, HUM_SAG, low) \
-		* lerpf(1.0, HUM_DUG, load)
-	# Let out, the edge leaves the sand with a whoosh, once.
-	if ride.dig < 0.1:
-		_dug_most = 0.0
-	elif _dug_most >= 0.0:
-		_dug_most = maxf(_dug_most, ride.dig)
-		if _dug_most > WHOOSH_DEEP and ride.dig < _dug_most * 0.8 and going > WHOOSH_FROM:
-			_whoosh.volume_db = linear_to_db(clampf(going / _tuning.board_top_speed, 0.4, 1.0))
-			_whoosh.play()
-			_dug_most = -1.0
-	_tick_in -= delta
-	if low > 0.0 and _tick_in <= 0.0:
-		Sounds.play(self, Sounds.LOW_TICK)
-		_tick_in = lerpf(TICK_SLOW, TICK_FAST, low)
+	global_transform = rider.ride.board_pose(true)
+	var left := seconds_flat_out()
+	if left > WARNING * REARM:
+		_warned = 0
+	elif _warned < 1 and left <= WARNING:
+		_warned = 1
+		Sounds.battery_low(self)
+	if _warned < 2 and left <= CRITICAL:
+		_warned = 2
+		Sounds.battery_critical(self)
 
 
 ## Before anything reads it this tick, back where the tick put it.

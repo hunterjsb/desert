@@ -24,11 +24,11 @@ func run() -> void:
 			and is_equal_approx(panel.stats.solar_w, 60.0 * gear.keeps) and is_equal_approx(tray.stats.lift_kg, 80.0 * gear.keeps),
 			"%s: batteries hold %d and %d Wh, a panel makes %d W, a tray floats %d kg" % [era, cell.capacity(), big.capacity(),
 			panel.stats.solar_w, tray.stats.lift_kg])
-		var crate := Catalog.device(&"crate_frame")
-		crate.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
-		crate.fit(tray, crate.sockets().filter(func(s: Socket) -> bool: return s.kind == &"bottom")[0])
-		check(is_equal_approx(crate.stats().hover_draw, gear.draws), "%s: its tray draws %.2f a kilogram's watts" % [era,
-			crate.stats().hover_draw])
+		var deck := Catalog.device(&"chassis") as Chassis
+		deck.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+		Stick.put(deck, deck, Chassis.BOTTOM, Vector2.ZERO, 0.0, tray)
+		check(is_equal_approx(deck.stats().hover_draw, gear.draws), "%s: its tray draws %.2f a kilogram's watts" % [era,
+			deck.stats().hover_draw])
 		var turbine := _device(&"turbine", line)
 		var light_panel := _device(&"light_panel", line)
 		var shield := _device(&"shield", line)
@@ -42,7 +42,7 @@ func run() -> void:
 		turbine.wear(0.2)
 		check(is_equal_approx(1.0 - turbine.durability, 0.2 / (4.0 * gear.tough)), "%s: the weather takes %.3f of a turbine's life" % [
 			era, 1.0 - turbine.durability])
-		for thing: Node in [cell, big, panel, crate, turbine, light_panel, shield, light]:
+		for thing: Node in [cell, big, panel, deck, turbine, light_panel, shield, light]:
 			thing.free()
 	check(held[Eras.COLONIAL] > held[Eras.FIRST] and held[Eras.FIRST] > held[Eras.SKIMMER]
 		and held[Eras.SKIMMER] > held[Eras.SECOND], "older is better: a colonial battery holds the most, a second-age one the least")

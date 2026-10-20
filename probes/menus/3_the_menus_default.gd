@@ -30,7 +30,9 @@ func run() -> void:
 	check(menu.title != null and menu.title.text == UIRoot.TITLE and menu.title.is_visible_in_tree(),
 		"the main menu's title is the game's name")
 	var build: String = ProjectSettings.get_setting("application/config/version", "")
-	check(build != "" and menu.version != null and menu.version.text == build and menu.version.is_visible_in_tree(),
+	var edition: String = ProjectSettings.get_setting("application/config/release_name", "")
+	check(build != "" and menu.version != null and build in menu.version.text
+		and (edition.is_empty() or edition in menu.version.text) and menu.version.is_visible_in_tree(),
 		"the main menu shows the project's version (%s)" % build)
 	var piece := main.showpiece
 	var eye := main.view.player.camera
@@ -99,7 +101,7 @@ func run() -> void:
 	SaveFile.write(saves().path(), saves().KIND, saves().VERSION, older)
 	press(&"ui_accept")
 	check(main.ui.top().aside().size() == 4 and main.ui.top().shows == Showpiece.CAMP,
-		"a save without time played shows the rest (%s)" % main.ui.top().aside())
+		"a save without time played shows the rest (%s)" % [main.ui.top().aside()])
 
 	var back := {}
 	saves().restored.connect(func(at: World) -> void:

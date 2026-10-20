@@ -18,7 +18,8 @@ maker's mark. See [the lore research](../lore-research.md).
 
 ## What the player experiences
 
-- **Every device has its own battery,** and you can see its charge on the device itself.
+- **Every deck has its batteries,** stuck loose on it, and everything on the deck draws on
+  them; what you carry or ride has its own. You see a battery's charge on the battery itself.
   There's no menu.
 - **You start with a light solar panel** that you can set down and pick back up. Out of
   the storm, you sit for a moment and recharge the shield, or the hoverboard once
@@ -36,9 +37,11 @@ maker's mark. See [the lore research](../lore-research.md).
 
 ## Modular, like everything else
 
-The battery slot is a mod socket, the same idea as rope hooks and hover trays. A better
-battery is an upgrade you fit. The socket system itself belongs to the Devices & mods
-PRD; this PRD owns what flows through the battery slot.
+A battery is a part like any other: it sticks loose on a deck, goes in a power box's bay, or
+fits the battery slot of what works away from one (the board, the radio, the heat cutter, the
+planter, the turbine). A
+better battery is an upgrade you stick on. Sticking and slots belong to the Devices & mods
+PRD; this PRD owns what flows through them.
 
 ## Sources
 
@@ -127,7 +130,7 @@ Readings, not in the session:
 - **"Restored vent taps" read as the colonial vent power stations** along the rift (part 4's generated
   pieces), which feed the Stoker. Whether a restored tap can also power a camp is not said.
 
-## The deck's pool and the power box (agreed, 2026-10-18 spec; not built)
+## The deck's pool and the power box (agreed, 2026-10-18 spec; the pool built 2026-10-18, the box 2026-10-19)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): battery slots leave every device. Everything on one deck shares
 one pool, loose batteries included; cables and hoses only reach other bodies (a turbine staked on
@@ -135,12 +138,77 @@ the sand), and they drag but are much weaker than rope. Early on: one chassis on
 loose battery, a panel, the shield and the bedroll on top. The **power box** is the upgrade: many
 battery bays, each charging or supplying, a light strip per bay reading direction and fill at a
 glance; a Console's Power page mirrors it with exact numbers, priorities and switches.
-- **By era** (the spec's riff, confirmed): **colonial** (Tilg or RMC) a big clean industrial
+- **By era** (the spec's riff, confirmed): **colonial** (TILG consignment; legacy RMC contractor
+  placeholder; installer and OEM unassigned) a big clean industrial
   cabinet, many bays, precise readouts, full Console integration, rare and heavy; **First
   Kingdoms** have no model of their own, they ran colonial cabinets patched and repurposed;
   **skimmer** a bodged rack of mismatched bays, some dead, high capacity, shared pool only, no
   priorities; **second age** temple-made, few bays, ornate, crude; **company issue** small, light,
   about four bays, clean but built to a budget. Nomads have none.
+
+**Built (2026-10-18): the pool.** A deck and everything stuck on it, its devices and its loose
+batteries, are one pool (`Power._pools` joins a stuck device to its deck), so the shield, the
+condenser and the Console, which lost their battery slots, run on whatever batteries are stuck
+anywhere on the same deck: on one piece's top, a wall, a shelf. A battery taken off leaves the
+pool at once. The board, stuck on a deck, keeps its own battery and charges it from the pool as
+a draw ranked below the shield.
+
+**Built (2026-10-19): the power box.** A device with battery bays that sticks on a deck like any
+other and joins its one pool (`PowerBox`, `game/power/power_box.gd`). A bay is a slot of its own:
+a battery goes in and comes out with take, the tug and the ghost as any slot's, and a box with
+batteries in its bays is stored power you carry or drag like anything else.
+- **Each bay charges or supplies.** A bay supplies by default: it gives to the pool when the pool
+  draws on its batteries and takes its share of what's spare. Use at a battery in a bay holds the
+  bay to charge only, saying "charging only" (again, "supplying"): it takes what's spare and gives
+  nothing, a charger for a spare for the board or the radio. The pool runs short, and goes dark,
+  on what its supplying batteries hold; the Console's bank is theirs.
+- **A light strip per bay** reads at a glance: lit from its foot as far as the bay is full, green,
+  amber when low, red nearly gone, as every charge light; a pulse runs up it while the bay
+  charges and down it while it supplies, faster the harder it flows (full pace from 60 W), still
+  while it rests. A held bay's dark segments glow a cool blue; a dead or empty one is dark. The
+  strips are one draw a box (a multimesh, the state on each instance), animated on the GPU.
+- **By era**, each its own catalog id, in its era's coats (`PowerLooks`, through Dress):
+
+| Model | Id | Bays | Frame | Strips | Sticks | Its terms |
+|---|---|---|---|---|---|---|
+| Colonial cabinet (legacy RMC mark) | `power_cabinet` | 8, two columns of four, numbered | 0.8 × 1.2 × 0.45 m, 30 kg | 10 segments; its bank read out across its head (Wh, %, W) | stands, tall | held by hand; from a Console its bays set, ranks and switches |
+| Company issue | `power_box` | 4, set in its face | 0.62 × 0.12 × 0.5 m, 6 kg, carried | 5 segments | any face, a wall too | held by hand; switches |
+| Skimmer rack | `power_rack` | 12, mismatched, 3 dead | 0.96 × 1.06 × 0.36 m, 16 kg (11.2 found, the era's make) | 4 segments, under each bay | stands, tall | shared pool only: nothing |
+| Second-age shrine | `power_shrine` | 3 niches | 0.8 × 0.9 × 0.38 m, 16 kg | a smooth sand-glass tube | stands | held by hand; ranks |
+
+  The First Kingdoms have no model of their own: their sites hold colonial cabinets, marked by a
+  house as their lineage says. Nomads have none. The colonial cabinet is off-white modular
+  panels, grey and safety orange; the company's dock gunmetal, teal and yellow with rubber
+  corners and its batch stencil; the skimmer rack a tube frame of olive, red plate and scrap
+  housings, taped, its dead bays sooted, plated half over and daubed with a red cross; the
+  shrine limewashed render round ceramic-linteled niches, saltbush posts, a dome, the sign of
+  Tu, cord, charms and tassels, the old bus's plate at its back. A box's capacity is its
+  batteries': with big batteries the rack holds the most, 2,700 Wh in its nine live bays, the
+  cabinet 2,400, the dock 1,200 and the shrine 900.
+- **Why the middle two get what they get** (the spec says colonial fully, skimmer not at all):
+  company issue has breakers but no load-shedding logic, built to a budget, so a Console can
+  switch its devices off but they're served in the order every pool keeps, the shield first; the
+  temple's box ranks what's served, its order a rite, but has no breakers, crude, so everything
+  wired to it runs while there's power. Bays are set from a Console only on the cabinet, its
+  full integration; on the rack not even by hand.
+- **Ranks and switches** (Power): a device's `priority`, set from a Console, and `switched_off`
+  count only while a box in its pool allows them, so a box taken away takes its logic with it.
+  Switched off, a device is a draw the pool skips: dark and drawing nothing, however full the bank.
+  Ranks run 0 to 5, a shield's own 1 and the rest 0, so a shield is first unless something is
+  ranked over it. Running short, the highest rank keeps the last of the charge and the lowest
+  gives way at the reserve, the rest evenly between: with three ranks the middle one at 12.5%.
+  A device runs past its share while the sources carry it and everything ranked over it. With
+  two ranks this is the shield-first rule as it was.
+- **Where they're found** (`SiteLoot`, `Finds`): the cabinet among colonial sites' best (1 in
+  18) and a freight pod's bays (1 in 10), and on First Kingdoms floors (1 in 19) and among their
+  best (1 in 15); the rack on skimmer-era floors (1 in 15), among their best (1 in 17) and in a
+  tithe hauler's bays (1 in 9); the shrine on second-age floors (1 in 53), among their best (1 in
+  37) and a wayshrine's (1 in 10); the company's dock lying on the way, what a surveyor before
+  you dropped, a surface find (1 in 15 of the devices there). A found box's bays hold the
+  standard cells it was built for (`Finds.FILLS`' "bay"), never big ones, so the heaviest found,
+  a cabinet with all eight, is 62 kg and still drags by hand.
+- **Saves** keep each bay's hold and each device's rank and switch.
+- **Starts are unchanged**: no kit carries a box yet.
 
 ## What draws power
 
@@ -169,10 +237,9 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
 
 ## Skeleton version
 
-- Batteries as items with a charge and a capacity. Every powered device has one
-  battery slot.
+- Batteries as items with a charge and a capacity, stuck on a deck or in what has a slot.
 - The light solar panel (place it, pick it up) and one crude wind turbine, each reading
-  the felt weather. A source can be wired straight into a device or into a charger.
+  the felt weather. A source can be wired straight into a device.
 - A day-night cycle of about 20 minutes driving solar output.
 - Swapping batteries by hand.
 - The shield, the test floater and the hoverboard all draw from their batteries.
@@ -181,15 +248,13 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
 - The probes below, all passing.
 
 **As built (2026-10-14):**
-- **The light solar panel is the panel part.** Carry it and fit it on any device's top
-  mount; it powers that device. A small **charger** frame (a top mount and a battery
-  slot) is how you charge a loose battery in the sun.
+- **A solar panel is a part.** Stuck on a deck, it powers everything on it, and a battery
+  stuck beside it charges in the sun; the charger that once did that is gone (2026-10-18).
 - **The starting light panel** (2026-10-16) is a small device of its own: a 30 W panel,
   half a found one, built into a flat frame with a port, 5 kg, that you carry, set down,
-  pick back up or seat on a top mount. It's half a crate's top, like a found panel, so
-  it rides beside a shield. Lying flat, the wind meets its edge, so a breeze doesn't
-  skate it off. Every run starts with it seated on the kit's floating crate beside the
-  light shield (Survival).
+  pick back up or stick on a deck. It's half a piece across, like a found panel, so it lies
+  beside a shield. Lying flat, the wind meets its edge, so a breeze doesn't skate it off.
+  The Surveyor starts with it stuck on its deck beside the light shield (Survival).
 - **The starting power margin** (2026-10-16): over a clear equator day the light panel
   makes about 3.2 Wh against the light shield's 0.7, and on the probes' seed a day a
   quarter stormy made 3.0 Wh against 2.1, so the battery ends the day a little fuller.
@@ -197,26 +262,25 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
   even a 60 W panel makes about 6.4 Wh a clear day against the base shield's 3.3, and a
   full storm drains 100 Wh in 30 minutes, so "sit for a moment and recharge the shield"
   would want about 1 kW of panel for the base shield.
-- **Two battery slots on one device** share its pool like any two batteries; its charge
-  light shows them together.
+- **Batteries on one deck** share its pool like any two batteries, each showing its own
+  charge on its strip.
 - **Cables are two plugs on 6 m of wire.** Each plug snaps into a port socket like any
   part, so wiring is the same act as fitting. Pull a cable too far and a loose plug is
   dragged along; with both ends held fast, a plug pops out.
 - **Cabled devices share one pool.** What they make feeds what they draw, then fills
   their batteries, and any surplus is spilled. A pool that can't meet its draw goes
-  dark, so a crate's tray stops and it settles to the sand. A dark pool runs nothing
+  dark, so a deck's trays stop and it settles to the sand. A dark pool runs nothing
   and lets its sources recharge it, and restarts once its batteries hold 5%.
 - **The shield comes first** (2026-10-16, pulled forward from the full version for
-  the floating kit crate). Every device has a rank, and a shield ranks above everything
+  the floating kit camp). Every device has a rank, and a shield ranks above everything
   else. When a pool runs short, a device that ranks below the highest in it stops
   drawing once the pool's batteries are down to a quarter, which is kept for the higher
   ranks, unless its sources alone carry everything; it starts again once they hold
-  30%. So a crate's tray lets the crate settle onto the sand and leaves the last quarter
-  to the shield seated on it, and a condenser cabled to a shield stops at a quarter the
-  same way. A pool with nothing ranked above the rest runs down as before.
+  30%. So a deck's trays let it settle onto the sand and leave the last quarter to the
+  shield stuck on it, and a condenser on the same deck stops at a quarter the same way. A pool with nothing ranked above the rest runs down as before.
 - **Trays draw for what they hold up** (2026-10-17): 2 W for each kilogram a tray pushes
-  up, so at rest a device's trays together draw 2 W a kilogram of it, as a single tray
-  always did (91 W for the kit's crate). A deck tipped onto the sand draws less, the sand
+  up, so at rest a deck's trays together draw 2 W a kilogram of it, as a single tray
+  always did (about 136 W for the Surveyor's 68 kg deck). A deck tipped onto the sand draws less, the sand
   carrying a share, and a line pulling down draws more. A tray that's stopped asks for
   the whole weight, what lifting it again would take, so the quarter's stop and the 30%
   restart work as before.
@@ -228,17 +292,15 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
   so a base battery lasts about twenty minutes flat out. What it draws is metered tick
   by tick in world time and read by each power tick for its own quarter second, so its
   charge comes out the same at 30, 60 or 120 ticks a second.
-- **A racked board charges from the camp** (2026-10-16). Its battery stays its own,
-  out of the crate's pool, and it draws up to 50 W to charge it, a base battery in two
-  hours. That draw ranks below the shield, so it stops with the crate's tray once the
-  pool is down to a quarter and starts again at 30%, and it never takes the shield's
-  last quarter. What it draws is stored in its battery, not used, so the ledger still
-  adds up. On the starting kit the light panel is the only source, so it's a trickle,
-  and the board's weight adds 22 W to the tray's draw: on the probes' seed, from 10 Wh
-  over the reserve, the board took 4.2 Wh in five minutes before the pool was down to a
-  quarter, and charged again 2.3 days in, once the panel had brought the pool to 30%.
-  Every run starts with it racked, so on its first day the kit's crate settles at 0.56
-  days instead of 1.00 (Survival).
+- **A board stuck on a deck charges from the camp** (2026-10-16, on a rack until the
+  chassis). Its battery stays its own, out of the deck's pool, and it draws up to 50 W to
+  charge it, a base battery in two hours. That draw ranks below the shield, so it stops with
+  the deck's trays once the pool is down to a quarter and starts again at 30%, and it never
+  takes the shield's last quarter. What it draws is stored in its battery, not used, so the
+  ledger still adds up. On the Surveyor's start the light panel is the only source, so it's
+  a trickle: on the probes' seed, from a run's first morning, the deck's trays give way at
+  0.43 days (517 s), the board up from 50 to 57 Wh, and the shield runs the whole first day,
+  the battery ending it at 15 Wh. (The crate's start, racked, settled at 0.56 days.)
 - **Two kinds of cable** (decided 2026-10-14, from the Stage 4 playtest). **Common
   wiring** pops a plug when pulled too hard, and Hunter likes that: a floating planter
   blown off a turbine unplugs itself. A **strong cable** is also a rope, so it holds
@@ -246,26 +308,24 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
   4,000 N. While you hold one of its plugs, the rope pulls on you, not on the plug in
   your grip. A loose plug on either kind is dragged along by what drifts off with
   the other end, never slung, however long it was caught.
-- **The reference camp** (Stage 12, 2026-10-17) is what probe 4 leaves alone. The "afk"
-  dev scenario parks it round you, running, on a deck two pieces by two (Hunter,
-  2026-10-17: "add a 2x2 pimped out chassis to afk scenario"), a tray under every piece and
-  a hook on every free ring, floating about a metre up. Standing on it, their own trays
-  off: the base shield on a big battery and a condenser on a battery and a panel, on the
-  upwind pieces; the crate, with two big batteries, the light panel and a found panel;
-  and a second crate with two more big batteries, a found panel and a lamp. All of it is
-  one pool, and a strong cable from the crate's port holds the turbine out in the wind
-  beyond the bubble, its battery in the pool too: a 1,700 Wh bank and 210 W of panels.
-  The deck is moored to a stake upwind of it. Two harvester planters float upwind of it
-  on their own trays and batteries, on hoses from the condenser (Survival), each moored
-  to a stake of its own. Floating, the deck draws about 370 W, its 185 kg at 2 W a
-  kilogram, more than all the rest together. At 45° north, through two days and nights
-  of the probes' seed, 24 minutes of them full storm, nothing in it went dark and its bank
-  fell to 84% (it never fell below 98% when the camp sat on the sand, its trays resting,
-  before the deck). At the equator the deck floated for 7.4 days, nearly six of them
-  storm, until the bank was down to its reserve and the deck gave way to the shield,
-  settling on the sand; the planters' own batteries ran out about the sixth day, and
-  they settled too, still growing. The kit's power under a found shield (the light panel
-  and a battery half charged) went dark in the same weather at 1.34 days.
+- **The reference camp** (Stage 12, 2026-10-17; on the chassis 2026-10-18) is what probe 4
+  leaves alone. The "afk" dev scenario parks it round you, running, on a deck two pieces by
+  two (Hunter, 2026-10-17: "add a 2x2 pimped out chassis to afk scenario"), a tray under
+  every piece and a hook on every free ring, floating about a metre up. Stuck on it: upwind,
+  the condenser, its tap toward the planters, a lamp and a panel, and the base shield with
+  another panel; downwind, the bank, five big batteries and a battery, the light panel and
+  a third panel. All of it is one pool, and a strong cable from the light panel's port holds
+  the turbine out in the wind beyond the bubble, its battery in the pool too: a 1,700 Wh
+  bank and 210 W of panels, as before. The deck is moored to a stake upwind of it, and its
+  weight sits behind its trays, which are set a little upwind against the mooring's pull, so
+  it floats about 2.3° off level. Two harvester planters float upwind of it on their own
+  trays and batteries, on hoses from the condenser (Survival), each moored to a stake of its
+  own. Floating, the deck draws about 310 W, its 155 kg at 2 W a kilogram (the crates' deck
+  was 185 kg and 370 W). At 45° north, through two days and nights of the probes' seed, 24
+  minutes of them full storm, nothing in it went dark and its bank fell to 85.9%; the
+  turbine made 71 Wh before it wore. The kit's power under a found shield (the light panel
+  and a battery half charged) went dark in the same weather at 1.34 days. The equator's run,
+  7.4 days floating with the crates, isn't re-measured.
 - **What the camp costs** (2026-10-18, from Hunter feeling it lag). Running, the
   reference camp cost the main thread about 7 ms a tick over the world without it, and
   its slowest tick each second 7 to 9 ms more. Most of it was the hard floor under loose
@@ -279,8 +339,9 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
   and the power tick, four times a second. Probe 11 holds it.
 - **Holding a turbine out from a deck is tight.** A strong cable is 6 m and the base
   shield's bubble 7 m, so a turbine on a cable from a deck under it stands only just
-  outside. On the 2x2 deck the shield stands on the piece across from the crate, as far
-  from its port as the deck allows, and the turbine stands 7.6 to 7.9 m from the shield.
+  outside. On the 2x2 deck the shield stands at the front of the upwind piece across from
+  the light panel's port, as far from it as the deck allows, and the turbine stands 7.5 to
+  7.8 m from the shield.
   A wind that swings round toward the shield's side can bring it inside, where it makes
   nothing. A floating deck on a strong cable to a turbine on the sand also creeps toward
   it, drawn by the cable's weight, about 0.3 m a day until its mooring is taut, so the
@@ -288,7 +349,7 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
 - **A turbine has to be held out there.** Nothing plants one yet (the probes freeze
   theirs), and standing loose, a storm slides it over the sand, making nothing while it
   moves: in a first try at the camp it slid 33 m in the first storm, until its cable
-  popped. On a strong cable from the moored crate, through three minutes of full storm
+  popped. On a strong cable from the moored crate (2026-10-17), through three minutes of full storm
   in real time, it made power 99% of the time and drifted 1.4 m.
 - **The storm wears the turbine out.** About half an hour of full storm wrecks it, and
   nothing mends it: on the probes' seed it goes on the third day (2.45 days in at the
@@ -321,7 +382,8 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
 - **Battery tiers,** chargers, wires, and central capacitors built from them.
 - **Tracked and mounted solar.**
 - **Priorities beyond the shield's.** When the capacitor runs low, the shield is the
-  last thing to lose power (begun in the skeleton: two ranks, one reserve).
+  last thing to lose power (begun in the skeleton: two ranks, one reserve; ranked from a
+  Console through a power box, 2026-10-19).
 - **The heavy generator** on caterpillar tracks, with fuels: rare consumables,
   fissile material with something to burn it, and fuel grown from plants.
 - **Draw by state:** idle, active, holding back a storm.
@@ -340,8 +402,8 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
    parked at mid-latitude runs through 24 simulated hours of weather without any
    device going dark. A deliberately underbuilt camp fails the same test, which proves
    the test can fail.
-5. **Clean swaps.** A swapped battery takes effect immediately, and no charge is counted
-   twice.
+5. **Clean swaps.** A battery swapped on a floating deck takes effect within a tick, and
+   no charge is counted twice.
 6. **Thirty minutes.** A full base shield in a storm lasts about 30 minutes.
 7. **A strong cable holds.** In a 20 m/s wind, a floating planter on a strong cable
    to a staked turbine stays on the end of it, joined and powered. On a common cable
@@ -351,8 +413,8 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
    plug over the dunes and round your legs, from several starts and winds. The plug
    never closes on the port dragging it much faster than 3 m/s, and never outruns
    the wind.
-9. **The shield comes first.** The run's kit crate under clear skies, its shield on and
-   its battery just above a quarter: its tray gives way at a quarter and it settles on
+9. **The shield comes first.** The run's kit deck under clear skies, its shield on and
+   its battery just above a quarter: its trays give way at a quarter and it settles on
    the sand while the shield keeps running, and the light panel brings the battery back
    until it floats again.
 10. **The rotor turns.** A planted turbine's blades turn faster in a gale than in a
@@ -360,6 +422,24 @@ glance; a Console's Power page mirrors it with exact numbers, priorities and swi
 11. **The camp costs little.** Parked and running, the reference camp's scripts take
     at most three times a tick what the same world's took just before it was parked,
     so a slow machine is slow on both sides.
+12. **One pool a deck** (2026-10-18). Two pieces joined, a loose battery on one and a
+    shield and a Console with none of their own on the other: the shield runs and the
+    Console reads on the loose battery, which drains for both. Taken off the deck, it's in
+    no pool and they go dark; stuck back on, anywhere on the deck, they run.
+13. **A box joins the pool** (2026-10-19). A battery goes into the company's dock by hand and
+    the dock sticks on a deck by hand beside a shield: the shield runs on the bay, which
+    drains; the battery taken out by hand, it goes dark, and put straight back, it runs.
+14. **A bay charges and supplies.** A cabinet's two half-full bays, the second held by use at
+    it, run a shield: the first supplies, its strip running down, the held one gives nothing;
+    with more made than drawn both charge, both strips running up, each lit as full as it is.
+15. **Switched off and ranked.** A cabinet, a Console, a shield and a condenser on a deck: the
+    page's switch turns the condenser off with the bank full, and on; short, the shield is
+    served and the condenser gives way, until ranked over the shield it runs and the shield
+    gives way. With a skimmer's rack instead, the page offers neither and the rank no longer
+    counts.
+16. **A dead bay holds nothing.** Held to a rack's dead bays a battery goes in a live one;
+    filled from data or found, the dead stay empty and their strips dark; use at a bay says
+    "shared pool only".
 
 ## Out of scope
 
@@ -425,3 +505,27 @@ following. Each is quoted old and new, and the PRD follows the session as direct
   quietbloom is above.
 - **A god module's draw.** The session gives none for the Walker, the Quartermaster, Mother Cistern or
   the Almanac. Not said whether a module runs on the deck's pool, its own battery, or nothing.
+
+## Board meter interval correction (2026-10-19; agreed and built)
+
+Power passes each device a quarter's start time. The board incorrectly treated it as
+an ending time, reading `[t - step, t]` and billing a quarter late. A deterministic
+quarter offset of 0.225 s reproduces the movement frame-charge CI failure: the racer
+meters 0.800364690915 Wh at 30 Hz but bills only 0.800059135359 Wh after dismount and
+its normal catch-up; at 60 Hz it bills the full amount. The 0.000305555556 Wh gap is
+exactly 25 ms at its 44 W idle hover, rather than different motor work or lost energy
+in the battery ledger. Unconsumed meter history shows the remaining slice.
+
+Read the board's history over `[t, t + step]`, retaining anything after that end, to
+match Power's existing interval convention. Keep physics, motor effort, the power
+quarter and charge tolerance unchanged. Pin the existing frame-rate route to this
+adverse quarter phase so the same assertion catches late billing deterministically.
+
+As built: the existing movement probe 6 places the quarter's start 25 ms before the
+ride (the same 0.225 s phase modulo a quarter), keeping the beginning of the ride
+inside an accounting interval. With the old code it fails at the exact reported
+0.000306 Wh racer difference while path checks pass. With the correction it passes:
+racer charge is 99.199635 Wh at 30, 60 and 120 Hz, issued-board charge 99.208370 Wh;
+paths agree to the printed 0.0000 m. Charge tolerance remains 0.0003 Wh, all route
+coverage and other assertions unchanged. No ride dynamics or steering changed.
+The existing power probe 12 also passes for shared deck power and the board’s own battery.

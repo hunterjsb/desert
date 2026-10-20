@@ -10,7 +10,11 @@ extends Node
 signal restored(world: World)
 
 const KIND := "sandgame run"
-const VERSION := 1
+## 2: what's on a deck is saved by the face it's stuck on and where, since
+## the chassis became the one structure (2026-10-18).
+const VERSION := 2
+## Why an older version can't be resumed, said plainly.
+const OLDER := {1: "it was saved before camps were rebuilt round the chassis, so nothing in it would sit where it was"}
 
 ## Where the save lives; probes point it somewhere of their own.
 var dir := "user://"
@@ -132,7 +136,7 @@ func _wait() -> void:
 func _read() -> Dictionary:
 	_wait()
 	var got := SaveFile.read(path(), KIND, VERSION)
-	refused = got.refused
+	refused = OLDER.get(got.found, got.refused) if got.refused != "" else ""
 	return got.data
 
 

@@ -1,6 +1,6 @@
 extends LineProbe
 ## Rope & tethering probe 8: origin shifts are invisible. A camp staked out in
-## a steady storm wind (a floating planter and crate, each on two lines to
+## a steady storm wind (two floating planters, each on two lines to
 ## stakes upwind, and a slack spare lying on the sand between two stakes), with
 ## you holding a third device's line in your hand and a fourth's at your waist,
 ## crosses an origin shift. No line's pull jumps, every drawn end is still on
@@ -29,7 +29,7 @@ func run() -> void:
 	await load_lines()
 	speed_up(2)
 	# Downwind is +z; the camp's stakes are upwind of it.
-	var camp: Array[Device] = [floating(&"planter", spot(-4.0, -3.0)), floating(&"crate_frame", spot(3.0, -3.0))]
+	var camp: Array[Device] = [floating(&"planter", spot(-4.0, -3.0)), floating(&"planter", spot(3.0, -3.0))]
 	for piece in camp:
 		for side in [-1.5, 1.5]:
 			var stake := driven_stake(piece.global_position + Vector3(side, 0.0, -6.0))
@@ -37,7 +37,7 @@ func run() -> void:
 	var spare_a := driven_stake(spot(-1.0, -12.0))
 	var spare_b := driven_stake(spot(3.0, -12.0))
 	Line.between(world, spare_a.free_tie(spare_b.global_position), spare_b.free_tie(spare_a.global_position), 2.0)
-	var towed: Array[Device] = [floating(&"planter", spot(-1.0, 4.0)), floating(&"crate_frame", spot(1.0, 4.0))]
+	var towed: Array[Device] = [floating(&"planter", spot(-1.0, 4.0)), floating(&"planter", spot(1.0, 4.0))]
 	for i in 2:
 		var spare := Catalog.stake()
 		world.content.add_child(spare)

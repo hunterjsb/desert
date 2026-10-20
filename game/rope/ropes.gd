@@ -380,6 +380,8 @@ func _unhide() -> void:
 ## drawn as long as the hidden line leaves it past your waist.
 func _ride_on() -> void:
 	_carried.tension = hidden.tension
+	_carried.asked = hidden.asked
+	_carried.opening = hidden.opening
 	_carried.stretch = hidden.stretch
 	_carried.sag = NAN
 	var span := hidden.point_p.distance_to(hidden.point_b)
@@ -399,6 +401,14 @@ func line_at(body: Node) -> Rope:
 
 func _far_from_you(rope: Rope) -> RopeEnd:
 	return rope.b if on_you(rope.a.holder) else rope.a
+
+
+## The body a line at your waist leads to, by its end there; null if none.
+func far_holder(body: Node) -> Node3D:
+	var line := line_at(body)
+	if line == null or not is_instance_valid(line.a) or not is_instance_valid(line.b):
+		return null
+	return _far_from_you(line).holder
 
 
 func _waist_end(end: RopeEnd) -> bool:
@@ -423,7 +433,22 @@ func clear() -> void:
 func _process(_delta: float) -> void:
 	for rope in ropes:
 		if is_instance_valid(rope.a) and is_instance_valid(rope.b):
-			rope.strand.pin_ends(rope.a.global_position, rope.b.global_position)
+			rope.strand.pin_ends(_shown_end(rope.a), _shown_end(rope.b), Engine.get_physics_interpolation_fraction())
+
+
+## The camera and board draw between ticks. Waist lines must start in that
+## same frame; held ends already follow the hands' drawn pose.
+func _shown_end(end: RopeEnd, fraction := Engine.get_physics_interpolation_fraction()) -> Vector3:
+	var player := world.player
+	var at := end.global_position
+	if end.holder != player and not player.waist.holds(end.holder):
+		return at
+	var moved := Vector3.ZERO
+	if player.ride != null:
+		moved = player.ride.last_step
+	if player.tumble != null:
+		moved = player.tumble.last_step
+	return at - moved * (1.0 - fraction)
 
 
 func _physics_process(delta: float) -> void:
@@ -616,12 +641,15 @@ func _drag_player(h: float) -> void:
 	player.set_meta(&"rope_drag", _drag - own * _tuning.waist_slow if tied and walking else _drag)
 
 
-## Sustained load breaks ropes and pulls stakes; a spike alone never does.
+## Sustained load breaks ropes and pulls stakes; a spike alone never does,
+## and a line never pulls past its strength meanwhile: asked for more, it
+## gives at that, and asked for more long enough, it parts.
 func _bear(h: float) -> void:
 	var alpha := 1.0 - exp(-h / _tuning.rope_load_seconds)
 	for rope: Rope in ropes.duplicate():
 		rope.sustained += (rope.tension - rope.sustained) * alpha
-		if rope.sustained > rope.breaking:
+		rope.straining += ((1.0 if rope.asked > rope.breaking and rope.opening else 0.0) - rope.straining) * alpha
+		if rope.parts():
 			give_way(rope)
 	for stake: Node3D in _pulls:
 		if stake.feel(_pulls[stake], alpha):

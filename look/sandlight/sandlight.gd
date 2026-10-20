@@ -5,8 +5,10 @@ extends Node
 ## and then with the game's own, the light, the eye and the frame unchanged:
 ## noon; a low sun ahead, from the ground and from 200 m up, and behind you
 ## where it lights what you see; dusk the same; a full-Tu night with Tu behind
-## you, and by the headlamp; a walked track at midmorning; and close up into
-## the low sun, the camera sliding a centimetre a frame and then walking on, to
+## you, and by the headlamp; a walked track at midmorning; your feet at noon;
+## ripples over a dune, ripples into the low sun, and a slip face from its
+## foot; and close up into the
+## low sun, the camera sliding a centimetre a frame and then walking on, to
 ## see the glitter hold still. With --storm, deep in a storm by day instead.
 ## It prints the ground's lightness, spread and clipped share (look/dunes'
 ## measure), the eye, and the GPU's frame time either way, alternated. --only
@@ -35,6 +37,11 @@ const SLIDE := 0.012
 const WALK_PITCH := -16.0
 const STRIDE := 0.05
 const MOVES := 3
+## Looking down at your feet, degrees; and standing this far from a slip
+## face's foot, m.
+const FEET_PITCH := -68.0
+const RIP_PITCH := -16.0
+const SLIP_OFF := 7.0
 const GPU_FRAMES := 60
 const GPU_ROUNDS := 9
 
@@ -126,7 +133,7 @@ func _capture() -> void:
 		player.flying = true
 		_hide_screens()
 		await _pair("storm", _at_hour(MIDMORNING), atan2(-upwind.x, -upwind.y), -6.0)
-		await _gpu_cost("storm")
+		await _gpu_cost("storm", "storm")
 		get_tree().quit()
 		return
 
@@ -151,19 +158,23 @@ func _capture() -> void:
 
 	var noon := _at_hour(0.5)
 	await _pair("noon", noon, atan2(-upwind.x, -upwind.y), -6.0)
-	await _gpu_cost("noon")
+	await _gpu_cost("noon", "noon")
 	sun = _sun(morning)
 	await _pair("low_into", morning, atan2(-sun.x, -sun.z), -6.0)
-	await _gpu_cost("low sun ahead")
+	await _gpu_cost("low sun ahead", "low_into")
+	# Ripples into the low sun, looking down over the few metres they show in.
+	await _pair("rip_into", morning, atan2(-sun.x, -sun.z), RIP_PITCH)
 	# Nothing but sand in view, glinting: what the shader itself costs.
 	await _pair("sand_only", morning, atan2(-sun.x, -sun.z), -50.0)
-	await _gpu_cost("sand filling the frame")
+	await _gpu_cost("sand filling the frame", "sand_only")
 	await _pair("low_behind", morning, atan2(sun.x, sun.z), -6.0, _backlit(sun))
 	# The dunes from 200 m up into the low sun, a little to one side of it.
 	await _pair("air_low", morning, atan2(-sun.x, -sun.z) + 0.6, -9.0, _spot, 200.0)
 	var dusk := _sun_at(DUSK_SUN, false)
 	sun = _sun(dusk)
 	await _pair("dusk", dusk, atan2(sun.x, sun.z), -4.0, _backlit(sun))
+	# And from 200 m up, the sun behind you and to one side: the crests' long shadows.
+	await _pair("air_dusk", dusk, atan2(sun.x, sun.z) + 0.6, -12.0, _spot, 200.0)
 	var full := day.next_eclipse(0.0) + world.tuning.day_minutes * 30.0
 	var tu := day.tu_direction(full, world.moon.latitude, world.moon.longitude)
 	await _pair("night", full, atan2(tu.x, tu.z), -6.0)
@@ -177,7 +188,15 @@ func _capture() -> void:
 	# Back behind the track's start, looking along it.
 	var back := Vector2(sin(toward), cos(toward)) * 2.5
 	await _pair("track", mid, toward, -28.0, start + back)
+	# At your feet at noon.
+	await _pair("feet", noon, atan2(-upwind.x, -upwind.y), FEET_PITCH)
+	await _gpu_cost("your feet", "feet")
 	var close := _sun_at(CLOSE_SUN, true)
+	# Ripples over a dune: from a crest down its windward face, the sun low.
+	await _pair("ripples", close, atan2(-upwind.x, -upwind.y), -10.0, _crest(-upwind) + upwind * 3.0)
+	# A slip face from its foot, at the hour that lights it most.
+	var toe := _toe(-upwind)
+	await _pair("slip", _lighting(-upwind), atan2(-upwind.x, -upwind.y), 8.0, toe - upwind * SLIP_OFF)
 	sun = _sun(close)
 	var yaw := atan2(-sun.x, -sun.z)
 	# Sliding sideways, looking down; then walking on, looking ahead, where
@@ -268,11 +287,13 @@ func _save(name: String) -> void:
 ## The GPU's time per frame with each look, alternated so a busy machine
 ## weighs on both alike; and the middle of the rounds' differences, which a
 ## burst of someone else's load in one round moves least.
-func _gpu_cost(what: String) -> void:
-	if not _only.is_empty() and not OS.get_cmdline_user_args().has("--gpu"):
+func _gpu_cost(what: String, shot: String) -> void:
+	if not _only.is_empty() and (not OS.get_cmdline_user_args().has("--gpu") or not _only.has(shot)):
 		return
-	var sums := {"before": 0.0, "after": 0.0}
-	var differences := PackedFloat32Array()
+	var sums := {}
+	for look: String in _all_looks():
+		sums[look] = 0.0
+	var rounds := []
 	for round in GPU_ROUNDS:
 		var got := {}
 		for look: String in sums:
@@ -285,11 +306,21 @@ func _gpu_cost(what: String) -> void:
 				sum += RenderingServer.viewport_get_measured_render_time_gpu(get_viewport().get_viewport_rid())
 			got[look] = sum / GPU_FRAMES
 			sums[look] += got[look]
-		differences.append(got.after - got.before)
-	differences.sort()
-	print("sandlight: gpu at %s: %.3f ms a frame before, %.3f after, %+.3f in the middle round (%+.3f to %+.3f), at %s%s"
-		% [what, sums.before / GPU_ROUNDS, sums.after / GPU_ROUNDS, differences[floori(GPU_ROUNDS / 2.0)], differences[0],
-		differences[GPU_ROUNDS - 1], get_viewport().get_visible_rect().size, _shared_gpu()])
+		rounds.append(got)
+	for look: String in sums:
+		if look == "before":
+			continue
+		var differences := []
+		var relief := []
+		for got: Dictionary in rounds:
+			differences.append(got[look] - got.before)
+			relief.append(got.after - got[look])
+		differences.sort()
+		relief.sort()
+		print("sandlight: gpu at %s, %s: %.3f ms before, %.3f ms %s; median delta %+.3f ms (%+.3f to %+.3f), after minus %s %+.3f ms, at %s%s"
+			% [what, look, sums.before / GPU_ROUNDS, sums[look] / GPU_ROUNDS, look,
+				differences[floori(GPU_ROUNDS / 2.0)], differences[0], differences[-1], look, relief[floori(GPU_ROUNDS / 2.0)],
+				get_viewport().get_visible_rect().size, _shared_gpu()])
 
 
 ## A standpoint near the spot where the sun behind you lights what you see:
@@ -312,6 +343,50 @@ func _backlit(sun: Vector3) -> Vector2:
 			if score > most:
 				most = score
 				best = at
+	return best
+
+
+## The foot of the tallest slip face within 240 m of the spot, facing `down`.
+func _toe(down: Vector2) -> Vector2:
+	var best := _spot
+	var most := 0.0
+	for i in range(-40, 41):
+		for j in range(-40, 41):
+			var at := _spot + Vector2(i, j) * 6.0
+			var h := world.height_at(at.x, at.y)
+			var ahead := at + down * 8.0
+			var steep := world.height_at(at.x - down.x * 3.0, at.y - down.y * 3.0) - h > 1.5
+			var flat := absf(world.height_at(ahead.x, ahead.y) - h) < 0.8
+			var tall := world.height_at(at.x - down.x * 16.0, at.y - down.y * 16.0) - h
+			if steep and flat and tall > most:
+				most = tall
+				best = at
+	return best
+
+
+## The highest crest within 120 m of the spot along the wind.
+func _crest(down: Vector2) -> Vector2:
+	var best := _spot
+	for i in range(-40, 41):
+		var at := _spot + down * i * 3.0
+		if world.height_at(at.x, at.y) > world.height_at(best.x, best.y):
+			best = at
+	return best
+
+
+## The morning or afternoon hour the sun lights a slip face facing `down`
+## most, kept off noon's flat light.
+func _lighting(down: Vector2) -> float:
+	var face := Vector3(down.x * sin(0.55), cos(0.55), down.y * sin(0.55))
+	var best := _at_hour(0.35)
+	for k in 41:
+		var hour := 0.3 + k * 0.01
+		if absf(hour - 0.5) < 0.07:
+			continue
+		var t := _at_hour(hour)
+		var sun := _sun(t)
+		if sun.y > 0.2 and face.dot(sun) > face.dot(_sun(best)):
+			best = t
 	return best
 
 

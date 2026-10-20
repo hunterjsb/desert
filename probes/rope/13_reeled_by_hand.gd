@@ -1,13 +1,13 @@
 extends LineProbe
 ## Rope & tethering probe 13: reeled in by hand, with the wheel as bound. A
-## floating crate rides a breeze out on the line in your hand: reeling in
+## floating planter rides a breeze out on the line in your hand: reeling in
 ## draws it in about the notches reeled, and paying out lets it back, never
 ## past the line's length. Tied at your waist, the line reels too. Reeling
 ## against a staked line steps you in to the stake, which stays put. Nothing
 ## goes faster than a line's closing speed, and the drawn strand stays as long
 ## as the line as it reels. The wheel alone reels; with ctrl it leaves a line
 ## be, and brings what you hold nearer or pushes it out: a part you carry, a
-## crate you have hold of, each stopping at the ends of its range.
+## planter you have hold of, each stopping at the ends of its range.
 
 const NOTCHES := 8
 ## Drawn within this share of the notches reeled.
@@ -16,6 +16,9 @@ const ROUGHLY := 0.2
 const LENGTH := 0.03
 ## Nothing on a line goes faster than its closing speed, m/s.
 const FLUNG := 3.0
+## How far short of your reach a planter dragged on the sand may stop, m: its
+## friction against the hold's give takes 0.2.
+const SHORT := 0.25
 
 var _seen := {"fastest": 0.0, "length": 0.0, "reeling": 0}
 
@@ -29,48 +32,49 @@ func run() -> void:
 	await settle(true)
 	at = player.global_position
 	var out := Vector3.FORWARD
-	var crate := floating(&"crate_frame", at + out * 5.0)
+	var planter := floating(&"planter", at + out * 5.0)
 	await simulate(0.5)
-	var line := await lead(crate)
+	var line := await lead(planter)
 	player.set_physics_process(true)
 	player.collision_layer = 1
 	player.collision_mask = 1
 	# A breeze carries it out on its line, so the line is taut from the start.
 	blow(Vector2(out.x, out.z) * 4.0)
 	var rope := line.rope
-	await _settled(rope, crate)
+	await _settled(rope, planter)
 	var full := rope.full
-	var from := _apart(crate)
+	var from := _apart(planter)
 
-	await _reel(NOTCHES, [crate, player], rope)
-	await _settled(rope, crate)
-	var drawn := from - _apart(crate)
+	await _reel(NOTCHES, [planter, player], rope)
+	await _settled(rope, planter)
+	var drawn := from - _apart(planter)
 	var reeled := full - rope.length
-	print("reeled %d notches in: the line %.2f m shorter, the crate %.2f m nearer, at most %.2f m/s"
+	print("reeled %d notches in: the line %.2f m shorter, the planter %.2f m nearer, at most %.2f m/s"
 		% [NOTCHES, reeled, drawn, _seen.fastest])
 	check(absf(reeled - NOTCHES * Reel.NOTCH) < 1e-3, "each notch reels a notch of line in")
 	check(absf(drawn - reeled) < ROUGHLY * reeled and _seen.fastest <= FLUNG,
-		"reeling in draws the crate about as far, never faster than a line closes")
+		"reeling in draws the planter about as far, never faster than a line closes")
 
-	var near := _apart(crate)
-	await _reel(-NOTCHES / 2, [crate, player], rope)
-	await _settled(rope, crate)
-	var let_out := _apart(crate) - near
-	await _reel(-NOTCHES * 2, [crate, player], rope)
-	print("paid out %d notches: the crate %.2f m farther; %d more: the line %.2f m of %.2f"
+	var near := _apart(planter)
+	await _reel(-NOTCHES / 2, [planter, player], rope)
+	await _settled(rope, planter)
+	var let_out := _apart(planter) - near
+	await _reel(-NOTCHES * 2, [planter, player], rope)
+	print("paid out %d notches: the planter %.2f m farther; %d more: the line %.2f m of %.2f"
 		% [NOTCHES / 2, let_out, NOTCHES * 2, rope.length, full])
 	check(absf(let_out - NOTCHES / 2 * Reel.NOTCH) < NOTCHES / 2 * Reel.NOTCH * ROUGHLY, "paying out lets it back out")
 	check(absf(rope.length - full) < 1e-3, "but never past the line's length")
 
 	check(hands.interact() and player.waist.holds(line.ends[1]), "you tie it at your waist")
-	await _settled(rope, crate)
-	var waist_from := _apart(crate)
-	await _reel(NOTCHES / 2, [crate, player], rope)
-	await _settled(rope, crate)
-	print("at your waist, %d notches in: the line %.2f m shorter, the crate %.2f m nearer"
-		% [NOTCHES / 2, full - rope.length, waist_from - _apart(crate)])
+	hands.reel.choose(line.ends[1])
+	await _settled(rope, planter)
+	var waist_from := _apart(planter)
+	await _reel(NOTCHES / 2, [planter, player], rope)
+	await _settled(rope, planter)
+	print("at your waist, %d notches in: the line %.2f m shorter, the planter %.2f m nearer"
+		% [NOTCHES / 2, full - rope.length, waist_from - _apart(planter)])
 	check(absf(full - rope.length - NOTCHES / 2 * Reel.NOTCH) < 1e-3
-		and absf(waist_from - _apart(crate) - NOTCHES / 2 * Reel.NOTCH) < NOTCHES / 2 * Reel.NOTCH * ROUGHLY,
+		and absf(waist_from - _apart(planter) - NOTCHES / 2 * Reel.NOTCH) < NOTCHES / 2 * Reel.NOTCH * ROUGHLY,
 		"the line at your waist reels too")
 	print("the strand drawn within %.2f%% of the line's length over %d ticks reeling"
 		% [_seen.length * 100.0, _seen.reeling])
@@ -79,19 +83,19 @@ func run() -> void:
 	blow(Vector2.ZERO)
 	player.waist.let_go()
 	await simulate(1.5)
-	await _cable(crate)
+	await _cable(planter)
 	await _staked(at - out * 4.0)
 	await _carried()
 	await _grasped()
 	speed_up(1)
 
 
-## A strong cable from the crate's port, its other plug in your hand: it reels as
+## A strong cable from the planter's port, its other plug in your hand: it reels as
 ## the rope it is, its plug staying in, up to its own length.
-func _cable(crate: Device) -> void:
-	var port: Socket = crate.sockets().filter(func(each: Socket) -> bool: return each.kind == &"port")[0]
+func _cable(planter: Device) -> void:
+	var port: Socket = planter.sockets().filter(func(each: Socket) -> bool: return each.kind == &"port")[0]
 	var cable: StrongCable = Catalog.cable(world, port.global_position, true)
-	crate.fit(cable.plugs[1], port)
+	planter.fit(cable.plugs[1], port)
 	hands.hold(cable.plugs[0])
 	await simulate(0.5)
 	_wheel(NOTCHES / 2, true)
@@ -159,22 +163,22 @@ func _carried() -> void:
 	await simulate(1.0)
 
 
-## A crate too heavy to carry, taken hold of: it goes out and comes in, as far as your reach.
+## A planter too heavy to carry, taken hold of: it goes out and comes in, as far as your reach.
 func _grasped() -> void:
 	var player := world.player
-	var crate := device(&"crate_frame", player.global_position - player.global_basis.z * 1.6, 0.3)
+	var planter := device(&"planter", player.global_position - player.global_basis.z * 1.6, 0.3)
 	await simulate(1.5)
-	check(await take(crate) and hands.grasp.body == crate, "you take hold of a crate")
+	check(await take(planter) and hands.grasp.body == planter, "you take hold of a planter")
 	await simulate(1.0)
-	var apart := [_apart(crate)]
+	var apart := [_apart(planter)]
 	for notches in [-2, -20, 4, 20]:
 		_wheel(notches)
 		await simulate(2.0)
-		apart.append(_apart(crate))
-	print("a crate you have hold of from %.2f m: out %.2f, as far as you reach %.2f; in %.2f, as near as it comes %.2f"
+		apart.append(_apart(planter))
+	print("a planter you have hold of from %.2f m: out %.2f, as far as you reach %.2f; in %.2f, as near as it comes %.2f"
 		% apart)
-	check(hands.grasp.body == crate, "it never slips from your hands")
-	check(apart[1] > apart[0] + 0.3 and apart[2] > apart[1] and absf(apart[2] - world.tuning.reach) < 0.15,
+	check(hands.grasp.body == planter, "it never slips from your hands")
+	check(apart[1] > apart[0] + 0.3 and apart[2] > apart[1] and absf(apart[2] - world.tuning.reach) < SHORT,
 		"with ctrl the wheel pushes it out, as far as you reach")
 	check(apart[3] < apart[2] - 0.6 and apart[4] < apart[3] and apart[4] > 0.9,
 		"and brings it in, no nearer than clears you")
@@ -215,11 +219,11 @@ func _reel(notches: int, bodies: Array, rope: Rope) -> void:
 			_seen.length = maxf(_seen.length, off))
 
 
-## Until the breeze has the line taut and the crate riding still on it.
-func _settled(rope: Rope, crate: RigidBody3D) -> void:
+## Until the breeze has the line taut and the planter riding still on it.
+func _settled(rope: Rope, planter: RigidBody3D) -> void:
 	await simulate(1.0)
 	for i in 30:
-		if rope.is_taut() and flat(crate.linear_velocity).length() < 0.05:
+		if rope.is_taut() and flat(planter.linear_velocity).length() < 0.05:
 			return
 		await simulate(0.5)
 

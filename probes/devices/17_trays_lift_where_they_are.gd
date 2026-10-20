@@ -1,11 +1,12 @@
 extends DeckProbe
-## Devices & mods probe 17: trays lift where they are. A deck three pieces
-## by three, a crate standing in its middle, floats level on four trays at
-## its corners. Loaded heavier it rides lower, still level; too heavy for
-## four, it rests on the sand drawing nothing, and a tray under every piece
-## floats it again, drawing for all it holds up. Use sets the whole of it
-## resting and floating. Light again, with its trays bunched along one edge,
-## it tips its far edge onto the sand, and draws for less than its weight.
+## Devices & mods probe 17: trays lift where they are, so a balanced rig
+## floats and a lopsided one tips. A deck three pieces by three, batteries
+## stuck in its middle, floats level on four trays at its corners. Loaded
+## heavier it rides lower, still level; too heavy for four, it rests on the
+## sand drawing nothing, and a tray under every piece floats it again,
+## drawing for all it holds up. Use sets the whole of it resting and
+## floating. Light again, with its trays bunched along one edge, it tips its
+## far edge onto the sand, and draws for less than its weight.
 
 ## Level within this, degrees.
 const LEVEL := 1.0
@@ -31,14 +32,14 @@ func run() -> void:
 		"on four corner trays, a light load floats level")
 
 	for cell: Vector2i in EDGES:
-		_stand(deck, cell, [&"big_battery", &"big_battery"])
+		_stand(deck, cell, [&"big_battery", &"big_battery", &"big_battery"])
 	await simulate(5.0)
 	print("heavier, %.0f kg: %.3f m up, %.2f° from level" % [deck.mass, clearance(deck), _tilt(deck)])
 	check(deck.stats().hovering and clearance(deck) < light - 0.03 and _tilt(deck) < LEVEL,
 		"loaded heavier, it rides lower, still level")
 
 	for cell: Vector2i in CORNERS:
-		_stand(deck, cell, [&"big_battery", &"big_battery"])
+		_stand(deck, cell, [&"big_battery", &"big_battery", &"big_battery"])
 	await simulate(5.0)
 	check(not deck.stats().hovering and clearance(deck) < 0.4 and deck.demand_w() == 0.0,
 		"too heavy for four trays (%.0f kg), it rests on the sand, drawing nothing" % deck.mass)
@@ -56,11 +57,11 @@ func run() -> void:
 	await simulate(5.0)
 	check(deck.stats().hovering and _tilt(deck) < LEVEL, "and it floats")
 
-	for socket in deck.sockets():
-		if socket.kind == &"deck" and socket.mounted != null and deck._cell_of(socket) != Vector2i.ZERO:
-			deck.dismount(socket).free()
-		elif socket.kind == &"bottom" and socket.part != null and not WEST.has(deck._cell_of(socket)):
-			deck.take(socket).free()
+	for socket in deck.stuck():
+		var off_middle := deck._cell_of(socket) != Vector2i.ZERO
+		if socket.part is Battery and off_middle or socket.part != null and socket.out.y < -0.5 \
+				and not WEST.has(deck._cell_of(socket)):
+			deck.unstick(socket).free()
 	await simulate(6.0)
 	var east := deck.global_transform * Vector3(1.5, -0.06, 0.0)
 	var west := deck.global_transform * Vector3(-1.5, -0.06, 0.0)
@@ -73,20 +74,16 @@ func run() -> void:
 		"and the sand taking a share, its trays draw for less than its weight")
 
 
-## A hover tray fitted under the piece at a place.
+## A hover tray stuck under the piece at a place.
 func _tray(deck: Chassis, at: Vector2i) -> void:
-	var tray := Catalog.part(&"hover_tray")
-	world.content.add_child(tray)
-	deck.fit(tray, socket_on(deck, at, &"bottom"))
+	Stick.put(deck, Rig.piece(deck, at), Chassis.BOTTOM, Vector2.ZERO, 0.0, Catalog.part(&"hover_tray"))
 
 
-## A crate frame with parts in it, standing on the piece at a place.
+## Parts stuck side by side on the piece at a place.
 func _stand(deck: Chassis, at: Vector2i, parts: Array) -> void:
-	var crate := Catalog.device(&"crate_frame")
-	world.content.add_child(crate)
-	for id: StringName in parts:
-		fit_part(crate, id)
-	deck.mount(crate, socket_on(deck, at, &"deck"))
+	for i in parts.size():
+		var place := Vector2(-0.3 + 0.6 * i / maxf(parts.size() - 1, 1.0), 0.0)
+		Stick.put(deck, Rig.piece(deck, at), Chassis.TOP, place, 0.0, Catalog.part(parts[i]))
 
 
 func _tilt(body: Node3D) -> float:

@@ -180,7 +180,7 @@ by a rule that keeps it true to Tu's geography. All angles are from the sub-Tu p
 |---|---|---|---|
 | **Halloran and Aitch** | On the axis, 3° to 5° from the sub-Tu point (1.3–2.1 km): Tu all but overhead. A rift crosses the axis there. | "Deepest in, near the sub-Tu point. Rift valley; refinery on the terraces, H-Town on the floor." The Stoker's twin fire. | The refinery terraces (Muster on them), the Crossing at the switchback, Aitch on the rift floor 600 m across |
 | **The black site** | On the artery 1.0–1.6 km from the refinery toward Port Morgan, in the rift wall | "Cut into the rift wall near Halloran inside the ring... on the main artery, not an isolated spoke." The Quartermaster's bunker | The bunker, the specimen case |
-| **Port Morgan** | On the axis, 38° to 48° from the sub-Tu point (16–20 km from it, 17–22 km in from the Rim): Tu 42° to 52° up | "Partway in on its plateau. Tu high but off to one side." The colonial hub every spoke leaves | The Pads, the Bastion (the freighter and the Ledger), Kesselside, Lowtown, the Okafor bunker under the Bastion **(default: which enclave is open)** |
+| **Port Morgan** | On the axis, 38° to 48° from the sub-Tu point (16–20 km from it, 17–22 km in from the Rim): Tu 42° to 52° up | "Partway in on its plateau. Tu high but off to one side." The colonial hub every spoke leaves | The Pads, the Bastion (the freighter and the Ledger), Crakeside, Lowtown, the Haberjack bunker under the Bastion **(default: which enclave is open)** |
 | **Halfrise** | On the axis at the Rim, 88.5° to 90°: Tu half-risen | "On the Rim, Tu half-risen on the horizon... at the head of the old road in to Port Morgan" | The citadel |
 | **Sister** | On the Rim 1.6 to 2.6 km from Halfrise, either way along it | "A sister city near Halfrise," Mother Cistern's temple | The temple, the basin, the seed vault |
 | **The Rim depot** | 0.7 to 1.2 km from Sister, on the Rim, away from Halfrise | "A suborbital port near Sister... The Cistern was built beside the depot that supplied it" | The pads, the rail yard |
@@ -210,7 +210,10 @@ with the world and the save, keyed by the landmark's id, and is the endings work
 *Built 2026-10-18, on the `plumes` branch, from Hunter's brief ([geology and
 plumes](geology-and-plumes-2026-10-18.md)): "Give Zan's plumes a convincing geological source and a
 consistent relationship to wind, the atmosphere, and the moon's history. Start with one compelling
-plume, not a sprawling simulation."*
+plume, not a sprawling simulation." The plumes' look was settled in a third round, when the smoke didn't
+sit right with him: "its mostly emitting gas at this point so its just massive sand plumes that are epic
+from a distance but really just blend into the storm and or the haze when up close cuz theyres so big"
+([Wind & storms](prd/wind-and-storms.md#plumes)).*
 
 The ground the landmarks stand on, made once a run (`Geology`, on `History`) after the landmarks and
 before the colonial layer, which reads it. It holds only what something reads.
@@ -242,15 +245,16 @@ before the colonial layer, which reads it. It holds only what something reads.
 - **Gas pockets.** Round the rift, gas trapped under the old flows breaks out now and then:
   `geology.pockets(t0, t1)` gives those whose plumes show in a span, each a point 1.5 to 13 km from the
   point under Tu, a start, a size and how long it blows. One slot of 500 s in two holds one; it blows 20
-  to 50 s at 20 to 80 times the rift's seep and fades by e every 12 s, a dust column a kilometre or two
-  high **(defaults)**. Harmless, as everything is: a spectacle and a boom.
+  to 50 s at 1.7 to 6.7 times the rift's seep and fades by e every 12 s, a dust column a kilometre or
+  two high **(defaults)**. Harmless, as everything is: a spectacle and a boom.
 - **What a vent is doing** is a pure function of the time, as the weather is:
   `geology.venting(vent, t)` gives how hard, as a share of its seep, and the share of ash in what it
-  carries. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: a vulcanian burst,
-  an explosion clearing its throat and a column of ash after. Each slot of 1,200 s (a game day) holds
-  one 60% of the time, rising over 10 s, holding 40 s and fading by e every 150 s, at 300 to 2,000 times
-  the seep, a column standing 6 to 10 km in a breeze; ash is a fifth of what it carries seeping and 85%
-  at a burst's peak **(defaults)**. `next_burst(vent, t)` says when the next begins and `last_burst(vent,
+  carries. What comes out is mostly gas, which lifts the sand and dust round the mouth; that's what
+  shows. A live vent breathes by a fifth over periods of 170 and 410 s, and bursts: a blast of gas
+  clearing its throat that swells its column of dust. Each slot of 1,200 s (a game day) holds one 70% of
+  the time, rising over 10 s, holding 90 s and fading by e every 220 s, at 25 to 170 times the seep
+  (whose own lift is the steady column's, 1.5 to 3 km), a column standing 6 to 10 km in a breeze; ash is
+  a fifth of what it carries seeping and 85% at a burst's peak, a faint trace in the dust **(defaults)**. `next_burst(vent, t)` says when the next begins and `last_burst(vent,
   t)` when the last did, and how big. A pocket's venting is its blowout's. Quiet and capped vents give
   nothing. Nothing in the world reads the plumes: what they show is `venting`'s.
 - **Magnetized crust.** `geology.magnetized(p)`, 0 to 1: lava that cooled in the old field stays
@@ -281,14 +285,15 @@ before the colonial layer, which reads it. It holds only what something reads.
    layer's vent stations stand on its tapped vents, the plume and the vent's mouth on its live one, and
    the compass on its magnetized crust. It's the rift, its vents and the capped summit; no heat field,
    no impact basin, nothing else until something needs it.
-2. **What does the plume emit?** Gas, which doesn't show (carbon dioxide, sulphur gases and water
-   vapour are the science brief's guesses, not fixed), carrying what does: fine basalt ash, dark and soon
-   fallen out; steam, only where the air is cold enough to hold it, so it's grey by a hot day and white
-   in the cold of night and dawn; and the pale blue sulphate haze its gas makes over minutes, which is
-   most of what a far plume is.
+2. **What does the plume emit?** Mostly gas, which doesn't show (carbon dioxide, sulphur gases and
+   water vapour are the science brief's guesses, not fixed), sweeping up and lifting the sand and dust
+   round the mouth, which does: a vast column of the storms' own dust, with a faint trace of ash at a
+   burst's core. Round two's ash, steam and sulphate haze were dropped in round three, when the smoke
+   read wrong.
 3. **Seeping, intermittent or bursting?** It seeps all the time, breathing, and bursts now and then.
-   The tapped vents are quiet and the summit capped. Round two made the bursts vulcanian (columns of 6
-   to 10 km, booming) and added the rift's second live vent, the volcano's flank vent and gas pockets.
+   The tapped vents are quiet and the summit capped. Round two made the bursts tower (columns of 6 to
+   10 km, booming) and added the rift's second live vent, the volcano's flank vent and gas pockets;
+   round three made the seep's own column 1.5 to 3 km and the bursts a little more often.
 4. **Is the observatory volcano part of a province?** Yes: the far side's, one of the two tidal-heating
    provinces, its summit vent capped by the elevator's anchor. The colonial vent stations are the other
    province's, Han's, on the rift. Both are the same heat, from the same tides.
@@ -296,9 +301,10 @@ before the colonial layer, which reads it. It holds only what something reads.
    The provinces are the bulges, which the landmarks already mark; the rift is the line Halloran's
    heading already drew, through Aitch, with the black site in its wall; only its length and the vents
    along it are geology's own draws.
-6. **The smallest rendering?** One draw of 248 soft puffs a plume, whose places the shader works out from
-   a line of 24 points computed on the main thread, up to three plumes at once, and the sand's look for
-   the ash; no new full-screen pass, no particle simulation ([Wind & storms](prd/wind-and-storms.md#plumes)).
+6. **The smallest rendering?** The storm walls' own: a dust volume marched round a line of points
+   computed on the main thread, up to three plumes in one compute pass at half the screen's size and
+   brought up by depth, with the walls' billows, light and haze, and near you the haze and grit you stand in rather than anything drawn; the
+   sand's look for the old ash; no particle simulation ([Wind & storms](prd/wind-and-storms.md#plumes)).
 7. **Visual only, or more?** Visual and atmospheric, with history's vent stations moved onto the
    vents, the magnetized crust for the compass, and booms and a roar ([Radio, sound &
    atmosphere](prd/radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)). No hazard
@@ -306,7 +312,7 @@ before the colonial layer, which reads it. It holds only what something reads.
 8. **Which physical assumptions now?** Settled now: the plume's rise and bend follow Briggs's
    buoyant-plume laws in the field's wind and an air stability that's steadier by night; gravity enters
    both the buoyancy and the stability, so how high a plume levels doesn't change with it, only how
-   hard it climbs at first; ash falls out, steam needs cold air, haze forms over minutes. Qualitative:
+   hard it climbs at first; the sand it lifts falls out over minutes, the fines staying up. Qualitative:
    the gases' mixture, the vent's real heat output (its buoyancy is a look value, `plume_buoyancy`), and
    the outgassing's share of the air, which a single vent doesn't sustain: the air still leaks.
 9. **Which tests?** Geology's purity and shape on twelve worlds (geology 1), venting and pockets as the
@@ -495,7 +501,7 @@ sockets (`Ruin.SPOTS`) and mesh.
 
 | Era | Kit (part 4) | Burial **(default)** | Loot identity (part 4) |
 |---|---|---|---|
-| Colonial | Pylon stubs, pipeline segments, hab pods, relay masts | Deepest: 2 to 6 m of sand over the roof; rarely exposed | Infrastructure: power, crates, big systems |
+| Colonial | Pylon stubs, pipeline segments, hab pods, relay masts | Deepest: 2 to 6 m of sand over the roof; rarely exposed | Infrastructure: power, chassis, big systems |
 | Skimmer era | Wreck hulls, fuel bladders, dugouts | Shallow, 0.2 to 1 m, tilted 10° to 35°; exposed and reburied fast | Best single-item gear: from deserters and the black site |
 | First Kingdoms | Pipe-wall huts, cisterns, low stone walls | Deep, 0.8 to 2 m: low foundations, barely visible | Intact working colonial tech used in new ways |
 | Dark Age | No sites | None | No loot of its own: the lineage of second-age gear |
@@ -711,6 +717,7 @@ drawn by the skyline ([Salvage & ruins](prd/salvage-and-ruins.md#whats-built-202
 | Memory | under 8 MB for the history and the sheet | 3.6 MB with a Rim sheet laid |
 | Per tick, for anything static | zero: no site, path or landmark has a process step | none: standing still for 300 ticks, the sheet never ran |
 | A storm working loaded sites | only the sites on loaded ground near you each frame, the rest a few chunks a frame, never all sites | 6 µs a frame for each site moving near you ([What storms do to sites now](#what-storms-do-to-sites-now)) |
+| A big dune's ruin you pass | nothing at a chunk's load, a seed only; looked at on a worker only once you've slowed, built only once bared | 0.03 ms a frame riding past at 20 m/s, nothing found or built (kits probe 8) |
 
 The pass, the cells and the index are `RefCounted`, with no node and no process step. Laying runs in the
 terrain's streaming step, inside its budget, and only when the ground under you changes chunk.
@@ -897,6 +904,14 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
   laid, so it can't see history's structures yet: the spawns package's to order. The performance pass's
   `held_height_at` and `highest_in` on master ask `ruins.covering` and `RuinSites.MARGIN`: on this branch
   they become `sites.covering` and `sites.narrowest()`, the narrowest any structure's ground is.
+- **Wrecks** (2026-10-18, the `wrecks` branch): five kit pieces with a scrapping plan, in one file of
+  their own (`WreckKit`): the skimmer hull (the wreck fields' hull, now at half its site's lean), the
+  tithe hauler (wreck fields and the black site's checkpoints), the freight pod (by frontier towns,
+  1 to 3 m deep, a kind's own burial over its era's: `SiteKinds.burial`), the lifeboat (a row off the
+  roads into Port Morgan, within 16 km of it: a row may say how `near` a landmark it lies) and the
+  Knights' hopper (a row along the artery, and by crusader bunkers). New kinds are appended to their
+  settlements' members and to the rows, so every older site keeps its stream. Their plates, packed
+  holds, held modules and hazards are [Salvage & ruins'](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built).
 - **Planned only, still:** survey beacons, pump stations, farm domes, vent stations, checkpoints,
   generator shrines, caravanserais, stepwells, ration gates, granaries, earthworks, bunkers and the signs:
   history's plan, for the map and the packages to come.
@@ -907,11 +922,13 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
 
 - **A lineage is a short list on the thing** (its `lineage`, saved with it), each entry [era, what was
   done, how], from its making on:
-  - [colonial, made, who]: who made it, as its stamp says (`Catalog.MAKERS`): Tilg on crate frames and
-    chassis pieces, the contractor RMC on the condenser, the Console and the fitted shield, the shield's
-    maker on the light shield, the wind maker on the turbine; commodity parts name none.
-  - [First Kingdoms, marked, house]: a Port Morgan house kept it and marked it: Okafor, Kessel, Arkwright
-    or Vante.
+  - [colonial, made, mark]: the item's colonial provenance mark (`Catalog.COLONIAL_MARKS`):
+    TILG's consignment label on chassis pieces and frames; the legacy RMC contractor placeholder
+    on the condenser, Console and fitted shield; the OEM's sign on the light shield and turbine;
+    commodity parts name none. Current lore names Moonco and its specialist network but has not
+    reassigned those legacy RMC marks to specific organizations ([lore research](lore-research.md#colonial-contractors-moonco-and-its-network-agreed-2026-10-20)).
+  - [First Kingdoms, marked, house]: a Port Morgan house kept it and marked it: Haberjack, Pellicott, Crake
+    or Vonatelli.
   - [Dark Age, remade, work]: what held it together, one of five sets of cord, ceramic, a saltbush-wood
     splint and a plate off something else **(default)**.
   - [second age, blessed, gifts]: one of four sets of the sign of Tu, a charm, a tassel and a water vial,
@@ -927,7 +944,7 @@ Shared files each package may touch, and nothing else outside its own: `Tuning` 
 - **Its era** is its last hands': a Dark Age remake is second-age gear. That era sets its numbers, and its
   first hands' set the row its own stamp is from. A thing with no lineage is what it was before: the
   company's issue when it was never found (the run's kit: colonial numbers, the "new" row, LOT 3127 on
-  the crate), and its layer's look when a save from before lineage found it.
+  its chassis), and its layer's look when a save from before lineage found it.
 
 ### The interface for loot
 
@@ -941,8 +958,9 @@ returns it.
 - `seed`: the thing's own draw from the site's loot seed (its socket, its index), so each thing in a site
   has its own lineage. The same seed gives the same lineage, numbers and look, so a find made again as its
   chunk loads needs nothing saved.
-- Each part fitted in a found device takes its own call and seed, fitted or not yet: a crate's battery can
-  be another era's than the crate. Nothing anywhere asks what era a thing is: any crate takes any module.
+- Each part fitted in a found device, or stuck on a found chassis, takes its own call and seed: a chassis's
+  battery can be another era's than the chassis. Nothing anywhere asks what era a thing is: anything sticks
+  on any era's chassis, and pieces of any eras join.
 - A crop, food or salt takes none, and it returns an empty list.
 - What's taken keeps its lineage through the save (`Snapshot`: a thing's `lineage`).
 - `Eras.lineage(era, kind, seed)` is the draw alone; `Catalog.inherit(body, lineage)` gives a known one.
@@ -965,7 +983,7 @@ order)**
 
 So a battery holds 100, 92, 85 and 75 Wh by era, a big battery 300, 276, 255 and 225; a panel makes 60,
 55, 51 and 45 W, a turbine 200, 184, 170 and 150; a tray floats 80, 74, 68 and 60 kg at 2.0, 2.1, 2.2
-and 2.5 W a kilogram; the base shield holds a storm back on 200, 210, 220 and 250 W. A mixed crate's trays
+and 2.5 W a kilogram; the base shield holds a storm back on 200, 210, 220 and 250 W. A mixed deck's trays
 draw by each one's share of the lift. Probe 3 checks each.
 
 **Repair is needed and not built.** Nothing mends yet; each era's material is data
@@ -978,12 +996,12 @@ your own, a new lashing or cap on its look.
 
 Readable without text, through the paint pass, stacked in lineage order (art direction, "Layered
 marks"):
-- **Its maker's stamp** is the look's own, from its first hands' row: the colonial row (TILG XN 0217,
-  RMC), the new row for the company's issue.
+- **Its first provenance mark** is the look's own, from its first hands' row: the colonial row
+  (TILG XN 0217, legacy RMC placeholder), the new row for Tilg & Standard's present-day issue.
 - **A First Kingdoms house's** is an enamel band in the house's colour round the top edges of a frame,
   round a round housing or round a part's end, and an enamel plaque with the house's crest cut through to
-  bright metal, riveted in brass: Okafor's key, Kessel's cauldron, Arkwright's arch, Vante's tower; deep
-  red, ochre, teal, and ochre with red for Vante **(default)**.
+  bright metal, riveted in brass: Haberjack's key, Pellicott's cauldron, Crake's arch, Vonatelli's tower; deep
+  red, ochre, teal, and ochre with red for Vonatelli **(default)**.
 - **The Dark Age's repair** is cord lashed round two corner posts or round a part's body or a round
   housing, a round ceramic cap on a square corner, a saltbush-wood splint lashed along an edge, and a
   plate off something else in its paint, riveted on crooked; on what was consigned, the code daubed back
@@ -993,7 +1011,7 @@ marks"):
   cap and a blue charm.
 
 Where they go is worked out once a thing, from its own look (`Paint.Shell`): its box, or the round body in
-it (`Catalog.ROUND`), its faces cast against with rays so a plaque sits on a crate's recessed panel, not
+it (`Catalog.ROUND`), its faces cast against with rays so a plaque sits on a device's recessed panel, not
 in the air before it, and four spots clear of its sockets, its charge light, its mast and its stamps, a
 part's face out of its socket first. Each entry's marks are drawn alone on those, so they cache by entry
 and stack in any lineage; the lineage's look is its own merged with them (`Paint.merged`), one mesh and
@@ -1007,23 +1025,23 @@ paint's age.
   the 24 that take marks (the Console's slowest, 2.8 ms); the first time each of a thing's lineage entries
   is drawn, once a run, 0.3 ms (0.6 ms for nine in ten, 2.3 ms at most, the first of a size of piece:
   every piece is a prototype placed natively after); a lineage's look merged from entries already drawn,
-  0.2 ms for a crate frame and less for anything smaller. A marked look adds a few hundred triangles to a
+  0.2 ms for a crate frame (since removed with the slots) and less for anything smaller. A marked look adds a few hundred triangles to a
   thing and no draw.
 - **Probes** (`probes/lineage/`): 1 a lineage is its seed's alone, for every era and kind of site; 2 the
   Dark Age's rule, every second-age find an older thing remade; 3 era stats scale the numbers as the table
-  says, a colonial battery holding the most and a second-age one the least; 4 a crate, its parts and a
-  shield keep their lineages, numbers and looks across a save and resume, and things without one stay so;
-  5 every era's battery, tray, hook, panel and light shield fit every era's crate and chassis pieces join
-  across eras. Each fails on a deliberately broken build: a lineage drawn from no seed; a second age made,
+  says, a colonial battery holding the most and a second-age one the least; 4 a found device, its parts
+  and a shield keep their lineages, numbers and looks across a save and resume, and things without one
+  stay so; 5 every era's battery, tray, hook, panel and light shield go on every era's chassis and
+  chassis pieces join across eras (both reworked off the crate with the chassis, 2026-10-18). Each fails on a deliberately broken build: a lineage drawn from no seed; a second age made,
   not remade; numbers left unscaled; a save that drops a thing's lineage; a fit refused across eras.
-- **To see them** (unseen, on a GPU): `look/lineage/shoot.sh <dir>` stands a crate and a battery in each era
+- **To see them** (unseen, on a GPU): `look/lineage/shoot.sh <dir>` stands a device and a battery in each era
   and lineage before the camp and builds `~/Desktop/lineage.png`. Not shot yet: the GPU needs a reboot.
 
 ### What's fragile
 
 - **Seen only flat.** The marks were checked on a CPU render of their meshes, not on the GPU: no wear
   shader, light, dust or scale. The sheet above is the test.
-- **A house's teal on the colonial teal.** Arkwright's band reads weakly on a teal crate; its plaque does.
+- **A house's teal on the colonial teal.** Crake's band reads weakly on a teal chassis; its plaque does.
 - **Hanging is a part's guess.** What hangs from a part hangs as if its socket faced sideways; on a top
   mount it stands out.
 - **Marks follow the look.** They settle on a thing's look by ray; change a look in Dress and its marks
@@ -1046,7 +1064,7 @@ paint's age.
   deeper than the rest of its site holds; a kind may put its own row in place of its era's, which is how
   the kind says what fits. Each socket draws from its own stream of the site's loot seed, so a site holds
   the same things whoever comes, whenever, laid from wherever on the ground. What each era's sites hold:
-  - **Colonial,** infrastructure: crates, chargers, chassis pieces, a condenser or turbine, big batteries,
+  - **Colonial,** infrastructure: chassis pieces and frames, a condenser or turbine, big batteries,
     trays, panels and strong cable on its floors; batteries, lamps, plugs and instruments on its shelves;
     clean root-tuber and vat fungus in its beds; at its best Consoles, shield generators, turbines,
     condensers, big batteries, trays and panels, radar, screens and harvesters. A hab pod's shelf holds
@@ -1058,8 +1076,8 @@ paint's age.
     found light and fragile, half to nine tenths sound. A wreck hull's best is its own (2026-10-18):
     the land yacht's helm seat and keel, 3 in 13 each, with shields, boards, radar, a harvester and a
     big battery ([Movement](prd/movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)).
-  - **First Kingdoms,** working colonial machines kept running: condensers, turbines, chargers, planters
-    and crates, three sockets in four filled, instruments on the shelves, water kept sealed; a cistern's
+  - **First Kingdoms,** working colonial machines kept running: condensers, turbines, frames, planters
+    and chassis pieces, three sockets in four filled, instruments on the shelves, water kept sealed; a cistern's
     floor water and hose, its bed and a field plot's seed and saltbush. Near sound.
   - **Second age,** worn reused gear, water, seeds and salt: a house ruin's floor holds what its floor
     always did (parts, devices, seeds, rations and survival kits), its hall a later visitor's device with
@@ -1113,7 +1131,8 @@ paint's age.
   settlement's site, built or only planned **(default)**, where what travellers dropped lies. They are
   what they always were, deeper the harder the weather. At seed 1234's start, deep desert, the 769 chunks
   within a kilometre hold 2 (loot probe 4); round a town 166 chunks on the way hold about one in ten.
-- **The first hour** (step 4, loot probe 6, six seeds). The Surveyor walks in toward Tu 1 to 1.3 km to
+- **The first hour** (step 4, loot probe 6, six seeds; measured before the chassis rework, when crates and
+  chargers lay where chassis pieces, frames and light panels lie now). The Surveyor walks in toward Tu 1 to 1.3 km to
   the line it starts off and finds what lies loose along it (a condenser, a radio, a crate, a canister of
   water) or a watchtower's; the Salvager finds the wreck field's hulls 70 to 240 m off, a hoverboard or a
   survival kit half buried in one, or what lies among the wrecks 90 to 350 m off (a charger, a planter, a
@@ -1216,9 +1235,10 @@ paint's age.
   4 m wide by 15 cm a metre and thinning as what it carries falls out, most of it within 150 m
   **(defaults)**, the sites asked of the index by area. A catch line catches it as it catches the open
   drift, the lee and all, its own lesser things falling just past the line in the site's era's look.
-  Through the storm a house ruin is dug out by (loot probe 7), an 8 m line 30 m downwind catches about
-  one thing of the house's in the open (1.1 expected, 0.08 at 200 m, none upwind, aside or past 450 m),
-  five times as many in a full lee: a stationary camp downwind gets some.
+  Through the storm a house ruin out in the open is dug out by (loot probe 7), an 8 m line 30 m downwind
+  catches about three things of the house's (3.0 expected, 0.21 at 200 m, none upwind or past 450 m, and
+  aside only as the wind swings through the storm, 0.04), five times as many in a full lee: a stationary
+  camp downwind gets some.
 - **A glint through the dust** (Skyline). Inside a storm everything far off takes the storm's veil
   (`Plume.seen_through`, the far saltbush round's) and is hidden, glints and all, but what the storm has
   newly laid bare near you, the metal or glass its settled sand would still cover, glints through the
@@ -1230,8 +1250,8 @@ paint's age.
   chance every 4 s of world time by how far it's laid bare, heard from the site after the sound's trip
   there, duller the further (`clang.ogg`, from Sand Game's metal clank, its ring kept).
 - **The hook for the Console's sensors.** `sites.newly_exposed(x, z, radius)` lists the sites near a place a
-  storm has newly laid bare, nearest first, with how much further out of the sand it has them: what a
-  particle sensor or ground radar will pin on the Console. Nothing calls it from the Console yet.
+  storm has newly laid bare, nearest first, with how much further out of the sand it has them: the ground
+  radar marks them bared on a Console's survey page (2026-10-19, below).
 - **Cost** (17 sites by hand coming out of the sand round you as a storm rises, headless; `terrain/site` on
   the dev overlay, and `terrain/dust` the glints through the dust): following them, 0.10 ms a frame on average and 0.43 at most, about 6 µs a moving
   site, and nothing for sites the weather isn't moving; 12 presses a minute at play speed, each 4 ms on a
@@ -1242,16 +1262,84 @@ paint's age.
   dunes, 18 KB near and 5 KB mid. `sites.newly_exposed` within 140 m takes 56 µs. A drift tick for a
   line with 18 sites near is 0.27 ms, 16 µs with none, so the drift a clock jump draws (540 ticks at most)
   can cost a few tens of milliseconds once where sites stand thick.
+- **Where it lies among the dunes** (2026-10-19, `Exposure.dune_at`): -1 to 1 from the bare dunes along
+  the run's long-term wind, which they face, read where the site is surveyed and kept with it. Toward 1:
+  the ground climbing downwind through it (a windward face, from a rise of 0.02 to 0.15 a metre), or
+  standing 2 to 10 m over the ground 50 m either way along the wind (a crest), off a slip face. Toward -1:
+  a slip face (the ground falling 0.2 to 0.45 a metre downwind), or a crest upwind within 128 m sheltering
+  it, as the lee's own reading would (Lee's heights and tall). The term times `site_dune_strip` (1) more
+  stripping and more of the storm's work off it; less than none times `site_dune_bury` (1) more sand back
+  and more of the storm's work onto it **(defaults)**. Every reader of a site's weather takes its term:
+  its memo is its own. Kits probe 6.
+- **A seeded ruin in each big dune's lee** (2026-10-19, `DuneRuins`, the sites' `dunes`). Cells along the
+  run's wind a dune spacing long (260 m) and 300 m across it **(default)**; through a seeded line across
+  each, every 2 m, the highest crest whose top lies in the cell, standing at least 14 m over the trough past
+  its slip face, is a big dune; its ruin lies on the flat past the foot of its slip face, tried every 5 m
+  down it and 60 m along the crest either way until the ground takes it (its kind's own survey) where the
+  dune term is -0.3 or less. Its kind, bearing, depth (5.5 to 6.5 m) and loot are its seed's; its id
+  stays clear of history's; `source` says `dune`. Finding one costs a worker 0.5 to 28 ms (2.6 on average
+  round the start), most of it surveys.
+- **A seed until it's needed.** Nothing at a chunk's load: a dune's ruin isn't in the index until it's
+  built. Each frame (`Sites.step_dunes`, from the world's tick) your pace is read from where you are; slower
+  than 4.5 m/s for 2 s you've slowed, and then a worker at low priority takes up to three seeds within 300 m
+  that want a look, nearest first, a turn at most every 0.2 s, finds where each lies if it hasn't, and reads
+  how far out of the sand it is, again every 15 s of world time **(defaults)**. A ground radar's place is
+  looked over the same way whatever your pace. One read with something of it showing, within 150 m while
+  you're slow, joins the index (`Sites.join`): a unit of its own, never saved with the sheet, over no other
+  structure's ground (where one stands the dunes took it). The loaded chunks under it hold it from then and
+  are pressed afresh with it on a worker (`Terrain.join`), sampling their dunes again where they kept none;
+  the one its middle stands on draws it and makes it solid once that's in, and its finds are laid
+  (`Salvage.adopt`). A chunk still building when it joins is pressed once it's built. From then it's a site
+  like any other, held, followed and released with its ground, until the sheet lifts it; lifted, it's a
+  seed again and what was dug off it is forgotten with it. **A save keeps** the seeds dug or built (`dunes`:
+  each one's cell, the sand dug off it, whether it was built and how much a sieve sifted), and resumed, one
+  built is built again as soon as the sheet is laid.
+- **Digging** (2026-10-19, `Sites.dig_at`, `Structure.dig`): sand off a site by hand, m, kept on it
+  (`dug_m`) apart from the weather's (`pure_taken`), and added to it only up to dug out (`with_dug`), so the
+  deepest sockets still need a storm to strip past them, and what's dug never reads as a storm's baring
+  (`bared` leaves it out). A seed not built yet takes it on itself until it builds. History's sites keep
+  theirs in the index's memory while they're laid (`dug`: each one's id, m dug and m³ sifted, in the save).
+- **Light things fall in a crest's lee** (2026-10-19, `Drift.lee_ground`, `Drift.fallen`). Each tick of
+  drift, round you and each deck of yours on solid ground, the 6 m squares within 24 m whose lee at the
+  tick's wind is half or more each draw from their own stream of the seed (the square and the tick) at
+  `drift_lee_fall` things an hour on a hundred square metres of full lee in a storm's heart, times how hard
+  it blows there **(defaults)**; what falls, what the wind carries, lies on the sand in the square, as drift
+  does. Fewer than a pile's worth (8) lie round you first; a clock that jumps draws its last 90 ticks of
+  them at most. Loot probe 8.
+- **Cost, dune archaeology.** A fast traveller without a ground radar skips worker-candidate selection
+  entirely (2026-10-19): there is no survey to select while riding past. Pace, completed-worker handling,
+  resumed builds and seed residency still run. Previously the empty selection allocated arrays and a
+  sorting callable every frame, since an empty batch never started a worker turn. Kits probe 8 (20 m/s,
+  40 m off a bared ruin) measured a local wall-time maximum of 0.104 ms before, then 0.047 and 0.018 ms
+  in two focused runs after; no seed was found or built riding past, and stopping still surveyed, built
+  and drew the ruin. Its 0.2 ms limit is unchanged. Wall-time maxima can include scheduler pauses.
+  Built as history's are, as you pass, the same ride along the crests hitched the terrain's frame to
+  4.5 ms, laying their finds 4.2 ms (a found Console among them), against 0.95 ms lazily. A build, once you've slowed: the index's join and the chunks' hold well under a
+  millisecond on the main thread, each chunk pressed on a worker in a few ms and swapped in within 0.2 ms,
+  and its finds a socket at a time in the streaming budget. Lee falls: a tick reads the wind and the lee at
+  about 60 squares, every 20 s, only while the weather blows; a clock that jumps, 90 ticks at most.
+- **Wrecks follow it too.** A wreck's scrapping (`Wreckage`) stands at its floor as its chunk draws it,
+  so its plates, hazards and packed holds rise and sink with its hull, and its modules are read again
+  as any finds are; what's cut and cleared is its memory, apart from the weather's function, so a
+  storm never undoes it. A cut plate rides the wreck it lies on, and one on the sand is buried with
+  the wreck as it sinks deeper than when it fell, never lifted off its sand as it rises (wrecks probe 7;
+  [Salvage & ruins](prd/salvage-and-ruins.md#wrecks-and-scrapping-hunter-2026-10-18-built)).
 - **Probes:** kits 3 (a loaded site follows the storm, smoothly, and never buries you), kits 4 (exposure is
   pure, and a storm works a site), loot 7 (what a storm bares blows downwind), sightlines 4 (a glint
-  through the dust only near), saves 23 (a save never buries you). Each fails on a deliberately broken build: no hold over you, no ground
+  through the dust only near), saves 23 (a save never buries you); and for dune archaeology kits 6 (the dune
+  term strips a windward face more than its lee), kits 7 (a big dune's ruin bares only past an intense
+  storm), kits 8 (a buried site costs nothing until bared and slowed by), loot 8 (light loot falls in a
+  crest's lee), saves 33 (the dune deeds through play). Kits 1 and loot 2 read a site's weather through
+  the site, its dune term and all. Each fails on a deliberately broken build: no hold over you, no ground
   pressed afresh, a look that doesn't follow; the storm's sand never coming back, or read only on its
   ticks; drift shed upwind as well; glints through the dust at any range, or every bare glint; a
   resume that forgets the held sand.
 - **To see it** (unseen, on a GPU): `look/exposure/shoot.sh <dir>` stands a hab pod where a storm lays it
   bare by day and shoots it from off its ground in the clear before the storm, rising half out of the
   sand in it, at its height and in the clear after, and from out in the dust its bared windows glinting
-  through, and builds `~/Desktop/exposure.png`.
+  through, and builds `~/Desktop/exposure.png`. `look/archaeology/shoot.sh <dir>` shoots a big dune's ruin
+  bared after a big storm, the archaeology setup on a deck beside it and its survey page, and what a
+  storm let fall in a crest's lee round you, and builds `~/Desktop/dunes.png`.
 
 ## Defaults
 
@@ -1296,14 +1384,14 @@ group.
   Salvager within 300 m of a wreck field; the Homesteader on a road within 100 m of a wayshrine; every
   start within 12° of the equator and 500 m clear of a landmark's footprint; and something in sight by
   3 px buried, the Surveyor's from bare flats (sand at most 0.15).
-- The Okafor bunker under the Bastion.
+- The Haberjack bunker under the Bastion.
 - Lineage: a second-age find keeps a house's marks half the time and is blessed 40% of the time, 90% at a
   wayshrine and 60% at a stepwell, half of those the Cistern's, 5% elsewhere; five sets of Dark Age repair
   and four of blessings.
 - Era stats: keeps 1.00, 0.92, 0.85, 0.75 (colonial, First Kingdoms, skimmer, second age); draws 1.00,
   1.05, 1.10, 1.25; tough 1.0, 1.5, 0.5, 0.9; the skimmer era's weight 0.7; the skimmer era mended with
   scrap.
-- The houses' colours: Okafor deep red, Kessel ochre, Arkwright teal, Vante ochre with a red plaque.
+- The houses' colours: Haberjack deep red, Pellicott ochre, Crake teal, Vonatelli ochre with a red plaque.
 
 - Loot ([What loot does now](#what-loot-does-now)): each era's tables and each kind's rows; the regions'
   generosity (the Rim all, Mon 0.9, Han 0.75 with a third of floors and caches its era's best, the far side
@@ -1314,9 +1402,9 @@ group.
 - Geology ([Geology](#geology)): the rift 8 to 11 km either way from Aitch, its floor 600 m across and
   its walls to 1.6 km; the tapped vents 1.5 to 3 km along it, the live ones 5 to 7.5 km either way; the
   volcano's flank vent 1.2 to 2.4 km from its summit; a live vent's breath a fifth over 170 and 410 s,
-  a burst in a 1,200 s slot 60% of the time, rising 10 s, holding 40 s, fading by e every 150 s, 300 to
-  2,000 times the seep, ash a fifth seeping and 85% at a peak; gas pockets 1.5 to 13 km from the point
-  under Tu, one in two 500 s slots, blowing 20 to 50 s at 1 to 4 times the seep; the magnetized crust
+  a burst in a 1,200 s slot 70% of the time, rising 10 s, holding 90 s, fading by e every 220 s, 25 to
+  170 times the seep, ash a fifth seeping and 85% at a peak; gas pockets 1.5 to 13 km from the point
+  under Tu, one in two 500 s slots, blowing 20 to 50 s at 1.7 to 6.7 times the seep; the magnetized crust
   across the rift's walls, 2 km past its ends and over the volcano's footprint to 6 km; the mouth's
   pit, rampart and 56 m apron, sliding up to 24 m along the rift.
 
@@ -1339,5 +1427,9 @@ group.
 - **How dense history should be.** Away from the great sites the Rim has about one structure a km²
   besides the grid's ruins, Mon half that: open desert with structures strung along the roads. The rows
   and settlements tables set it, and the kit package will tune it in play.
+- **Session 5's places** ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). The Counting House
+  in Crakeside and Halfrise's stone cradles are not parts of any landmark yet. The Counting House is the
+  likeliest new part of Port Morgan; the cradles wait on their kit. Wow's resting place is unplaced (Hunter,
+  2026-10-18: not under the black site), so it is no part of any landmark.
 - **The Rim's far stretch.** The second-age empire is "centred on the stretch of Rim closest to Port
   Morgan." How built up the Rim is on the far side of the sub-Tu point is the richness default.

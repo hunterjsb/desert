@@ -14,8 +14,11 @@ func run() -> void:
 	var player := world.player
 	var suit := player.suit
 	var broadcast := player.get_node(^"Broadcast") as Broadcast
-	var shield := device(&"shield", spot(0.0, -1.5), 0.25) as ShieldGenerator
-	fit_part(shield, &"battery")
+	# A shield on a plate: a chassis with a battery stuck beside it.
+	var plate := device(&"chassis", spot(0.0, -1.5), 0.08) as Chassis
+	fit_part(plate, &"battery")
+	var shield := Catalog.device(&"shield") as ShieldGenerator
+	Stick.put(plate, plate, Chassis.TOP, Vector2.ZERO, 0.0, shield)
 	look(eye(), shield.global_position)
 	var radio := Catalog.device(&"radio") as Radio
 	world.content.add_child(radio)

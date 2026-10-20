@@ -55,6 +55,9 @@ var gravity: float
 ## that isn't a dev scenario's. The menu's world, a probe's and a look-test's
 ## count none unless they say so.
 var counts_deeds := false
+## The Walker taught the anomaly's tells, this run (Console.upload): its
+## feed and every map flag anomalies from then on.
+var taught := false
 
 @onready var terrain: Terrain = $Terrain
 @onready var content: Node3D = $Content
@@ -77,6 +80,10 @@ var _followed_jumps := 0
 ## onto, so stepping onto one is noticed once.
 var _stood_at := Vector2i.MAX
 var _stood: Structure
+## The sites a storm had freshly bared as you reached them, by id, while
+## you've stayed in it; and the whole days lived as last counted.
+var chased := {}
+var _lived := -1
 
 
 func _ready() -> void:
@@ -100,6 +107,8 @@ func _ready() -> void:
 	farm.setup(self)
 	sleep.setup(self)
 	_set_scene()
+	add_child(Walker.new())
+	add_child(CityLights.new())
 	spawn = Starts.ground(shape, tuning, kit.start if kit != null else &"", start)
 	player.global_position = Vector3(engine_x(spawn.x), height_at(spawn.x, spawn.y) + 0.1, engine_z(spawn.y))
 	_last_x = player_world_x()
@@ -320,8 +329,11 @@ func _physics_process(delta: float) -> void:
 	_last_z = z
 	if terrain.chunk_at(x, z) != _followed or moon.jumps != _followed_jumps or not shape.sites.anchored():
 		_follow_history()
+	shape.sites.step_dunes(x, z, time, delta)
 	if counts_deeds:
 		_step_onto(x, z)
+		if not weather.in_storm:
+			chased.clear()
 
 	var stray := Vector2i(floori(player.global_position.x / tuning.chunk_size),
 		floori(player.global_position.z / tuning.chunk_size))
@@ -331,6 +343,8 @@ func _physics_process(delta: float) -> void:
 	_keep_bodies_on_ground()
 	time += delta * time_warp
 	played += delta
+	if counts_deeds:
+		_live_days()
 
 	Dev.put("world/seed", "%d" % run_seed)
 	if rescued > 0:
@@ -343,7 +357,9 @@ func _physics_process(delta: float) -> void:
 
 
 ## Stepping onto a structure's ground counts its age toward standing in one
-## of each age that built.
+## of each age that built; reaches it freshly bared, in the storm baring it,
+## or as the site whose glint you saw from far off; or finds a dune's ruin. A live vent's mouth is
+## stood at once you're inside its rampart's crest.
 func _step_onto(x: float, z: float) -> void:
 	var at := Vector2i(floori(x), floori(z))
 	if at == _stood_at:
@@ -354,6 +370,25 @@ func _step_onto(x: float, z: float) -> void:
 		_stood = site
 		if Eras.BUILT.has(site.era):
 			Deeds.done(self, &"ages", site.era)
+		if weather.in_storm and Deeds.waiting(self, &"storm_chaser") and site.bared() > 0.0:
+			chased[site.id] = true
+			Deeds.measure(self, &"storm_chaser", chased.size())
+		if terrain.skyline.glinted.has(site.id):
+			Deeds.done(self, &"glint")
+		if site.kind == &"nomad_camp":
+			Deeds.done(self, &"just_missed")
+		if site.source == &"dune":
+			Deeds.done(self, &"dune_reader")
+	if site is VentMouth and GeologyKit.from_slot(site.plan(x - site.x, z - site.z)) <= GeologyKit.CREST:
+		Deeds.done(self, &"live_vent")
+
+
+## Each whole day lived in the run, counted toward living many.
+func _live_days() -> void:
+	var lived := floori((time - began) / (tuning.day_minutes * 60.0))
+	if lived != _lived:
+		_lived = lived
+		Deeds.measure(self, &"ten_days", lived)
 
 
 ## Nothing physical is ever outside collision: a body whose ground is gone is

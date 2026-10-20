@@ -5,8 +5,8 @@ extends SailProbe
 ## keel holds it there and it makes ground upwind; the same yacht with a
 ## tray in the keel's place only runs downwind, sliding off sideways however
 ## it's steered. Left to itself, its sheet made fast and nobody aboard, a
-## floating camp still sails itself downwind. Saved at the helm, you resume
-## there.
+## floating camp still sails itself downwind. At the helm, reeling hauls the
+## sheet at your waist in. Saved at the helm, you resume there.
 
 var kit: Array[Node3D] = []
 
@@ -61,6 +61,13 @@ func run() -> void:
 	await _set_up(true)
 	check((kit[2] as Helm).interact(player), "back at the helm")
 	await simulate(3.0)
+	var trimmed := mast.trim
+	for body in player.waist.tied:
+		if Mast.sheet_end(body):
+			hands.reel.choose(body)
+	check(hands.reel.notch(2), "at the helm, the reel works the sheet at your waist")
+	await simulate(1.0)
+	check(absf(trimmed - mast.trim - 2.0 * Reel.NOTCH) < 0.01, "and two notches haul its inboard in half a metre (%.2f m)" % (trimmed - mast.trim))
 	check(get_node(^"/root/Saves").save(world), "saved at the helm")
 	check(await resume(), "resumed")
 	var at := world.player.helm
@@ -116,12 +123,15 @@ func _set_up(keeled: bool) -> void:
 	deck = kit[0]
 	mast = kit[1]
 	if not keeled:
-		for socket in deck.sockets():
+		for socket in deck.stuck():
 			if socket.part != null and socket.part.stats.has("keel"):
-				deck.take(socket).free()
-				var tray := Catalog.part(&"hover_tray")
-				world.content.add_child(tray)
-				deck.fit(tray, socket)
+				# A tray stuck where the keel was, under the same piece.
+				var pose := socket.transform
+				var out := socket.out
+				var piece := deck.own_piece(socket)
+				deck.unstick(socket).free()
+				deck.stick(Catalog.part(&"hover_tray"), pose, out, piece)
+				break
 	await physics_frames(30)
 	blow(downwind * 10.0)
 	hoist(60.0)

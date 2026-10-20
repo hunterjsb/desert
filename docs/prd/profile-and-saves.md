@@ -66,7 +66,7 @@ like the default, and each unlocks through `profile.unlock`:
 | Surveyor | Default |
 | Salvager | A playstyle, e.g. long board distance or surviving a storm on carried gear |
 | Homesteader | A playstyle, e.g. riding out big storms without moving camp |
-| Archaeologist | Proposed: finding a number of landmarks |
+| Archaeologist | Two deeds, Field Kit and Spadework (built 2026-10-19) |
 | Replacement | Needs a prior save |
 | Prisoner | Finding the black site |
 | Nomad | The nomad city ending |
@@ -99,8 +99,8 @@ the profile (`Kit.is_open_to`, through `Profile.has`) as ????. A kit's `unlock` 
 the board) opens the Salvager, and Hermit (a whole day under a shield) the Homesteader (Hunter,
 2026-10-18: "let's lock the two other starts behind some deeds"). The dev console's `unlockall`
 opens both for testing. The profile keeps the origin a run was last begun or resumed as (`Profile.last_origin`), whose
-kit the main menu shows; reset forgets it. The novelty kits aren't built; an origin that
-isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
+kit the main menu shows; reset forgets it. Of the novelty kits only the Varran settler is built (below); an
+origin that isn't balanced is offered Normal only. The run keeps its origin (`World.kit`) and so does its save
 (`kit`); a new run after a death comes as the same origin. A save from before origins has none and
 resumes as it was, from the tuning's start. Spawns probes 2 and 3.
 
@@ -121,10 +121,23 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
   - Shield: take X of a storm's wear on a shield; **Hermit**, a full day under a shield.
   - Farming: grow three kinds of crop; two planters in tow at once.
   - Sailing: **Set Sail**, a sail's sheet tied at your waist.
-  - Camp: six chassis pieces joined in one deck; a Console, a condenser and a crate on one deck.
+  - Camp: six chassis pieces joined in one deck; a Console, a condenser and a battery on one
+    deck (the crate the first list named went with the chassis, 2026-10-18).
   - Power: over X W made in one system.
   - Story: **The Old City**, reach Port Morgan; **Hot Tourist Destinations**, reach every named
     landmark; a structure of each of the four ages stood in.
+- **Earning one is an event** (Hunter, 2026-10-18: "achv should be a bigger deal when you get them
+  in game, sound + badge, plus indication of your unlock on the menu"): a sound of its own and its
+  badge, its card's picture and name, shown a moment over the game; and the main menu marks what's
+  new, the Deeds word and a start a deed has opened, until you've looked. Built (2026-10-18): the
+  badge (`DeedBadge`, through `UIRoot.badge`) is a small dark panel a fifth of the way down the
+  screen, under the notes and how-tos at the top, the deed's card picture beside "Deed done" and its
+  name; it rises into place over a third of a second, stays three and a half, and fades. Its sound,
+  three soft bell notes rising (`deed.wav`, made here, CC0), plays as it shows, on the menus' bus.
+  Two done at once wait their turn, each shown and heard alone, and the run's end takes any still
+  waiting. Nothing else is said: no note.
+  The marks are the profile's (`Profile.is_new`, `seen`): each deed done, and each start it opens
+  that wasn't open, is new until the deeds menu is opened, or that start highlighted.
 - **Shown in a grid,** reached from the main menu and the system menu: each deed a tile, named,
   with a short line saying what it asks, lit once done (Menus & UI). Then (Hunter, 2026-10-18): a
   tree of what waits on what, each card only a name and a picture of its thing, and what it asks
@@ -132,7 +145,7 @@ names it), and so can a kit variant or a mark on your gear (Hunter: "they should
 
 **Built (2026-10-18).** One table, `Deeds.TABLE` (`game/saves/deeds.gd`): each deed's id, name, the
 line saying what it asks, its family and the deeds it waits on, its card's thing, whether it's hidden
-(none is), and its goal, which is Tuning's (the Deeds group). What a deed opens is each kit's own
+(round two's two anomaly deeds are), and its goal, which is Tuning's (the Deeds group). What a deed opens is each kit's own
 `unlock`, so it has one owner. The names Hunter didn't give are proposals, his to rename; the id
 stays. Green Thumb is new, so Crop Rotation has one before it.
 
@@ -146,10 +159,10 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
 | `crop` | Green Thumb | Grow a crop | | a planter's harvest, by hand or by its harvester |
 | `crops` | Crop Rotation | Grow 3 kinds of crop | Green Thumb | the same, each kind counted once a profile |
 | `planters_towed` | Meals on Wheels | Have 2 planters in tow at once | Green Thumb | a line tied or moved, something tied at your waist or taken in your hand: planters along the lines from you, or standing on what they reach, short of a driven stake |
-| `deck_home` | All Mod Cons | A Console, a condenser and a crate on one deck | | a device standing on a deck, or a piece joining with one on it |
+| `deck_home` | All Mod Cons | A Console, a condenser and a battery on one deck | | a device or a part stuck on a deck, or a piece joining with one on it |
 | `sail_waist` | Set Sail | Tie a sail's sheet at your waist | | your waist, once the sheet tied on there is laid |
 | `deck_pieces` | Six Pack | Join 6 chassis pieces into one deck | All Mod Cons | a piece joining a deck |
-| `power` | Power Trip | Make 300 W in one system | Set Sail | Power's tick, by what each pool makes |
+| `power` | Power Trip | Make 300 W in one system | All Mod Cons (Set Sail until round two) | Power's tick, by what each pool makes |
 | `port_morgan` | The Old City | Reach Port Morgan | | the world, as the history follows you, inside the landmark's footprint |
 | `ages` | Carbon Dated | Stand in a structure of each of the four ages | | the world, stepping onto a structure's ground, its era counted once a profile; the Dark Age built nothing |
 | `landmarks` | Hot Tourist Destinations | Reach every named landmark | The Old City | the same as The Old City, each of the eight counted once a profile |
@@ -160,8 +173,8 @@ stays. Green Thumb is new, so Crop Rotation has one before it.
   waits on is done and open in turn.
 - **Done out of order:** recording never waits. A deed done before what it waits on is kept in the
   profile with its run all the same, and opens its start if it names one; it shows, lit and
-  counted, once its branch opens, and its note waits until then, said beside the deed that opened it
-  ("Deed: Big Air, Flying Bling").
+  counted, once its branch opens, and its badge waits until then, shown after the deed that opened it
+  (Big Air's, then Flying Bling's).
 - **How far along:** a deed that's a number to reach goes through `Deeds.measure(world, id,
   value)`, which keeps the best so far in the profile (`Profile.best`, `improve`), a step at a time
   (250 m, half a metre, a minute, 10 W, one), and records the deed once the goal is reached. A deed
@@ -186,23 +199,183 @@ How each X was chosen, from the probes' numbers:
 - **The hook.** `Deeds.done(world, id, part)` records a deed the moment it's done; with a part (a
   crop, a landmark, an era) the part counts toward it and it's done once enough different ones
   have, across every run. Each check is a comparison where the system already works, and nothing
-  looks for deeds on its own. A deed done says so in the note under the top of the screen ("Deed:
-  Hermit").
+  looks for deeds on its own. A deed done shows its badge, with its sound.
 - **Only a player's own run counts** (`World.counts_deeds`): the game sets it on a run that isn't
-  a dev scenario's and clears it the moment `scenario` is used, and a death in that run keeps it.
-  Nothing counts while the dev console's `god` holds you. The menu's world, a probe's and a
+  a dev scenario's and clears it the moment `scenario` is used, or any dev command that changes the
+  run (`god` among them; Menus & UI, the dev console), and a death in that run keeps it. The save
+  keeps it cleared (`dev_run`), so a dev run resumed is one still. The menu's world, a probe's and a
   look-test's count nothing.
 - **Kept in the profile** (`Profile.deed`, `did`, `deeds`, `toward`, `best`): each deed with when,
   the run's seed and origin, and whether it was Ironman; what has counted toward each, and the best
   toward each that's a number. Achievements
   attach at `Profile.deed`, as unlocks do at `unlock`. Only reset empties them, and the dev
   console's `deeds clear`.
+- **Names from before** (2026-10-19): session 5 renamed the houses, Kesselside and the Okafor
+  bunker. A profile or run saved before reads their old ids as the new ones as it loads
+  (`History.RENAMED`, `Eras.RENAMED`), so neither format's version changed.
 - **The dev console**, at the main menu too: `unlockall` opens every start whatever deeds are done
   (through `Profile.unlock`, so forgetting the deeds leaves them open; reset closes them), `deed
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
 
-## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; not built)
+### Round two: the trees that tie it together (agreed 2026-10-18; steps 1 and 3 built 2026-10-19)
+
+Hunter, 2026-10-18: "what are the big deeds and deed trees we're missing to tie everything
+together?", then "lets do it, and do it right, in the right order." Sailing, ruins, storms, wrecks,
+the anomaly, the radio gods, the sky and the far places had no deed. Each tree runs from an easy
+deed to a hard one, and each ends in a start opening or a step in the story. The numbers were
+starting points, tuned from the probes' numbers as the first batch was (below). Each deed is
+recorded by the system that knows, through the one hook.
+
+**What moves** (built). The shield family becomes **Weather**. Set Sail moves from Camp to the head
+of **Wind**, so Power Trip waits on All Mod Cons instead. Carbon Dated moves from Story to the head
+of **Ruins**. All Mod Cons and Six Pack follow the chassis rework (built): the home is a Console, a
+condenser and a battery stuck on one deck, and a wall or shelf on a frame's face is a piece, where
+the frame is a part stuck on the deck.
+
+| Tree | Deed | Asks | After | Recorded |
+|---|---|---|---|---|
+| Board | **Yard Sale** (hidden) | Tumble 12 m in one wipeout | Big Air | `Tumble`'s tick: how far you've tumbled since you were thrown off ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-19 |
+| Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
+| Wind | **Hand-Me-Down** | Take the sail off a wrecked nomad rig | Set Sail | `Salvage.claim`: the find a nomad rig always carries (its mast with its sail, the socket `SiteLoot.RIGGED`) becoming yours |
+| Wind | **Telltale** | Trim a sail with a streamer flying on its rig | Hand-Me-Down | `Mast`'s haul: its sheet's inboard taken in or let out a notch, its sail all the way up and yours to sail, with a wind streamer anywhere on its camp, its mast too |
+| Wind | **Close-Hauled** | Make 500 m upwind under sail | Set Sail | `Mast`'s tick: while its sail is all the way up and yours to sail (its sheet on you, or you at the helm of its camp), its camp's way against the field's wind, kept through tacks and never below none; gone once it isn't yours to sail. Kept in the save |
+| Wind | **Land Yacht** | Sail a keeled camp 5,000 m from its helm | Close-Hauled | `Helm`'s tick: the ground its camp covers while you sit there, floating on a keel under a raised sail; gone when you stand up. Kept in the save |
+| Wind | **Storm Runner** | Sail 3,000 m on a storm's outflow, ahead of its wall | Land Yacht | `Mast`'s tick, as Close-Hauled: the ground its camp covers while the field puts it in a front's outflow and short of its wall, gone once it leaves the outflow. Opens nothing yet (step 2) |
+| Weather | Hermit, Sandblasted | (as now) | | Wear |
+| Weather | **Eye of the Anomaly** (hidden) | Live through an anomaly's heart | Sandblasted | `Vitals`' tick, asleep too: the hidden term where you stand reaches its full (0.99), then falls back to nothing with you alive. Kept in the save |
+| Weather | **Tells** (hidden) | Notice each of an anomaly's three tells | Eye of the Anomaly | each where it's shown to you, once a profile: the compass in your hands leaning 10° or more toward a heart (`Compass`); a radio you hear crackling a quarter deep or more (`Radio`); a shield's load past 100%, its hum straining with you in its bubble (`ShieldGenerator`) or its load row on the stats page of a Console near enough to read (`Console`) |
+| Weather | **Taught** (hidden) | Teach the Walker the anomaly | Tells | `Console.upload`: a Console plugged into the Walker's port, holding evidence of each tell (the session 5 ruling), teaches it (built 2026-10-19) |
+| Ruins | Carbon Dated | (as now) | | the world |
+| Ruins | **Bared** | Take loot from a site a storm has stripped | Carbon Dated | `Salvage.claim`: a find taken from a site the storm working on it has further out of the sand than its settled sand would (`Structure.bared`) |
+| Ruins | **Storm Chaser** | Reach 3 freshly bared sites in one storm | Bared | the world, stepping onto a site so bared while you're in a storm, each counted once; the count goes the moment you're out of the storm |
+| Ruins | **Dune Reader** | Find a ruin buried in a dune's own lee | Storm Chaser | the world, stepping onto a big dune's ruin's ground: one is only ever built once something of it shows |
+| Ruins | **Field Kit** | A Console with a ground radar, a scoop and a sieve on one deck; with Spadework opens the Archaeologist | Dune Reader | `Chassis`, as a piece joins or something sticks on its deck, and the Console as its ground radar comes online: the three counted on one deck, as All Mod Cons counts the home's |
+| Ruins | **Spadework** | Dig a dune's ruin out yourself; with Field Kit opens the Archaeologist | Dune Reader | `Hands`, a scoop's stroke on its sand: dug out, with at least half its depth off by your hand |
+| Scrap | **First Cut** | Cut a wreck's seam through | | `Wreckage.cut`: a plate's last cell cut, and it falls |
+| Scrap | **Stripped** | Free every module on one wreck | First Cut | `Salvage.claim`: a wreck's module taken out once it's free, every module of that wreck taken |
+| Scrap | **Clean Hands** | Make a live wreck's hazards safe without a shock or a sickness | Stripped | `Wreckage.make_safe`: its last hazard made safe, every one of them safe and none set off |
+| Scrap | **Bonepicker** | Scrap one of each kind of wreck | Clean Hands | `Salvage.claim`: a module taken from a wreck counts its kind, hull, hauler, freight pod, lifeboat, hopper or nomad rig (`Wreckage.kinds`; six since 2026-10-19, when it said five), once a profile |
+| Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
+| Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
+| Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
+| Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
+| Signals | **The Living City** | See the living city's lights | Triangulated | `CityLights`: its lights shown for your eye at night within its chatter's range, in view, over the dunes and past the storms (built 2026-10-19) |
+| Far | **Totality** | Watch a whole eclipse out in the open | | `SkyView`, each frame: the sun seen going in behind Tu, through totality and out again, up all the while, you in no bubble, the clock never jumping |
+| Far | **Glint** | Reach a site whose glint you saw from 1,000 m off | Totality | `Skyline`, as it reads the storms between you and what it draws: a stand-in's glint that far off shining for your eye, as a start's sighting is judged, over the dunes and past the storms with the sun up; then the world, stepping onto that site |
+| Far | **Just Missed Them** (hidden) | Reach a nomads' camp | Glint | the world, stepping onto a nomads' camp's ground. Hidden: the grid shouldn't say anyone's out there |
+| Far | **Live Vent** | Stand at a live vent's mouth | Glint | the world, stepping inside a vent mouth's rampart (every mouth is a live vent's) |
+| Far | **Thunder** | Hear a burst's boom from 35,000 m away | Live Vent | `Rumbles`, a vent's burst booming that far off; a gas pocket's doesn't count |
+| Far | **Under Tu** | Stand with Tu overhead | Totality | `SkyView`: Tu within 5° of straight up |
+| Far | **The Dark Side** | Stand where Tu never rises | Under Tu | `SkyView`: Tu's whole disc under the horizon however far it nods (`DayCycle.never_rises`), 95.5° from the point under Tu at 9° |
+| Nomad | **Ten Days** | Live 10 days in one run | | the world's clock, each whole day since `World.began`, which a death's respawn sets afresh |
+| Nomad | **Moved House** | Move your camp 5,000 m in one day | Ten Days | `Chassis`' tick: a deck's distance from where it stood as the day began where you are; not while it's in your hands. Kept in the save |
+| Nomad | **Slept It Off** | Sleep through a storm with nothing lost from your camp | Ten Days | `Sleep.overnight`: a storm over where you lie at some time in the night, none as you wake, and every deck near you still there with all of its camp on it, nothing wrecked that wasn't |
+| Nomad | **Nomad** | A deed from each of Wind, Weather, Ruins, Signals and Far | each of those trees | the hook, once the last of them is done |
+
+- **Your camp** is a deck as the chassis rework made it (`Chassis.camp`): its pieces
+  (`Chassis.pieces()`), every part fitted to them, a frame on a piece among them, and every device
+  stuck on it with what's fitted to that, all one pool as its power is. Moved House reads any deck you
+  aren't carrying. Slept It Off takes each deck within `sleep_camp_m` of where you lie down.
+- **Hidden deeds** show "????" and no picture until they show done, and their panel says only
+  "????"; a deed after one waits on "????". Their place and the lines to them still show. The
+  anomaly's deeds are hidden so the grid doesn't say anomalies exist before you've learnt them by
+  their tells. Their badge says their name. Built: the table's `hidden`, read through
+  `Deeds.revealed`.
+- **Nomad ties the trees together:** its card stands apart, with a line from each of the five
+  trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
+  table's `after` gains "any of a family".
+- **The grid holds every tree** (built for step 1, Menus & UI): 51 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+  branch or two beside its name down the left, as round one's were (eleven columns side by side
+  wouldn't stand left of the prop). It scrolls, and opens on the latest done.
+- **The order.** Each part waits for what it reads to land:
+  1. **Built 2026-10-19.** After the devex, chassis, sail-trim and board rounds landed: the hidden
+     flag, the grid holding every tree, the moves above, and every deed whose system is built: Wind
+     (without its start), Weather to Tells, Ruins to Storm Chaser, Scrap, Signals to Pantheon, Far,
+     and Nomad's first three.
+  2. With the chassis spec's starts and kits: Storm Runner opens the Varran settler. Built 2026-10-19.
+  3. **Built 2026-10-19,** with dune archaeology: Dune Reader, Field Kit and Spadework, the last two
+     opening the Archaeologist together.
+  3b. **Built 2026-10-19,** with the nomads' gear (Hunter: "New features should be exposed via
+     deeds"): Hand-Me-Down and Telltale in Wind, Just Missed Them in Far, hidden. A deed for
+     spotting from the crow's nest was weighed and left out: what it'd ask (a glint the crests hid
+     from the deck) the Glint deed's sightline can't yet tell apart. Profile & saves probe 36.
+  4. **Built 2026-10-19,** with the radio stations' second pass and the Walker's quest
+     ([Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+     Triangulated, The Living City, and Taught, hidden; 43 deeds now. Their cards are marks drawn
+     (DeedsGrid): three lines crossing, the city's decks dark against their glow, the Walker.
+  5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
+     asks never changes after someone has earned it.
+
+How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
+- **500 m upwind,** not 1 km. The "yacht", its sheet tended, settles about 64° off a steady 10 m/s
+  at 4.6 m/s, 2.0 m/s of it against the wind (109 m in its first 45 s close-hauled; Movement's 36 m
+  in 20 s); the "sail" deck on skates makes 1.0. So 500 m is four to five minutes close-hauled on the
+  yacht or eight on skates, and the tacks on top; 1 km was most of a day of it.
+- **5,000 m from the helm.** On a broad reach in 10 m/s the yacht comes up to 11.7 m/s, past the
+  wind's own speed, 508 m in its first minute from across the wind; close-hauled it makes 4.6. Its
+  700 Wh run its trays' 470 W for an hour and a half. So 5 km is about ten minutes at the helm, half
+  a day, and the battery is no limit.
+- **3,000 m on the outflow.** Over 200 fronts on the probes' seed, the outflow ahead of a wall runs
+  360 m deep at the median (115 to 4,120), blowing 14 to 17 m/s, and the wall comes on at 9 m/s (5 to
+  14). In 15 m/s the yacht tears its sail on a beam reach (728 N against the 600 that tears it) but
+  holds on a broad reach at 20 m/s, 11 of them downwind: it gains on the wall about 2 m/s, so entered
+  at the wall the band slips past it in three minutes, about 3.6 km sailed. So 3 km is the band held
+  nearly whole.
+- **3 bared sites.** Within 1.5 km of the Surveyor's start stand 21 structures, and each of its
+  first eight storms (2 to 92 minutes long) bares 9 to 16 of them; round the Homesteader's 48, bared
+  13 to 38 at a time; round the Salvager's deep desert 7, bared 0 to 3. Three is a storm chased where
+  history stands thick, under a shield you carry.
+- **1,000 m off,** not 5 km: the skyline draws to 3 km. Glints in sight are rare: from 15 places round
+  the three starts, five saw a glint shine over the dunes at some time of day, for 20 to 50 s, from
+  584, 1,378, 2,028 (twice) and 2,326 m. Past 1 km is past the built ground, where all but the
+  nearest of them shone from.
+- **35,000 m away,** not 20 km. The rift's live vents stand 24 to 30 km from the Surveyor's start,
+  10 to 16 from the Salvager's and 9 to 10 from the Homesteader's, and a boom carries 45 km. At 20 km
+  the Surveyor would have it at its start; 35 km is past every start, out toward the Rim, a low
+  rumble at about -33 dB.
+- **5,000 m in one day,** not 20 km. A day is 20 minutes and the yacht's best is 11.7 m/s, 14 km if
+  it never turned. Five km is the yacht on its reaches for half a day, or a camp on skates at its
+  4.3 m/s beam reach for all of one.
+- **12 m in one wipeout:** thrown off a flat-out landing you tumble 12.3 m, and riding at 15 m/s
+  13.4; an edge caught in a flat-out stop throws you at 13.5 m/s and only 9.7 m, and a crash bounces
+  you back 3.2.
+- **5° and 10 days** are the table's. Tu nods about a degree a day, so overhead is a circle about 2
+  km across the point under Tu, 25 km from the tuning's start; the Dark Side begins 95.5° from it, 15
+  km the other way. Ten days is 200 minutes without dying.
+- **Where a tell shows:** 10° of lean is a needle plainly off north in your hand (it leans up to
+  60°); a quarter of the crackle's depth bursts at an eighth of full static, plain under the hiss.
+- **Dune Reader, Field Kit and Spadework** (step 3), both of the last "fairly hard" as the spec asks,
+  from the probes' numbers. 35 of the 40 big dunes within 1.5 km of the probes' start hold a ruin, and it
+  shows only past an intense storm: storms that never bring their heart over one leave it under (8 bared
+  of 1,162 over two days), those whose heart holds over it half an hour or more nearly always bare it (136
+  of 160); after one lets go it's back under in minutes. So finding one is being by a big dune in a big
+  storm, or reading the dunes with a radar. Field Kit wants a ground radar, which lies most often in a dune
+  ruin's deepest cache, and a sieve, on their shelves: the setup's gear is a dune ruin's to find, a scoop
+  the skimmer era's, a Console the colony's best. Spadework wants half a ruin's depth off by your hand: a
+  dune ruin is 5.5 to 6.5 m deep and a hab pod 48 m² across, so that's at least 3 m and 3½ minutes holding
+  use, and from the sand that came back after its storm (0.6 m off) the probe dug 5.2 m in about six
+  minutes. A storm that has taken half or more off one leaves it the storm's: you wait for the sand to
+  come back, or find another.
+
+- **Probes** 25 to 31, one a tree, and Menus & UI probe 16; 33, the dune deeds through play (a ruin
+  stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
+  ground radar is fitted), and 34, the Archaeologist locked until both of hers; 35, the Walker's deeds
+  through play (Taught as the plug goes in its port, Triangulated as its noted contacts fix the city,
+  The Living City from a kilometre off on a clear night).
+
+**Cast Off (Sanddune, agreed 2026-10-19):** in Wind after Set Sail, release two
+or more waist lines together. `Waist._undone` records it when live line ends
+actually drop, including an all-line release resumed during its untie delay.
+Selecting a line, starting a timer, or returning an end to the hand does not count.
+The existing sail icon is reused.
+
+**New features come with deeds (Hunter, 2026-10-19).** "I love all the new deeds, we should keep
+the creed that new features should be exposed via deeds." Every feature that lands brings a deed
+or more for doing what it's for, in the tree it fits, recorded where it happens. A deed makes a new
+system something you go and do.
+
+## Starts on the chassis, and two new kits (agreed, 2026-10-18 spec; built)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets the Surveyor only.
 - **The Surveyor:** two chassis joined as a deck and a frame with an upright on its side, its gear
@@ -221,6 +394,87 @@ From the [chassis spec](../chassis-kits-dunes-2026-10-18.md); balance targets th
   panel can go on top, weakly.
 - **The Salvager and Homesteader** stay deed-opened and get reworked onto the chassis.
 
+**Built (2026-10-18), the three origins on the chassis.** Each start is a rig, data steps the
+one builder (`Rig`) puts together, as the scenarios and the showpiece are (Devices & mods):
+- **The Surveyor:** two pieces joined, floating on a tray under each, set back under its
+  weight so it rides within 2° of level; a frame on the second piece with a wall on its back,
+  the board hung on the wall's outside with a compass beside it; a battery, the light shield
+  and the light panel stuck on the first piece; a hook on its outer ring, moored to a stake on
+  a 6 m line. 68 kg, it draws about 136 W floating (the crate drew 91 W), so its trays give way
+  at about 0.43 days on the probes' seed instead of 0.56, while the shield runs the whole first
+  day (Power). Still floating, as a camp you tow should, and viable; the kits agent may
+  rebalance it. Carried, as before: a canister, a ration and the bedroll.
+- **The Salvager:** a plate, one chassis resting on the sand with the light shield and a full
+  battery stuck on it, beside the board and the heat cutter; the scoop, sealant and med kit
+  carried.
+- **The Homesteader:** a deck of two resting on the sand, its homestead: the base shield, a big
+  battery and a solar panel on one piece, the condenser with its canister and a battery on the
+  other, all one pool; the planter and the turbine beside it as they stand, with a common and
+  a strong cable to wire them.
+- **The main menu's showpiece** builds the origin's rig, so the Surveyor shows its deck, wall
+  and board.
+
+**The Surveyor's first day, measured again (2026-10-19), kept as it is.** On the probes' seed its
+trays give way at 0.43 days, a run's first storm due three to eight minutes in, so the camp floats
+for the first eight or so minutes, long enough to tow it a few hundred metres to the shelter you
+choose before that storm, then settles and keeps the battery's last quarter for the shield, which
+runs the whole first day and into the next morning (Survival probe 4); it rides within 2° of level.
+A good first day as it stands, so nothing changed.
+
+**Built (2026-10-19), the Varran settler** (`varran_kit.tres`, the fourth origin, Kit.ORIGINS). A
+novelty start: not balanced, so Normal only, and opened by Storm Runner, the Wind tree's last deed
+(Hunter's spec said a dune sailboat built and used; round two's tree settled it). It begins where the
+Surveyor's would, deep desert with an artery to find. "Sails the storms."
+- **His rig,** behind you to your right as the run begins, resting on the sand with its sail furled: a
+  deck two pieces by two on four hover trays set out at its corners, his navigation computer on its
+  front on the middle line, the mast behind it, two batteries and the light panel aft, and a hook on
+  each front piece's outer side ring. No runners and no keel: he's the keel, on his board
+  ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)). 121 kg; floating it
+  draws 261 W (244 W its trays, 17 W the computer and its screen), so its two batteries float it about
+  46 minutes, two and a third days, and the light panel gives 30 W at best. Narrower decks were tried
+  and are no rig: two pieces abreast or in a line go over or hang luffing on the lines, and three in an
+  L fly only one tack.
+- **Its three lines at your waist from the start:** a bow line from each side hook at its bow, its
+  bridle, laid 1.5 m slack, and the sheet from the boom's end, 0.5 m; a kit's `waist` lays them, by
+  what its rig's steps name (a rig's hook can be named now, as a stick can). One set of lines flies it
+  on either tack ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built);
+  2026-10-19, before which it had the left bow line alone, and the other tack needed it moved). The
+  board lies at your feet, its battery full.
+- **Carried:** a canister, a ration and his personal shield, with a battery of its own
+  ([Bubble shield](bubble-shield-and-camp.md#the-varran-settlers-personal-shield-built-2026-10-19)).
+  A device a kit carries comes with its batteries, as one beside you does. Every battery starts full.
+- **To sail:** use the mast to raise the sail, use a piece to float the deck, step onto the board and
+  dig in. What sits outside his bubble wears in a long storm as anything does: the rig, the computer
+  and the sail, which a storm's wind tears.
+
+**Built (2026-10-19), the Archaeologist** (`archaeologist_kit.tres`, the fifth origin). A novelty start:
+not balanced, so Normal only. She came out on a Daventry-funded university expedition to dig up the
+proof of why people have to be careful, and Zan only half fits the story she was sent to tell: the
+hive-mind war mattered, but what killed the place was being left, being overseen badly and people
+being people. "Digs for proof." She begins where the Surveyor would, deep desert, with big dunes
+round her as there are anywhere the sand runs deep.
+- **Opened by both her deeds,** Field Kit and Spadework (Dune Reader before them in the grid). A kit's
+  `unlock` names one deed or unlock, or several apart by commas, all of them needed (`Kit.unlocks`);
+  each one says it opens her, and she's marked new only once the last is done.
+- **The archaeology setup on a rig** (`Rig`), beside you to your right, resting on the sand: a deck
+  of three pieces in a line, a Console on the first with its screen and a ground radar fitted, its
+  survey page in reach, two batteries in front of it; the light shield and solar panel on the
+  second. The third is a clear work surface. Its mass is about 58.3 kg, removing the 1.5 kg scoop
+  and 1.2 kg sieve from the earlier measured 61 kg; it draws 11 W (the Console, screen and radar),
+  so its two batteries, starting at 80%, keep the survey running about fourteen and a half hours
+  of world time with no sun, and the panel gives 60 W at best.
+- **Carried:** a canister, two rations, the bedroll, a med kit, a radio with its battery, the scoop
+  and the sieve. The scoop and sieve are on her, so she can work at a remote dune; the sieve sifts
+  from her suit. A separate hoverboard with its own battery gives her scouting mobility. It doesn't
+  tow the heavy lab, which stays as a powered base.
+
+**Playability pass (2026-10-19):** the expedition's roughly 58 kg lab is a stationary home base,
+not something the hoverboard can tow. The Archaeologist therefore starts with a separate
+hoverboard for scouting, and carries the radio, scoop and sieve so a dune dig works away from the
+Console. The lab keeps its ground radar, power, solar panel and light shield; Surveyor remains the
+sole balance target. This is still a novelty start, and the board is for the player's travel rather
+than hauling the lab.
+
 ## Ending flags (proposed)
 
 *Session 4, part 3 ([lore session](../lore-session-2026-10-17-part-3.md)); proposed, and none of it
@@ -232,6 +486,10 @@ vision](../vision.md#the-three-axes-varran-daventry-and-cistern)).
   lane. "Player control is how careful you are with the transmitter." The stolen freighter and the
   pathfinder read it: loud, and Daventry waits at the lane; quiet, and the passage is unnoticed.
 - **The Cistern state** is one of three: dormant, restored, or linked into the network.
+- **Nomad reputation** (session 5, [the vision](../vision.md#nomad-reputation-agreed-session-5-not-built)) is a
+  third running value: a number that rises with sails and goods returned at a shrine and falls with theft,
+  and that, through the nomad quest line the Walker's quest ties closely to, decides whether you may tend to
+  the Walker. How it is counted is not said.
 
 Readings, not in the session:
 - **They are a run's changes, so they belong to the run save,** whose rule is that a save holds
@@ -303,8 +561,8 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
   your body are in their ticks. Then everything of yours: each thing by its
   catalog id, where it is and how it's moving, its wear, charge, water, growth and
   harvests, a shield's switch and how far its bubble has bloomed, a stake driven or not,
-  and every part in every socket, down to a line's end on a hook's ring and a shield
-  seated on a crate. Every line and strong cable with its ends, length and load, and its
+  every part in every slot, down to a line's end on a hook's ring, and on a chassis
+  everything stuck on each piece (version 2, below). Every line and strong cable with its ends, length and load, and its
   strand's points as drawn, so nothing snaps or flings on resume. Of the finds, only the
   chunks near you: how hard the weather had been when each came near, and which finds were
   taken. No ground, no weather, no untouched find. A camp mid-storm saves in about 13 KB.
@@ -319,11 +577,17 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 - **Versioned:** each file opens with what it is and its version, and one of another
   version, or not a save at all, is refused with the reason (`refused`) before any of it
   is read. A refused profile is never written over, except by a reset.
-- **A frame that changes keeps older saves** (2026-10-17). A save says how it numbers
-  each frame's sockets. One without that is from before the crate lost its side rings,
-  and is renumbered as it resumes: every part goes back in its own socket, and a hook
-  from a side ring goes on a free ring or comes out beside the crate (Devices & mods).
-  The file's version is unchanged, so those saves aren't refused.
+- **Version 2** (2026-10-18, the chassis): each body is saved with what's in its slots by
+  their place in its frame's list, and with what's stuck on it, each by the piece it's on,
+  its pose on that piece and the face's way out, and its own record: a part with its state,
+  or a device with its own slots and state. A deck's pieces are saved in the order they
+  joined, each saying how: across a ring (the piece it joined, that piece's ring, its quarter
+  turns) or on a frame's face (the piece the frame stands on, the frame among what's stuck
+  there, the face's name). Resuming builds each piece alone with what's on it, then joins it,
+  so nothing joins before what it hangs from. A version 1 save, from before, is refused before
+  a byte of it is read, and the menu says plainly why: "it was saved before camps were rebuilt
+  round the chassis, so nothing in it would sit where it was". The profile, its deeds and its
+  unlocks carry on untouched; only the run is lost, an alpha's honest break.
 - **A death in Ironman deletes the save,** so the main menu offers only New game, and
   a new Ironman run begins at once.
 - **A dev scenario's run is never saved,** and a death in it begins a new run without
@@ -340,7 +604,7 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 - **The default kit** is the starting kit's data resource (`game/survival/standard_kit.tres`).
 - **Probes** run on a folder of their own, never the player's save or profile.
 - **Found along the way:** a device seated on another trailed its seat a little every
-  tick, which added up on a floating crate; it's held on its seat every tick now.
+  tick, which added up on a floating deck; it's held on its seat every tick now.
 
 ## Full version
 
@@ -374,24 +638,20 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
     puts you back where and when you saved, through the fade. In Ironman neither saves
     nor loads, and a dev scenario's run never saves.
 12. **A deck resumes.** A floating deck of three pieces, two of them turned, left when the
-    first piece joined came off its end, moored by a hook on its ring, with a charged
-    crate and a running light shield standing on it, is
-    saved and resumed: the same pieces stand on the same places, turned as they were,
-    with every tray, what stood where with its charge, the shield running and the line
-    tied, and it floats on.
+    first piece joined came off its end, trays under all, moored by a hook on its ring, a
+    frame with a wall and a shelf on one piece, the board on the wall and a battery on the
+    shelf, a running light shield and two batteries on another, is saved and resumed: the
+    same pieces stand on the same places, every thing on the same face of the same piece in
+    the same pose with its charge, the shield running and the line tied, and it floats on.
 13. **What you carry.** Saved carrying a radio on the weather station, a compass and
     three canisters and resumed, the radio is carried on the same frequency with the same
     charge, playing from you with its words showing, the compass is carried, and the
     canisters stack as one, each with its water. A save from before, with five slots and a
     radio kept as a channel, resumes with their contents carried, the radio on that channel's
     carrier.
-14. **An older crate.** Two crates saved as a build from before 2026-10-17 numbered
-    them, side rings and all: one floating, moored by hooks on both side rings, and one
-    resting with a hook on all four rings, its side hooks tied to stakes. Resumed, every
-    part and seated device is in its own socket; the first's side hooks are on its front
-    and back rings with their lines, let out where they must be to reach, the second's
-    lie beside it with their lines' ends loose, and the first floats on, moored, nothing
-    flung.
+14. **An older save is refused** (2026-10-18). A version 1 run save isn't offered, says
+    plainly why, and resuming it changes nothing, while the profile's unlocks and deeds
+    carry on.
 15. **A farm from before.** A save the build before the crop roster wrote, of a
     harvester planter with three carrots and a ripe fungus, carrots stored, a survival kit
     with seeds and carrots carried, resumes as root-tubers in the standard planters, a
@@ -404,8 +664,9 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 17. **A deed is kept** (2026-10-18). Reaching Port Morgan in a run records The Old City there and
     then, with the run's seed and origin and not Ironman, and the next session's profile still has
     it.
-18. **A dev run counts nothing.** While the console's god holds you, and once a dev scenario is
-    used in a run, reaching Port Morgan records no deed, and no landmark toward them all.
+18. **A dev run counts nothing.** The console's listing commands leave a run counting; once warp has
+    changed it, reaching Port Morgan records no deed, and no landmark toward them all, and saved and
+    resumed it's a dev run still.
 19. **Unlockall opens the starts.** With the Salvager and the Homesteader behind their proposed
     deeds, a fresh profile has the Surveyor alone; the console opens over the main menu, unlockall
     there opens every start, New game shows none locked, and forgetting the deeds leaves them open.
@@ -418,6 +679,16 @@ calls them from Save, Save & quit, Resume, New game, the death screen and Option
 23. **A save never buries you** (2026-10-18). Saved standing on a cistern's floor as the storm that
     dug it out lets go, the sand held off it over you, a resume brings it back dug out round you, the
     sand at your feet and not over them, though the weather alone would have it filled.
+24. **Names from before** (2026-10-19). A profile with Kesselside and the Okafor bunker counted
+    toward Hot Tourist Destinations counts Crakeside and the Haberjack bunker instead; a chassis an
+    Okafor marked, saved and resumed, is a Haberjack's and wears their heraldry.
+
+32. **Storm Runner opens the Varran settler** (2026-10-19). On a fresh profile New game lists four
+    starts, the Surveyor first and highlighted, the Varran's ????; the Wind tree's earlier deeds don't
+    open it, Storm Runner does, marked new, and it offers Normal only.
+36. **The nomads' gear's deeds** (2026-10-19). Taking a wrecked nomad rig's mast and sail is
+    Hand-Me-Down; stepping into a nomads' camp, Just Missed Them, ???? till then; trimming a raised
+    sail's sheet is Telltale only with a streamer flying on its rig.
 
 ## Out of scope
 
@@ -464,3 +735,26 @@ living docs, so this PRD follows it as direction.
   changes are read as "a record keyed by the landmark," kept whatever the distance. The session places
   each landmark per seed, so a record is keyed by the landmark in this run's world, which is another
   reason it lives in the run save and not the profile.
+
+## Salvager personal kit (Hunter, 2026-10-19; agreed correction)
+
+The Salvager carries a personal shield with its own full battery instead of starting
+with a light shield on a chassis plate. The racer board and cutter remain nearby;
+the existing carried supplies and tools remain. The first chassis/home is found in
+salvage. Keep the existing deed unlock and generated wreck-field start. The existing
+personal shield trades a smaller bubble and higher storm draw for portability; its
+tuning is unchanged. Existing saves keep their current equipment.
+
+As built, `salvager_kit.tres` puts `personal_shield` in carried gear and removes the
+plate assembly. Suit.restock fits its battery using the kit's existing full-charge
+setting. The existing origin-showpiece/gear-list/new-run/save check (menus9) passes
+in9s with no assertion changes; other origin resources and the unlock are unchanged.
+
+**Up and Over (2026-10-20):** complete a swept on-foot vault onto a real walkable ledge. Recorded by LedgeVault only after the player establishes floor contact; a blocked or interrupted attempt does not count.
+
+### Surveyor delivery (2026-10-20)
+
+The first burning flare to call a real Surveyor delivery records `care_package`
+(**Care Package**, Signals, flare icon). The flare records it at the successful
+call, alongside its persistent one-call flag. Developer scenarios/commands do
+not award it, following the existing deed contract.

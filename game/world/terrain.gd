@@ -84,6 +84,9 @@ var _far_next: RID
 ## behind what stands in it; presses in flight, and their results.
 var _standing := {}
 var _behind := {}
+## Chunks a structure has just joined (Sites.join), loaded or building, to
+## the structures to press into each afresh whether or not it kept its dunes.
+var _joined := {}
 var _pressing := {}
 var _pressed := {}
 var _far_turn := 0
@@ -100,8 +103,8 @@ func setup(world: World) -> void:
 	# Compiles the sand's shader now, while the world loads: otherwise the first
 	# chunk to arrive stalls its frame on it (18 ms on an RTX 3070).
 	_material_rid = sand_material.get_rid()
-	# Squared: Jolt takes the geometric mean against a body's own 1.0.
-	_sand.friction = _tuning.sand_friction * _tuning.sand_friction
+	# Godot's Jolt takes the lesser of two frictions, and bodies keep their own 1.0.
+	_sand.friction = _tuning.sand_friction
 	for step in [NEAR_STEP, _tuning.mid_step]:
 		_indices[step] = ChunkBuild.indices_for(_size / step)
 	_far = GeometryInstance3D.new()
@@ -115,6 +118,7 @@ func setup(world: World) -> void:
 	# Structures read their exposure as their ground is built, and hold it
 	# while that ground is loaded.
 	world.shape.sites.set_clock(func() -> float: return world.time)
+	world.shape.sites.joined = join
 	unloaded.connect(world.shape.sites.release)
 
 
@@ -244,6 +248,7 @@ func forget(rect: Rect2) -> void:
 			chunk.free()
 			_chunks.erase(coord)
 			_standing.erase(coord)
+			_joined.erase(coord)
 	_planned = false
 
 
@@ -378,6 +383,7 @@ func _upload(build: ChunkBuild) -> void:
 		RenderingServer.free_rid(build.mesh)
 		if chunk == null:
 			_world.shape.sites.release(build.coord)
+			_joined.erase(build.coord)
 		return
 	if chunk == null:
 		chunk = TerrainChunk.new()
@@ -424,6 +430,7 @@ func _retire() -> void:
 			chunk.free()
 			_chunks.erase(coord)
 			_standing.erase(coord)
+			_joined.erase(coord)
 		elif d > _tuning.near_radius + 1:
 			if chunk.has_collision():
 				ungrounded.emit(chunk)
@@ -493,8 +500,37 @@ func _occupied(structure: Structure) -> bool:
 	return false
 
 
+## A structure laid over loaded ground (a dune's ruin): each chunk touching
+## its ground holds it from now and is pressed afresh with it on a worker,
+## the chunk its middle stands on drawing it once that's in.
+func join(site: Structure) -> void:
+	var lo := chunk_at(site.x - site.reach - 4.0, site.z - site.reach - 4.0)
+	var hi := chunk_at(site.x + site.reach + 4.0, site.z + site.reach + 4.0)
+	for j in range(lo.y, hi.y + 1):
+		for i in range(lo.x, hi.x + 1):
+			var coord := Vector2i(i, j)
+			var building := _tasks.has(Vector3i(i, j, NEAR_STEP)) or _tasks.has(Vector3i(i, j, _tuning.mid_step))
+			if not (_chunks.has(coord) or building) or not site.touches(Rect2(Vector2(coord) * _size, Vector2.ONE * _size).grow(4.0)):
+				continue
+			if site.holders.is_empty():
+				site.hold_ground()
+			site.holders[coord] = true
+			var sites: Array = _joined.get(coord, [])
+			sites.append(site)
+			_joined[coord] = sites
+			_behind[coord] = true
+
+
+## A chunk takes in what joined it since its build or press was launched.
+func _take_in(chunk: TerrainChunk) -> void:
+	for site: Structure in _joined.get(chunk.coord, []):
+		if not site in chunk.carved:
+			chunk.carved.append(site)
+			chunk.carved_steps.append(-1)
+
+
 ## Loaded ground behind what stands in it is pressed afresh on a worker,
-## from the dunes it kept.
+## from the dunes it kept, or sampled again where it kept none.
 func _press() -> void:
 	for coord: Vector2i in _behind.keys():
 		if _pressing.size() >= PRESSES or _out_of_time():
@@ -502,12 +538,19 @@ func _press() -> void:
 		if _pressing.has(coord):
 			continue
 		var chunk: TerrainChunk = _chunks.get(coord)
-		if chunk == null or chunk.dunes.is_empty() or _tasks.has(Vector3i(coord.x, coord.y, NEAR_STEP)) \
-				or _tasks.has(Vector3i(coord.x, coord.y, _tuning.mid_step)):
+		var fresh := _joined.has(coord)
+		var building := _tasks.has(Vector3i(coord.x, coord.y, NEAR_STEP)) or _tasks.has(Vector3i(coord.x, coord.y, _tuning.mid_step))
+		if fresh and (chunk == null or building):
+			# Pressed once it's built: its build was launched before it joined.
+			continue
+		if chunk == null or (chunk.dunes.is_empty() and not fresh) or building:
 			_behind.erase(coord)
 			continue
 		_behind.erase(coord)
-		if not chunk.behind(1 if chunk.step == NEAR_STEP else MID_BEHIND):
+		if fresh:
+			_take_in(chunk)
+			_joined.erase(coord)
+		elif not chunk.behind(1 if chunk.step == NEAR_STEP else MID_BEHIND):
 			continue
 		var steps := PackedInt32Array()
 		for k in chunk.carved.size():
@@ -520,7 +563,8 @@ func _press() -> void:
 func _press_one(coord: Vector2i, dunes: PackedFloat32Array, step: int, carved: Array[Structure],
 		steps: PackedInt32Array, mesh: RID) -> void:
 	var started := Time.get_ticks_usec()
-	var build := ChunkBuild.pressed(dunes, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps)
+	var build := ChunkBuild.make(_world.shape, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps) \
+		if dunes.is_empty() else ChunkBuild.pressed(_world.shape, dunes, coord, _size, step, _tuning.skirt_depth, _indices[step], carved, steps)
 	ChunkBuild.fill(mesh, build.arrays, _material_rid)
 	build.mesh = mesh
 	_mutex.lock()
@@ -548,7 +592,11 @@ func _collect_presses() -> void:
 			RenderingServer.free_rid(build.mesh)
 			continue
 		var started := Time.get_ticks_usec()
-		chunk.show_pressed(build)
+		var adopted := chunk.show_pressed(build)
+		if not adopted.is_empty():
+			_standing[coord] = chunk
+			if chunk.has_collision():
+				_world.salvage.adopt(chunk, adopted)
 		presses += 1
 		slowest_press_ms = maxf(slowest_press_ms, (Time.get_ticks_usec() - started) / 1000.0)
 		# It may have moved on again meanwhile.

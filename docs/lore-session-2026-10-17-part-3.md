@@ -170,6 +170,6 @@ Don't add any Varran, Daventry or war content to normal play beyond radio noise.
 - [ ] Exact Daventry kit unlock
 - [ ] Cost of keeping a stolen Walker broadcasting; showing the nomad pilgrimage without dialogue
 - [ ] World clock behind the atmosphere ending
-- [ ] "Wrong answer," the Okafor-line bunker and the radio ending: develop or drop
+- [ ] "Wrong answer," the Haberjack-line bunker and the radio ending: develop or drop
 - [ ] Exact era year figures; whether the Ledger still broadcasts, and voices vs tones
 - [ ] A separate lore doc for the war and player-era states, once they're fully settled

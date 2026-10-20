@@ -128,7 +128,7 @@ the active phase. Three layers fix the early wait:
   many hours, until a time, or through the storm; gear such as a radio adds more (wake for a
   broadcast). **Physics never fast-forwards:** the camp freezes, its batteries and shield are worked
   out against the storm curve over the hours slept, and the result is applied ("shield held", "a
-  crate broke loose"). A bedroll may share the hoverboard's mount on a crate. Built ([Sleep, as
+  deck broke loose"). A bedroll sticks on a deck like anything else. Built ([Sleep, as
   built](#sleep-as-built-2026-10-18)).
 - **Something to do under the shield:** swapping mods and repairing gear, watching for loot blowing
   in, the radio.
@@ -142,12 +142,18 @@ food running out, each from the night's own numbers rather than dice.
 *Hunter's [spec](../storms-signals-sailing-2026-10-18.md#sleep), built 2026-10-18 (`game/survival/sleep.gd`).*
 
 **Where you sleep.**
-- **The bedroll** is a device by the catalog's rules: the rack seats devices (the board), and a part
-  becomes its device's shapes, worked by nothing. Rolled company canvas 0.9 m long, 3 kg, low and
-  round, so a breeze leaves it be on the sand and a storm slides it. Use on it laid on the sand, among
-  what you carry, or in a crate's rack in the board's place asks how long to sleep. In your hands, use
-  lays it out where you look, fore and aft as you face, or at your feet when nothing flat is in reach;
-  setting it down asks nothing of the camp, only sleeping does. The Surveyor and the Homesteader start
+- **The bedroll** is a device by the catalog's rules: devices stay bodies of their own when they're
+  stuck on a deck, and a part becomes its deck's shapes, worked by nothing. Rolled company canvas
+  0.9 m long, 3 kg, low and round, so a breeze leaves it be on the sand and a storm slides it. Use on
+  it laid on the sand, among what you carry, or stuck on a deck asks how long to sleep. In your hands, use
+  lays it out where you look, its head there and across you, or at your feet when nothing flat is in
+  reach; setting it down asks nothing of the camp, only sleeping does. Laid, it unrolls (2026-10-19):
+  over a second the roll rolls away from you, thinning as it goes, and leaves the pad flat behind it,
+  1.9 m from the pillow at its head to its foot, the top turned back and the straps lying undone. Taken
+  again, it rolls back up where it lay in 0.6 s, then shows in your hands; tipped over by the wind, it
+  rolls up where it lies. Only its look unrolls: its body is still the roll, under the pillow, so it
+  sleeps you, slides in a storm and sticks on a deck as it did, and use on it is at its head. A save
+  keeps it laid, and it comes back flat, not unrolling again. The Surveyor and the Homesteader start
   carrying one; the Salvager, riding light, finds one or a ruin's bed. It's found on deserters' dugout floors (3 in 12 of
   their draws, beside their survival kits) and now and then lying on open sand (1 in 14 of the
   surface's devices). There's no sleeping on bare sand without one: the bedroll is how you sleep in the
@@ -172,7 +178,7 @@ sail's pull); and no harm reaching you where you lie, which in a storm means und
 shield and out of one, wind under 20 m/s and the air within the suit's limits. Then the screen goes
 black over half a second while the physics runs on and the camp is watched. Anything over those marks,
 then or at the start, and you don't sleep: use's line says why with the soft knock ("no shield", "the
-crate's still moving", naming what moved as you lay down or as the screen went dark, "sail up", "too
+deck's still moving", naming what moved as you lay down or as the screen went dark, "sail up", "too
 windy", "hands full", "a line at your waist").
 
 **The night.** Physics never steps. The camp is held where it stands and the clock steps to when you
@@ -192,7 +198,9 @@ deck's load on its trays, a planted turbine.
 - **What nothing holds drifts.** Each group of things joined by lines with nothing in it held fast (a
   driven stake, a find) goes with the wind at its speed less what the sand's friction holds back, none
   of it while it floats, as a body slides once the wind beats its friction live. Carried off the ground
-  the world keeps, it's gone.
+  the world keeps, it's gone. Against live, in steady 24 to 40 m/s winds (2026-10-19): a crate slides
+  within 2% of it, and the Surveyor's camp, leaning on its edge as it goes, 10% to 25% slower, so a
+  night carries a loose camp a little farther than living it would.
 - **Against live play** (probe 16): the reference camp lives a day and a night of the probes' seed, a
   storm over a fifth of it or more, at the time warp's fastest, and sleeps the same: its batteries
   1733.6 Wh slept against 1734.2 lived (0.04%), the shield's pool 1567.2 against 1567.8, held both
@@ -214,7 +222,7 @@ that would come through live comes through asleep and one that wouldn't, doesn't
    floods in and you wake to it ("Light shield gave out", "The storm woke you").
 2. **A line gives at the storm's peak.** Loaded past its strength it gives as it would live: rope
    snaps, a hose pops an end, a stake pulled past its holding comes out. What it held breaks loose and
-   goes where the wind takes it ("Crate broke loose", or "Crate blew away" carried off the ground).
+   goes where the wind takes it ("Deck broke loose", or "Deck blew away" carried off the ground).
 3. **Wear.** What was outside a bubble wears as it would; one wrecked is said ("Panel wrecked").
 4. **Your water or food runs out.** You wake with a quarter left ("Woke thirsty"). The Surveyor's one
    canister wakes you about 45 hours into a long storm.
@@ -229,11 +237,13 @@ first frame, as for any jump; and a catch line's drift since you lay down comes 
 any jump. Nothing is saved mid-night, which is one frame
 under the fade, and a save made on waking resumes as you woke.
 
-**Probes** 16 to 20 (below). **Not yet:** a smart shield doesn't switch itself on asleep, since the
+**Probes** 16 to 21 (below). **Not yet:** a smart shield doesn't switch itself on asleep, since the
 Console's radar doesn't sweep, so sleep with the shield on; what drifts never snags on a dune or a
-ruin; a line's share of the wind is what it holds itself, so a crate on a line to a crate on a line to
-a stake puts only the second crate's push on the last line. The dev overlay's `sleep/last` says how
-long the last night was and what it cost.
+ruin; a line's share of the wind is what it holds itself, so a deck on a line to a deck on a line to
+a stake puts only the second deck's push on the last line. The dev overlay's `sleep/last` says how
+long the last night was and what it cost. The **"sleep"** dev scenario stands you at dusk by a still
+camp to try it: a deck of two resting on the sand, the bedroll and the base shield running on it, a
+wall to windward on a frame and a radio on the weather station.
 
 **After sleeping it** (Hunter, 2026-10-18): "we should be able to place the bedroll... allow them to
 place it but you cant sleep until your camp is stable. and so right now cant you hack the game by
@@ -249,6 +259,11 @@ storm":
   kit](#skeleton-version)), and no anomaly comes in a run's first five days; the tail itself is
   [Wind & storms](wind-and-storms.md#open-questions)'s question. A night slept through an anomaly
   lives its real damage on a plan made from the clean curve.
+
+**Playtest (Hunter, 2026-10-19; built 2026-10-19).** "I still wanna see the sleepingbag unroll when
+you place it." A bedroll set down unrolls out flat over a moment; picked up, it rolls back up.
+*Built (above; probe 21; `look/bedroll/shoot.sh` shoots it rolled, unrolling, flat and rolling back
+up).*
 
 ## Sleep (proposed)
 
@@ -309,16 +324,16 @@ What the game already has, as readings and not in the session:
   ([Salvage & ruins](salvage-and-ruins.md)).
 
 **Where and on what you sleep.**
-- **Bedrolls,** "probably sharing the hoverboard's mount slot on a crate." That is the rack
-  ([Movement](movement.md#the-hoverboard)), which holds one thing.
+- **Bedrolls,** "probably sharing the hoverboard's mount slot on a crate." *Settled by the chassis
+  (2026-10-18):* the rack is gone with the crate, and a bedroll sticks anywhere on a deck it fits,
+  beside the board or not ([Devices & mods](devices-and-mods.md#the-chassis-as-the-one-structure-built-2026-10-18)).
 - **Ruin beds.** "Some ruins have beds" ([Salvage & ruins](salvage-and-ruins.md)).
 - **Bare sand:** "Maybe sleep on bare sand if stable." Stable is the pre-sleep check above.
 - **The patrol board's bedroll** (session 4, part 3; not built). The Daventry kit has a bedroll to
   "sleep out storms under the shield," on the board's own superchassis
   ([Movement](movement.md#the-patrol-board-a-superchassis-agreed-session-4-part-3-not-built)).
   That is the sleep proposal's sleeper in a bubble, with a strong shield "that can practically stay
-  on permanently" and a compact high-capacity battery to outlast the span. It needs no rack, since
-  the board carries it.
+  on permanently" and a compact high-capacity battery to outlast the span. The board carries it.
 
 **A bed opens sleep options.** "Sleep X hours, sleep until a time, sleep through the storm. Gear
 unlocks options; a radio adds some."
@@ -348,7 +363,7 @@ whether a broadcast carries a voice or only tones and numbers. The daily rite, t
 still the second age's own clock, and the radio's rule is that broadcasts read the real systems.
 
 **Its links.** [Power](power.md): the shield's draw by storm strength is what a sleep sums, and
-the sum has to be lived through. [Movement](movement.md): the rack. [Salvage &
+the sum has to be lived through. [Devices & mods](devices-and-mods.md): the deck a bedroll sticks on. [Salvage &
 ruins](salvage-and-ruins.md): the beds. [Radio, sound & atmosphere](radio-sound-and-atmosphere.md)
 and [the lore](../lore-research.md#the-faith-of-tu-and-the-ai-gods-agreed-session-4-part-2): the
 broadcasts. [Wind & storms](wind-and-storms.md): the curve.
@@ -405,10 +420,10 @@ Death means a new run (see Runs in the vision).
   - **Stacks.** Like things stack as one: canisters, rations, batteries, stakes, hooks,
     coils of a length, cables of a kind. A device with anything fitted in it, a radio with
     its battery, is a thing of its own.
-  - **Nothing fastened.** A device goes in whole, seated on nothing, with nothing seated on
+  - **Nothing fastened.** A device goes in whole, stuck on nothing, with nothing stuck on
     it, no plug in its ports and no line on its rings. So the board, the light panel and
-    a shield generator go in once they're off the crate; the crate doesn't, being too
-    heavy to carry. A shield carried running keeps its bubble round you as one in your
+    a shield generator go in once they're off the deck; a deck doesn't, being too heavy
+    to carry. A shield carried running keeps its bubble round you as one in your
     hands does. A size cap for things big but light, like the board, is an open question.
 - **The inventory by mouse** (Hunter, 2026-10-16, replacing the look-across picking): the
   inventory action frees the mouse. A click on a thing, or a stack, brings one to your
@@ -417,6 +432,13 @@ Death means a new run (see Runs in the vision).
   while it's open, and take works on the world as ever, not on what you carry; so does
   use, but over a thing it's the thing's (below). Closing it captures the mouse again, as
   does a run ending while it's open.
+- **Choose waist ropes in the carry view** (Hunter, 2026-10-19 playtest).
+  Hover an actual visible rope to highlight and name it, then click to select it. A readable
+  hint explains this and gives the distinct live connected-rope count. There is no automatic
+  selection or gaze option. Looking around keeps the choice; losing its tie clears it.
+  Reeling and delayed empty-handed untie use that choice; a held line takes priority.
+  Timed Release all remains available. The world continues running. See the
+  [rope PRD](rope-and-tethering.md#explicit-physical-rope-choice-only-agreed-2026-10-19-playtest).
 - **Stakes go in too** (Hunter, 2026-10-16: "we should be able to put stakes in our inv"):
   a stake that isn't driven and has nothing tied to it goes in as it is, and comes out to
   your hands ready to drive. A found one goes in once it's taken up. A driven stake stays
@@ -459,7 +481,9 @@ Death means a new run (see Runs in the vision).
   - **A device you carry works on its own battery, as anywhere else** (Hunter, 2026-10-17,
     rejecting a pocket flag and a built-in cell as exceptions to core systems): it rides on
     you out of sight, touching nothing, and the weather doesn't wear it in the suit. So a
-    radio plays from you, its line of words showing as ever.
+    radio plays from you, its line of words showing as ever. What has no battery of its own
+    since the chassis rework, a shield or a condenser, runs only on a deck or a cable, so
+    carried it's dark.
   - **Use on a thing uses it where it is:** a device is worked (the radio's dial sweeps on),
     and water or food you drink or eat your fill of, the least full first, as the suit
     would. Anything else does nothing. Over a thing, use never reaches the world, so it
@@ -581,9 +605,9 @@ Death means a new run (see Runs in the vision).
   softens it as it does the day's swing. It's a few degrees, never near the
   suit's limits; it also nudges the condenser and the crops, which read the same felt
   temperature.
-- **The crude condenser** is a catalog device with a water socket, a battery slot, a top
-  mount for a panel, a port, a ring mount and a bottom mount. It runs whenever it has
-  power and somewhere for its water, a canister with room or a hose (above), drawing 40 W, and makes 10 L an hour of world time in
+- **The crude condenser** is a catalog device with a water tap and a port, too tall to stand
+  under a frame. It stands on a deck and runs on the deck's pool, whenever there's power and
+  somewhere for its water, a canister with room or a hose (above), drawing 40 W, and makes 10 L an hour of world time in
   air at 0 °C or colder, falling to a fifth of that at 40 °C, by the felt temperature
   where it stands. At the equator in the clear that's about 2 L a day. You drink about
   1.8 L a day there, less under a storm's blanket, so one condenser just keeps you, if it keeps its power and stays
@@ -595,17 +619,18 @@ Death means a new run (see Runs in the vision).
   canister, the ration and the bedroll.
 - **The starting kit** (Hunter, 2026-10-16, after playing the first one: "start the
   player with floating crate, shield and hoverboard already mounted ... we should at
-  least add a hook so we can tow it"). The kit is data, `game/survival/standard_kit.tres`
-  (a `Kit`: what the suit carries, what's set down beside you and where,
-  what comes assembled, socket by socket, which lines are laid, how full its batteries
-  start and how long its line is). It's the Surveyor's, the default origin's; the Salvager
-  and the Homesteader have kits of their own, chosen at New game ([Profile &
+  least add a hook so we can tow it"; reworked round the chassis, 2026-10-18, from [the
+  chassis spec](../chassis-kits-dunes-2026-10-18.md)). The kit is data,
+  `game/survival/standard_kit.tres` (a `Kit`: what the suit carries, what's set down beside you
+  and where, what comes put together, a deck as its rig's steps ([Devices &
+  mods](devices-and-mods.md#the-chassis-as-the-one-structure-built-2026-10-18)), which lines are
+  laid, how full its batteries start and how long its line is). It's the Surveyor's, the default
+  origin's; the Salvager and the Homesteader have kits of their own, chosen at New game ([Profile &
   saves](profile-and-saves.md#kits-are-data)), each beginning at its own start on the moon.
   (Session 4, part 2 lists the Surveyor's standard shield, multi-compass, stake tether and radio
-  against the kit below, a light shield, a light panel and a racked board: the clash is
-  recorded in [the vision](../vision.md#player-origins-and-kits), and this kit is what's
-  built.) Every run, the first and every one after a death, begins on a clear morning
-  with the sun well up, a third of the way through the day, so the panel makes about
+  against the kit below: the clash is recorded in [the vision](../vision.md#player-origins-and-kits),
+  and this kit is what's built.) Every run, the first and every one after a death, begins on a
+  clear morning with the sun well up, a third of the way through the day, so the panel makes about
   half its 30 W from the first minute, and the first storm due in three to eight
   minutes, facing where it will come from (Hunter, 2026-10-16: "it spawns me in a
   storm!"). That storm is an ordinary one, passing in five to twenty minutes, a quarter
@@ -618,55 +643,48 @@ Death means a new run (see Runs in the vision).
   median 14, the clock beginning on day 10 at the median and day 122 at the latest;
   before, a third ran past a day, the longest 92 minutes, and the clock began by day 24.
   The run starts with it: carrying the canister, the ration and a bedroll, and beside
-  you, once the ground there is solid:
-  - **a floating crate** at your front right: a crate frame with a hover tray, a
-    battery half charged and a hook on its back, floating at the tray's height. The
-    **light shield generator**, switched off, sits on its front top mount and the
-    **light solar panel** on its back one, both on the crate's power. The light panel
-    is half a crate's top, the same footprint as a found panel, so the two sit 5 cm
-    apart and clear of everything else on the crate (survival probe 4 checks it by
-    their bounds).
+  you, once the ground there is solid, a camp you learn the whole system from by sight:
+  - **a floating deck** of two pieces at your front right, a hover tray under each, set
+    toward its back so the deck hangs within about 2° of level. On the near piece, on its
+    top: a **battery** half charged, the **light shield generator**, switched off, and the
+    **light solar panel**, all one pool. On the far piece a **frame** stands, an **upright**
+    on its side facing you, the **hoverboard** hung across the upright with its battery half
+    charged, and a **compass** stuck beside it. A hook sits on the near piece's outer ring.
   - **moored to a stake** driven upwind of it, by the hook, on the kit's **6 m line**
-    (a found coil lays 12 m). Floating, nothing holds a crate but its lines: loose in
-    the start's 10 to 13 m/s breeze it was gone in seconds. To travel, take up the
-    stake and tie it at your waist, and the crate follows on its line with its bubble
+    (a found coil lays 12 m). Floating, nothing holds a deck but its lines. To travel, take
+    up the stake and tie it at your waist, and the deck follows on its line with its bubble
     (survival probe 8); to camp, drive the stake again.
-  - **a hoverboard** racked on the crate's left side (Hunter, 2026-10-16: "i think it
-    should start you w a *racked* hoverboard"), its battery half charged, ready to
-    ride: the ride action at it takes it off and steps you on. It's one line of the
-    kit, `8: &"board",` among the crate's sockets, naming the board beside you in the
-    rack; without that line it lies on the sand at your left.
-  None of it overlaps you or each other at the start, the racked board included. None of
-  it goes in with what you carry while it's seated on the crate, nor the crate, too heavy
-  to carry; the board, the light panel and the light shield do once they're off it.
+  - The board comes off the upright to the ride action, which steps you on; take lifts it
+    off into your hands.
+  None of what's stuck on the deck goes in with what you carry while it's stuck there, nor the
+  deck, too heavy to carry; the board, the light panel, the light shield and the compass do
+  once they're off it.
   The light shield is clearly weaker than a found one: a 4 m bubble against 7 m (a third
   of the room for a camp), and it lets 15% of the wind through where a found one stills
   it (Hunter, 2026-10-16: blocks most of the wind, so you barely drift inside). It sips
-  2 W in the clear and draws 20 W holding back a full storm. The crate's tray draws
-  about 90 W floating everything on it, the racked board's 11 kg included, and the
-  board charges from the crate at up to 50 W, far more than the 30 W panel can keep up
-  with, so the crate floats on what its battery holds, and the shield ranks above both:
-  neither the tray nor the board ever takes the battery's last quarter (Power). On the
-  probes' seed, over the run's own first 1.25 days (its storm from 0.31 days in, 12
-  minutes long, then clear into the next day) the crate floated until 0.55 days, when,
-  with the battery at 25 Wh, it settled onto the sand. The shield ran on, 24.9 Wh left at
-  1.25 days, the panel having made 5.1 Wh to the shield's 4.3. Under clear skies the
-  panel brings the battery from a quarter back to 30% in 1.35 days and the crate floats again until it's back at a quarter: a clear day is
-  worth a few minutes of floating, fewer while the board charges. The quarter kept back runs the light shield for 75 minutes of
-  full storm with no sun, almost four days of it. A dev scenario that drops its own
-  camp clears the run's kit first.
+  2 W in the clear and draws 20 W holding back a full storm. The deck weighs 68 kg, against the
+  old crate's 45.5, so its trays draw about 136 W floating it, and the board charges from the
+  deck at up to 50 W, far more than the 30 W panel can keep up with: the deck floats on what its
+  battery holds, and the shield ranks above both, so neither the trays nor the board ever takes
+  the battery's last quarter (Power). On the probes' seed, from the run's own first morning, the
+  trays gave way and the deck settled onto the sand 0.43 days in (the crate's had at 0.55), and
+  the light shield ran on through the day. The rest of the old crate's day (the panel bringing
+  it back to floating, the shield's 75 minutes of storm in the last quarter) isn't yet
+  re-measured on the deck. The kits are due a rework of their own; balance targets the Surveyor.
+  A dev scenario that drops its own camp clears the run's kit first.
   Survival probe 4 checks both runs start with it and runs the light shield into the
   second morning.
 - **Food and water from salvage:** no new food was needed. Survival kits, common on
   ruins' floors and sometimes on open sand, hold a sealed canister and a ration three
   times in four, and seeds for a planter; loose rations and seeds lie on ruins' floors.
 - **The playtest scenario** ("survive a few days", among the dev scenarios) starts you over at a
-  clear dawn, with a condenser in front of you (a battery, a panel and an empty
-  canister fitted), a charged shield generator, a cable and two spare rations. A
-  simulated run of it on the probes' seed: standing in the open, a storm kills you on
-  day two. With the shield alone, a long storm drains it on day three. With the shield
-  and the condenser cabled into one pool, and canisters swapped as they run dry, you're
-  alive after three days with a quarter of the power left.
+  clear dawn, with a deck of two resting on the sand in front of you: a condenser with an empty
+  canister in its tap and a solar panel on one piece, a charged shield generator and two
+  batteries on the other, all one pool; and two spare rations. A simulated run of it with the
+  old slot camp, on the probes' seed: standing in the open, a storm killed you on day two; with
+  the shield alone, a long storm drained it on day three; with the shield and the condenser in
+  one pool, and canisters swapped as they ran dry, you were alive after three days with a quarter
+  of the power left. Not yet re-measured on the deck.
 - **The AFK promise, with a body** (Stage 12, 2026-10-17). The "afk" scenario stocks you
   as you'd leave yourself: three canisters of water and nothing to eat; the farm drops
   your food onto you. Idle in the reference camp (Power) at the equator for three
@@ -713,16 +731,15 @@ Death means a new run (see Runs in the vision).
    stakes; paying out or laid, a line stays out. A cable plugged into nothing goes in
    and comes out whole, a strong one too; plugged in at one end, it stays out.
 8. **The kit in tow.** In a crosswind you take up the kit's stake, tie it at your waist
-   and walk off: the crate follows on its line, floating all the way, its shield's
+   and walk off: the deck follows on its line, floating all the way, its shield's
    bubble with it.
-9. **The board racked.** The kit's board seats in its crate's rack through the tug and
-   take, clear of everything a fully fitted crate holds, and the ride action takes it off
-   and steps you on. Racked, it rides with the crate towed 40 m, charges from the camp
-   until the pool is down to the shield's reserve, takes nothing past it, and charges
-   again once the panel brings the pool back, every watt-hour of it accounted for. Take
-   lifts it off; saved racked, it resumes racked. The kit starts it racked.
+9. **The board on a deck.** The kit's board, stuck on its deck, rides with the deck as it's
+   towed and charges from the camp until the pool is down to the shield's reserve, takes
+   nothing past it, and charges again once the panel brings the pool back, every watt-hour of
+   it accounted for; the ride action takes it off and steps you on, and saved on the deck it
+   resumes there.
 10. **Stakes go in.** A found stake and a loose one, each taken up, go in and come out
-    ready to drive; driven, each holds a crate floating on a line in a breeze,
+    ready to drive; driven, each holds a floating piece on a line in a breeze,
     the found one after a save and a resume too. A driven stake, or one with a line on
     its eye, stays out.
 11. **The headlamp.** Under a clear sky at noon it's off. At dusk, the light wavering
@@ -751,14 +768,14 @@ Death means a new run (see Runs in the vision).
 16. **A night slept comes out as lived.** The reference camp lives a day and a night of the probes'
     seed, a storm through it, at the time warp's fastest, and sleeps the same: its batteries, its
     shield's pool and whether the shield held agree within 1% of all it stores.
-17. **Only a still camp sleeps.** Under a running shield in a full storm with a crate floating beside
-    you, you can; with the crate swinging, or set swinging as the screen goes dark, or out in the
+17. **Only a still camp sleeps.** Under a running shield in a full storm with a deck floating beside
+    you, you can; with the deck swinging, or set swinging as the screen goes dark, or out in the
     storm, you can't, it says what moved, and no night passes. The bedroll goes down all the same:
-    with the crate swinging, use in your hands lays it on the sand, and use on it says "the crate's
+    with the deck swinging, use in your hands lays it on the sand, and use on it says "the deck's
     still moving".
-18. **A line gives at the storm's peak.** Asleep under a shield with a storm coming on, two crates on
+18. **A line gives at the storm's peak.** Asleep under a shield with a storm coming on, two decks on
     the sand past its bubble on lines to stakes: the one made stronger than the night's peak load
-    holds its crate where it was, the weaker gives and its crate is gone where the wind took it, and
+    holds its deck where it was, the weaker gives and its deck is gone where the wind took it, and
     waking says so.
 19. **Waking jumps cleanly.** Eight hours asleep, you wake eight hours on: every ticking system stands
     on the new hour, the forecast reads from it, no storm map is drawn in a hitch after, and a save
@@ -766,6 +783,10 @@ Death means a new run (see Runs in the vision).
 20. **Sleep is no dodge** (2026-10-18). Asleep in the open on the probes' seed, no bubble over you, a
     storm due in the morning: its arrival wakes you, the night lived up to it, and waking says the storm
     woke you.
+21. **The bedroll unrolls** (2026-10-19). Laid out from your hands it's partway open a third of a
+    second on and flat by a second and a half; looked at by its head it's the bedroll, and it sleeps
+    you an hour; taken, it rolls up where it lay, then shows in your hands; and a save keeps it laid,
+    flat at once.
 
 ## Out of scope
 
@@ -812,12 +833,13 @@ was built.
   sleep the camp can't last, warns, or wakes you early when the pool nears the shield's reserve
   or a need runs low. *Built:* it never refuses for the span; harm wakes you (the bubble going),
   and so does thirst or hunger at a quarter with nothing left.
-- **Where each start sleeps.** Here: the Surveyor starts with the board racked, the Salvager has
-  "Hoverboard and the light shield; little else" (read here as no crate, so no rack), and oysters
-  "never find ruins" (the vision's playstyles). The session: bedrolls share the rack, and some
-  ruins have beds. Not said where a hover punk keeps a bedroll, or whether a Surveyor unracks
-  the board to sleep. An oyster never sees a ruin bed. *Built:* the Surveyor and the Homesteader
-  carry a bedroll, so the rack keeps the board; the Salvager has none and finds one, or a ruin's bed.
+- **Where each start sleeps.** Here: the Surveyor starts with the board hung on its deck's
+  upright, the Salvager has "Hoverboard and the light shield; little else", and oysters "never
+  find ruins" (the vision's playstyles). The session: bedrolls share the rack, and some ruins have
+  beds. Not said where a hover punk keeps a bedroll. An oyster never sees a ruin bed. *Built:* the
+  rack is gone with the crate, and a bedroll sticks on a deck beside the board as anything does;
+  the Surveyor and the Homesteader carry one, and the Salvager has none and finds one, or a ruin's
+  bed.
 - **How you name a time.** The session: "sleep until a time." Here the game has no clock you can
   read: the sun by day, and in a storm the radio's music, day or night. Not said what a time is
   made of: hours, dawn and dusk, or a broadcast. *Built:* hours, the four moments of the local day
@@ -835,4 +857,110 @@ was built.
   "sleep out storms under the shield." Here: a sleep through a storm is a sleep inside a
   running shield whose pool outlasts the span, and the sleep session wants the camp checked for
   stability first. Not said what "stable" means for a board, which has no camp. *Still open:* the
-  patrol board isn't built; as built, a racked board and a bedroll can't both ride one rack.
+  patrol board isn't built.
+
+### Physical waist-line selection (agreed, 2026-10-19)
+
+The carry view selects the actual ropes in the world rather than listing their names. Hover a
+visible rope curve to preview and highlight it; click that curve to keep it selected. Hover
+never changes the committed choice. Follow gaze restores aiming-based selection. Curves
+behind the camera or hidden by solid gear are not pick targets, and the shared near-waist
+cluster is avoided. The held line still takes priority and a lost tie clears its selection.
+
+Context in the carry view uses readable shared-theme text for the hovered or selected line.
+Remove the persistent crosshair waist-stat line during ordinary play; show handling progress
+only while an untie is active. Keep the existing timed Release all action and progress in a
+compact carry-view control. This does not implement a player body or physical storage system.
+
+**As built:** `WaistLines` projects `Rope.strand.shown()` through the player's current camera.
+It rejects segments crossing the near plane, avoids the first metre by the eyes, and checks
+solid-world occlusion before hover selection or highlighting. Hover is a thick accent curve;
+a different committed selection is a thin pale curve. Highlights draw behind inventory cards.
+`Suit` routes tiles first, then rope/control clicks, then its existing empty-space stow action.
+Follow gaze and timed Release all remain compact controls. `Hands` no longer appends waist
+statistics at the crosshair; its ordinary context and active untie countdown use the shared
+20 px AsideValue style with space for two lines.
+
+A 1280×720 unseen capture of the normal three-line Varran start inspected each curve separately:
+hovering left the prior selection intact, clicking selected each corresponding physical end,
+and Follow gaze cleared the explicit choice. Release progress reached 0.5 while all three ties
+remained attached; its active in-game countdown was readable, and ordinary play showed no
+waist-stat HUD. Import and capture completed without script/runtime errors. The existing rope
+18 HUD assertion follows the revised contract; no new probes or local test runs were added.
+
+### Explicit physical-rope choice only (agreed, 2026-10-19 playtest)
+
+Physical carry-view hover and click selection works; remove Follow gaze because automatic
+aiming selection is unreliable. No waist rope is chosen automatically, even when exactly one
+is connected. Hover previews; clicking chooses. Losing that tie clears the choice without
+switching to another rope. Held-line reeling still takes priority. Reeling or empty-handed
+untying without a chosen rope gives a readable cue to open the carry view and choose one.
+
+The carry view always explains hovering/clicking ropes and shows the number of distinct live
+ropes connected across all waist holders, including a Stake. Orphan ends do not count. Remove
+the last-tied fallback in empty-handed untie; retain only the distinct return of a sole waist
+Stake that has no individual reel target. Timed Release all remains. No input binding or
+force rule changes; sailing notes teach the same explicit physical-rope interaction.
+
+**As built:** `Reel.line` now resolves a held line or an explicit live choice only. Its
+connected-rope count deduplicates active Rope instances with valid endpoints and holders,
+including connections carried by a Stake. `Waist.give_back` refuses a missing rope choice,
+retaining only the sole non-reelable Stake return. Reeling or use without a choice
+shows the readable carry-view cue. The physical picker has no gaze button; its shared-theme
+20 px hint and count remain visible while the carry view is open. Mast help and sailing
+notes teach clicking the physical rope. Existing physics probes select their fixture rope
+explicitly; the former gaze assertions now check no implicit choice and retained selection.
+
+A 1280×720 normal Varran capture began with no selected rope and three connected ropes.
+Each of the three curves was hovered and clicked independently, selecting its corresponding
+physical end. The hint, count, selected context and active release countdown fit the screen;
+Release all reached 0.5 progress while all three ties remained attached. Import completed
+without script errors. The visual helper reported 16 ObjectDB instances and eight resources
+still in use on teardown, with no gameplay script error. No local probes or suites were run.
+
+The count also remains visible at zero after releasing the last tie; its unavailable Release
+all control is hidden. A follow-up 720p capture showed zero connected ropes and no selection,
+and the unselected reel attempt returned false while displaying the readable choose-a-rope
+cue. That follow-up helper exited cleanly with no script or resource-teardown errors.
+
+The sole-Stake return also works after its rope breaks: it returns that one physical object,
+without selecting any rope. Its missing connections still contribute zero to the live count.
+
+When the sole waist holder is a Stake with no individual reel target, the carry view keeps
+the real connected count and explains the existing empty-handed Use return. It does not
+promise clickable individual ropes for that whole-stake case.
+
+A 1280×720 Surveyor capture with its normal mooring Stake tied at the waist showed one live
+connected rope, zero individual reel targets and no selected rope. The readable whole-stake
+return cue replaced the hover/click instruction and stayed above the carry tiles. Import
+and the capture completed without script or teardown errors; no local probes were run.
+
+## Surveyor's Guide (agreed and built 2026-10-19)
+
+A physical Surveyor's Guide starts carried by the Surveyor alone, alongside all its
+existing supplies. Five short pages explain establishing a self-sustaining survey
+camp, recognizing the starter gear, unstaking/towing/parking, scouting and returning,
+and loose salvage upgrades with storm shelter. It teaches current actions with their
+binding macros. A short profile-once carried hint explains the first survey and how
+to open the Guide after live input returns. There is no arrival pod, receiver, map, quest marker or forced reader
+opening. Return advice is physical: short scouts, keeping camp in sight, looking back
+at landmarks and allowing for fading tracks. It is a normal carried,
+placeable, saveable booklet, available in the creative menu, with a distinct procedural
+survey-mark cover using existing materials. Reading adds no deed.
+
+As built, the guide adds 0.3 kg (the same physical booklet size and mass as sailing
+notes), with no existing gear removed. Only the Surveyor kit resource gains it;
+existing saves are not retroactively restocked. A fresh Surveyor's carried guide
+opened from the carry view in an unseen 1280 by 720 run, closed back to that view,
+and remained carried with all five pages after saving and resuming. The initial
+hint appeared without opening a menu. Existing clean-new-run probe 4 passes with
+its exact kit fixture extended for the Guide; other origin kit data is unchanged.
+The current camp streaming/persistence limits remain outside this teaching change;
+the Guide does not promise a permanent distant camp or introduce arrival machinery.
+
+The first integrated remote CI run found one stale development-scenario fixture:
+`survive` restocks the normal Surveyor suit, so its carried set now also contains
+the Guide. Dev probe 1 still expected only water, a ration and a bedroll, although
+the run contained all four intended objects. Extend that existing exact gear list
+for the Guide; preserve its health, hunger, thirst, sealed-water and condenser checks.
+This changes the fixture only, with no scenario or supply behavior change.

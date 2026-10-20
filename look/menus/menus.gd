@@ -1,5 +1,5 @@
 extends Node
-## Look-test helper: shoots the main menu, its title and crate, over its desert
+## Look-test helper: shoots the main menu, its title and the Surveyor's camp, over its desert
 ## as it opens and once its storm has passed, and with its music switched
 ## off; Options, its controls list and the question over a save with the prop
 ## aside; who you come as on a first run, the Surveyor alone open, then with
@@ -37,7 +37,7 @@ func _ready() -> void:
 	Tuning.current().run_seed = 1234
 	var main: Main = MAIN.instantiate()
 	add_child(main)
-	# The real mouse may pass over this window: the crate rests facing you.
+	# The real mouse may pass over this window: the camp rests facing you.
 	main.showpiece.set_process_input(false)
 	await _idle(main.view)
 	await _ticks(120)

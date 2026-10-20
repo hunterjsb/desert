@@ -7,7 +7,8 @@ extends Control
 ## and the rest dimmer, never boxed, each with a soft dark edge so it reads
 ## over bright sand and storm alike. Menu up and down move the highlight,
 ## confirm triggers it, and left and right change a setting's value, each
-## with a very quiet click. The mouse can pick too.
+## with a very quiet click. The mouse can pick too. A word can carry a small
+## mark after it while there's something new behind it.
 
 ## The highlight moved to the word at this place, or landed there on opening.
 signal moved(at: int)
@@ -31,6 +32,10 @@ const APART_GAP := 16.0
 const APART_DELAY := 0.25
 const APART_SECONDS := 0.4
 const LOCKED := 0.5
+## The mark of something new after a word: a dot, across as a share of the
+## word's height, and how far it stands off the word, px.
+const NEW_DOT := 0.2
+const NEW_GAP := 9.0
 
 ## Back never closes it: the main menu is the bottom of the stack.
 var root := false
@@ -151,6 +156,9 @@ func add_title(name: String) -> void:
 	version = Label.new()
 	version.theme_type_variation = &"Version"
 	version.text = ProjectSettings.get_setting("application/config/version", "")
+	var release_name: String = ProjectSettings.get_setting("application/config/release_name", "")
+	if not release_name.is_empty():
+		version.text += " · " + release_name
 	version.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 10)
 	version.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	version.grow_vertical = Control.GROW_DIRECTION_BEGIN
@@ -287,6 +295,18 @@ func add_corner(on: Callable, act: Callable) -> Button:
 	return word
 
 
+## A mark after the word while `is_new` says there's something behind it not
+## looked at yet: a dot as bright as a word highlighted, edged dark like it.
+func mark_new(word: Button, is_new: Callable) -> void:
+	word.draw.connect(func() -> void:
+		if not is_new.call():
+			return
+		var r := word.size.y * NEW_DOT * 0.5
+		var at := Vector2(word.size.x + NEW_GAP + r, word.size.y * 0.5)
+		word.draw_circle(at, r + 1.5, word.get_theme_color(&"shadow", &"Palette"), true, -1.0, true)
+		word.draw_circle(at, r, word.get_theme_color(&"text", &"Palette"), true, -1.0, true))
+
+
 ## Under the prop aside, bare words on their soft edge: each thing beside what
 ## it comes to, as an origin's gear or a save's numbers, replacing what was there.
 func set_aside(rows: Array) -> void:
@@ -329,12 +349,13 @@ func aside() -> Array[PackedStringArray]:
 	return out
 
 
-## The words as they stand now, settings with their values.
+## The words as they stand now, settings with their values, and their marks.
 func refresh() -> void:
 	for item in _items:
 		var text: Variant = item.text
 		var words: String = text.call() if text is Callable else text
 		(item.button as Button).text = words.to_upper()
+		(item.button as Button).queue_redraw()
 
 
 ## The list's words, the corner's switch aside.
@@ -375,6 +396,7 @@ func cover() -> void:
 
 func uncover() -> void:
 	visible = true
+	refresh()
 	highlight()
 
 

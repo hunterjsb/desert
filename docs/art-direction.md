@@ -14,7 +14,8 @@ the shield generator with its bubble up; a stake with a line to the crate's hook
 charger under a solar panel. They're the game's own devices, sizes, sockets and rope, with
 each candidate drawn over them, so only the look changes. B, C and D also lay two finds in
 the sand in front of the camp: a crude surface-era lamp made from a can, and an overbuilt
-sealed colonial module whose light is still on.
+sealed colonial module whose light is still on. (The test was run on the crate frame and the
+charger, before the chassis rework of 2026-10-18 replaced both; its verdicts below are on those.)
 
 Shots, each candidate beside today's grey boxes: the camp from 8 m at morning, mid-morning,
 noon and dusk; from 50 m, and that frame's middle blown up two times; the crate from 5 m,
@@ -288,45 +289,60 @@ nothing (0.00 and 0.03).
 *2026-10-16, mapped onto [session 3](lore-session-2026-10-16.md) the same day. Loose, not
 canon: the names are the lore's, and every design is a rough placeholder.*
 
-Six rough marks on a few things: a contractor's tag, a member state's seal, two makers' signs,
-a crate's label and a crew's patch. Each is painted where its lore says it belongs, so a mark
+Six rough marks on a few things: a contractor's tag, a member state's seal, two OEM signs,
+a consignment label and a crew's patch. Each is painted where its lore says it belongs, so a mark
 means something wherever it appears. They're stencilled or stamped on with the paint, so the
 same wear chips, scours and dusts them: a deep find's mark is crisp, and a surface one's is
 ragged and flaked in patches. They read close up; at 5 m they're a smudge.
 
 | Mark | What it stands for | Carried by |
 |---|---|---|
-| **Contractor's tag:** "RMC" on a notched plate | A corporate builder of the colonial era: the Remote Moon Contractor, who built the hub's infrastructure and fitted what was bought in ([part 1 §4](lore-session-2026-10-14.md#4-whos-there-the-entity-stack), [part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)) | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
+| **Legacy contractor tag:** "RMC" on a notched plate | Placeholder lettering still in the build. Current lore names Moonco as the prime contractor and Geologix, ProvWorks, GHe3, United Biotech and Teresa among its specialists. Which organization marked or installed each surviving device is not settled ([colonial contractors](lore-research.md#colonial-contractors-moonco-and-its-network-agreed-2026-10-20)). | The condenser; a found shield's housing; the ruin, beside each stencilled 07 |
 | **Member state's seal:** rings round a chevron, in another hand's paint | One of the governments the UG federated, before it stood as one: early ruins show member-state and corporate markings that don't match ([session 3](lore-research.md#factions-agreed-session-3)) | The ruin, beside the contractor's tag |
 | **Shield maker's sign:** a bubble on its ground, the emitter beneath | The main shield OEM, the common make; it's unnamed, and "Acme Shield Corporation" is the lore's own placeholder ([part 2 §3](lore-session-2026-10-14-part-2.md#3-shields)) | The light shield you start with, on its body; a found shield, small, on its emitter cap |
 | **Wind maker's sign:** three vanes in a ring | Wind's maker, a different one from solar's ([part 2 §4](lore-session-2026-10-14-part-2.md#4-power)) | The turbine |
-| **Consignment label,** by era | The box says who ordered it; the parts inside say who made them ([part 2 §1](lore-session-2026-10-14-part-2.md#1-the-oem-tier-who-actually-makes-things)). The deep one is Tilg's, stencilled in the capitals of the acronym it still was, the shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)) | The crate frame's two ring sides |
-| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | A found hoverboard's tail, which is what shows when it's found nose-down; a board of your own is new and plain |
+| **Consignment label,** by era | The label says who ordered or shipped the gear; it does not identify the OEM. The colonial label is TILG, the pre-war shipping line that registered Zan as a temporary transshipment hub ([session 3](lore-research.md#factions-agreed-session-3)). Tilg & Standard is its distinct successor, formed with Standard Freight thousands of years after the war ([lore research](lore-research.md#factions-agreed-session-3)). | A chassis piece's top (the crate frame's two ring sides, until the crate went in the chassis rework); the company's issue hoverboard's tail (2026-10-18, [boards by make](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)) |
+| **Skimmer crew's patch,** painted by hand: the giant, a dive across it, a tally | The hoverboard as skimmer-culture personal gear, not official issue ([lore research, question 11](lore-research.md#13-open-questions-for-hunter)) | The skimmer racer's tail, which is what shows when it's found nose-down; a new one, the Salvager's, is plain (2026-10-18: the patch was on every board until the boards by make) |
+
+**What the build currently attributes.** These are equipment and marks already represented in
+the game; the marks' letterforms and designs remain placeholders for the planned logo redesign.
+TILG's colonial consignment and Tilg & Standard's present-day company issue are different
+provenances. The RMC stamp is still drawn on the condenser, found shield housing and ruin, but is
+a legacy placeholder, not a confirmed faction name or a final Moonco logo. The Skimmer racer
+carries a crew patch, identifying a crew/culture rather than a single Skimmers corporation or
+manufacturer. The Knights Requisitioner have a patrol board and a hopper; Mother Cistern's temple
+has a temple board. First Kingdoms house heraldry (Haberjack, Pellicott, Crake and Vonatelli) can
+appear as a layer on older gear, and Second Age religious marks can bless reused gear: neither
+makes those houses or orders the original OEM. Gear placed in the Provisional's tithe hauler and
+black site is military/Provisional-associated salvage. Halloran Isotope and Frontier Ag are named
+makers in planned designs, not logos on current gear.
 
 **Why these.** The marks go where the lore names a maker or issuer. The ruin's wall shows
-session 3's early markings that don't match: a corporate builder's tag and number beside a
+session 3's early markings that don't match: a contractor-placeholder tag and number beside a
 member state's seal, in two hands' paint. The same contractor's tag on the devices found in the
 sand lets the player tie them to the buildings. Its build-out is the overbuilt colonial tech
 ([part 1 §6](lore-session-2026-10-14.md#6-history-runs-backwards-in-the-ground)), and corporate tech lies deepest
 ([session 3](lore-research.md#the-surface-today-agreed-session-3)). The two shields show issuer
 against maker. The light shield was bought new, so it carries only its maker's sign. A found
-one carries the tag of the contractor who fitted it, with the maker's sign small on the core
-inside. The crate is the lore's own example of the box and its label.
+one carries the legacy RMC placeholder on its housing, with the maker's sign small on the core
+inside. This does not yet identify which Moonco specialist installed it. The crate is the lore's
+own example of the box and its label. The current Moonco/specialist network does not yet specify
+this gear's acceptance, installation or OEM marks.
 
 **Left blank on purpose.** Batteries and the other commodity parts carry no mark ([part 2
-§4](lore-session-2026-10-14-part-2.md#4-power)). So do the survival kit and the charger, since the lore doesn't say who made
+§4](lore-session-2026-10-14-part-2.md#4-power)). So does the survival kit (and so did the charger, until it went), since the lore doesn't say who made
 them, and inventing an issuer would be making canon. The next candidates were left out to keep
 this to a few:
 
 - the planter, as ag-tech issue (session 4, part 4 names the maker: Frontier Ag, one of the main
-  remote colonial contractors, with its grow crates and its crops);
+  remote colonial contractors, with its grow crates and its crops; this remains a planned attribution);
 - the solar panels, from a big commodity OEM;
 - Standard Freight's plain, severe stamp, for when hull wreckage or war-era materiel is in the
   game.
 
 **How era shows.** The atlas has a row per era: a recent make (yours), the surface and the
-deep. A found device takes its layer's row. So far the crate's label is the mark that changes
-most from row to row:
+deep. A found device takes its layer's row. So far the consignment label, a chassis piece's
+since the crate went, is the mark that changes most from row to row:
 
 - **Deep:** "TILG" over "XN 0217", Tilg's consignment stencil in the acronym's capitals (it
   hasn't worn into "Tilg" yet: [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2)),
@@ -339,11 +355,12 @@ most from row to row:
   Dark Age),
   and session 3 dates ruins by which form appears. **Decided (session 4, part 2, 2026-10-17):
   the Z stays.** "The hand-daubed 'ZN' consignment mark is intentional drift from XN."
-- **Yours:** a plain batch number, "LOT 3127", for a recent, cheap make. Session 4, part 2 says
+- **Yours:** a plain batch number, "LOT 3127", for the current company's issue. The Surveyor's
+  issue is Tilg & Standard, the post-war successor, not colonial TILG. Session 4, part 2 says
   the Surveyor's starting gear "is company issue, which fits the existing 'new' mark row and its
   cheap batch stencil."
 
-The crew's patch has only two states: a found board carries it, and a board of your own is
+The crew's patch has only two states: a found racer carries it, and a racer of your own is
 plain, since nobody has painted it yet.
 
 Wear does the rest, from the same amount that wears the paint: ragged edges, patches flaked
@@ -360,7 +377,9 @@ on Zan itself), and its marks would be the war era's standardised, severe ones.
 
 **Placeholders.** Every design and ink colour is a placeholder. So are these:
 
-- "RMC," the Remote Moon Contractor, is part 1's working name. Session 3 names no builder.
+- "RMC" is the old atlas placeholder for the colonial contractor tier, superseded in lore by
+  Moonco and its specialist network. Existing RMC stamps are not yet reassigned to one of those
+  organizations; nor is any of them an equipment OEM by default.
 - The member state is unnamed, and so is its seal.
 - The shield maker and the wind maker are unnamed.
 - In "XN 0217", only XN comes from the lore; the number is invented. The moon's own
@@ -421,7 +440,8 @@ Readings, not in the session:
   house colours (red, ochre, teal) are the houses' enamel, which the heraldry in "Marks by era" sits on.
 - **The second age's colour is the sand's.** Bone, sand, rust and clay are the dunes' own, so
   second-age gear blends in and the blue glaze is the one thing that doesn't: the Cistern's mark.
-- **The skimmer era has no row.** The notes' skimmer crate was "light, cheap and fragile"; part 5's table
+- **The skimmer era has no row.** (2026-10-18: the skimmer racer is the first thing drawn as the era's own,
+  hand-painted crew red with tape round its rails.) The notes' skimmer crate was "light, cheap and fragile"; part 5's table
   skips it. Its look (hasty, welded, improvised) is B's wreckage texture, and nothing here draws it.
 - **One shield first.** The notes asked for the shield to change first. Three silhouettes of one device
   (a chamfered housing, the same with a crest and a vent grille, and an asymmetric one with a ceramic cap)
@@ -432,12 +452,18 @@ Readings, not in the session:
 *Session 4, part 2 ([lore session](lore-session-2026-10-17-part-2.md)); named, not drawn, and
 none of it is in the atlas.* The atlas stops at the colonial, surface and new rows. The session
 names what the ages after the collapse would carry, to be drawn when there is a find to carry it:
-- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Okafor, Kessel,
-  Arkwright and Vante; the guilds of the keepers).
+- **First Kingdoms** gear carries heraldry and guild stamps (houses such as Haberjack, Pellicott,
+  Crake and Vonatelli; the guilds of the keepers).
 - **Second-age** gear carries religious symbols (the faith of Tu).
 - **Homesteader** gear carries civilian brand marks, not Tilg's.
 - **Carvings and daubs** use the worn slang (Monward, Hanmen, Zanborn, the tu- prefix) and the
   worn names (Zan, Tu, Han, Mon, Aitch): [the names](lore-research.md#slang-and-name-erosion-agreed-session-4-part-2).
+- **Session 5 (named, not drawn)** ([lore session](lore-session-2026-10-18-mitchell-wow-shoemaker.md)): the
+  Tabbed's **tab-stone**, carved with what a family owes and is owed, and the Ashwalkers' pendant ones;
+  the **Mitchells**, stamped company scrip whose brand outlived its meaning; and the **singing stone**, black and
+  glassy, scored with melted grooves, warm to the touch
+  ([the lore](lore-research.md#mitchell-the-dead-god-agreed-session-5)). A tab-stone is a second-age
+  thing and a Mitchell a First Kingdoms one, so each fits the layered marks below.
 
 ### Layered marks (Agreed, session 4, part 5; named, not drawn)
 
@@ -465,8 +491,8 @@ marks over its own look, each layer added as pieces in the paint pass, not repai
   company's issue the new one.
 - **The First Kingdoms** add an enamel band in the house's colour round a frame's top edges, a round
   housing or a part's end, and a small enamel plaque with the house's crest cut through it to bright metal
-  (a new scratched ink), two brass rivets at its top: Okafor's key (they kept the last Harbourmaster's),
-  Kessel's cauldron, Arkwright's arch, Vante's tower, in deep red, ochre, teal, and ochre with red.
+  (a new scratched ink), two brass rivets at its top: Haberjack's key (they kept the last Harbourmaster's),
+  Pellicott's cauldron, Crake's arch, Vonatelli's tower, in deep red, ochre, teal, and ochre with red.
 - **The Dark Age** adds cord lashed round corner posts or round a body, a round ceramic cap on a square
   corner, a saltbush-wood splint lashed along an edge, and a plate off another thing in its paint, riveted
   on crooked, with "ZN" daubed back on it where the thing was consigned.
@@ -852,6 +878,152 @@ measured 0.2 to 0.3 ms the same way, so the times and the count agree.
 - Times were taken with Hunter's game on the same GPU; between runs a frame's own time moved by
   2 ms, and only the alternated differences hold.
 
+**Built: sand that reads as sand (2026-10-18).** Hunter, after the light: "glitter is decent, and
+yeah the glow is nice, but i wanted the sand to be a little more... realistic?" Set against real
+dune fields, what read unreal was mostly the ripples: one pattern everywhere, swirled like a
+fingerprint, torn along straight lines, with smooth plastic between them close up. The colour, the
+third of the light sent back, Ridges, the palette, the eye and the light are as they were.
+- **Ripples no longer tear.** The sand's noise hashed its lattice with `sin`, which out here,
+  kilometres from the origin, gave the same corner different numbers in the cells either side of it
+  (most likely as the GPU folds the arithmetic differently), so the noise jumped at its lattice lines;
+  the ripples, warped by it, tore along lines 3 m apart, the jagged seams at dusk that read as a slip
+  face's edge. The noise now hashes integers (`lattice()`).
+- **Lopsided ripples,** a long gentle windward side and a short steep lee, as sand climbs a ripple
+  and spills off its crest: about 4° and 11° to 14° at most, a height about 5% of their length,
+  where real ripples' is 4 to 7%. It's a rounded sawtooth (the slope of arg(1 - k e^-iw)), crisper
+  on windward slopes (k 0.58) than on flats (0.4), with the old wave's mean square, so the sheen and
+  the light overall are as they were. A low sun now leaves thin shadows on their lee faces.
+- **Ripples fork and end,** as real ones do, never one unbroken crest for metres: pairs of opposite
+  twists in their phase (dislocations) 5 to 12 crests apart, one pair in four-fifths of 2.4 m cells,
+  each adding one short crest with a fork at each end.
+- **Their heading and spacing drift** by about 10° over a few metres, where the old warp swirled
+  them by up to 40° and more in 3 m; their light tilts the way they run. They're patchy, 0.55 to 1.3
+  of their depth over 5 m, and fade toward a slip face over a ragged line rather than at the
+  lattice's triangles.
+- **They reach about half again further,** fading out as a pixel spans from a tenth to a quarter of
+  a ripple (it was a sixteenth to a sixth), easing to a plain wave first so nothing finer than a pixel
+  is drawn: at a low sun the ripples' grain runs on into the middle distance where it stopped short.
+- **Coarse crests, fine troughs.** The wind sorts grains: the coarser gather on the crests, a shade
+  darker and redder (2.5, 4.5 and 6% off red, green and blue at a full crest, as much added in a
+  trough), so even at noon, when the light can't show the ripples, they show faintly. It fades with
+  the ripples, so the sand's mean colour is unchanged.
+- **Grainflows down slip faces:** tongues a hand or two wide and a few metres long, and a metre wide
+  and longer, a few percent lighter or darker, down the fall line (the nearest two of a fan of
+  headings, blended, as the face turns), fresh in some places and smoothed in others. They read from
+  the next dune.
+- **Ribbons down the wind.** The broad colour's 23 m patches and the 7 m ones are drawn out down the
+  wind, 16 by 48 m and 7 by 30 m (the small ones now ±4%), as the wind lays coarser and finer sand
+  in ribbons; and a small mottle, ±3% over 0.6 m, out to about 20 m.
+- **Grains at your feet.** A pixel's mean of n grains varies as 1/√n, so cells two pixels or so
+  across, stepped by powers of two and blended as the glitter's are, vary the less the larger they
+  are (7% for a 2 mm cell): grainy at your feet, gone within 5 m, and holding still as you move.
+- **Fewer glints flash full.** A grain's weight is its draw to the fourth power, not the square, so
+  most glint faintly and few clip to white: the even white dots at your feet read as stylised.
+
+Weighed and left out:
+- **A sharper brink,** turning the light faster than the lattice between a windward grade and a slip
+  face's: from 200 m it changed 35 pixels of the frame. The lattice already turns within a pixel or
+  two.
+- **Cooler shade on the shadow side.** On Earth the shade is cooled by a blue sky; this sky is dust,
+  and Godot's sky light already lights the shade with it.
+- **The wind map orienting the ripples.** Its wind is one heading for the whole window (the
+  prevailing wind and its gusts), turning with the hours, so it has nothing to steer ripples by
+  place; ripples that turn with the wind, with the minutes of lag real ones have, are P6's. Ripples
+  and grainflows follow the dunes' own downwind, the long-term wind that built them.
+- **Finer crests and coarse interdunes** at the dunes' own scale: the shader doesn't know a place's
+  height above its dune's foot. From 200 m the sand changed least.
+
+**How it looks,** master's sand against this, shot as the light was (`look/sandlight/shoot.sh`,
+which now also shoots your feet at noon, ripples from a crest down its windward face with the sun
+14° up, and the tallest slip face near the spot from its foot; `--only` without `storm` skips the
+storm's pass). The sheet is `~/Desktop/sandreal.png`, its last rows at full size. A different hash
+lays the patches differently, so the same shot lands on different ones, and lightness moves by about
+a level either way for that alone.
+
+| Moment | L* before, after | Spread before, after |
+|---|---|---|
+| Noon | 81.9, 82.1 | 1.3, 2.1 |
+| Your feet at noon | 82.3, 83.1 | 5.0, 5.6 |
+| Ripples over a dune, the sun 14° up | 62.1, 63.1 | 16.3, 16.4 |
+| A low sun (8°) ahead | 51.8, 51.9 | 7.3, 8.3 |
+| The same from 200 m up | 56.9, 56.4 | 17.1, 16.9 |
+| The same sun behind you | 55.7, 55.0 | 13.5, 15.5 |
+| Dusk (2°), the sun behind you | 45.8, 44.3 | 14.1, 16.8 |
+| A slip face from its foot | 79.0, 79.0 | 3.7, 5.1 |
+| A full-Tu night; by the headlamp | 4.8, 4.9; 23.6, 23.9 | 0.8, 1.0; 73.9, 74.2 |
+| Deep in a storm by day | 24.2, 24.3 | 9.4, 9.8 |
+| A walked track at midmorning | 77.5, 77.1 | 6.2, 5.9 |
+
+The low sun and dusk changed most: ripples that fork and end, lean, shadow on their lee and run on
+into the distance, untorn. At your feet the sand is grainy, with fewer, fainter glints; slip faces
+carry grainflows; noon shows the ripples faintly by their crests' colour. From the air little
+changed, and the night, the lamp, the storm and the track are as they were.
+
+**What it costs,** on the RTX 3070 at 1920x1080 with Hunter's game on the GPU, the middle of nine
+alternated rounds, over three runs: 0.12 to 0.29 ms a frame at noon, 0.46 to 0.63 into a low sun,
+0.15 to 0.65 with sand filling the frame, and 0.16 in a storm; the same shader against itself
+measured within 0.2 ms either way. Almost all of it is near you, behind branches: the ripples'
+drift, defects, profile and sorting where ripples show, the grains within 5 m, the mottle within
+20 m, the grainflows on slip faces. A first cut that did the ripples' work everywhere cost 1.7 ms.
+Each defect pair skips pixels out of its reach, so a pixel takes the twist of one or two, not four.
+
+**Fragile:**
+- Any new noise in the sand hashes integers (`lattice()`, `hash6`): a `sin` hash tears this far out.
+- The ripples' phase is laid along the dunes' fixed downwind. Ripples that turn with the wind (P6)
+  need it accumulated instead, and the defects and drift with it.
+- The grains' cells, like the glitter's, hold still through origin shifts only because a 64 m chunk
+  holds whole cells.
+
+**Playtest (Hunter, 2026-10-19; built):** "improved but we still need more volume." Read
+as the sand needing to look solid rather than painted on:
+- **Dune-scale shading:** crests lighter and hollows darker, from the ground's own height, which
+  the shader reads from the streamed vertices.
+- **Ripple relief near you:** real ripples in the surface close up, the roadmap's displaced patch,
+  not only in the shading.
+- **Shadow in the hollows:** soft shadow in the troughs and under the brinks, so the ripples and
+  dunes have depth at every sun.
+
+**Built (2026-10-19):** dune shading is baked into the streamed vertices, including the far ring
+(`TerrainShape.shade`, `ChunkBuild`, `FarRing`, shader `CUSTOM0`). The height over the local dune
+mean sorts crests paler and hollows darker. The crests' two horizons hide the hollows' sky and
+extend their soft directional shadows past the shadow map; near it, the real shadow map takes
+precedence. The ripple profile supplies its own soft shadow and trough occlusion.
+
+Close ripple relief traces the view through that same rounded, lopsided profile: up to eight
+steps to its first crossing, then three refinements. Crests cover their troughs as you move;
+the grain pattern follows that surface. `ripple_relief` fades from full at 2 m to none at 6 m,
+with grazing views bounded and tracks flattening the relief. These are millimetre-scale parallax
+ripples; the ground's metre lattice and collision remain authoritative. This completes close
+relief without a separately streamed displaced mesh patch.
+
+Measured at 1920 × 1080 on the shared machine's RTX 3070, nine alternating rounds of 60 measured
+frames per look after ten settling frames, with no other Godot running. Each entry is the median
+paired GPU difference; medians of different pairs need not add exactly. The baseline is the
+previous sand shader (`14cb3d0`); switching only `ripple_relief` off separates the trace's cost.
+
+| View | Complete change | Dune and ripple shading, relief off | Close relief alone |
+| --- | ---: | ---: | ---: |
+| Noon from eye height | +0.326 ms | +0.274 ms | +0.049 ms |
+| Low sun, sand filling the frame | +0.652 ms | +0.272 ms | +0.516 ms |
+| Noon at your feet | +0.598 ms | -0.013 ms (noise) | +0.401 ms |
+
+The complete change stays below the roughly 0.8 ms budget in these median samples. Individual
+rounds vary with desktop load; this is a measurement on this GPU, not a guarantee for every GPU.
+The vertex bake costs worker CPU time: a 64 m near chunk at 1 m steps takes 30.552 ms against
+17.777 ms before (+12.775 ms); a mid chunk at 2 m steps, 8.062 against 4.755 ms (+3.307 ms).
+It adds no per-frame CPU bake, and stores four floats per vertex including the skirts.
+
+World probe 12 checks continuous shade across chunk seams. The reported long-walk leak did not
+reproduce after integration. A diagnostic found resource and orphan-node counts fixed while
+resident chunk and collision counts changed. World probe 3 now compares memory back at the same
+settled location after warming up and after 20 km, preserving its original 10% object and 64 MB
+memory limits: 4,946 → 4,943 objects, 220.8 → 221.1 MB. It still checks the complete route's
+collision, dropped boxes and maximum resident chunks.
+
+The before/after capture covers noon, low sun from eye height and above, dusk from above, full-Tu
+night, the headlamp, storm, a walked track, and close ripples. The look-test can measure each
+`--try` separately and now measures only the selected views, including a view at your feet.
+
 ## Open questions
 
 - **Tu's palette** (open in the spec: "Tu's palette, to be settled against
@@ -882,3 +1054,59 @@ measured 0.2 to 0.3 ms the same way, so the times and the count agree.
   models should differ by era in shape... The shield comes first." Not said: whether the
   shield's remodel is the first exception or waits with the rest, and whether a new shape keeps
   the grey box's collision and sockets, as the paint pass did.
+
+## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
+
+Hunter: "sand looks great ... our best iteration yet" and "we need our sand trails to look as good as our sand." The accepted sand appearance is the baseline. Improve walking trails and board/skid gouges with soft compressed floors, loose raised rims and nearby relief that belongs to the rippled surface. Keep marks stable while moving and through origin shifts, preserve their lifetime and physical ground, and measure the extra GPU cost against the accepted sand build. Prefer a bounded nearby shader treatment within the existing visual budget before expanding the track map or adding a separate mesh patch.
+
+
+**Trail follow-up built and rendered (2026-10-19).** Signed compressed floors and loose
+rims use bounded near relief and local wall horizons. Deep board gouges get extra depth;
+boots and shallow hover wakes keep their own pressure scale. The physical ground, mark
+lifetimes and track-map memory are unchanged. Filled bare-sand comparison regions match
+the accepted sand build exactly. The direct combined shader comparison against `14cb3d0`
+measured paired median increments of 0.204 ms in daylight and 0.365 ms in low sun at
+1080p on the same test renderer (nine alternated rounds, 60 frames, 30 settling frames).
+Those representative views remain below the roughly 0.8 ms budget; individual rounds
+are noisier. These are direct measurements, not a sum of different camera cases.
+See [Tracks](prd/world-and-terrain.md) for the full profile and measured checks.
+
+## Survey receiver (2026-10-20)
+
+A first receiver tier using the existing signal system, modelled as a complete
+handheld field instrument. Keep B's bevelled, worn industrial language: a bone enamel
+cast housing, teal recessed front, black impact corners, brass fittings and an open
+loop aerial. A large cream analogue meter with a red moving needle is the visual
+focus, balanced by a deeply ribbed tuning wheel and a small power lamp. Speaker
+slots, a rear battery cradle, hinge pins, screws and a contractor's plate explain
+how it is assembled and held. Avoid decorative detail across the meter or controls.
+
+Use merged procedural Godot meshes and the existing Paint shader so wear, era
+lineage, sand and lighting remain native to the game. Separate the needle, tuning and volume
+wheels from the case for readable movement. Inspect actual close/held/mounted and dust
+captures before acceptance. Original switch, tuning and pulse sounds should be
+quiet and tactile, with signal audibility tied to the real receiver state.
+
+
+**As built and inspected (2026-10-20).** `SurveyReceiverLooks` uses four cached
+single-surface meshes: case 3,336 triangles, needle 140, tuning wheel 1,484 and
+aerial 880. A second scaled wheel supplies volume, making 7,324 submitted triangles
+across five mesh instances before the fitted battery/socket. These are geometry
+counts, not a measured frame-time cost. The aerial has physical hinge lugs and
+support posts meeting its ring; the case has a rear cell cradle and feet meeting
+the placement floor.
+
+Actual Forward+ renders on Godot 4.7.2 show front, side and rear assembly, the live
+needle and both controls in hand, and the receiver in the carry view at 720p. Turning
+through a quarter turn changed measured signal strength from 0.8664 to 0.0693 and
+the visible meter from step 7 to 1. The meter reads signal strength; no compass or
+range digits were added to its face. Three original mono 48 kHz switch, detent and
+contact-pulse sounds ship with a reproducible generator; measured levels are in
+[audio credits](../assets/audio/CREDITS.md). The existing static bed supplies hiss.
+Automated unseen runs use dummy audio, so these checks establish playback state
+and measured levels, not subjective listening quality.
+
+Mounted views were also inspected in daylight dust and local midnight dust, with
+a small staged warm light for the night inspection. The face, needle, lamp and
+both wheels remain distinct against the worn chassis. This is a rendered model
+readability check; the staged light does not establish unlit night legibility.

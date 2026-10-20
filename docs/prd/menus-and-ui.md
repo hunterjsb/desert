@@ -35,6 +35,12 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 - **Type:** Geist for UI text, Geist Mono for numeric readouts (power, weight, charge).
   Menu text is small, uppercase, widely letter-spaced and light.
 
+## The game icon
+
+The game uses a separate, simple icon: one large sand dune silhouette against a quiet
+sky, with no lettering or extra scene details. It is the Godot project's icon, distinct
+from the worktree picker's launcher icon (Hunter, 2026-10-19).
+
 ## The main menu
 
 A title at the top, "Desert" for now in a light logo like the prototype's, and the
@@ -69,21 +75,35 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
   origin last played, kept in the profile.
 - **The Surveyor is the game as meant, the others novel starts,** shown by design and never said
   (Hunter, 2026-10-18): the Surveyor leads the choice in its own right, and the deed-opened starts
-  sit apart from it as variations.
+  sit apart from it as variations. Five starts since 2026-10-19: the Surveyor, then apart from it the
+  Salvager, the Homesteader, the Varran settler and the Archaeologist, each ???? until its deed or, the
+  Archaeologist, both of hers (Profile & saves probes 32 and 34).
 - **The prop steps aside for every menu over it** (Hunter, 2026-10-18: "the minimal, no
   background text works for the top title and main menu bc they have a consistent sand or sky
   background... we should always move the prop"). The title and the main menu's words stand
   alone over the sand and sky. Every menu opened from them, Options, the "this ends your saved
   run" question, who you come as and the mode, slides the prop to the right and stands on the
   left, as the origin choice does; the question slides it before the origins come up.
-- **Each origin shows one compact piece,** not its kit scattered: the Surveyor its crate as
-  assembled, the Salvager its board, the Homesteader its planter. Under the piece, on the
+- **Each origin shows one compact piece,** not its kit scattered: the Surveyor its deck as
+  put together, the Salvager its board, the Homesteader its planter, the Varran settler his rig
+  (2026-10-19), its sail raised as a sail on show always is, its boom swung a little off, and the
+  Archaeologist her dig camp of three. Under the piece, on the
   right, its gear is listed, each thing and how many, in bare words with no background
   behind them (Hunter, 2026-10-18: no translucent panel), big enough and edged enough to
   read on their own over bright sand.
 - **Resume opens the same view:** the prop is your last camp as the save holds it, what stood
   round you when you saved, with the save's numbers beside it (time played, when it was saved,
   the day, who you came as), and confirm carries on.
+- **Unmuting starts the theme at once,** with no silence before it. Built (2026-10-18): it comes
+  up in a twentieth of a second, not half a second from silence, where the mute left it, or where
+  the song starts when that was in the file's own quiet, the four seconds it opens on and the two
+  and a half it ends on (`MenuMusic.SOUNDS`).
+- **The deeds menu opens on the deed done last,** or the first one open to do, never always the
+  first. Built (2026-10-18, `DeedsGrid.opening`): the latest done of those that show done, or with
+  none, the first card open and still to do.
+- **The main menu marks what's new** (Profile & saves, deeds), built 2026-10-18: a small dot after
+  Deeds while a deed done hasn't been looked at in the deeds menu, and after a start in who you come
+  as that a deed has opened, until it's been highlighted (`Words.mark_new`, `Profile.is_new`).
 - **Music at the main menu,** its own theme, Hunter's "Salt" (Hunter, 2026-10-18: "use this for a
   main menu theme"), with a mute switch in the bottom left that stays as you leave it. The menu's
   storm stays silent.
@@ -163,30 +183,149 @@ The console opens at the main menu too, for what needs no world (Hunter, 2026-10
 useful for like an `unlockall` command for classes in case i want to test a new class and achv
 resets"): `unlockall` opens every start, and deeds can be granted or cleared to test them.
 
+**The dev console for building and testing** (Hunter, 2026-10-18):
+- **Any dev command that changes the run** (give, goto, fly, warp, time, gravity, tu, god, fresh,
+  scenario) makes it a dev run for deeds: none count from then on. Listing commands (help,
+  scenarios, deeds) don't.
+- **`fresh` fills you up and leaves what you carry;** the suit's kit isn't restocked.
+- **`god`** also lifts the weight limit and lets you take hold of anything, however heavy.
+- **The console scrolls back** through what it said.
+
+**Built** (2026-10-18):
+- **A dev run:** each of those commands, once it has changed something, clears `World.counts_deeds`,
+  the flag a dev scenario clears, and the console says "a dev run from now: no deed counts in it"
+  the first time. A command that only shows something, `goto` alone, or `map`, its usage after a
+  typo, and the profile's own (`unlockall`, `deed`, `reset`) leave it as it was. The save keeps the
+  flag (`dev_run`), and a resumed run takes it back, so a resumed dev run stays one; a death in
+  Ironman carries it to the next run, as it does a scenario's.
+- **`fresh`** fills health, hunger and thirst and leaves your suit as it is; the scenarios that
+  begin on a fresh suit's kit restock it themselves.
+- **`god`** has the grasp's strength without limit and never digs you in, and what you carry weighs
+  nothing on your pace or your stance (`Grasp.step`, `Suit.burden`): a check on `Vitals.god` at
+  those limits, nothing else.
+- **Scrolling:** the console keeps its last 200 lines; the wheel scrolls them two lines a notch
+  wherever the mouse is, and the page-up and page-down actions a page at a time, while up and down
+  still step through what was typed. The head line says how far back it is. While the console is
+  up the wheel reaches nothing else, so reeling and bringing nearer or pushing further never fire
+  behind it. Anything said brings it back to the latest.
+- **Probes:** Dev probes 4 and 5, Menus & UI probe 15, Profile & saves probe 18.
+- **A creative menu** for building crafts in a dev run: every part and device in a grid, taken
+  straight into your hands (Hunter: "a creative-style menu for building crafts in test").
+- **Scenarios are pruned and modernised:** the old ones the chassis and the newer systems have
+  overtaken are cut or remade around what the game is now (Hunter: "we should clean up old
+  scenarios or repurpose and modernize some").
+
+**Built** (2026-10-19), once the chassis rework landed:
+- **The creative menu** (`game/ui/creative_grid.gd`) opens over a run with nothing else open, by the
+  creative action (a dev key, listed under Dev) or the console's `creative`, laid out as a menu over a
+  run is, the world running on behind it; back or its action closes it. Every part and device give
+  makes is a card in the deeds' style, its picture (`ItemIcons`, which now draws any catalog thing as
+  it comes) over its name, in groups down two sides: chassis and frames, power, devices, sail and
+  rope, tools, food and water, boards by make. Picking one puts a fresh one, as the catalog makes it,
+  in your hands; with them full it goes in your suit; one too big for the suit (a Console, a
+  condenser, a shield, a planter, a turbine) stands in front of you, and you have hold of it if your
+  hands are free, which `god` makes light work of. Rope, wire and hose come rolled, as found. A line
+  under the grid says where the last one went. Opening it makes the run a dev run, and the first time
+  that line says so. (Since the playtest below, a search and a pick of its groups narrow it, and it
+  scrolls.) Its pictures are drawn as the game starts, with the deeds'. `look/creative` shoots it over a run, and with `--scenarios` the
+  still camp, every make of board, and the vent as you arrive and as it bursts.
+- **`scenario`** alone, or `scenarios`, lists each with a line on what it stages. Each scenario names
+  what it lays (`lays`), and `Scenarios.lay` lays it, so dev probe 1 starts every one as the console
+  does. A scenario clearing the last one's things unties that one's lines from your waist too, so a
+  sheet left on you doesn't keep you from sleeping.
+- **The scenarios' fates:**
+
+  | Scenario | Fate | Why, and what it stages now |
+  | --- | --- | --- |
+  | spawn, clear, wall, storm_500, storm_100, storm_20, deep, clearing, dusk, night, eclipse, far, far_storm | kept | moments of the weather and the sky; nothing of the old structure in them |
+  | survive, ruin, farm, radio, clear_skies, afk, lee, chassis, sail, sail_tow, yacht, wreck, console, anomaly | kept | already on chassis decks and plates and the newer systems |
+  | kit | cut | a test kit of lone devices and parts on the sand: the creative menu hands over every one |
+  | camp | remade as sleep | lone floaters each on a line, a duplicate of afk's moored deck; now dusk at a still camp, a deck of two resting on the sand with the bedroll, the base shield running, a wall to windward on a frame and a radio on the weather station |
+  | board | remade | one board by a plate and a bare piece; now a board of every make, charged, by a deck of two resting on the sand |
+  | boards | cut | merged into board |
+  | vent | new | across the rift from its live vent, facing it, a minute before it bursts in clear daylight, a charged board at your feet |
+  | dig | new (2026-10-19) | by a big dune's ruin a storm has just laid bare, the slip face behind it, a scoop in your hands and a sieve carried: dune archaeology's dig, to be tried |
+  | walker | new (2026-10-19) | where the run's start puts the Walker, 60 m ahead of it on its route as it comes, a Console holding all three tells beside you on a deck of two, its cable's plug in your hands: the Walker's quest, to plug in as it passes |
+- **Probes:** Dev probe 6 (the creative menu) and dev probe 1 (every scenario starts and lays what it
+  stages without an error).
+
 **The deeds grid** ([Profile & saves](profile-and-saves.md#deeds-achievements-agreed-2026-10-18-built))
 is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("6 of 15 deeds"), with Back: a branch or two for each family
-(Board, Shield, Farming, Camp, Story, named down the left), each deed a step right of the furthest it
-waits on, and a line across from each to what it opens, brighter once that's open. It's laid out as
-every menu is where it opens: over the main menu it stands on the left, narrow enough for the prop
-set aside to its right; over a run, in the middle on the soft dark field.
+of every deed under how many show done ("16 of 44 deeds"), with Back: a branch or two for each family
+(Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
+2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
+from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:
+over the main menu it stands on the left, narrow enough for the prop set aside to its right (940 px,
+four steps of 190 px cards); over a run, in the middle on the soft dark field.
+- **It scrolls** (round two): taller than the screen has room for (1,062 px), it shows at most two
+  thirds of the screen's height of its page, and the wheel or the selection moves it, keeping the card
+  highlighted in view. It draws its own bar at its right, what shows in the theme's dim ink over the
+  whole in its faint, so nothing in it reaches past the one theme (an engine scroll container's own
+  parts style themselves); since 2026-10-19 the bar is the console's and the creative menu's too, and
+  dragging it scrolls the tree. It opens scrolled to stand the deed done last in the middle of what shows.
 - **A card** is the deed's name and a picture of its thing: the board, the shield, a crop, a planter,
-  the Console, a chassis piece, the turbine; drawn in the theme's ink, a sail on its mast, and for
-  the story a landmark's mast and pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its
-  thing's outline in faint ink and ????.
+  the Console, a chassis piece, the turbine, the helm, the compass, the heat cutter, a survival kit,
+  sealant, a radio, the bedroll; drawn in the theme's ink, a sail on its mast, a storm's wall, an
+  anomaly's eye, a bared ruin, a wreck in the sand, a mast's signal, the eclipse, a glint, a vent and
+  its boom, Tu overhead, the dark side's stars, the sun's days, and for the story a landmark's mast and
+  pennant. Done, it's lit; open but not done, dimmer; still waiting on another, only its thing's
+  outline in faint ink and ????. A hidden deed is ???? with no picture until it shows done.
 - **The pictures** are Dress's looks of each thing's frame and what's fitted (`ItemIcons`), drawn
-  once in a little world of their own the first time they're asked for and kept, so a card costs a
-  texture. With no screen to draw on, as in a probe, they stay blank.
+  once in a little world of their own as the game starts and kept, so a card costs a texture. (Drawn
+  later in a session, once the menu's world had run a few seconds, they came out as slivers, 2026-10-18;
+  why is still open.) With no screen to draw on, as in a probe, they stay blank.
 - **The card highlighted,** by the mouse over it or the menu's selection, which moves between the
-  cards as between words and starts on the first, has a small panel beside it, on whichever side
+  cards as between words and starts on the deed done last, has a small panel beside it, on whichever side
   has room: the deed's name, what it asks, how far along you are where it's a number or a count
   ("3,250 / 5,000 m", "2 / 3 kinds") or done (in Ironman, if it was), and what it opens. A card
-  still locked says only what it waits on.
-- `look/deeds` shoots it over the main menu and over a run, seven done, one of them early, a card
-  highlighted (`look/deeds/shoot.sh` builds the sheet).
+  still locked says only what it waits on, a hidden one only ????. The panel stands over everything
+  round the tree, so the scroll never cuts it off, kept on the screen and following its card.
+- `look/deeds` shoots the whole tree, its top and its foot, over the main menu and over a run, with
+  some done, one of them early, a hidden one done and one not, and a card highlighted
+  (`look/deeds/shoot.sh` builds the sheet).
+
+**Playtest (Hunter, 2026-10-19; agreed, built below).**
+- **The console has a scroll bar and can be resized.** "There are so many scenarios they dont fit
+  in the console. i see we added scroll but lets add a scroll bar and make it resizeable so the
+  player can make it bigger." A bar shows where you are in what it said, and you can drag the
+  console bigger, kept between sessions.
+- **The creative menu scales.** "We will need to find a way to scale it as we will likely have many
+  more items." It stays a grid of pictures, with a way to narrow it as it grows: its groups to
+  pick from, and a search.
+
+**Built** (2026-10-19), after the playtest:
+- **The console's bar** stands beside what it said: what shows of its 200 lines, along the whole, in
+  the theme's dim ink over its faint, brighter while held or pointed at. Dragged, or pressed along, it
+  scrolls them, as the wheel and the page actions still do; the head line above stays put, saying how
+  far back it is. It scrolls a whole line at a time.
+- **Resizing:** its sides, its foot and the corners between are taken hold of to pull it bigger or
+  smaller, about its middle, from the top where it hangs; the pointer shows which way, and two short
+  strokes mark its foot's corner. It stays within the screen, no narrower than 360 px and a few lines
+  tall at the least, always whole lines tall. Let go, its size is kept in the settings
+  (`Settings.console_size`) and the next session's opens at it; a smaller screen fits it in.
+- **At first it's 800 px wide and as tall as `scenario`'s whole list needs**, with the line it was
+  typed on and its usage, so the list is read at once wherever the screen has room (a 1080 px screen
+  does; at 648 px it's a line short). `scenario` alone and `scenarios` list each on a line of its own,
+  their keys in a column, and `help` its commands so.
+- **The creative menu scales:** a search line over it narrows the grid to the cards whose name, label or
+  id has what's typed, as it's typed; under it, a row of its groups, All first, picks one to show, or
+  all of them under their headings, the one picked lit and underlined. What shows is one grid, as many
+  cards to a row as the screen has room for (ten at most), as tall as the screen has room for, and the
+  rest scrolls by the wheel, its bar (the console's) or the selection, which keeps the card highlighted
+  in view; nothing by the name searched for says so. It opens on the first card. By keys alone: up from
+  the top row reaches the groups, where moving along picks at once, and up again the search, typing at
+  once; down or confirm leaves it for the groups or the first card. The pointer picks a group by
+  pressing. `GROUPS` stays the one list of what's on it.
+- **One bar** (`game/ui/page_bar.gd`) for the console, the creative menu and the deeds, drawn by the game
+  itself since an engine scroll bar styles itself past the one theme.
+- `look/creative` with `--devui` shoots the menu narrowed by a search and the console pulled bigger
+  saying help and the scenarios.
+- **Probes:** Menus & UI probe 15 (its bar tracks each scroll and dragged scrolls it), 17 (the size is
+  kept), and dev probe 6 (the search and the groups narrow it, by keys alone, and every thing is still
+  reached through its group, once).
 
 ## Skeleton version
 
@@ -221,10 +360,11 @@ set aside to its right; over a run, in the middle on the soft dark field.
   over a bright sky; in a storm it reads on its own.
 - **The prop** (`game/ui/showpiece.gd`) is one compact piece of the origin last played's
   kit (`Kit.shown`), floating between the title and the words, put together as a new
-  run's is: the Surveyor's crate as assembled, the light shield and the light panel on top,
-  the board racked on its side, the batteries half full and their lights showing it; the
+  run's is, from the same rig (Rig): the Surveyor's two-piece deck, its battery, light
+  shield and light panel on the near piece and the frame on the far one, the board and the
+  compass hung on its upright, the batteries half full and their lights showing it; the
   Salvager's board; the Homesteader's planter with its crops, battery, harvester and
-  canister. One much wider than the crate is shown smaller, to fit where the crate does.
+  canister. One much wider than the Surveyor's deck is shown smaller, to fit where it does.
   It tilts toward the mouse, up to 25°, easing there, and rests facing you until the mouse
   moves and once it leaves the window. Dragged, it spins, and let go it keeps a little of
   the spin; a press on a word is always the word's, and under another menu it can't be
@@ -248,7 +388,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   top in larger words (48, its line 18), a shade brighter at rest than the rest; after a clear
   gap the starts the deeds open stand apart beneath it, smaller (26, their lines 15), closer
   together and dimmer, coming up a moment after it as the choice opens, and one still locked
-  fainter still (`Words.set_apart`). Their pieces stand back from the crate's place, shown
+  fainter still (`Words.set_apart`). Their pieces stand back from the Surveyor's place, shown
   smaller, at home and aside (`Showpiece.NOVEL`). The origin last played is highlighted, the
   Surveyor before any, so the piece on show stays as it is. The highlighted origin's piece
   shows aside, the last one shrinking away and the next growing in as the selection moves,
@@ -262,8 +402,8 @@ set aside to its right; over a run, in the middle on the soft dark field.
 - **Resume** opens the same view: Continue, highlighted, on the left, and aside your last
   camp as the save holds it, built from the save's own data with no world
   (`Snapshot.camp`): the thing of yours nearest where you stood and what stood within 12 m
-  of it, 8 at most, each with everything seated in it and its state (charge, crops, a
-  shield's switch), seen from where you stood toward it and fitted to the crate's span.
+  of it, 8 at most, each with everything stuck or fitted on it and its state (charge, crops, a
+  shield's switch), seen from where you stood toward it and fitted to the Surveyor's span.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
   (today 13:40, yesterday 21:05, 3 days ago), the run's day (counted from its own start, the
   day it began day 1), and who you came as; then how many
@@ -272,7 +412,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
 - **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
   stereo), from its start as the menu's desert shows, on the menus' bus while the menu's storm
   stays silent (`game/ui/menu_music.gd`). It fades in once the screen is up and out with the
-  screen into a run, and comes back from its start on Save & quit. (It was the radio's day or
+  screen into a run, and comes back from its start on Save & quit; unmuted, it's there at once. (It was the radio's day or
   night track by the menu's own light.) A speaker in the bottom left switches it,
   by a click or by the menu's up and down, round past the first and last words: waves
   while it plays, a cross while it's off, and it stays as you leave it (`Settings.music`).
@@ -288,9 +428,8 @@ set aside to its right; over a run, in the middle on the soft dark field.
   the fade; New run is New game in Normal, on a new seed, the save deleted. Dying before
   the run has ever been saved offers only New run. In Ironman there's no screen: the
   caption says you died and a new run begins at once.
-- **The dev console** (`game/dev/console.gd`), opened by the console action in a run with
-  nothing else open: a small dark panel near the top of the screen, a line to type into
-  under the last few lines it said. While it's up every key goes to it and nothing
+- **The dev console** (`game/dev/dev_console.gd`), opened by the console action over a run or any menu: a dark panel hanging from the top of the screen, a line to type into
+  under what it said, its bar beside it, pulled to any size within the screen and kept so. While it's up every key goes to it and nothing
   reaches the game: held keys wait as under a menu, the mouse is free, and the world
   runs on. Back closes it before anything else, and so does the console action. Up and
   down step through what was typed, and the focus-next key finishes a command's name, a
@@ -300,12 +439,12 @@ set aside to its right; over a run, in the middle on the soft dark field.
   on to the next such moment of your local day; `tu [6|9|13]`, Tu's width across the sky in degrees,
   the three under trial, alone the next of them (2026-10-17); `give <id> [n]`, a part into your hands, or a
   device, a stake, a coil or a cable at your feet, by catalog id; `fresh`, fed,
-  watered and whole on a fresh suit's kit; and the deeds' (2026-10-18): `unlockall`, every start
+  watered and whole, carrying what you carried; and the deeds' (2026-10-18): `unlockall`, every start
   open whatever deeds are done, `deed <id>`, one granted, `deeds`, which are done, and `deeds
   clear`, all forgotten (Profile & saves). Those and `help` and `scenarios` need no world, so the
-  console opens over the main menu too, with nothing else open there, standing over its words;
-  the rest say "only in a run". Closed there, the menu's word is highlighted again. The keys list and Options' controls list
-  show the console action and the dev overlay's under a heading of their own, and the
+  console opens over the main menu and its nested menus too;
+  the rest say "only in a run". Closed there, the covered menu and its focus return. The keys list and Options' controls list
+  show the console action, the creative menu's and the dev overlay's under a heading of their own, and the
   function keys the dev tools held now go to quick save and quick load (Profile & saves).
   The look-tests keep their own keys and have no console.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
@@ -324,7 +463,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
   never saved: no Save, Quit to menu in place of Save & quit, and no autosave, so the
   player's own save is left as it was. A run the console's `scenario` has been used in
   is the same from then on.
-- `look/menus` shoots the main menu, with its title and crate, in a storm, on a clear day
+- `look/menus` shoots the main menu, with its title and the Surveyor's deck, in a storm, on a clear day
   and with its music off; Options, its controls list and the question over a save with
   the prop aside; who you come as on a first run, the Surveyor alone open, then with each
   origin highlighted, its piece and gear, and with one locked beside one open, and the
@@ -348,7 +487,7 @@ set aside to its right; over a run, in the middle on the soft dark field.
    exactly as they do with it closed.
 2. **Back closes the topmost first.** With the inventory open, back closes it; pressed
    again, it opens the system menu; again, it closes that.
-3. **The menu's default.** The title is the game's name, over the starting crate, which
+3. **The menu's default.** The title is the game's name, over the starting deck, which
    is only to look at: no body in it, and a storm doesn't move it. With a save, Resume
    is highlighted and confirm shows the save's camp and numbers, and confirm again
    resumes; a save from before time played was kept still opens. With none, Resume is
@@ -378,8 +517,21 @@ set aside to its right; over a run, in the middle on the soft dark field.
 12. **The menu theme.** On the main menu "Salt" fades in on the menus' bus while the world is
     muted; a new run fades it out and stops it; Save & quit brings it back from its start.
 13. **The Surveyor leads** (2026-10-18). On a fresh profile New game opens on the Surveyor, first
-    and highlighted, its crate on show, and down passes over the starts still locked; with every
+    and highlighted, its deck on show, and down passes over the starts still locked; with every
     start open it still opens there, its word larger than the rest.
+14. **The deeds open on the latest** (2026-10-18). With none done the deeds open on the first card
+    still to do; with Green Thumb done and then Hermit, on Hermit. Deeds is new until they're looked at.
+15. **The console scrolls back** (2026-10-18). After it has said more than shows, the wheel scrolls up
+    to its first line, and what you hold isn't brought nearer; the page actions scroll a page each way,
+    the line keeping its focus, and a command run shows at once. Its bar tracks each scroll, and dragged
+    to its top shows the first line (2026-10-19).
+16. **A hidden deed** (2026-10-19). Open but not done, Eye of the Anomaly is ???? with no picture, its
+    panel giving nothing away, and Tells after it waits on ????; done, it shows its name and picture.
+    The tree is taller than it shows and opens scrolled to the deed done last, far down it, in view
+    with its panel beside it.
+17. **The console keeps its size** (2026-10-19). At first it shows every scenario at once, each on a
+    line of its own. Pulled out as far as can be, it stays within the screen; pulled in, it's smaller
+    about its middle, by whole lines; the settings keep that size, and the next session's opens at it.
 
 ## Out of scope
 
@@ -393,3 +545,43 @@ set aside to its right; over a run, in the middle on the soft dark field.
   stand out by brightness in a thin keycap instead, or keep a colour of their own. For
   now they keep a colour of their own, a soft lavender, one entry in the theme, so
   trying another is a one-line change.
+
+## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
+
+"I had to go back to main menu ... for unlockall, I should be able to do that from any menu." The console action opens over every menu, including nested origin selection, options, deeds, pause/system menus and creative search. Suspend the covered menu's input, then restore the previous selection and exact usable focus on close. Profile-changing commands such as unlockall refresh a menu already showing locked starts; returning to the main menu is not required.
+
+**Built:** `UIRoot` takes the console action before focused controls can consume it, covers the current menu, and restores its exact word, deed card or search field on close. The origin list is rebuilt with its prior selection so `unlockall` takes effect immediately. Menus probe 18 exercises origin selection, options, deeds, the run system menu, nested run options and creative search; existing console probe 8 still passes.
+
+The once-per-profile how-to is hidden while menus, the console or a fade hold input, so a sail controls hint does not overlap a sailing-notes chapter heading. Its usual timeout continues; it returns to the run only if still current. Menus probe 19 checks covered hints alongside the booklet's bounded text and navigation.
+
+## Reading carried field notes (Sanddune, 2026-10-19)
+
+The normal Varran kit carries its sailing notes so spawn weather cannot blow the
+booklet away. Using it from the carry view opens the normal reader. The carried
+objects and waist list are hidden while a menu covers them; closing the reader
+restores that view with its mouse free. Deed toasts are hidden over menus as
+how-to hints already are, so they do not overlap chapter headings. Their normal
+timeout continues and the profile retains its unread-deed indication.
+
+## Surveyor field guide reader (agreed and built 2026-10-19)
+
+The Surveyor's carried Guide uses the existing SailingNotes reader through overridable
+book title and page data. Preserve sailing chapter/paragraph navigation and reading
+from hands, world and carry view. The Guide has five concise single-page chapters;
+using it opens its chapter list, with ordinary Back/Chapters navigation. Carry-view
+instructions expose Use to read, reinforced by the short first-carried hint; no
+automatic reader popup or new reading deed.
+Check both existing booklet behavior and the real Guide at 1280 by 720.
+
+As built, SailingNotes exposes `book_title()` and `pages()`; the Surveyor subclass
+supplies its own content and first-carried hint. Existing sailing reader probe 19
+passes unchanged. In actual 1280 by 720 captures all five Guide pages and their
+navigation fit; body heights were 216, 243, 216, 243 and 297 px. All action macros
+resolved, Back returned to chapters, and closing chapters restored the open carry
+view with its mouse free. The guide's pale survey-cross cover is distinct from the
+teal sailing booklet, built from existing procedural pieces and materials.
+
+The Guide's introductory hint uses local 20 px BBCode text, with a shorter first
+survey sentence, so it is readable at 720p without changing other hints or the
+reader. A second unseen 1280 by 720 capture shows both lines fitting without extra
+wrapping or clipping; the five reader pages retain the same measured heights.

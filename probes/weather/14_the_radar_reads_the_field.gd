@@ -1,6 +1,6 @@
 extends WeatherProbe
 ## Wind & storms probe 14: the radar reads the field. A Console with a radar
-## stands in the clear with a front a few kilometres off, the clock stopped.
+## stands on a plate in the clear with a front a few kilometres off, the clock stopped.
 ## Once it has swept round, the front it reports is the field's: as near as
 ## the nearest stormy ground in every direction, and that way. Inside a
 ## storm, it says so.
@@ -15,8 +15,11 @@ func run() -> void:
 	await load_weather()
 	world.player.set_physics_process(false)
 	world.time_warp = 0.0
-	var made := Scenarios.standing(world, &"console", [&"battery", &"radar"], [0.0, 2.0]) as Console
-	made.freeze = true
+	# On a plate: a chassis with its battery beside it.
+	var rig := Scenarios.rig_at(world, [[&"stick", Vector2i.ZERO, &"top", Vector2(0.0, 0.1), 0.0, [&"console", [&"radar"]], &"console"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.3, -0.35), 0.0, &"battery"]], [0.0, 2.0], false)
+	var made: Console = rig.named.console
+	rig.deck.freeze = true
 	var x := world.world_x(made.global_position.x)
 	var z := world.world_z(made.global_position.z)
 	world.time = find_time(func(t: float) -> bool:

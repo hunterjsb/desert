@@ -44,17 +44,3 @@ func run() -> void:
 	press(&"console")
 	press(&"console")
 	check(not console.visible and console._line.text == "", "the console action closes it too, typing nothing")
-
-
-## Each character typed, as its key pressed and let go.
-func type(text: String) -> void:
-	for c in text:
-		var key := InputEventKey.new()
-		key.keycode = KEY_SPACE if c == " " else OS.find_keycode_from_string(c.to_upper())
-		key.physical_keycode = key.keycode
-		key.unicode = c.unicode_at(0)
-		key.pressed = true
-		get_viewport().push_input(key)
-		key = key.duplicate()
-		key.pressed = false
-		get_viewport().push_input(key)

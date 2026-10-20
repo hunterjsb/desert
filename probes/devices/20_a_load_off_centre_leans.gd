@@ -1,9 +1,9 @@
 extends LineProbe
-## Devices & mods probe 20: a load off centre leans a crate. A crate frame on
-## its one tray, a solar panel on each top mount, floats level, its load
-## right over its tray. Another with a big battery in its back slot, running
-## both on a cable, leans toward the battery and floats on, still and
-## nowhere near tipping.
+## Devices & mods probe 20: a load off centre leans a piece. A chassis piece
+## on one tray under its middle, a battery in its middle and a solar panel
+## either side, floats level, its load right over its tray. Another with a
+## big battery stuck at its back edge leans toward the battery and floats on,
+## still and nowhere near tipping.
 
 ## Level within this, degrees; leaning, at least this and never past the most.
 const LEVEL := 1.0
@@ -14,17 +14,13 @@ const MOST := 20.0
 func run() -> void:
 	await load_lines()
 	var flat := flat_spot(0.0, 4.0, 5.0)
-	var even := _crate(flat + Vector3(-1.5, 0.0, 0.0), [&"solar_panel", &"solar_panel"])
-	var heavy := _crate(flat + Vector3(1.5, 0.0, 0.0), [&"big_battery"])
-	# The battery runs both, on a cable, so nothing in the level one leans it.
-	var cable := Catalog.cable(world, flat)
-	for i in 2:
-		var port: Socket = [even, heavy][i].sockets().filter(func(s: Socket) -> bool: return s.kind == &"port")[0]
-		[even, heavy][i].fit(cable.plugs[i], port)
+	var even := _piece(flat + Vector3(-1.5, 0.0, 0.0), [[Vector2(0.0, 0.3), &"solar_panel"], [Vector2(0.0, -0.3), &"solar_panel"]])
+	# At its back edge, the way out of its +Z side.
+	var heavy := _piece(flat + Vector3(1.5, 0.0, 0.0), [[Vector2(0.0, -0.4), &"big_battery"]])
 	await simulate(5.0)
 	print("load over its tray: %.2f° from level; a big battery at its back: %.2f°, %.3f m up, turning %.4f rad/s"
 		% [_tilt(even), _tilt(heavy), clearance(heavy), heavy.angular_velocity.length()])
-	check(even.stats().hovering and _tilt(even) < LEVEL, "its load right over its tray, a crate floats level")
+	check(even.stats().hovering and _tilt(even) < LEVEL, "its load right over its tray, a piece floats level")
 	# Level, the way out of its back; leaning toward it, its top tips that way.
 	var toward := heavy.global_basis.z * Vector3(1.0, 0.0, 1.0)
 	check(heavy.stats().hovering and _tilt(heavy) > LEANS and _tilt(heavy) < MOST
@@ -32,11 +28,14 @@ func run() -> void:
 		"a big battery at its back leans it toward the battery, and it floats on, still")
 
 
-## A crate frame on a tray with parts in it, floating where it rests over a place.
-func _crate(at: Vector3, parts: Array) -> Device:
-	var made := device(&"crate_frame", at, 0.0)
-	for id: StringName in [&"hover_tray"] + parts:
-		fit_part(made, id)
+## A piece on a tray under its middle, a battery in its middle and these
+## stuck on its top at their places, floating where it rests over a place.
+func _piece(at: Vector3, parts: Array) -> Chassis:
+	var made := device(&"chassis", at, 0.0) as Chassis
+	Stick.put(made, made, Chassis.BOTTOM, Vector2.ZERO, 0.0, Catalog.part(&"hover_tray"))
+	Stick.put(made, made, Chassis.TOP, Vector2.ZERO, 0.0, Catalog.part(&"battery"))
+	for each: Array in parts:
+		Stick.put(made, made, Chassis.TOP, each[0], 0.0, Catalog.part(each[1]))
 	made.global_position.y += made.rest_height()
 	return made
 

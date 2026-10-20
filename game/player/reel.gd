@@ -2,11 +2,12 @@ class_name Reel
 extends Node3D
 ## Working a line hand over hand: reel in draws it in a notch, pay out gives a
 ## notch back, up to all there is of it. It works the line's end in your
-## hand, else the line at your waist you look nearest along. Only the line draws, pulling
+## hand, else the waist line chosen in the carry view. Only the line draws, pulling
 ## both its ends, so what's on it comes only as hard as your strength allows;
 ## against a stake, or anything too heavy to come, you step in along it
-## instead. Each notch is a stroke of your hand, the rope gathers into a coil
-## where it's on you, and it rubs through your hands as it comes.
+## instead. A sheet runs through its block, so what comes in is its inboard,
+## as hard as its sail allows. Each notch is a stroke of your hand, the rope
+## gathers into a coil where it's on you, and it rubs through your hands as it comes.
 
 ## One scroll step, m.
 const NOTCH := 0.25
@@ -19,11 +20,11 @@ const PACE := 1.0
 const STRAIN := 0.5
 ## A stroke dips your hand this far, m, across the line so it never stretches it.
 const STROKE := 0.04
-## The waist line being worked stays the one until another lies this much
-## nearer your aim, as a share of its angle off it.
-const STICKY := 0.7
+const CHOOSE_LINE := "Open carry view and choose a rope"
 
 var rope: Rope
+## A chosen waist end, or null when no rope is selected. Never a physical tie.
+var _chosen: RigidBody3D
 ## The length it's being reeled to, m.
 var wanted := 0.0
 ## Where your reel walks you in, m/s along engine x and z: toward what won't come.
@@ -60,29 +61,60 @@ func _ready() -> void:
 	add_child(_sound)
 
 
-## The line reel in and pay out work now: its end in your hand, else, of
-## the lines at your waist, the one whose far end you look nearest, so with
-## a sheet and a mooring line both there you trim looking at the sail; the
-## last tied on a tie. None while a coil still pays it out.
+## A held line wins; otherwise only the explicit carry-view choice is worked.
 func line() -> Rope:
 	var held := in_hand()
 	if held != null:
 		return held
-	var tied := _player.waist.tied
-	var eye := _player.camera.global_transform
-	var best: Rope = null
-	var nearest := INF
-	for i in range(tied.size() - 1, -1, -1):
-		var waisted := _line_of(tied[i])
-		if waisted == null or not is_instance_valid(waisted.a) or not is_instance_valid(waisted.b):
+	var chosen := chosen_body()
+	return _line_of(chosen) if chosen != null else null
+
+
+## Live waist ends that can be worked individually, in tie order.
+func waist_lines() -> Array[RigidBody3D]:
+	var found: Array[RigidBody3D] = []
+	for body in _player.waist.tied:
+		if _live_waist(body):
+			found.append(body)
+	return found
+
+
+## Count actual connections, including several ropes carried by a waist stake.
+func connected_ropes() -> Array[Rope]:
+	var found: Array[Rope] = []
+	for body in _player.waist.tied:
+		if not is_instance_valid(body):
 			continue
-		var off := (-eye.basis.z).angle_to(_far(waisted).global_position - eye.origin)
-		if waisted == rope:
-			off *= STICKY
-		if off < nearest:
-			nearest = off
-			best = waisted
-	return best
+		for child in body.get_children():
+			if child is RopeEnd:
+				for on in _player.world.ropes.lines_on(child):
+					if _live_rope(on) and not found.has(on):
+						found.append(on)
+	return found
+
+
+func _live_rope(on: Rope) -> bool:
+	return on != null and _player.world.ropes.ropes.has(on) and is_instance_valid(on.a) \
+		and is_instance_valid(on.b) and is_instance_valid(on.a.holder) and is_instance_valid(on.b.holder)
+
+
+## Explicit selection is lost when its physical tie is lost.
+func chosen_body() -> RigidBody3D:
+	if not is_instance_valid(_chosen) or not _live_waist(_chosen):
+		_chosen = null
+	return _chosen
+
+
+## Null clears the choice; selecting never changes a rope or tie.
+func choose(body: RigidBody3D) -> void:
+	_chosen = body if _live_waist(body) else null
+
+
+func _live_waist(body: RigidBody3D) -> bool:
+	if not is_instance_valid(body) or not _player.waist.holds(body):
+		return false
+	var on := _line_of(body)
+	return _live_rope(on)
 
 
 ## The line whose end is in your hand, or null.
@@ -91,10 +123,51 @@ func in_hand() -> Rope:
 	return _line_of(hands.held) if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held) else null
 
 
+## The waist end explicitly selected for reeling.
+func waist_body() -> RigidBody3D:
+	var selected := line()
+	if selected == null:
+		return null
+	for end in [selected.a, selected.b]:
+		if is_instance_valid(end) and _player.waist.holds(end.holder):
+			return end.holder
+	return null
+
+
+## A named target and its live load make the wheel's choice visible.
+func waist_readout() -> String:
+	var body := waist_body()
+	if body == null:
+		return ""
+	return waist_description(body) + (" · selected" if body == chosen_body() else "")
+
+
+## The same name and live numbers in the carry view and the sailing readout.
+func waist_description(body: RigidBody3D) -> String:
+	if not _live_waist(body):
+		return ""
+	var selected := _line_of(body)
+	var label := "Sail sheet" if Mast.sheet_end(body) else "Waist line"
+	var far := _far(selected)
+	if label == "Waist line" and far.holder is Chassis and _player._bridled():
+		var deck := far.holder as Chassis
+		var middle := 0.0
+		for piece in deck.pieces():
+			middle += piece.pose().origin.x / deck.pieces().size()
+		label = "Left bow line" if deck.to_local(far.global_position).x < middle else "Right bow line"
+	elif label == "Waist line" and far.holder is Device:
+		label = "Line to " + (far.holder as Device).label.to_lower()
+	elif label == "Waist line" and far.holder is Stake:
+		label = "Stake line"
+	return "%s · %.1f m · %d N" % [label, selected.length, roundi(selected.tension)]
+
+
 ## A notch in, or out for a negative `by`. Says whether there was a line to work.
 func notch(by: int) -> bool:
 	var now := line()
 	if now == null:
+		if not connected_ropes().is_empty():
+			_player.hands.say(CHOOSE_LINE)
 		return false
 	if now != rope:
 		rope = now
@@ -135,9 +208,10 @@ func _physics_process(delta: float) -> void:
 	var pace := PACE
 	_way = signf(-off)
 	if off < 0.0:
-		# Slower as the pull nears your strength: what won't come, you step in to.
+		# Slower as the pull nears your strength, a sheet's sail's too: what
+		# won't come along the line, you step in to.
 		var strain := smoothstep(STRAIN, 1.0, rope.tension / _tuning.hand_strength)
-		pace *= 1.0 - strain
+		pace *= 1.0 - maxf(strain, smoothstep(STRAIN, 1.0, rope.haul_n / _tuning.hand_strength))
 		var far := _far(rope).global_position - _player.global_position
 		walk_in = Vector2(far.x, far.z).normalized() * PACE * strain
 	var step := clampf(off, -pace * delta, pace * delta)
@@ -164,7 +238,7 @@ func working() -> bool:
 ## The rope gathered where the line is on you, as a coil growing with it.
 func _process(_delta: float) -> void:
 	var now := line()
-	var gathered := now.full - now.length if now != null else 0.0
+	var gathered := now.full - now.length + now.haul_gathered if now != null else 0.0
 	_coil.visible = gathered > 0.05
 	if not _coil.visible:
 		return

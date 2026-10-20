@@ -26,10 +26,11 @@ const BEFORE := 10.0
 ## The share of the sun left for the shot of its last light going copper.
 const LAST_LIGHT := 0.25
 ## The camp in the bubble, as [catalog id, metres right, metres ahead, yaw
-## degrees, parts fitted], round the generator, which stands this far ahead.
+## degrees, parts fitted or, on a chassis, stuck], round the generator on its
+## plate, which stands this far ahead.
 const AHEAD := 2.5
 const CAMP := [
-	[&"crate_frame", -1.6, 1.2, 20.0, [&"battery", &"lamp"]],
+	[&"chassis", -1.6, 1.2, 20.0, [&"battery", &"lamp"]],
 	[&"planter", 1.8, 0.4, -10.0, [&"battery", &"root_tuber", &"root_tuber"]],
 ]
 ## How far off the wall stands, m, and how far up you look at it.
@@ -258,23 +259,29 @@ func _camp() -> Array[Device]:
 	var at := player.global_position + ahead * AHEAD
 	var turn := Basis(Vector3.UP, player.global_rotation.y)
 	var made: Array[Device] = []
-	var generator := _device(&"shield", [&"battery"]) as ShieldGenerator
-	_set_down(generator, &"shield", at, turn)
-	made.append(generator)
+	var plate := _device(&"chassis", [&"shield", &"battery"])
+	_set_down(plate, &"chassis", at, turn)
+	made.append(plate)
+	var generator := plate.mounted()[0] as ShieldGenerator
 	for entry: Array in CAMP:
 		var device := _device(entry[0], entry[4])
 		_set_down(device, entry[0], at + turn * Vector3(entry[1], 0.0, -entry[2]),
 			turn * Basis(Vector3.UP, deg_to_rad(entry[3])))
 		made.append(device)
-	generator.battery().charge_wh = generator.battery().capacity()
+	plate.battery().charge_wh = plate.battery().capacity()
 	generator.stand(true)
 	return made
 
 
+## A device with parts fitted, or a chassis with these stuck on its top.
 func _device(id: StringName, fitted: Array) -> Device:
 	var made := Catalog.device(id)
 	world.content.add_child(made)
 	made.global_position = world.player.global_position + Vector3.UP * 50.0
+	if made is Chassis:
+		for i in fitted.size():
+			Stick.put(made, made, Chassis.TOP, [Vector2(-0.2, 0.2), Vector2(0.28, -0.28)][i], 0.0, Rig.make(fitted[i]))
+		return made
 	for part_id: StringName in fitted:
 		var part := Catalog.part(part_id)
 		world.content.add_child(part)

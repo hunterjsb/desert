@@ -29,6 +29,8 @@ const PARTS := {
 		[&"plug", 3],
 		[&"hose_end", 2],
 		[&"compass", 1],
+		[&"frame", 1],
+		[&"fabric", 1],
 	],
 	DEEP: [
 		[&"big_battery", 3],
@@ -41,26 +43,28 @@ const PARTS := {
 		[&"sail", 2],
 		[&"skates", 2],
 		[&"board_plate", 2],
+		[&"frame", 2],
 	],
 }
 const DEVICES := {
 	SURFACE: [
-		[&"crate_frame", 3],
-		[&"charger", 2],
+		[&"chassis", 4],
+		[&"light_panel", 2],
 		[&"planter", 2],
 		[&"stake", 2],
 		[&"survival_kit", 1],
 		[&"radio", 2],
-		[&"chassis", 1],
+		[&"survey_receiver", 2],
 		[&"bedroll", 1],
+		# What a company surveyor before you dropped: its own issue.
+		[&"power_box", 1],
 	],
 	DEEP: [
-		[&"crate_frame", 2],
+		[&"chassis", 3],
 		[&"turbine", 2],
 		[&"condenser", 2],
 		[&"shield", 2],
 		[&"board", 1],
-		[&"chassis", 1],
 		[&"console", 1],
 		[&"mast", 1],
 	],
@@ -72,12 +76,15 @@ const SURVIVAL_KIT := {&"water": [&"canister"], &"food": [&"ration"], &"plant_st
 	&"plant_pot": [&"vat_fungus"]}
 const KIT_FILL := 0.75
 const KIT_SEEDS_IN_THE_OPEN := 0.1
-## What a found device's sockets hold, by socket kind; a kind not listed is
-## found empty. A Console is a deep find, and its screen and instruments come
-## only in one.
+## What a found device's sockets hold, by socket kind, and a found chassis's
+## spots, by the fills each names (top, battery, bottom); a kind not listed
+## is found empty. A Console is a deep find, and its screen and instruments
+## come only in one. A power box's bays hold the cells it was built for, so
+## the heaviest box found still drags by hand.
 const FILLS := {
-	SURFACE: {&"battery": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"], &"water": [&"canister"]},
-	DEEP: {&"battery": [&"big_battery", &"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
+	SURFACE: {&"battery": [&"battery"], &"bay": [&"battery"], &"ring": [&"hook"], &"top": [&"lamp"],
+		&"water": [&"canister"]},
+	DEEP: {&"battery": [&"big_battery", &"battery"], &"bay": [&"battery"], &"ring": [&"hook"], &"bottom": [&"hover_tray"],
 		&"top": [&"solar_panel", &"lamp"], &"water": [&"canister"], &"screen": [&"screen"],
 		&"computer_mod": [&"anemometer", &"barometer", &"hygrometer", &"particle_sensor"], &"computer_top": [&"radar"],
 		&"sail": [&"sail"]},
@@ -193,9 +200,10 @@ static func on_way(sites: Sites, x: float, z: float, scatter: float) -> bool:
 ## whose hall `taken(site id, socket)` says is yours already; picked through
 ## the site index. {x, z, coord, index, site} in world metres, or {} if none
 ## is in reach.
-static func beacon(_run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable) -> Dictionary:
+static func beacon(_run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable, reach_m := -1.0) -> Dictionary:
 	var size := float(tuning.chunk_size)
-	var ruin := sites.nearest(x, z, tuning.radio_reach_m, func(site: Site) -> bool:
+	var reach := tuning.radio_reach_m if reach_m < 0.0 else reach_m
+	var ruin := sites.nearest(x, z, reach, func(site: Site) -> bool:
 		return site is Ruin and SiteLoot._stream(site.loot, BEACON).randf() < tuning.beacon_share \
 			and not taken.call(site.id, 0)) as Ruin
 	if ruin == null:
@@ -227,15 +235,27 @@ static func _fill(spec: Dictionary, rng: RandomNumberGenerator) -> void:
 		return
 	var packed: bool = spec.id == &"survival_kit"
 	var fills: Dictionary = SURVIVAL_KIT if packed else FILLS[layer]
-	var sockets: Array = Catalog.DEVICES[spec.id].sockets
-	for i in sockets.size():
-		if not fills.has(sockets[i][0]):
+	var holds := holds(spec.id)
+	for i in holds.size():
+		if not fills.has(holds[i]):
 			continue
 		var share: float = kind.fill
 		if packed:
-			share = KIT_SEEDS_IN_THE_OPEN if sockets[i][0] in [&"plant_pot", &"plant_standard", &"plant_deep"] else KIT_FILL
+			share = KIT_SEEDS_IN_THE_OPEN if holds[i] in [&"plant_pot", &"plant_standard", &"plant_deep"] else KIT_FILL
 		if rng.randf() < share:
-			spec.fill.append([i, _any(rng, fills[sockets[i][0]]), rng.randf_range(kind.charge.x, kind.charge.y)])
+			spec.fill.append([i, _any(rng, fills[holds[i]]), rng.randf_range(kind.charge.x, kind.charge.y)])
+
+
+## What a found device can hold, in order, each by the fills it draws from:
+## its sockets by kind, then a chassis's spots.
+static func holds(id: StringName) -> Array[StringName]:
+	var out: Array[StringName] = []
+	var spec: Dictionary = Catalog.DEVICES[id]
+	for socket: Array in spec.sockets:
+		out.append(socket[3].get("fills", socket[0]) if socket.size() > 3 else socket[0])
+	for spot: Array in spec.get("spots", []):
+		out.append(spot[3])
+	return out
 
 
 ## Somewhere on the chunk's open sand on the way, clear of structures and of
@@ -276,7 +296,10 @@ static func make(spec: Dictionary) -> RigidBody3D:
 ## its site's era and kind, before it's in the world.
 static func bare(spec: Dictionary) -> RigidBody3D:
 	var body: RigidBody3D
-	if not spec.device:
+	if spec.has("rig"):
+		# A rig kept whole: its deck and all that's on it, one find.
+		body = Rig.build(null, spec.rig, spec.charge).deck
+	elif not spec.device:
 		body = _part(spec.id, spec.charge, spec.layer, spec.get("sealed", false))
 	else:
 		body = Catalog.stake() if spec.id == &"stake" else Catalog.device(spec.id)
@@ -306,7 +329,12 @@ static func fit(device: Device, spec: Dictionary, k: int) -> void:
 	var part := _part(entry[1], entry[2], spec.layer, spec.id == &"survival_kit" or spec.get("sealed", false))
 	if spec.has("era"):
 		Catalog.found_in(part, spec.era, spec.kind, hash([spec.seed, k]))
-	device.fit(part, device.sockets()[entry[0]])
+	var slots: Array = Catalog.DEVICES[spec.id].sockets
+	if entry[0] < slots.size():
+		device.fit(part, device.frame_sockets()[entry[0]])
+		return
+	var spot: Array = Catalog.DEVICES[spec.id].spots[entry[0] - slots.size()]
+	Stick.put(device as Chassis, device as Chassis, spot[0], spot[1], deg_to_rad(spot[2]), part)
 
 
 ## Nothing found runs until it's yours; its light still shows what it holds.

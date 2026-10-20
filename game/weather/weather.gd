@@ -24,6 +24,13 @@ const SUN_COLOR := Color(1.0, 0.95, 0.86)
 const AMBIENT_COLOR := Color(0.8, 0.72, 0.62)
 ## Light that has come through a storm's dust is reddened by it, as the dust is.
 const STORM_TINT := Color(0.95, 0.8, 0.62)
+## Inside a storm the haze closes in to these, m: all of anything past the
+## second is lost in the dust, as Plume.seen_through counts a storm's dust.
+const STORM_FOG := Vector2(50.0, 400.0)
+## Stood in a plume's dust, the light dims by this share of a storm's.
+const PLUME_SHADE := 0.5
+## The haze thins with height over this many m (the storm pass's).
+const PLUME_HAZE_HEIGHT := 700.0
 ## Grains in the air are lit from every side and throw the sun forward, so they
 ## show half again brighter than the same sand lying on the ground.
 const GRAIN_GLOW := 1.5
@@ -52,6 +59,10 @@ var rumbles: Rumbles
 var _plumes_due := 0.0
 var _plumes_at := 0.0
 var lee: Lee
+## Every deck's faces that cast a lee, as of the last tick (Faces).
+var walls: Array[Faces] = []
+## What the wind on decks' faces cost last tick, µs.
+var faces_us := 0.0
 ## The wind, the lee and the sand they move round you, as the GPU draws with them.
 var wind_map: WindMap
 var eye: Eye
@@ -88,6 +99,13 @@ var _shelters: Array[Node] = []
 var _shelters_seen := -1
 var _meter: EyeMeter
 var _sand_storm := -1.0
+## The plumes' drawing, and the light it's handed: the sun's way and light, the
+## sky's, the ring's, the haze's colour and its fog, and Tu's way and shine.
+var plume_draw: PlumeDraw
+var _plume_light: Array[Vector3] = []
+var _in_plume := 0.0
+## Main-thread time handing the plumes to PlumeDraw this frame, ms.
+var plumes_hand_ms := 0.0
 
 
 func setup(world: World) -> void:
@@ -102,6 +120,10 @@ func setup(world: World) -> void:
 	_environment = (world.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_sun = world.get_node("Sun")
 	_sun_energy = _sun.light_energy
+	# Past the sun's shadow map the sand's crests shade it themselves.
+	var sand := world.terrain.sand_material as ShaderMaterial
+	if sand != null:
+		sand.set_shader_parameter("shadow_reach", _sun.directional_shadow_max_distance)
 	# The storm pass draws the disc, so a wall can cover it.
 	_sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
 	_haze_color = _environment.fog_light_color
@@ -112,7 +134,10 @@ func setup(world: World) -> void:
 	eye = Eye.new(_tuning)
 	_meter = EyeMeter.new()
 	_meter.on_reading = eye.see
-	var effects: Array[CompositorEffect] = [_meter]
+	# The plumes over the storm pass, before the eye takes in the frame.
+	plume_draw = PlumeDraw.new()
+	var effects: Array[CompositorEffect] = [plume_draw, _meter]
+	RenderingServer.frame_pre_draw.connect(_hand_plumes)
 	world.player.camera.compositor = Compositor.new()
 	world.player.camera.compositor.compositor_effects = effects
 	face.setup(world, field, map)
@@ -130,22 +155,38 @@ func setup(world: World) -> void:
 
 
 ## Each felt_*() reads now, or a given world time t: power ticks read theirs.
-## Shelter is always as it stands now; the lee is the wind's at that time.
-## A bubble keeps out its share of what the lee lets through.
-func felt_storm(at: Vector3, t := NAN) -> float:
-	return field_storm(at, t) * (1.0 - lee_at(at, &"storm", t)) * (1.0 - shelter_at(at, &"storm"))
+## Shelter and the camps' walls are always as they stand now; the ground's
+## lee is the wind's at that time. A wall's lee takes its share of what the
+## ground's lets through, and a bubble its share of what's left. `except`, a
+## deck, reads as if its own walls didn't stand: its own faces shade each
+## other instead (Faces).
+func felt_storm(at: Vector3, t := NAN, except: Object = null) -> float:
+	return field_storm(at, t) * (1.0 - lee_at(at, &"storm", t)) * (1.0 - _tuning.lee_storm * walls_at(at, except)) \
+		* (1.0 - shelter_at(at, &"storm"))
 
 
 ## Horizontal wind, m/s, in engine axes.
-func felt_wind(at: Vector3, t := NAN) -> Vector3:
-	return open_wind(at, t) * (1.0 - shelter_at(at, &"wind"))
+func felt_wind(at: Vector3, t := NAN, except: Object = null) -> Vector3:
+	return open_wind(at, t, except) * (1.0 - shelter_at(at, &"wind"))
 
 
 ## The wind in the open air at a place, as if no bubble stood: the field's,
-## less what the ground's lee takes. What the dust outside a bubble rides.
-func open_wind(at: Vector3, t := NAN) -> Vector3:
+## less what the ground's lee and the camps' walls take. What the dust
+## outside a bubble rides.
+func open_wind(at: Vector3, t := NAN, except: Object = null) -> Vector3:
 	var blowing := field_wind(at, t)
-	return blowing * (1.0 - _lee(at, blowing, _tuning.lee_wind))
+	return blowing * (1.0 - _lee(at, blowing, _tuning.lee_wind)) * (1.0 - _tuning.lee_wind * walls_at(at, except))
+
+
+## How much of a full lee the camps' upright faces give a place, 0 to 1, as
+## they stand now: the best of them, a deck's own aside if it's `except`.
+func walls_at(at: Vector3, except: Object = null) -> float:
+	var best := 0.0
+	var skip := except.get_instance_id() if except != null else 0
+	for faces in walls:
+		if faces.deck_id != skip:
+			best = maxf(best, faces.lee_at(at))
+	return best
 
 
 ## Sunlight reaching a place, 0 to 1: the sky's share after Tu and the storm
@@ -161,8 +202,14 @@ func felt_light(at: Vector3, t := NAN) -> float:
 ## everything that deals damage: wear, harm, crops and a shield's load. Every
 ## forecast and instrument reads the clean field instead.
 func hidden(at: Vector3, t := NAN) -> Vector2:
-	var h := field.anomaly_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
+	var h := anomaly(at, t)
 	return Vector2(lerpf(1.0, _tuning.anomaly_particles, h), lerpf(1.0, _tuning.anomaly_wind, h))
+
+
+## How deep in an anomaly's heart a place stands, now or at world time t, 0
+## to 1: its hidden term.
+func anomaly(at: Vector3, t := NAN) -> float:
+	return field.anomaly_at(_world.world_x(at.x), _world.world_z(at.z), _when(t))
 
 
 ## The storm the field makes at a place, as if no shelter stood.
@@ -274,10 +321,54 @@ func _physics_process(delta: float) -> void:
 
 
 func _exit_tree() -> void:
+	if RenderingServer.frame_pre_draw.is_connected(_hand_plumes):
+		RenderingServer.frame_pre_draw.disconnect(_hand_plumes)
 	if map != null:
 		map.finish()
 	if wind_map != null:
 		wind_map.finish()
+
+
+## Just before each frame draws, after every plume has worked itself out: the
+## light, the storm map and the plumes in sight, to PlumeDraw.
+func _hand_plumes() -> void:
+	var started := Time.get_ticks_usec()
+	_pack_plumes()
+	plumes_hand_ms = (Time.get_ticks_usec() - started) / 1000.0
+
+
+func _pack_plumes() -> void:
+	var drawn: Array[Plume] = []
+	for plume in plumes:
+		if plume.visible:
+			drawn.append(plume)
+	var values := face.uniforms
+	if drawn.is_empty() or _plume_light.size() < 8 or values.is_empty():
+		plume_draw.show(PackedFloat32Array(), 0, [])
+		return
+	var l := _plume_light
+	var albedo := _linear(_tuning.wall_dust_color)
+	var shift: Vector2 = values.storm_map_shift
+	var air: Vector2 = values.storm_air
+	var frame := PackedFloat32Array([
+		l[0].x, l[0].y, l[0].z, _tuning.wall_glow,
+		l[1].x, l[1].y, l[1].z, PLUME_HAZE_HEIGHT,
+		l[2].x, l[2].y, l[2].z, 0.0,
+		l[3].x, l[3].y, l[3].z, 0.0,
+		l[6].x, l[6].y, l[6].z, 0.0,
+		l[7].x, l[7].y, l[7].z, 0.0,
+		albedo.x, albedo.y, albedo.z, 0.0,
+		l[4].x, l[4].y, l[4].z, 0.0,
+		l[5].x, l[5].y, l[5].z, 0.0,
+		_tuning.plume_fade_m.x, _tuning.plume_fade_m.y, _tuning.skyline_m, Plume.FAR_FALL,
+		_tuning.wall_fade_begin, _tuning.wall_fade_end, _tuning.wall_height, _tuning.wall_roof_soft,
+		values.storm_map_blend, values.storm_map_ready, values.storm_map_extent, 0.0,
+		shift.x, shift.y, air.x, air.y,
+		_world.time, _in_plume, 0.0, 0.0])
+	for plume in drawn:
+		frame.append_array(plume.block)
+	var noise: Texture3D = face.material.get_shader_parameter("storm_noise")
+	plume_draw.show(frame, drawn.size(), [map.texture_a.get_rid(), map.texture_b.get_rid(), noise.get_rid()])
 
 
 ## Every drawn frame, after the world has moved and shifted.
@@ -350,16 +441,29 @@ func wind_load(body: CollisionObject3D, t := NAN, span := 0.0) -> float:
 
 
 ## Loose bodies feel drag: a push along the air's speed past them, growing
-## with its square, so a breeze leaves a box be and a storm slides it.
+## with its square, so a breeze leaves a box be and a storm slides it. A
+## deck's whole faces each take their own (Faces), and cast the lee the felt
+## wind reads from the next tick.
 func _blow_loose_bodies() -> void:
+	var casting: Array[Faces] = []
+	var faces_took := 0
 	for child in _world.content.get_children():
 		var body := child as RigidBody3D
 		if body == null or body.freeze:
 			continue
-		var catch := catch_of(body)
-		var past := felt_wind(body.global_position) - body.linear_velocity
+		var deck := body as Chassis
+		var catch := catch_of(body) if deck == null else deck.middle_catch()
+		var felt := felt_wind(body.global_position, NAN, body)
+		var past := felt - body.linear_velocity
 		past.y = 0.0
 		body.apply_central_force(past * past.length() * catch)
+		if deck != null:
+			var from := Time.get_ticks_usec()
+			if deck.faces.blow(deck, felt):
+				casting.append(deck.faces)
+			faces_took += Time.get_ticks_usec() - from
+	walls = casting
+	faces_us = faces_took
 
 
 func _show(delta: float) -> void:
@@ -390,7 +494,15 @@ func _show(delta: float) -> void:
 	# while their shadows go. A bubble clears the air, not the light.
 	var towering := atan2(_tuning.wall_height - here.y, maxf(-seen_front, 1.0)) / (PI * 0.5)
 	var coverage := lerpf(clampf(towering, 0.0, 1.0) * 0.5, 1.0, seen_shade)
-	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, seen_shade)
+	# A plume's dust round you: the deepest you stand in, and how far it lets you see.
+	var in_plume := 0.0
+	var plume_seen := INF
+	for plume in plumes:
+		if plume.visible and plume.air > in_plume:
+			in_plume = plume.air
+			plume_seen = plume.seen_m
+	_in_plume = in_plume
+	var dim := lerpf(1.0, 1.0 - _tuning.storm_darkness, maxf(seen_shade, in_plume * PLUME_SHADE))
 	var sky_left := 1.0 - 0.55 * coverage
 	var overhead := Vector3(sun.x * 0.15, 1.0, sun.z * 0.15).normalized()
 	var light_from := sun.slerp(overhead, seen_shade * up)
@@ -421,11 +533,15 @@ func _show(delta: float) -> void:
 	# dust itself is the storm pass's; the haze only closes in behind it, never
 	# within the few metres the dust leaves.
 	var haze_light := daylight * sky_left * dim
-	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, seen_storm) * fill
+	# In a plume the air closes in the same way, to how far its dust lets you see.
+	var haze_color := _haze_color.lerp(_tuning.storm_fog_color, maxf(seen_storm, in_plume)) * fill
 	_environment.fog_light_color = haze_color
 	_environment.fog_light_energy = haze_light
-	_environment.fog_depth_begin = lerpf(_tuning.haze_begin, 50.0, seen_storm)
-	_environment.fog_depth_end = lerpf(_tuning.haze_end, 400.0, seen_storm)
+	var fog_end := lerpf(_tuning.haze_end, STORM_FOG.y, seen_storm)
+	_environment.fog_depth_begin = lerpf(lerpf(_tuning.haze_begin, STORM_FOG.x, seen_storm),
+		minf(STORM_FOG.x, plume_seen * 0.1), in_plume)
+	_environment.fog_depth_end = lerpf(fog_end, minf(fog_end, plume_seen), in_plume)
+	_environment.fog_density = lerpf(_tuning.haze_strength, 1.0, in_plume)
 	_world.terrain.show_far(not in_storm)
 	var air := lerpf(1.0, 0.45, coverage) * dim
 	sky.show(t, here, sun, shown, Vector3(fill.r, fill.g, fill.b) * daylight * air,
@@ -448,10 +564,10 @@ func _show(delta: float) -> void:
 	# The light round the camera, which a shell's glass catches.
 	face.set_light("shell_light", _linear(_environment.ambient_light_color) * _environment.ambient_light_energy)
 	var tu := day.tu_direction(t, moon.latitude, moon.longitude)
-	for plume in plumes:
-		plume.light(sun, sun_light, sky_light, ring_light, _linear(haze_color) * haze_light,
-			Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
-			tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light)
+	# A column faces half the sky, as a wall does.
+	_plume_light = [sun, sun_light, sky_light * 0.6, ring_light, _linear(haze_color) * haze_light,
+		Vector3(_environment.fog_depth_begin, _environment.fog_depth_end, _environment.fog_density),
+		tu, _linear(SkyView.TU_SHINE_COLOR) * _sun_energy * tu_light]
 
 	# Outside a bubble the dust is the storm's own: it rides the open air's
 	# wind, slowed in a lee, and thickens with the storm, and the bubble only
@@ -462,7 +578,8 @@ func _show(delta: float) -> void:
 	var ring_grains := ring_light * face.ring_at(here, sun) if ring > 0.0 else Vector3.ZERO
 	atmosphere.show_eclipse(sun, _linear(_tuning.sand_color) * GRAIN_GLOW * ring_grains, (1.0 - shown) * up, delta)
 	atmosphere.show_weather(camera, _world.height_under(here), open_wind(_world.player.global_position),
-		shelter_at(here, &"storm"), seen_shade, near, grains, face.sigma() * seen_shade, _world.time_warp > 0.0, delta)
+		shelter_at(here, &"storm"), seen_shade, in_plume, near, grains,
+		maxf(face.sigma() * seen_shade, 3.0 / plume_seen * in_plume), _world.time_warp > 0.0, delta)
 
 
 func _report() -> void:
@@ -481,7 +598,8 @@ func _report() -> void:
 		if seen_front >= 0.0 else "%dm" % roundi(-seen_front)))
 	Dev.put("weather/seen", "%d%%" % roundi(seen_storm * 100.0))
 	Dev.put("weather/shel", "in" if shelter_at(_world.player.global_position, &"storm") > 0.0 else "-")
-	var lee_cut := lee_at(_world.player.global_position, &"wind")
+	var lee_cut := 1.0 - (1.0 - lee_at(_world.player.global_position, &"wind")) \
+		* (1.0 - _tuning.lee_wind * walls_at(_world.player.global_position))
 	Dev.put("weather/lee", "%d%%" % roundi(lee_cut * 100.0) if lee_cut > 0.0 else "-")
 	var eta := next_change_time - t
 	Dev.put("weather/next", "%s %s" % ["clr" if in_storm else "stm",
@@ -491,6 +609,7 @@ func _report() -> void:
 	Dev.put("weather/eye", "x%.1f" % eye.exposure() if _tuning.eye_adapts else "off")
 	Dev.put("weather/temp", "%d°C" % roundi(felt_temperature(_world.player.global_position)))
 	Dev.put("weather/map", "%.1fms %d jumps" % [map.max_upload_ms, map.rebuilds])
+	Dev.put("weather/faces", "%dus" % roundi(faces_us))
 
 
 static func _linear(color: Color) -> Vector3:

@@ -1,7 +1,7 @@
 class_name Settings
 extends RefCounted
-## The options on this machine: volume, the main menu's music and a few
-## graphics settings. Kept in their own small file, apart from the profile
+## The options on this machine: volume, the main menu's music, a few
+## graphics settings and the dev console's size. Kept in their own small file, apart from the profile
 ## and the run, and written only when someone changes one.
 
 ## Where they're kept; probes and look-tests point it at a folder of their own.
@@ -11,10 +11,15 @@ const SCALES: Array[float] = [0.5, 0.75, 1.0]
 static var volume := 1.0
 ## The main menu's music, which its switch mutes.
 static var music := true
+## The weather station's voice reading its reports from the radio: a switch,
+## since a voice out of nowhere can startle.
+static var radio_voice := true
 static var fullscreen := false
 static var vsync := true
 ## The 3D view's resolution, as a share of the window's.
 static var render_scale := 1.0
+## The dev console as it was last resized, px; none, its own first size.
+static var console_size := Vector2.ZERO
 
 
 static func load_saved() -> void:
@@ -23,18 +28,22 @@ static func load_saved() -> void:
 		return
 	volume = clampf(file.get_value("audio", "volume", volume), 0.0, 1.0)
 	music = file.get_value("audio", "music", music)
+	radio_voice = file.get_value("audio", "radio_voice", radio_voice)
 	fullscreen = file.get_value("graphics", "fullscreen", fullscreen)
 	vsync = file.get_value("graphics", "vsync", vsync)
 	render_scale = file.get_value("graphics", "render_scale", render_scale)
+	console_size = file.get_value("dev", "console_size", console_size)
 
 
 static func save() -> void:
 	var file := ConfigFile.new()
 	file.set_value("audio", "volume", volume)
 	file.set_value("audio", "music", music)
+	file.set_value("audio", "radio_voice", radio_voice)
 	file.set_value("graphics", "fullscreen", fullscreen)
 	file.set_value("graphics", "vsync", vsync)
 	file.set_value("graphics", "render_scale", render_scale)
+	file.set_value("dev", "console_size", console_size)
 	file.save(path)
 
 

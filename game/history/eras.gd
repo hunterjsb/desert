@@ -14,13 +14,15 @@ const SECOND := &"second"
 const NEW := &"new"
 ## The ground's own: older than every era, what geology leaves standing.
 const GEOLOGY := &"geology"
+## The nomads', now: what they rig and leave, from whatever every era left.
+const NOMAD := &"nomad"
 const ORDER: Array[StringName] = [COLONIAL, &"collapse", SKIMMER, FIRST, DARK, SECOND, &"feral", &"sand"]
 ## The eras that left structures.
 const BUILT: Array[StringName] = [COLONIAL, SKIMMER, FIRST, SECOND]
 ## As bits, for what a path was used in.
 const BITS := {COLONIAL: 1, SKIMMER: 2, FIRST: 4, DARK: 8, SECOND: 16}
 const NAMES := {COLONIAL: "colonial", SKIMMER: "skimmer era", FIRST: "First Kingdoms", DARK: "Dark Age",
-	SECOND: "second age", NEW: "company issue", GEOLOGY: "the ground's own"}
+	SECOND: "second age", NEW: "company issue", GEOLOGY: "the ground's own", NOMAD: "the nomads'"}
 
 ## Sand over a site by its era, m, least and most (part 4's burial table):
 ## colonial deepest, the First Kingdoms' low foundations deep, skimmer wrecks
@@ -57,7 +59,9 @@ const DRAWS: Array[String] = ["draw_w", "light_w", "clear_w", "storm_w"]
 
 ## Port Morgan's ruling families, whose heraldry First Kingdoms gear carries
 ## (part 5). Halloran's and the Rim's houses aren't named.
-const HOUSES: Array[StringName] = [&"okafor", &"kessel", &"arkwright", &"vante"]
+const HOUSES: Array[StringName] = [&"haberjack", &"pellicott", &"crake", &"vonatelli"]
+## The houses by the names older saves knew them by (session 5's renames).
+const RENAMED := {&"okafor": &"haberjack", &"kessel": &"pellicott", &"arkwright": &"crake", &"vante": &"vonatelli"}
 ## How the Dark Age held a thing together, each a set of repair work: lashed
 ## with cord, a lost part rebuilt round in ceramic, a splint of saltbush wood,
 ## a plate off something else. Defaults.
@@ -79,13 +83,14 @@ const SHARES := {
 
 
 ## A thing's lineage, found at a site of this era and kind, from the loot
-## draw's seed alone: [era, what was done, how] from its making on. Nothing
+## draw's seed alone: [era, what was done, how] from its first making on. Nothing
 ## after the colony was manufactured but the skimmer era's imports, so the
 ## rest started colonial: the First Kingdoms kept it and marked it with a
 ## house's heraldry; a second-age thing is a colonial or First Kingdoms one
 ## remade in the Dark Age, and maybe blessed after. A Dark Age cache holds
-## the remade thing before any blessing. Who made it is the thing's own
-## (Catalog.MAKERS), so a made entry's how is left empty here.
+## the remade thing before any blessing. Its colonial entity mark is assigned
+## from its catalog id (Catalog.COLONIAL_MARKS), so a made entry's how is
+## left empty here.
 static func lineage(era: StringName, kind: StringName, seed_value: int) -> Array:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([seed_value, &"lineage"])
@@ -113,6 +118,12 @@ static func lineage(era: StringName, kind: StringName, seed_value: int) -> Array
 	return []
 
 
+## A lineage an older save kept, by the houses' names now.
+static func current(line: Array) -> Array:
+	return line.map(func(entry: Array) -> Array:
+		return [entry[0], entry[1], entry[2].map(func(how: StringName) -> StringName: return RENAMED.get(how, how))])
+
+
 ## The era a thing's numbers are of: its last hands', the Dark Age's remake
 ## being second-age gear. None, a thing never found: the company's issue.
 static func era_of(line: Array) -> StringName:
@@ -122,7 +133,7 @@ static func era_of(line: Array) -> StringName:
 	return SECOND if last == DARK else last
 
 
-## Who first made it: the era its maker's stamp is of.
+## The era of the first making in a lineage.
 static func origin(line: Array) -> StringName:
 	return NEW if line.is_empty() else line[0][0]
 

@@ -11,11 +11,12 @@ that someone else might still be out there.
 
 **In the world.** The moon never made anything high-tech. It was an assembly-and-operations
 economy at the far end of a manufacturing chain, so after the cut it could fit and repair
-parts but never fabricate them. Stamps come at two levels: the assembler's mark on a whole
-device, and each component's own maker inside it. Why a find is rare depends on why it's on the
-moon: ordinary goods are common, goods only the hub ran on were only ever made in small
-numbers, and contraband, such as a deserter's military kit, is rare because someone carried it
-in. See [the lore research](../lore-research.md).
+parts but never fabricate them. Provenance marks can name different roles: the OEM that made a
+component, the contractor/integrator that assembled or fitted it, and the company that ordered
+or consigned it. A mark is not automatically a maker's mark. Why a find is rare depends on why
+it's on the moon: ordinary goods are common, goods only the hub ran on were only ever made in
+small numbers, and contraband, such as a deserter's military kit, is rare because someone
+carried it in. See [the lore research](../lore-research.md).
 
 ## What you find
 
@@ -28,10 +29,11 @@ in. See [the lore research](../lore-research.md).
   Seed vaults, below).
 - **Survival kits:** a common find, usually holding seeds and water.
 - **Lore:** fragments of what happened here.
-- **Maker's marks:** almost everything found carries the mark of whoever made it, such as a
-  government seal, a regulator's stamp, a shipyard logo, a contractor's tag, a comms
-  casing or an improvised skimmer-crew patch. Commodity parts such as batteries carry none,
-  so a mark means something where it appears. The player reconstructs the supply chain
+- **Provenance marks:** almost everything found carries a mark that says something about its
+  origin or history, such as a government seal, a regulator's stamp, a shipyard logo, a
+  contractor's tag, a comms casing or an improvised skimmer-crew patch. These marks can name
+  different roles; they do not all identify the maker. Commodity parts such as batteries carry
+  none, so a mark means something where it appears. The player reconstructs the supply chain
   from salvage alone, with no exposition. The entities are in
   [the lore session](../lore-session-2026-10-14.md), and the makers beneath them in
   [part 2](../lore-session-2026-10-14-part-2.md).
@@ -46,7 +48,9 @@ in. See [the lore research](../lore-research.md).
   (World & terrain, rule 2).
 - **Ruins you can walk into.** These are structures sitting in the dunes, with sand
   drifted against their walls. Everything is above ground: there's no digging and
-  nothing underground.
+  nothing underground, bar Wow's resting place (Hunter, 2026-10-18, after session 5: the one thing
+  allowed below, still unplaced). A scoop digs a ruin's own sand off it (2026-10-19, [Digging a
+  ruin out](#digging-a-ruin-out-built-2026-10-19)), never the dunes and never below its floor.
 - **Ruin types follow the terrain.** Skimmer cradles, tethers and catch stations stand on
   high ground, refineries cluster near volcanic vents, tank farms sit buried in basins,
   and port cradles and beacons stand on the heights. Gardens, water-cracking and power
@@ -238,8 +242,9 @@ data in one shared system, each piece with its three exposure states:
   its footing, its cabinet, dish and light). The deepest: buried nearly always, partly exposed a quarter
   of the time, dug out only in the hardest storms.
 - **Skimmer era,** gunmetal and olive plate, panels that don't match, welds, hazard stripes, the crew's
-  patch: *wreck hulls* (a 12 m hull down nose first at its site's 10° to 35°, its tail torn open to walk
-  into), *fuel bladders* (a slumped rubber bag on a scrap pallet, taped, strapped, its valve), *dugouts*
+  patch: *wreck hulls* (a 12 m hull down nose first at half its site's 10° to 35°, its tail torn open to
+  walk into; since 2026-10-18 one of the five wrecks below, [Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)),
+  *fuel bladders* (a slumped rubber bag on a scrap pallet, taped, strapped, its valve), *dugouts*
   (a sandbagged pit with a drift down into it, roofed with scrap, an ammunition crate). Shallow and
   quick: dug out two thirds of the time.
 - **First Kingdoms,** stone and the colonial pipe the keepers reused, brass and copper fittings, a
@@ -275,7 +280,7 @@ skeleton version below). The relocation is the session's eighth step
 
 **Built: the loot (2026-10-18).** Loot is history's now. Every kit piece's sockets hold what its era's
 table says, a row for each kind of socket, its kind's own where the kind says what fits, its region how
-generous, each socket drawn from the site's loot seed alone: colonial infrastructure (crates, chassis,
+generous, each socket drawn from the site's loot seed alone: colonial infrastructure (chassis and frames,
 condensers and turbines, big batteries, trays and panels, at its best Consoles and shield generators),
 the skimmer era's single items (survival kits, radios, hoverboards, at its best military shield
 generators, radar and harvesters), the First Kingdoms' working machines (condensers, turbines, planters,
@@ -372,7 +377,7 @@ the same ruin, so revisiting pays.
 
 | Era | Best for |
 |---|---|
-| Colonial | Infrastructure: power, crates, big systems |
+| Colonial | Infrastructure: power, chassis, big systems |
 | Skimmer era | **Best single-item gear:** military weapons, armour, mods from deserters and the black site |
 | First Kingdoms (first age) | Intact working colonial tech used in new ways |
 | Dark Age | No sites, so no loot of its own: it is the lineage of the second age's gear (below) |
@@ -411,7 +416,8 @@ past that the far ring showed the dunes alone.
 
 - **Stand-ins.** A kit piece says how it reads far off (`far`, in its era's file): a few boxes of its
   shape, each in the coat its real look shows there (colour, metalness, roughness), lit as the ground
-  is. The relay mast, the watchtower, the pylon stub, the wreck hull and the pipeline segment have one.
+  is. The relay mast, the watchtower, the pylon stub, the pipeline segment, the six wrecks and the nomads'
+  camp have one.
   A stand-in stands at its structure's place and turn, as deep as its state sinks it and cut at the
   sand, on the far ring's own ground (`FarRing.ground`, its 32 m triangles), so it never floats or sinks
   where the ring skips a crest. Its level out of the sand is read on the worker, and read again each
@@ -661,11 +667,234 @@ skimming 1.9 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `therm
   metres came out all the same small size (`billboard_keep_scale`).
 - **Not yet:** what's inside. Active-drop saves are handled by the repair below.
 
-## Nomad gear (agreed, 2026-10-18 spec; not built)
+## Exposed wreck surfaces (Hunter, 2026-10-20; built)
+
+Exposed wreck skin must stop feet and support a board as the sand reveals it.
+The catalogue audit found the hopper's tilted canopy, the skimmer's aft roof
+ribs, and the nomad rig's tipped deck and rack cover drawn without matching
+solid shapes. Add small oriented boxes matching these existing pieces. Keep
+open roofs, cuttable plates, hatches and packed holds independent: no enclosing
+hull proxy or sealed opening. Supplemental shapes follow the same structure
+transform through lean, exposure and origin shifts, including when buried.
+
+The board will continue sampling sand analytically. Once per outer physics
+tick, collect a capped set of nearby actual static box shapes, then read their
+walkable upper faces analytically inside its 240 Hz integration. Only surfaces
+within a small rise of the current underside can become support; walls and
+unreached overhead roofs remain collision obstacles. Use the player's collision
+mask and slope limit. Do not turn thin scenery into an invisible ramp or snap
+the board onto a high roof. Verify actual foot capsule and board controls on
+partly buried/leaning surfaces, plus ceiling and cut-opening regressions.
+
+### As built and measured
+
+`Piece.fitted_boxes` adds matching oriented boxes without changing existing
+box or socket indices: two skimmer ribs, the hopper canopy and two benches,
+and the nomad's tipped deck and rack cover. These shapes use the structure's
+existing placement, exposure and collision retirement; saves need no new fields.
+The hopper's lowered aft ramp is also a shallow 2.41-degree slab whose outer
+edge meets floor level and inner edge retains its 0.08 m deck connection. Its
+existing box index is unchanged; optional local box rotation drives the same
+look and collider. Room floors, exposure profile, openings and loot/socket
+indices stay unchanged. The ramp-edge contact diagnosis and measured actual
+walking checks are recorded in Movement.
+
+The main roof plates already had collision. A systematic partly exposed-world
+sweep found zero misses at 150 exposed broad-plate points across all six kinds
+(21 skimmer, 36 hauler, 9 freight pod, 18 lifeboat, 57 hopper, 9 nomad).
+
+The board caches actual static box faces once per outer tick, using the player's
+collision mask and floor-angle limit. Query reach is capped at 16 m, broadphase
+results at 64; a full cap adds five footprint rays. Duplicate shape hits are
+removed. Every live quarter-heightmap RID in the nearby chunks is excluded
+before the query: Jolt otherwise returned 63 copies of sand triangle hits in a
+64-result query and omitted the actual roof. RIDs are read afresh each tick,
+not retained across chunk retirement. Sand heights remain analytic. Tops more
+than 0.18 m above the current underside cannot become hover ground; genuine
+walls remain obstacles. Walking now classifies only HeightMap shapes as sand,
+so solid roof contacts do not apply sand's horizontal correction. Board ceiling
+contacts retain the body's resolved height rather than restoring the attempted
+hop height.
+
+A scripted actual-control check drove from sand onto a partly exposed skimmer
+roof leaning 15.76°: 7.91 m travelled, 1.24 m gained, 8.30 m/s peak, 0.148 m
+minimum underside clearance, at most 0.0365 m rise in one 60 Hz tick, no throw.
+Actual walking covered 1.56 m on that roof, ending on the floor 0.0141 m above
+its local top. The unseen start and close roof captures were inspected. These
+are controlled diagnostics, not an unassisted expedition.
+
+On the shared machine at 60 Hz, the whole ramp `Ride.step` took median
+0.626 ms, p95 1.067 ms, max 1.213 ms over 104 ticks. Cache-only measurements
+while held on that roof (21 faces) were 0.323 / 0.418 / 0.457 ms. A separate
+headless baseline on sand measured 0.399 / 0.537 / 0.636 ms; these are different
+runs, not a paired overhead estimate. A deliberately synthetic cap stress with
+70 overlapping static floors cached 64 faces: two runs measured median
+1.423–1.871 ms, p95 1.904–2.250 ms, maximum 2.559 ms for the whole outer
+step. Only static box surfaces participate; moving rigid-body platforms keep their existing
+handling. Crowded fallback samples the footprint rather than mapping every
+possible distant surface.
+
+New Wreck 9 drops the player's capsule onto a leaning exposed aft rib and
+checks the torn roof beside it remains open. It passes; removing the matching
+ribs makes the same capsule fall 3.217 m and fail. Existing Wreck 5 hand scrapping,
+Wreck 6 cost, Movement 27 wall crashes, and Movement 11 frame-rate proof on foot
+pass unchanged. A boundary diagnostic confirmed a real ceiling contact during a
+4 m/s hop without clipping through, rejected the overhead roof as hover ground,
+rejected a tall wall's top, and retained floor support with the broadphase cap
+forced to one. No whole local suite was run.
+
+## Wrecks and scrapping (Hunter, 2026-10-18; built)
+
+*Hunter's direction, 2026-10-18: "embed loot into larger structures out in the sand, and require a
+variety of operations to remove valuable parts from a wreck. Operations like removing outer plating
+with a heat cutting tool or excavating deeper into the sand to expose more of the wreck." Optional
+operations too: "things that don't have to be done to get something out of the wreck but the player
+pays a price for not being prepared enough to do," like "a biohazard or electrical hazard, forcing
+the player to take an injury." "All wrecks should have multiple salvageable pieces with multiple
+physics interactable modules attached to them. Wrecks themselves will need to be made as preset large
+structures, made to reflect the moon's past." On excavating: "No digging under the surface. No
+digging at all really. More like structures that are full of sand after sitting in sandstorms for so
+long." The prototype (the `scrapper` branch) built it beside the old sites; after playing it Hunter
+asked for it rebuilt on the world system and polished, with five wrecks, plates cut by tracing their
+seams, the shock and the sickness, and cut plates as scrap for now (2026-10-18).*
+
+Built on the `wrecks` branch. "No digging and nothing underground" holds: the sand you clear is packed
+inside a wreck, above the ground, and nothing is dug out of the dunes.
+
+- **Six wrecks, each a kit piece history lays** (`WreckKit`, `game/salvage/kits/wrecks.gd`), standing,
+  surveyed, sunk and seen from far off like any structure (stand-ins and glints), each with a scrapping
+  plan (`WreckPlan`):
+  - **The skimmer hull** (skimmer era; the wreck fields' hulls, as before): a He-3 scoop ship down nose
+    first, at half its site's lean so its aft bay stays over the sand. Its cargo bay is packed through
+    the torn tail; a hatch over its starboard engine pod, welded shut, closes off the charger bay.
+  - **The tithe hauler** (skimmer era; a Provisional armoured hauler from the war): listing on its armour
+    skirts, its plates twice as slow to cut. A plated cargo door, a requisition locker behind a plated
+    door inside, a cab the storms filled through a breach in its roof, sand sifted over its cargo deck.
+    One in some wreck fields, and at some of the black site's checkpoints.
+  - **The freight pod** (colonial; its current salvage entry calls it an RMC/Remote Moon Contractor pod):
+    the RMC name is a legacy placeholder, now replaced in lore by Moonco as prime contractor. Its exact
+    installation contractor and OEM are unsettled. The front hold is packed full through its open hatch,
+    its rear hold behind a welded side panel. By some frontier towns, under 1 to 3 m of sand (shallower
+    than the colonial era's own, since it came down at the end).
+  - **The lifeboat** (colonial; a Tilg freighter's boat, its consignment stencil on its flanks): down on
+    its skids, its boarding hatch fused shut, its cabin sanded through a cracked viewport, its battery
+    room behind an aft access panel. Off the roads into Port Morgan, within 16 km of it.
+  - **The hopper** (second age; a colonial suborbital hopper the Knights Requisitioner flew on the
+    crusade, lime-washed over its maker's tag, their daubed sign on it): down on its belly, a wing
+    snapped off, its troop bay packed up the lowered ramp, a cockpit door and its lift fan's cowling
+    welded. Along the artery to Port Morgan, and by some crusader bunkers.
+  - **The nomad rig** (the nomads', now; since 2026-10-19, [Nomad gear](#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19)):
+    their sailing rig wrecked out anywhere, a scrap plate they welded over the battery rack they
+    scavenged, its cloth locker packed with sand, its mast down beside its snapped post with the sail
+    always furled on it. Light plate: cut at 0.6 times the seconds.
+- **Cut.** A plate is welded over an opening at its seams, a bead along each edge. Hold use with a heat
+  cutter (`Cutter`) and its hot spot lands where you aim; on a seam it cuts the weld, the cells under it
+  and either side of it, at 1.5 s a metre of seam times the wreck's armour (Tuning `cut_seconds_per_m`;
+  traced cell by cell it takes about two thirds of that, since the kerf runs ahead). Off the seam it does
+  nothing and says to trace the weld. The cutter draws 120 W from its own battery while it fires, its
+  beam reaching from its nozzle to the hot spot, sparks flying where it bites. A cell just cut glows
+  white, cooling through orange to a dark kerf; the plate warms round it. Every seam cut, the plate comes
+  away and falls outward, clangs as it lands, and lies where it fell, for good. A seam under the dunes'
+  sand can't be cut: a buried or partly exposed wreck keeps some plates until a storm strips it.
+- **Clear.** A hold packed with storm sand clears in slices from its open end, with a scoop held on the
+  open slice, 0.35 s a cubic metre (Tuning `clear_seconds_per_m3`); the slice wears back as you scoop, a
+  stroke and a spray of sand at a time. A hold cleared down from the top lies in level layers whatever
+  the wreck's lean. Packed sand shows the thin lines of the storms that laid it.
+- **Modules** are whole devices, held fast where they were stowed (on racks or floors) until what's in
+  their way is gone: each lists the plates and the slices of sand it needs. Taking one, or using it,
+  says why it won't come ("behind the starboard hatch · cut it away", "packed in sand · clear the cargo
+  bay"). They come from the wreck kind's own rows (`SiteLoot`'s `module` and `bay` sockets): the skimmer
+  era's single items, the Provisional's military kit, colonial freight, a lifeboat's survival stores, the
+  Knights' convoy gear; every module is there, with at least two parts fitted where it has sockets for
+  them. Once free it's an ordinary find. Every wreck holds three or four, and its other sockets hold
+  loot as any site's do.
+- **Hazards, the optional operations.** A **live capacitor bank** rides on some modules: lay a **stake**
+  across its terminals (use, with the stake in your hands) and it shorts out in a burst of sparks, the
+  stake falling where it was, yours still. A **breached store** rides on others: use **sealant** on it,
+  and the canister is used up. Take the module without, and the hazard goes off on you once:
+  - **Shock:** 25 health at once, a white flash and a crack, thrown off the module (you don't take it
+    that grab, and what you held drops), stunned for 1.5 s, unable to walk, look round or close your
+    hands. The bank is spent; the module comes the next time.
+  - **Sickness:** 0.08 health a second for 240 s of world time, thirst 1.8 times faster, no healing, the
+    edges of your sight sallow while it lasts. A **med kit** cures it, used in your hands or from what
+    you carry. A save keeps it.
+  A live bank blinks red and crackles; a breached store hisses and seeps a sickly mist.
+- **The readout** says what each piece is, how far its work has got and what does it ("starboard hatch ·
+  seams 72% cut · hold use with a heat cutter along its seams", "packed sand · cargo bay, blown in
+  through the torn tail · slice 1 of 3"), naming use by its binding; a cutter or scoop used on the hull
+  says where its work is.
+- **Storms work wrecks too** (2026-10-18, on master's live exposure: [What storms do to sites
+  now](../world-system.md#what-storms-do-to-sites-now)). A wreck rises out of the sand and sinks back as a
+  storm works it, and its scrapping goes with it frame by frame: its plates, hazards and packed holds
+  stand at its floor as its chunk draws it (`Wreckage.follow`, from `Salvage.follow`), and its modules
+  are read again as any site's finds are. A storm moves no sand on a wreck's ground (no drift, and its
+  rooms fill as far as it sinks), so burying one is its sinking. What's cut stays cut and what's cleared
+  stays cleared, under the sand or bared, since the storm's work and the wreck's memory are apart: one
+  is the weather's function, the other what you did. Each 3 cm it moves, the sand is asked again of its
+  seams (a buried seam can't be cut, a bared one can) and its holds packed from the top are laid again on
+  the sand in the hull, so a cargo deck under the sand when its ground was built has sand to clear once
+  a storm bares it. **A cut plate stays where it fell, and is buried with the wreck:** one lying on the
+  wreck itself (its lowest corner over 10 cm above the sand: a pod's top, a deck) rides it; one on the
+  sand sinks with the wreck as a storm buries it deeper than when the plate fell, out of sight, and
+  comes back up to where it fell as it's bared, but never rises off the sand it lies on as the wreck
+  rises past that. The hold over you is the site's own, so it holds the wreck and its plates alike, and
+  a save keeps the plates' rule with them (`fallen`: where each came to rest in the wreck's frame, and
+  how far the wreck was sunk then if it lies on the sand).
+- **Memory.** What was cut, cleared and made safe, and where each plate fell, is kept with the site's
+  memory of what was taken (`Salvage`, the site's id): built again as it was left whenever its ground
+  is, and in a save once worked (an untouched wreck saves nothing). Once the sheet lifts it, it's
+  forgotten, like any site.
+- **Gear.** The Salvager starts with a heat cutter beside them and a scoop, sealant and a med kit carried.
+  Skimmer-era shelves and caches hold scoops, sealant and med kits now and then, colonial shelves med
+  kits, and the skimmer era's best a heat cutter. A cut plate is scrap for now.
+- **Dev:** the `wreck` scenario stands every wreck in a fan ahead of you, dug out, each turned to show you
+  its way in, with a charged cutter, a scoop, sealant, stakes and a med kit at your feet.
+- **Code:** `game/salvage/kits/wrecks.gd` and `wreck_plan.gd`, `game/salvage/wreckage.gd`, `scrap_fx.gd`,
+  `weld.gdshader` and `packed_sand.gdshader`, `game/devices/cutter.gd`, `game/survival/wounds.gd` and
+  `remedy.gd`, with `Salvage`, `SiteLoot`, `Hands`, `History` and the catalog. Sounds made here
+  (`assets/audio/make_scrap_sounds.py`). Look-test: `look/wrecks`.
+- **Probes** (`probes/wrecks/`): 1 every wreck stands where history puts it and holds its modules, at its
+  least lean and its most; 2 a wreck needs its operations (held until the last need, the wrong tool
+  does nothing, only the seams cut, a plate falls outward and lies on the sand, holds clear from their
+  open end, a top-down hold lies level); 3 the unprepared are wounded, and the prepared aren't; 4 a wreck
+  remembers, across its ground going and coming, a save, a burial (its plate sunk with it) and a storm
+  stripping it while you stand there (it rises with its site, its plate where it fell); 5 scrapping by hand, through the actions; 6 building one is cheap enough;
+  7 a storm keeps what you cut (a hauler bared and buried again as you watch: its welds follow its hull
+  frame by frame, its cargo deck has sand once bared, its fallen door sinks with it and comes back where
+  it fell, its half-cut seams and cleared slice kept; it fails with a wreckage that stands still).
+- **Not yet:** a use for cut plates (Hunter: "just scrap for now"), a freighter wreck as the big dig
+  site the lore promises, and more hazards (a pressurised tank was offered and set aside).
+
+## Digging a ruin out (built 2026-10-19)
+
+Dune archaeology's "dig a ruin out of a dune yourself" ([Wind &
+storms](wind-and-storms.md#dune-archaeology-agreed-2026-10-18-spec-built-2026-10-19)), built on the dig
+there already was, the scoop clearing a wreck's packed holds.
+- **The scoop on a ruin's sand.** Hold use with a sand scoop on the sand over a structure's ground and it
+  digs the site out, a stroke and a spray of sand at a time, as a storm would lay it bare: its footprint's
+  area a metre deep at 1.5 s a cubic metre (Tuning `dig_seconds_per_m3`), so a hab pod comes up a metre
+  every 72 s. It rises out of the sand through the same exposure a storm's work goes through, its ground in
+  steps, what it holds coming within reach. Never past dug out: the deepest sockets still want a storm. A
+  wreck's sand is its holds' (scrapping, above) and isn't dug this way; the ground's own never is, so a
+  scoop on open sand says there's no ruin under it, and on one dug out that what's left is the weather's.
+- **Kept.** What's dug is the site's memory, apart from the weather's function, so a storm never undoes
+  it; the save keeps it; it goes with the site once the sheet lifts it. A big dune's ruin found under the
+  sand and dug before it was built builds once something of it shows.
+- **A sieve sifts it.** Carried, or set down or stuck on a deck within 4 m, a sieve sifts what the scoop
+  digs: one of the light things the site's lesser rows hold (what a storm would shed off it) for every
+  50 m³ (Tuning `sift_per_m3`), from its own stream of the site and how many have come, laid at your feet.
+- **A big dune's ruin holds survey gear:** kept whole under the dunes (85% of its sockets hold something),
+  its shelves sieves, batteries, a lamp, a compass, a scoop or a ration; its caches big batteries, a
+  screen, a sieve or a ground radar; its deepest a ground radar most often, else a Console, big batteries,
+  a shield or a screen (`SiteLoot.DUNE`). A relay mast's cabinet now and then holds a ground radar.
+- **Probes:** Profile & saves 33 digs one out through the hands.
+
+## Nomad gear (agreed, 2026-10-18 spec; built 2026-10-19)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): a neglected tier, common and found all over, open wilderness
 included: ruins give power and tech, the wilderness gives mobility. Wrecked nomad rigs are its
-common source, and nomads leave their gear in other eras' wrecks too, looting as you do. Active
+common source, and nomads leave their gear in other eras' wrecks too, looting as you do. Deep-desert
+starts may have nomad wrecks nearby; they still avoid every site's actual footprint. Active
 nomad camps are very rare and nobody's ever home, always just gone, their rig kept up with decent
 sailing gear and anything of any era, all lootable. Sails come from it: a broken nomad rig always
 carries one, and now and then one lies in a second-age ruin. A **wind streamer** points downwind and
@@ -673,6 +902,61 @@ flaps by strength, read in hand or the inventory like the compass, or stuck on a
 the anemometer stays the precise one. A sail's mast takes things stuck on it (heavy up high
 raises the centre of mass), and a **crow's nest** is a mast mount you climb into, a seat with a long
 view for glints, plumes and fronts.
+
+**Built (2026-10-19).** The nomads' own era (`Eras.NOMAD`, "the nomads'"): now,
+not in history's order, building nothing that lasts. Nothing in it is the nomads' make but the
+streamer; what they carry and leave is any era's, each thing's lineage drawn from their row's
+`from` (colonial 2, skimmer 2, First Kingdoms 1, second age 3, by weight, from the loot seed alone),
+so a nomad's chassis can be a colony's and its frame a house's. Nomad reputation isn't built, and
+nothing records what you take from them.
+- **Wrecked nomad rigs** (`nomad_rig`, a wreck: [Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)).
+  History lays one in 8% of its 500 m cells, anywhere off its landmarks, wilds and all (`History.NOMAD_RIGS`),
+  about one a 3 km², never buried: too new for the sand to have taken. A found chassis rig, nomad-built
+  from scavenged parts: five pieces of three eras' chassis (teal, olive and a second age's lime) with the
+  sixth torn off and tipped against the gap it left, a frame for a locker walled in ochre and indigo
+  cloth and packed with sand through its open side (two slices, its gear in it), a skimmer crew's
+  battery rack lashed at the bow behind a scrap plate they welded on (cut at 0.6 times the seconds; a
+  live bank rides on it), and the post their mast stood in, snapped off short, cord-wound, a pennant
+  still on it. No drift builds above the thin deck's plates; its exposed sand stays below their floor.
+  Its mast lies beside the post, its sail furled on its boom (`SiteLoot.RIGGED`, always
+  there, free to take), so every one yields a sail. Its far look is its deck, locker and post with
+  the pennant; the brass fitting on the post glints. Its modules: survival kits, radios, a light
+  shield, a streamer; the rack. Its floors, shelf and deep cache hold the nomads' row: coils,
+  streamers, skates, plates, bedrolls, chassis, frames, fabric, water; at their best sails, masts,
+  skates, a keel, a helm seat, a crow's nest, a racer. Its common mast and stowed mobility gear count
+  as surface-tier finds, rather than the premium tier of old wrecks; its best cache keeps the higher
+  tier. Across salvage probe 5's 155 sites, harder weather exposes 731 finds against 630, with mean
+  tier 1.153 against 1.121 (the required rise remains 0.03).
+- **Nomad gear in other eras' wrecks.** They loot as you do and leave what they don't need: of what
+  lies loose in any other wreck (its floors, shelves and caches, not its best or its modules), a
+  fifth is theirs (`SiteLoot.LEFT_SHARE`), from their own stream of the loot seed so nothing else
+  any wreck holds changes: coils, streamers, water, skates, a bedroll, fabric, now and then a sail.
+- **Their camps** (`nomad_camp`, `NomadKit`, `game/salvage/kits/nomads.gd`). One in 0.2% of cells
+  (`History.NOMAD_CAMPS`): round three worlds' Surveyor's starts, 25 camps in 14,700 cells against
+  868 wrecked rigs, one a 147 km² against one a 4 km². Kept, never buried, and just left: a windbreak
+  of cloth on saltbush posts, a sun shade over where they slept with a crate under it, a fire ring
+  with its embers still glowing and a kettle on its stones, a chassis on two stones for a table, a
+  water cache under a plate, a saltbush in a pot, mirror shards strung at the shade that the sun
+  catches, and their tracks leading off: footprints and two runners' lines. Everything there is kept
+  (`kept` 1.0) and sound (0.7 to 0.9): the rig they sail on, whole (`SiteLoot.RIG`, a deck built from
+  `NomadKit.RIGS`): a deck two by two on skates, its mast and sail, a streamer up the mast, its
+  ballast in a frame, a bedroll, a coil and a hook (two in three), or the yacht floating on its trays
+  over a keel with a helm seat aft and a crow's nest on its mast's head (one in three); and on its
+  floors, shelves and caches anything of any era, chassis included: frames, a turbine, a condenser,
+  shields, batteries, radios, survival kits, bedrolls, a planter, skates, a battery rack, a sail, a
+  mast, streamers, a compass, instruments, water, food, a med kit, saltbush. Take hold of their rig
+  and it's yours, all of it, as anything found is (`Salvage.claim` finds a seated thing's rig).
+- **Second-age sails.** A sail now and then on a second-age floor: weight 1 in its 54.
+- **How near the first one lies** (wreck probe 8, six worlds, every origin's start, the nearest sail
+  within reach as you'd find it when you'd walked there): 442 m at least, 886 m on the median, 2,922 m
+  at most, every one a nomad rig's, with 1 to 11 rigs within 3 km of a start. So a first run that goes
+  looking finds one within a fair walk, and none is at anyone's feet. Measured at the final 8% of
+  cells, on seeds 1234, 1, 2, 42, 777 and 1001 across all five origins (30 starts).
+- **The streamer, mast mounts and crow's nest** are [Devices & mods](devices-and-mods.md#mast-mounts-the-streamer-and-the-crows-nest-built-2026-10-19).
+- **Deeds:** Hand-Me-Down (take the sail off a wrecked nomad rig) and Telltale in Wind, Just Missed
+  Them (reach a nomads' camp, hidden) in Far ([Profile & saves](profile-and-saves.md)).
+- **Probes:** wreck probe 8 (a nomad rig always yields a sail; the nearest within reach, none at
+  your feet; taken, you hold it); structure kits probe 9 (camps rare, kept, lootable, their rig yours).
 
 ## The Dark Age as a lineage rule (Agreed, session 4, part 5; not built)
 
@@ -756,7 +1040,54 @@ are deferred: "Deferred: ... landmark interiors, heat shields." **Part 5:** "Par
 site' landmark is **replaced**" by the Rim depot, a suborbital port near Sister, and the elevator stub,
 which is the observatory on the far-side volcano ([World &
 terrain](world-and-terrain.md#the-rim-depot-the-twin-fires-and-the-elevator-stub-agreed-session-4-part-5-not-built)).
-The Okafor bunker, the Almanac's ag complex and the Stoker's terraces are not on the session's list.
+The Haberjack bunker, the Almanac's ag complex and the Stoker's terraces are not on the session's list.
+
+## Session 5's finds and places (Agreed and Idea; not built)
+
+*[Session 5](../lore-session-2026-10-18-mitchell-wow-shoemaker.md); direction, and none of it is built.
+What the session states plainly is Agreed and what it marks perhaps, possible or a sketch is an Idea. The
+stories are in [the lore research](../lore-research.md#mitchell-the-dead-god-agreed-session-5).*
+
+**Finds (Agreed).**
+- **Tab-stones** in ruined homes: the Tabbed's family stones, carved with what a family owes and is owed;
+  the Ashwalkers wear small ones as pendants.
+- **Mitchells** in the sand: the stamped tokens of the First Kingdoms, company scrip within Mitchell's own
+  towns and ledger (seed stays the common money, ruled by Hunter, 2026-10-18), long after the word lost its
+  meaning.
+- **Working Clerk synthesisers,** the second age's field medicine, carried like reliquaries.
+- **Singing stones** ([Devices & mods](devices-and-mods.md#the-singing-stone-agreed-session-5-not-built)):
+  the black stones in the sand, and the cradles on Halfrise's walls, the highest empty.
+- **Mario's voice logs** (an easter egg), left in the Halloran refinery; some were recorded in Mitchell's
+  back room, with Mitchell laughing in the background. Every log collected gives his master key and the
+  punchline about the pipe. They are a rare easter-egg exception to "people never talk" (*Idea*, ruled by
+  Hunter, 2026-10-18).
+- **Rosalind's notes** in the back room (they explain why children are always free) and **Mitchell's
+  notebook** from the second age ("Subject saw the Eye weep. Fascinating. Repeat Thursday.").
+
+**Places.**
+- **The Counting House** (Agreed): the original freight warehouse in Crakeside, with its stalls, scales and
+  counting tables in the old freight halls, sacked by the Knights Requisitioner. *Idea (perhaps):* one last
+  unpaid debt carved on its wall.
+- **Mitchell's back room** (Agreed): a room in that warehouse, sealed and buried when the machine went dark,
+  and dug out again by the Crakes.
+- **Halfrise's stone choir and Sister's stone** (Agreed): the walls ringed with stones as a storm-alarm
+  choir; Sister's stone sang the deepest note. The jar chamber's wall carries a priestess's half-carved name.
+- **Wow's resting place** (a sketch): Wow lies deep under a place not yet chosen. The session put it under
+  Facility 4, the Provisional's prison; Hunter ruled (2026-10-18) that it is under something else. You
+  cannot reach it, and it is confirmed only by implication.
+- **The deserter Knight's trail** (*Idea, a possible trail*): a grey cloak in a cave, a manifest with his own
+  name crossed out, and a tab-stone with one entry, Mitchell's, marked paid.
+
+Readings, not in the session:
+- **The Counting House is one more place in Mon's ruins.** It is a part of Crakeside beside the Bastion, the
+  Pads and Lowtown, or a landmark of its own; the session does not say, and the world system's eight do not
+  include it ([World system](../world-system.md#landmarks)).
+- **A sealed, buried room is the colonial bunker's case:** you camp outside and go down. The same open
+  question applies ("Buried bunkers against 'nothing underground'"); Wow's resting place is the one
+  place the rule is amended to allow.
+- **The finds are second-age and First Kingdoms lineage, not new eras:** a tab-stone is a second-age house's
+  stone, a Mitchell a First Kingdoms coin, and the stamped Mitchells sit with the layered marks
+  ([art direction](../art-direction.md#marks-by-era-after-the-collapse)).
 
 ## People: only hinted
 
@@ -768,12 +1099,12 @@ There are no NPCs. The moon is empty, or *almost* empty, and we only ever hint a
 
 The game never answers the question.
 
-**An idea from the endings session, not agreed:** the Okafor line, an underground bunker with a
+**An idea from the endings session, not agreed:** the Haberjack line, an underground bunker with a
 holdout. Session 4, part 3 says Zan has the last nomad city "and possibly a bunker holdout." A
 holdout would be a person, against the rule above, in a bunker underground, against this PRD's
 "nothing underground." The session says to develop it or drop it. **Developed by session 4, part 5:**
-the Okafor bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
-holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-okafor-bunker-agreed-session-4-part-5)).
+the Haberjack bunker, a sealed First Kingdoms vault under Port Morgan with nobody left in it, where the
+holdout is the player who seals the door ([the lore](../lore-research.md#the-ledger-and-the-haberjack-bunker-agreed-session-4-part-5)).
 
 ## What Sand Game taught us
 
@@ -843,22 +1174,22 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   in Hunter's playtest (2026-10-16): a find you'd taken from or tied a line to stayed
   frozen, so a stripped device on a ruin's floor could never be taken hold of, and a line
   tied to one held you as an anchor would. Nothing found is too heavy to drag by hand:
-  the heaviest, a crate with every socket filled, is 51 kg, 250 N of your 400 N on a
-  ruin's floor or the sand. A Console with every socket filled is 49.7 kg.
-- **What's found** is the catalog's own parts and devices. The surface layer holds
-  batteries, hooks, lamps, empty canisters, rope coils, cable plugs, hoses and compasses
-  (2026-10-17, compasses one in twenty-one of the surface layer's parts), and crate
-  frames, chargers, planters, stakes, survival kits, radios (Stage 11, two in thirteen of
-  the surface layer's devices) and chassis pieces (2026-10-17, one in thirteen). The deep
-  layer holds big batteries,
-  batteries, hover trays, solar panels, hooks, strong cable plugs and harvesters, and
-  crate frames, wind turbines, condensers, shield generators and, rarer, hoverboards
-  (Stage 10, one in eleven of the deep layer's devices; a ruin's hall never holds one,
-  since it promises parts to strip), chassis pieces (one in eleven) and Consoles
-  (2026-10-17, one in eleven), whose screens and instruments come only in them. A ruin's floor holds all
-  its layer's finds and more: seeds (carrots and fungus), sealed rations and survival
-  kits. A device comes with some of its sockets filled from its own layer, a third of
-  them at the surface and three in five deep. Over 3,000 chunks on two seeds, rope coils
+  the heaviest was a crate with every socket filled, 51 kg, 250 N of your 400 N on a
+  ruin's floor or the sand. With the crate gone, and the Console's batteries, rings and
+  tray with it, finds are lighter; the heaviest is not yet re-measured.
+- **What's found** is the catalog's own parts and devices (`Finds`, rebuilt round the chassis
+  2026-10-18). The surface layer holds batteries, hooks, lamps, empty canisters, rope coils,
+  cable plugs, hoses, compasses, frames and fabric, and chassis pieces (two in seven of its
+  devices), light solar panels, planters, stakes, survival kits, radios and bedrolls. The deep
+  layer holds big batteries, batteries, hover trays, solar panels, hooks, strong cable plugs,
+  harvesters, sails, runners and frames, and chassis pieces (one in four of its devices), wind
+  turbines, condensers, shield generators, masts and, rarer, hoverboards and Consoles (one in
+  twelve each; a ruin's hall never holds a board, since it promises parts to strip), whose
+  screens and instruments come only in them. A ruin's floor holds all its layer's finds and
+  more: seeds, sealed rations and survival kits. A device comes with some of its sockets
+  filled from its own layer, a third of them at the surface and three in five deep, and a
+  found chassis with things stuck where they'd have been left on it (`spots` in the catalog):
+  a tray under it (deep only), a battery and a lamp or panel on its top. Over 3,000 chunks on two seeds, rope coils
   and plugs are each about one find in fourteen, strong plugs one in thirty-five, survival
   kits one in thirty-three (a seventh of them on ruins' floors), and the harvester, at one in
   sixty, is the rarest part on open sand (2026-10-16, before radios). With radios,
@@ -925,7 +1256,7 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   socket tells share their looks.
 - **The "go looking" scenario** stands you 12 m out from the front door of the
   ruin nearest the run's start, facing it, at a clear and calm moment (no storm for ten
-  minutes, wind under 6 m/s), with a bare crate frame of your own beside you. The
+  minutes, wind under 6 m/s), with a bare chassis piece of your own beside you. The
   ruin's hall always holds a device with at least two parts to strip. *Since 2026-10-18:
   history's house ruin nearest the run's start on the moon, however far, at a moment it's
   dug out, you on fresh ground before it. The hall's device was a later visitor's and lies
@@ -938,8 +1269,8 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
   in ruins and the harvester is the rarest part; **probe 2** lays by hand any kind its
   walk didn't meet; **probe 6** strips a survival kit and unrolls a found coil, plug and
   strong plug through the hands.
-- **Probe 8** walks the heaviest find, stripped of a part, out of the ruin's front door
-  in your hands, and tows a found crate out of a roofed room and the back door on a line
+- **Probe 8** walks a heavy find, stripped of a part, out of the ruin's front door
+  in your hands, and tows a found device out of a roofed room and the back door on a line
   tied at your waist, dragged first into line with the door.
 - **Probes** 1 to 8 pass, each checked against a deliberately broken build. Probes of
   other systems run without ruins and finds, as ground probes run in still air; salvage's
@@ -985,10 +1316,15 @@ Walk-in ruins had collision trouble, for the same reasons the terrain did:
 8. **Out the door.** A found device, once yours, can be taken hold of and walked out of
    a ruin's doors, and towed out of them on a line.
 
+Wrecks have their own eight, in `probes/wrecks/` ([Wrecks and scrapping](#wrecks-and-scrapping-hunter-2026-10-18-built)),
+the eighth the nomad rig's sail ([Nomad gear](#nomad-gear-agreed-2026-10-18-spec-built-2026-10-19)).
+
 ## Out of scope
 
-- Digging, and anything underground.
-- NPCs, trading and crafting.
+- Digging, and anything underground, bar Wow's resting place (Hunter, 2026-10-18). A ruin's own sand
+  dug off it is the one dig there is (2026-10-19).
+- NPCs, trading and crafting. (A device auto-crafting its own recipes, such as Mitchell's module, is an
+  Idea and no player crafting.)
 
 ## Lore
 
@@ -1034,8 +1370,8 @@ Session 4's clashes with what's above are quoted and left standing. Nothing here
   placeholder," and the base case is "pillars and wall stubs," which have no hall. Not said:
   where a find sits at a stub, and whether the walk-in building becomes the colonial bunker's
   entrance or goes.
-- **What counts as a big item.** Here: "Nothing found is too heavy to drag by hand: the
-  heaviest, a crate with every socket filled, is 51 kg." The notes: "To get big items out, keep
+- **What counts as a big item.** Here: "Nothing found is too heavy to drag by hand" (the crate,
+  51 kg, was the heaviest; finds are lighter since the chassis rework). The notes: "To get big items out, keep
   both a sand-choked cargo ramp... and a dead freight lift." Nothing found today needs either.
   The big finds they serve, late-game base gear, don't exist yet.
 - **The collector against frozen finds.** Here: a find "is part of its chunk until it's yours:
@@ -1068,7 +1404,7 @@ Session 4, part 3 (2026-10-17) adds three. Each is quoted on both sides and left
   "basin that refills slowly." Not said whether it refills while you are away, or what a player
   who camps beside it for days gets (every other source in Survival is carried, towed or used
   up).
-- **A holdout against "no NPCs."** Here: "There are no NPCs." The endings session's Okafor line,
+- **A holdout against "no NPCs."** Here: "There are no NPCs." The endings session's Haberjack line,
   "an underground bunker with a holdout," and part 3's "possibly a bunker holdout." Not said what
   the player would see of a holdout, and the session puts it among the ideas to develop or drop.
 
@@ -1171,11 +1507,11 @@ it as direction and says so on each line. The built skeleton is not changed.
   sand has buried to its roof, as with the colonial bunker and the seed vaults above. A game that lets
   the player seal a door from inside needs a door that closes; "ruins never move" and "never physics
   objects" (rule 4) mean the seal is a placed state, not a moving door.
-- **The Okafor bunker's seal against stateless chunks.** The bunker "can never be sealed again" once the
+- **The Haberjack bunker's seal against stateless chunks.** The bunker "can never be sealed again" once the
   reliquary is lifted, and the seal-and-stay ending is a player's choice. Both are changes a chunk cannot
   hold ("Chunks hold no state"), so they live with the landmark's record in the save, as Sister's basin
   does (Profile & saves). Not said whether the bunker is a landmark.
-- **The Okafor holdout against "no NPCs."** Here: the open "holdout against 'no NPCs'" above. The
+- **The Haberjack holdout against "no NPCs."** Here: the open "holdout against 'no NPCs'" above. The
   session: "Nobody is left," and the player seals themselves in. *Follows the session; the clash is
   gone,* since no person is there to see.
 - **An orbital strike against the ground.** The session: the Quartermaster module's strike "blasts a
@@ -1185,6 +1521,23 @@ it as direction and says so on each line. The built skeleton is not changed.
 - **The depot's loot.** The session: the Rim depot "gives the Rim real colonial loot: hoppers, pads, rail
   yards, terraforming equipment." Here: a hopper is a vehicle and the game has none but the board and
   the tray. Hoppers are deferred in the session; a wrecked one is a prop until they are built.
+
+Session 5 (2026-10-18, [the Mitchell session](../lore-session-2026-10-18-mitchell-wow-shoemaker.md)) raised
+the following. Hunter ruled on the first and the third afterwards (2026-10-18), and the rulings replace the
+old wording above. Each clash is in the session's [Clashes
+note](../lore-session-2026-10-18-mitchell-wow-shoemaker.md#clashes).
+
+- **Wow deep underground against "nothing underground." Ruled:** Wow lies under something else, not Facility
+  4, still unplaced, and "nothing underground" is amended to allow Wow's resting place. The buried bunker, the
+  seed vaults, the vault under Port Morgan and Mitchell's sealed back room above are the same open question and
+  are not covered by the amendment.
+- **A market-church in Mon against "an uninhabited zone."** Here (the lore): Mon is "separate enclaves in an
+  uninhabited zone, all technically the holy city, all quarrelling," and Crakeside is diggers and a black
+  market. The session: the Counting House's stalls, scales and counting tables in the old freight halls,
+  "half market and half church," in Crakeside. Read as one more enclave before the sack; nobody is shown.
+- **Mario's logs against "no NPCs, no exposition." Ruled:** they are a rare easter-egg exception to "people
+  never talk" (an Idea). Not said whether they are heard or read.
+
 
 ### Delivery persistence repair (2026-10-20; built on the PR branch)
 

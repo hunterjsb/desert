@@ -96,10 +96,14 @@ class Unit:
 
 
 var history: History
+## The ruins seeded under big dunes, each a seed until it's built (DuneRuins).
+var dunes: DuneRuins
 ## Whether any of a rectangle of world metres is loaded ground, and builds
-## that ground again: the world's.
+## that ground again: the world's. A dune's ruin joins loaded ground through
+## `joined`, the terrain's, pressed in afresh.
 var loaded := func(_rect: Rect2) -> bool: return false
 var rebuild := func(_rect: Rect2) -> void: pass
+var joined := func(_site: Structure) -> void: pass
 ## Main-thread time laying took in a frame, the most any has, ms; and how
 ## often the sheet has followed you and laid a unit, all run.
 var slowest_ms := 0.0
@@ -127,15 +131,20 @@ var _making: Unit
 var _surveying: Array[Array] = []
 var _sites := {}
 var _pieces := {}
-## The next key for a unit laid by hand, below every landmark's.
+## The next key for a unit laid by hand, below every landmark's; a dune's
+## ruin's, below those.
 const BY_HAND := -1000000
 var _by_hand := BY_HAND
+var _dune_key := BY_HAND * 2
 ## Where laying was last asked from, and how far round it everything is laid.
 var _ready_at := Vector2(INF, INF)
 var _ready_m := -1.0
 ## Sand a resumed save had held off sites over you or your camp, by site id, m:
 ## each taken up as that site's ground is built again.
 var _kept := {}
+## Sand dug off history's sites by hand, by site id, m: their memory while
+## they're laid, and the save's.
+var _dug := {}
 
 
 func _init(world_history: History, shape: TerrainShape, tuning: Tuning) -> void:
@@ -147,6 +156,7 @@ func _init(world_history: History, shape: TerrainShape, tuning: Tuning) -> void:
 	_ctx.shape = weakref(shape)
 	_ctx.tuning = tuning
 	_ctx.field = WeatherField.new(history.run_seed, tuning)
+	dunes = DuneRuins.new(history.run_seed, _ctx, tuning)
 
 
 ## Where structures read the time from: the world's clock, world seconds.
@@ -477,6 +487,107 @@ func finish() -> void:
 	for each in _surveying:
 		WorkerThreadPool.wait_for_task_completion(each[1])
 	_surveying.clear()
+	dunes.finish()
+
+
+# --- Dune archaeology. ---
+
+## Each frame, from where you are: the dune ruins' seeds looked over, and a
+## bared one near you built once you've slowed.
+func step_dunes(x: float, z: float, t: float, delta: float) -> void:
+	if not _built or _anchor == null:
+		return
+	var started := Time.get_ticks_usec()
+	for seed in dunes.step(x, z, t, delta):
+		if seed.built:
+			continue
+		if join(seed.site):
+			seed.built = true
+			dunes.builds += 1
+		else:
+			# Over a structure standing already: the dunes took it.
+			seed.site = null
+	dunes.slowest_ms = maxf(dunes.slowest_ms, (Time.get_ticks_usec() - started) / 1000.0)
+	Dev.put("terrain/dune", "%d seen %d built %.2fms" % [dunes.reads, dunes.builds, dunes.slowest_ms])
+
+
+## Lays a dune's ruin into the index once something of it shows and you've
+## slowed by: a unit of its own, lifted with distance like any other, never
+## saved with the sheet. Loaded ground under it takes it in afresh, pressed on
+## a worker, never rebuilt. False where another structure's ground holds its.
+func join(site: Structure) -> bool:
+	var r := site.reach + SiteKinds.most_reach() + 2.0
+	for other in query(Rect2(site.x - r, site.z - r, r * 2.0, r * 2.0), false):
+		var each := other as Structure
+		if each != null and each != site and each.stands() and each.yields != 1 \
+				and site.distance_to(each.x, each.z) <= site.reach + each.reach + 2.0:
+			return false
+	var unit := Unit.new()
+	unit.key = _dune_key
+	_dune_key -= 1
+	unit.anchor = _anchor
+	unit.sites.append(site)
+	unit.ground = Rect2(site.x - site.reach, site.z - site.reach, site.reach * 2.0, site.reach * 2.0)
+	site.yields = 0
+	if _anchor != null:
+		site.point = _anchor.point_at(site.x, site.z)
+		site.region = history.region_of(site.point)
+	_put(unit, true)
+	joined.call(site)
+	return true
+
+
+## Sand dug off by hand where a world place is, for `seconds` of a scoop's
+## work: off the structure whose ground it's on, or a dune's ruin found there
+## not built yet, which builds once something of it shows. A site's sand is
+## its footprint's area a metre deep; a wreck's is its holds', and the
+## ground's own is never dug. [the site or null, m off it, m³].
+func dig_at(x: float, z: float, seconds: float, t: float) -> Array:
+	var site := covering(x, z)
+	var seed: DuneRuins.Seed = null
+	if site == null or not site.reaches(x, z):
+		seed = dunes.under(x, z) if _built else null
+		if seed == null or seed.built:
+			return [null, 0.0, 0.0]
+		site = seed.site
+	if site.piece.wreck != null or site.era == Eras.GEOLOGY:
+		return [null, 0.0, 0.0]
+	var area := 4.0 * site.piece.half.x * site.piece.half.y
+	var m := seconds / (_ctx.tuning.dig_seconds_per_m3 * area)
+	var by := dunes.dig(seed, m, t) if seed != null else site.dig(m)
+	if seed != null and seed.level > 0.0 and join(site):
+		seed.built = true
+		dunes.builds += 1
+	elif site.source == &"dune":
+		dunes.dug(site)
+	else:
+		_dug[site.id] = [site.dug_m, site.sifted_m3]
+	return [site, by, by * area]
+
+
+## What a save keeps of the sand dug off history's sites laid now: [site id,
+## m, and m³ of it a sieve sifted].
+func dug_memories() -> Array:
+	var out := []
+	for unit in units():
+		for site in unit.sites:
+			if site is Structure and site.dug_m > 0.0 and site.source != &"dune":
+				out.append([site.id, site.dug_m, site.sifted_m3])
+	return out
+
+
+## A resumed run's dug sand: each site of history's takes its own as it's
+## laid; each dune's ruin built when saved is built again once the sheet is.
+func recall_dug(memories: Array, dune_memories: Array) -> void:
+	_dug.clear()
+	for each: Array in memories:
+		_dug[each[0]] = [each[1], each[2] if each.size() > 2 else 0.0]
+	for unit in units():
+		for site in unit.sites:
+			if site is Structure and _dug.has(site.id):
+				site.dug_m = _dug[site.id][0]
+				site.sifted_m3 = _dug[site.id][1]
+	dunes.recall(dune_memories)
 
 
 ## Whether the sheet has somewhere to lay from: not before its first anchor,
@@ -677,6 +788,9 @@ func _put(unit: Unit, anyway := false) -> void:
 	_units[key] = unit
 	laid += 1
 	for site in unit.sites:
+		if not _dug.is_empty() and site is Structure and _dug.has(site.id):
+			site.dug_m = _dug[site.id][0]
+			site.sifted_m3 = _dug[site.id][1]
 		_hash(unit, _sites, site, Rect2(site.x - site.reach, site.z - site.reach, site.reach * 2.0, site.reach * 2.0))
 	for piece in unit.pieces:
 		for i in piece.points.size() - 1:
@@ -772,6 +886,10 @@ func _take_up(unit: Unit) -> void:
 	var own := {}
 	for site in unit.sites:
 		own[site] = true
+		# What was dug off it goes with it; a dune's ruin is a seed again.
+		_dug.erase(site.id)
+		if site.source == &"dune":
+			dunes.lifted(site)
 	for piece in unit.pieces:
 		own[piece] = true
 	for chunk: Vector2i in unit.chunks:

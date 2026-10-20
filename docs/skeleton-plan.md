@@ -371,7 +371,7 @@ no terrain generation yet. Lore here is deliberately deeper than what should be 
    kind, propagule type and stage behaviour. Root-tuber and vat fungus go in first, as direct
    replacements, then the rest ([Farming](prd/farming.md#the-crop-data-model-the-first-step-of-the-proposed-order)).
 2. **Planter socket kinds.** Small, standard and deep sockets in the typed-socket system, appended to
-   existing frames and never inserted ([Devices & mods](prd/devices-and-mods.md#socket-types-to-start)).
+   existing frames and never inserted ([Devices & mods](prd/devices-and-mods.md#slots-and-sticky-faces)).
 3. **Shared growth stages.** Seedling, growing, mature, to seed, with per-crop flags: keeps growing
    (sandroot), storm-burst fruiting, cyclic water output (dewleaf, stormcup), regrow from the stump
    (coalcane), stall until rain (rainseed).
@@ -438,8 +438,8 @@ as the full version does. It is the newest, so it supersedes the earlier lists w
 8. **Dispatch items.** Sealed packets with a sender, a recipient and opened and forged flags.
 9. **The gods, in order:** the Quartermaster, Mother Cistern, the Almanac, the Stoker, the Eye. The
    Walker and the Ledger "already exist in part 2 canon."
-10. **Endings.** The Okafor bunker, the captive-launch rule, blow up the moon ([the
-    vision](vision.md#the-okafor-bunker-agreed-session-4-part-5)).
+10. **Endings.** The Haberjack bunker, the captive-launch rule, blow up the moon ([the
+    vision](vision.md#the-haberjack-bunker-agreed-session-4-part-5)).
 
 *Deferred, in the session's own words:* hoppers, orbital strike, storm radio windows, hive mind forgery,
 and the Eye's growth beyond corruption.

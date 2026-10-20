@@ -39,6 +39,7 @@ var hover := -1
 var _player: Player
 var _layer: CanvasLayer
 var _view: Control
+var _waist_lines: WaistLines
 ## Each stack's picture, made as the view first needs them.
 var _looks: Array[InventoryLook] = []
 
@@ -58,6 +59,11 @@ func _ready() -> void:
 	_view.gui_input.connect(_on_view_input)
 	_view.mouse_exited.connect(func() -> void: hover = -1)
 	_layer.add_child(_view)
+	_waist_lines = WaistLines.new()
+	_waist_lines.reel = (_player.get_node("Hands") as Hands).reel
+	_waist_lines.waist = _player.get_node("Waist") as Waist
+	_waist_lines.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_view.add_child(_waist_lines)
 	restock()
 
 
@@ -80,9 +86,19 @@ func restock() -> void:
 	for thing in carried:
 		thing.free()
 	carried.clear()
-	for id in Kit.of(World.of(self)).carried_ids():
+	var kit := Kit.of(World.of(self))
+	for id in kit.carried_ids():
 		if Catalog.DEVICES.has(id):
 			var device := Catalog.device(id)
+			# It comes with its batteries, to work on you from the first;
+			# fitted before it's in the world, so before its _ready would set this.
+			device.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
+			for socket in device.sockets():
+				if socket.kind == &"battery":
+					var cell := Catalog.part(&"battery") as Battery
+					cell.charge_wh = cell.capacity() * kit.charge
+					device.fit(cell, socket)
+					cell.show_charge()
 			# You may still be setting up, too busy to take it on yet.
 			if _player.is_node_ready():
 				_on_you(device)
@@ -154,8 +170,10 @@ func kg() -> float:
 
 
 ## How far past what you carry easily you are: 0 up to carry_easy_kg, 1 at
-## carry_sunk_kg, and on.
+## carry_sunk_kg, and on. The dev console's god carries anything easily.
 func burden() -> float:
+	if _player.vitals.god:
+		return 0.0
 	var tuning := Tuning.current()
 	return maxf(kg() - tuning.carry_easy_kg, 0.0) / (tuning.carry_sunk_kg - tuning.carry_easy_kg)
 
@@ -174,6 +192,8 @@ func pace() -> float:
 func weight_words() -> String:
 	var weight := kg()
 	var easy := Tuning.current().carry_easy_kg
+	if _player.vitals.god and weight > easy:
+		return "carried %.1f kg, all of it easily as god" % weight
 	if burden() <= 0.0:
 		return "carried %.1f of the %d kg you carry easily" % [weight, roundi(easy)]
 	return "encumbered: %.1f kg, %.1f over · %d%% pace" % [weight, weight - easy, roundi(pace() * 100.0)]
@@ -286,6 +306,8 @@ func use(stack: int) -> bool:
 	var device := things[-1] as Device
 	if device != null:
 		return device.interact(_player)
+	if things[-1] is Remedy:
+		return things[-1].use(_player, Vector3.ZERO)
 	var least: Supply = null
 	for each in things:
 		var it := each as Supply
@@ -411,7 +433,7 @@ func tile_rect(at: int, count := -1) -> Rect2:
 	var cols := mini(count, across)
 	var rows := ceili(float(count) / across)
 	var width := cols * TILE.x + (cols - 1) * GAP
-	var top := size.y - FOOT - rows * TILE.y - (rows - 1) * GAP
+	var top := size.y - FOOT - _waist_height() - rows * TILE.y - (rows - 1) * GAP
 	return Rect2(Vector2((size.x - width) * 0.5 + (at % across) * (TILE.x + GAP), top + (at / across) * (TILE.y + GAP)),
 		TILE)
 
@@ -444,14 +466,29 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_view_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		hover = _stack_at(event.position)
+		_waist_lines.point_at(event.position if hover == -1 else Vector2(-100.0, -100.0))
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		hover = _stack_at(event.position)
-		click(hover)
+		if hover != -1:
+			click(hover)
+		elif not _waist_lines.click(event.position):
+			click(-1)
 	_view.accept_event()
 
 
+func _waist_height() -> float:
+	return WaistLines.HEIGHT if not _player.waist.tied.is_empty() else 0.0
+
+
 func _process(_delta: float) -> void:
-	if open:
+	var showing := open and Controls.playing()
+	if showing and not _layer.visible:
+		Controls.free_mouse(true)
+	_layer.visible = showing
+	if showing:
+		var last := tile_rect(stacks().size()).end
+		_waist_lines.controls_at = Vector2(tile_rect(0).position.x, last.y + 12.0)
+		_waist_lines.refresh()
 		_show_looks(stacks())
 		_view.queue_redraw()
 
@@ -466,12 +503,15 @@ func _show_looks(shown: Array[Array]) -> void:
 	for i in shown.size():
 		var look := _looks[i]
 		var thing: RigidBody3D = shown[i][0]
-		var now := [thing, _brief(shown[i]), thing is Device and (thing as Device).powered]
+		var now := [thing, _brief(shown[i]), thing is Device and (thing as Device).powered,
+			(thing as SurveyReceiver).meter_step if thing is SurveyReceiver else null]
 		if now != look.key:
 			look.key = now
 			look.show_thing(thing)
 		if thing is Compass:
 			look.turn_needle((thing as Compass).needle_on(face, _player.world))
+		elif thing is Streamer:
+			look.stream(thing as Streamer, Time.get_ticks_msec() / 1000.0)
 
 
 ## The picture of a stack, for anything that reads the view.
@@ -528,11 +568,13 @@ func _draw_view() -> void:
 		_text(&"Readout", box.position + Vector2(6.0, PICTURE.y + 32.0), _brief(things), TILE.x - 12.0)
 	var under := tile_rect(tiles - 1, tiles).end.y
 	var tied := PackedStringArray()
+	var selectable := _player.hands.reel.waist_lines()
 	for body in _player.waist.tied:
-		if is_instance_valid(body):
+		if is_instance_valid(body) and not selectable.has(body):
 			tied.append(str(body.get(&"label")))
-	_text(&"Label", Vector2(left, under + 16.0), "waist: " + (", ".join(tied) if not tied.is_empty() else "-"), width)
-	Controls.draw_keys(_view, Vector2(left, under + 30.0), HINT)
+	if not tied.is_empty():
+		_text(&"Label", Vector2(left, under + 16.0), "waist: " + ", ".join(tied), width)
+	Controls.draw_keys(_view, Vector2(left, under + 30.0 + _waist_height()), HINT)
 
 
 func _palette(color: StringName) -> Color:

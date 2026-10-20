@@ -10,7 +10,8 @@ func run() -> void:
 	await load_weather()
 	Scenarios.apply(world, Scenarios.by_key("clear_skies"))
 	var dropped := await _landed()
-	check(dropped.size() == 2 and dropped[0] is Radio, "it sets a radio and a shield in front of you")
+	check(not dropped.is_empty() and dropped[0] is Radio and dropped.any(func(n: Node) -> bool: return n is ShieldGenerator),
+		"it sets a radio and a shield on its plate in front of you")
 	if dropped.is_empty():
 		return
 	var radio: Radio = dropped[0]

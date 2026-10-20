@@ -17,14 +17,37 @@ Sand Game, the prototype this replaces, lives on the
   `scripts/probe.sh`; it needs a `godot` binary on your PATH, or set `GODOT`.
   `scripts/probe.sh selftest` proves the runner itself can fail. It runs in bash 3.2 and
   up, so in macOS's own and in Git Bash on Windows too. CI runs both on every push, on
-  Linux, macOS and Windows.
+  Linux; master and tags also run the native macOS and Windows checks.
 - **Writing a probe:** extend `Probe`, put the body in `run()`, and call `check()`. Probes
   run on a fixed seed and never find nodes by name.
 
+## Verifying a change
+
+Work in a sibling worktree. Copy `scripts/verify.sh` outside the checkout, then run
+that copy from the worktree with `<name>` (or `<name> --land` after merging current
+`origin/master`). It pushes `verify-<name>` and waits only for that branch's exact
+commit in `probes.yml`, accepting push or manual-dispatch runs. If no push run appears
+within about 30 seconds, it dispatches the same branch with `full_platforms=false`:
+the existing nine Linux groups, with all failures still blocking landing. Run polling
+is once a minute. Documentation-only changes skip CI as before.
+
+Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
+Manual Probes dispatches default to `full_platforms=true`, retaining full preview
+coverage; only an explicit branch dispatch with `full_platforms=false` omits the native
+and build jobs. Master/tag coverage cannot be disabled by that input.
+
 ## Releasing
 
+Fix releases increment the patch version (for example `0.2.1-alpha`). Alpha
+sub-releases increment the minor version, reset the patch to zero, and always
+have a name. The current 0.2 line is **“Sailboat”**; the next minor release is
+**0.3 “Sanddune”**. Patch releases keep
+their minor release's identity. Versions change per release, not per commit.
+The [1.0 Alpha roadmap](docs/alpha-roadmap.md) tracks the proposed completion gate.
+
 The version lives in one place, `application/config/version` in `project.godot`, and
-shows in the main menu's corner. `scripts/export.sh` exports the Linux, Windows and
+shows in the main menu's corner alongside `application/config/release_name`.
+The release name also appears in the GitHub release title. `scripts/export.sh` exports the Linux, Windows and
 macOS builds (`export_presets.cfg`) and zips each as `desert-<version>-<os>.zip`; it
 needs the pinned export templates installed. CI runs it on every push, then launches
 each build on its own OS for a smoke test (`scripts/probe.sh smoke <game>`).
@@ -34,7 +57,9 @@ each build on its own OS for a smoke test (`scripts/probe.sh smoke <game>`).
 - **Cut a release:** set the version in `project.godot`, update `RELEASE_NOTES.md`,
   merge to master, then tag that commit `v<version>` and push the tag. The Release
   workflow builds and smoke-tests it again and publishes a GitHub pre-release with the
-  zips and the notes. A tag that doesn't match the version publishes nothing.
+  zips and the notes only after that tag's full Probes run succeeds. A failed,
+  cancelled or missing probe run blocks publication. A tag that doesn't match
+  the version publishes nothing.
 
 ## Layout
 

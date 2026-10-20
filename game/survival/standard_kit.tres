@@ -7,28 +7,21 @@ script = ExtResource("1_kit")
 carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 1,
-&"bedroll": 1
+&"bedroll": 1,
+&"surveyor_guide": 1
 })
 beside = Dictionary[StringName, Vector2]({
-&"floating_crate": Vector2(1.8, 1.8),
-&"board": Vector2(-1.4, 1.2),
-&"stake": Vector2(1.8, 8.2)
+&"camp": Vector2(1.6, 2.2),
+&"stake": Vector2(1.6, 8.6)
 })
 assembled = Dictionary[StringName, Dictionary]({
-&"floating_crate": {
-"frame": &"crate_frame",
-"sockets": {
-0: &"battery",
-1: &"hover_tray",
-2: &"light_shield",
-5: &"hook",
-8: &"board",
-7: &"light_panel"
-}
+&"camp": {
+"floating": true,
+"rig": [[&"piece", Vector2i(1, 0)], [&"stick", Vector2i(0, 0), &"bottom", Vector2(0.06, 0.15), 0.0, &"hover_tray"], [&"stick", Vector2i(1, 0), &"bottom", Vector2(0.06, 0.15), 0.0, &"hover_tray"], [&"frame", Vector2i(1, 0), 0], [&"wall", Vector2i(1, 0), &"back"], [&"stick", Vector2i(0, 0), &"top", Vector2(0, -0.27), 0.0, &"light_panel"], [&"stick", Vector2i(0, 0), &"top", Vector2(-0.25, 0.22), 0.0, &"light_shield"], [&"stick", Vector2i(0, 0), &"top", Vector2(0.24, 0.25), 0.0, &"battery"], [&"stick", [Vector2i(1, 0), &"back"], &"top", Vector2(0, 0.12), 90.0, [&"board", [&"battery"]]], [&"stick", [Vector2i(1, 0), &"back"], &"top", Vector2(0.3, -0.3), 0.0, &"compass"], [&"hook", Vector2i(0, 0), Vector2i(-1, 0)]]
 }
 })
 lines = Dictionary[StringName, StringName]({
-&"floating_crate": &"stake"
+&"camp": &"stake"
 })
 charge = 0.5
 rope_m = 6.0
@@ -37,4 +30,4 @@ label = "Surveyor"
 about = "tows a camp"
 start = &"artery"
 balanced = true
-shown = &"floating_crate"
+shown = &"camp"

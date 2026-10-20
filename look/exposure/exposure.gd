@@ -87,28 +87,29 @@ func _find() -> Dictionary:
 			if not sites.by_hand(KIND, at.x, at.y, 0.0, 0.0).stands():
 				continue
 			var memo := Exposure.Memo.new()
+			var dune := Exposure.dune_at(world.shape, at.x, at.y, tuning)
 			for m in range(90, 3 * 24 * 60):
 				var t := (m + 1) * Exposure.SURGE_STEP_S
 				var day := world.weather.day.time_of_day(t, world.moon.longitude)
 				if day < DAY.x or day > DAY.y:
 					continue
-				var s := Exposure.surge_at(field, at.x, at.y, m, tuning, memo)
-				if s < 1.0 or s < Exposure.surge_at(field, at.x, at.y, m - 1, tuning, memo) \
-						or s < Exposure.surge_at(field, at.x, at.y, m + 1, tuning, memo):
+				var s := Exposure.surge_at(field, at.x, at.y, m, tuning, memo, dune)
+				if s < 1.0 or s < Exposure.surge_at(field, at.x, at.y, m - 1, tuning, memo, dune) \
+						or s < Exposure.surge_at(field, at.x, at.y, m + 1, tuning, memo, dune):
 					continue
 				var before := _clear(field, at, t, -1.0)
 				var after := _clear(field, at, t, 1.0)
 				if is_nan(before) or is_nan(after):
 					continue
-				var depth := 3.45 * maxf(Exposure.taken(field, at.x, at.y, before, tuning, memo),
-					Exposure.taken(field, at.x, at.y, after, tuning, memo))
-				var score := Exposure.taken(field, at.x, at.y, t, tuning, memo) / maxf(depth, 0.1)
+				var depth := 3.45 * maxf(Exposure.taken(field, at.x, at.y, before, tuning, memo, dune),
+					Exposure.taken(field, at.x, at.y, after, tuning, memo, dune))
+				var score := Exposure.taken(field, at.x, at.y, t, tuning, memo, dune) / maxf(depth, 0.1)
 				if score <= most:
 					continue
 				# Half out of the sand by day too.
 				var rising := t
 				while rising > before and Exposure.level(maxf(depth, 0.1),
-						Exposure.taken(field, at.x, at.y, rising, tuning, memo)) > 1.0:
+						Exposure.taken(field, at.x, at.y, rising, tuning, memo, dune)) > 1.0:
 					rising -= 10.0
 				var lit := world.weather.day.time_of_day(rising, world.moon.longitude)
 				if lit >= LIGHT.x and lit <= LIGHT.y:

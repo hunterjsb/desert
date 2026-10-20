@@ -9,14 +9,20 @@ extends CharacterBody3D
 ## Never moves where the ground has no collision yet, and never ends up in
 ## the sand. How it feels is Feel's: the camera's. Auto-walk gives your walk
 ## only its way. Sat at a helm you ride the camp, and the sideways moves turn it.
+## Thrown off the board you tumble (Tumble), and get up once you've come to rest.
 
 ## Touched down from the air at this speed, m/s.
 signal landed(speed: float)
 signal jumped
-## On the board, its dug edge bit at this speed, m/s, or caught and threw you
-## off, as you were going.
+## On the board, its dug edge bit at this speed, m/s, or it threw you off as
+## you were going: how (Ride.thrown), and how hard, m/s. It popped up off the
+## sand this fast, and met it again after flying this hard, m/s.
 signal edge_bit(speed: float)
-signal wiped_out(speed: float)
+signal wiped_out(speed: float, how: StringName)
+signal took_off(speed: float)
+signal touched_down(speed: float)
+## Tumbling, you hit the sand this hard, m/s.
+signal tumbled(speed: float)
 
 ## Slides and the air step at this rate whatever the physics tick, and the
 ## rest is exact over a tick, so the same keys trace the same path at 30, 60
@@ -31,13 +37,15 @@ const LOW_SECONDS := 0.12
 const SLIP_HOLD := 2.0
 ## A board this near your feet, m, is one you can step onto.
 const BOARD_REACH := 1.5
-## A caught edge stops the board in the sand and throws you on: you keep this
-## share of your way, it this share, tumbling over its edge, rad/s, popping
-## up off the sand, m/s.
-const THROWN_KEEPS := 0.6
+## Thrown off, the board stops in the sand and throws you on: it keeps this
+## share of its way, tumbling over its edge and end over end at this share of
+## that, rad/s, popping up off the sand, m/s; off something solid it bounces
+## back this share of what it hit it with.
 const BOARD_KEEPS := 0.25
 const TUMBLE := 7.0
+const END_OVER := 0.6
 const POP := 2.0
+const BOUNCE := 0.3
 
 var world: World
 var stamina: float
@@ -62,11 +70,15 @@ var feel: Feel
 var walker: AutoWalk
 ## Tuning a radio brings the view in to its dial.
 var close_up: CloseUp
-## The board you ride, or null, and the ride that moves you on it.
+## The board you ride, or null, and the ride that moves you on it; thrown
+## off it, your tumble until you're up again.
 var board: Hoverboard
 var ride: Ride
+var tumble: Tumble
 ## The helm you sit at, or null.
 var helm: Helm
+
+var vault: LedgeVault
 
 var _tuning := Tuning.current()
 var _sliding := false
@@ -103,6 +115,7 @@ var _touching := Vector2i.ONE
 
 
 func _ready() -> void:
+	vault = LedgeVault.new(self)
 	stamina = _tuning.stamina_max
 	feel = Feel.new()
 	add_child(feel)
@@ -117,6 +130,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		Controls.free_mouse(false)
 	elif event.is_action_pressed("ui_cancel"):
 		Controls.free_mouse(true)
+	elif tumble != null:
+		return
 	elif event.is_action_pressed("ride"):
 		if toggle_board():
 			get_viewport().set_input_as_handled()
@@ -125,7 +140,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_jump_queued = true
 	elif event.is_action_pressed("auto_walk"):
 		walker.toggle()
-	elif event is InputEventMouseMotion and not Controls.mouse_free:
+	elif event is InputEventMouseMotion and not Controls.mouse_free and not vitals.wounds.stunned():
 		if hands.turn(event.relative * _tuning.mouse_sensitivity):
 			return
 		rotate_y(-event.relative.x * _tuning.mouse_sensitivity)
@@ -134,10 +149,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Stunned by a shock, you go nowhere.
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back") \
-		if Controls.playing() else Vector2.ZERO
+		if Controls.playing() and not vitals.wounds.stunned() else Vector2.ZERO
 	walker.check(input)
 	if flying:
+		vault.cancel()
 		mode = "fly"
 		Dev.put("player/mode", mode)
 		var boost := 5.0 if Controls.held("sprint") else 1.0
@@ -149,12 +166,21 @@ func _physics_process(delta: float) -> void:
 	_clear_of_board()
 	_clear_of_deck()
 	if helm != null:
+		vault.cancel()
 		_at_helm(input)
 		return
 	# A board freed under you (a scenario's, say) still leaves a ride to end.
 	if ride != null:
+		vault.cancel()
 		_ride(delta, input)
 		return
+	if tumble != null:
+		# Moved from outside (a probe, a respawn, a load), you're as you're put.
+		if velocity != _left:
+			_get_up()
+		else:
+			_tumble(delta)
+			return
 	if _boarding != null:
 		if not is_instance_valid(_boarding) or _boarding.global_position.distance_to(global_position) > BOARD_REACH * 2.0:
 			_boarding = null
@@ -162,6 +188,11 @@ func _physics_process(delta: float) -> void:
 			get_on(_boarding)
 	if world == null or not world.has_ground_under(global_position):
 		_stop()
+		return
+	if vault.active:
+		_since_ground += delta
+		vault.step(delta)
+		_left = velocity
 		return
 	if velocity != _left:
 		own = Vector2(velocity.x, velocity.z)
@@ -178,6 +209,7 @@ func _physics_process(delta: float) -> void:
 	var on_floor := is_on_floor()
 	_since_ground = 0.0 if on_floor else _since_ground + delta
 	if on_floor:
+		vault.grounded()
 		_jumped = false
 	var crouch := Controls.held("crouch")
 	var pressed := crouch and not _crouch_was
@@ -245,6 +277,13 @@ func _physics_process(delta: float) -> void:
 		velocity.z += shove.z
 	velocity += get_meta(&"rope_drag", Vector3.ZERO)
 	velocity.y = lift
+	if not crouch and not _sliding and dir != Vector2.ZERO \
+			and (sprinting or _jumped) and vault.begin(dir):
+		_jumped = true
+		_jump_buffer = 0.0
+		vault.step(delta)
+		_left = velocity
+		return
 	var from := global_position
 	var meant := Vector2(velocity.x, velocity.z) * delta
 	move_and_slide()
@@ -281,7 +320,7 @@ func _stop() -> void:
 
 
 ## Ride: riding, step off, and at the helm stand up; otherwise step onto the
-## board in your hands, the one you look at, racked or not, or the nearest at
+## board in your hands, the one you look at, on a deck or not, or the nearest at
 ## your feet. Says whether it did anything.
 func toggle_board() -> bool:
 	if helm != null:
@@ -293,14 +332,14 @@ func toggle_board() -> bool:
 	return get_on(_board_near())
 
 
-## Onto a board, if it has the charge to carry you. It tows nothing, so you
-## let go of what you hold on a line or drag; a line at your waist has to be
-## untied first, and you step on once it is. A sheet stays tied: its sail
-## tows you.
+## Safe boarding drops a hand-held load and unties ordinary waist lines.
+## Sailing lines stay: wind and the board's limited motor can pull them.
 func get_on(on: Hoverboard) -> bool:
 	_boarding = null
 	if on == null or board != null or flying:
 		return false
+	if tumble != null:
+		_get_up()
 	if world.salvage.lying(on):
 		world.salvage.unbury(on)
 	if not on.can_run():
@@ -316,8 +355,8 @@ func get_on(on: Hoverboard) -> bool:
 		waist.let_go(holding)
 		_boarding = on
 		return true
-	# Racked, it comes off the crate straight under your feet, its own pool again.
-	if on.racked():
+	# On a deck, it comes off straight under your feet, its own pool again.
+	if on.on_deck():
 		on.host().dismount(on.host().seat_of(on))
 		world.power.wake(on)
 	board = on
@@ -327,13 +366,30 @@ func get_on(on: Hoverboard) -> bool:
 	_sliding = false
 	_jumped = false
 	if Controls.ui != null and Controls.playing():
-		Controls.ui.teach(Controls.RIDE_HOW_TO, Controls.RIDE_HOW_TO_SAYS)
+		# One how-to a ride: the board's first, then a bridled rig's.
+		if not Controls.ui.teach(Controls.RIDE_HOW_TO, Controls.RIDE_HOW_TO_SAYS) and _bridled():
+			Controls.ui.teach(Mast.BRIDLE_HOW_TO, Mast.BRIDLE_HOW_TO_SAYS)
 	return true
+
+
+## Whether a sail's rig flies from your waist on its sheet and two lines more.
+func _bridled() -> bool:
+	var rigs := {}
+	for body in waist.tied:
+		if is_instance_valid(body) and Mast.sheet_end(body) and world.ropes.far_holder(body) != null:
+			rigs[world.ropes.far_holder(body)] = 0
+	for body in waist.tied:
+		var far: Node3D = world.ropes.far_holder(body) if is_instance_valid(body) else null
+		if far != null and rigs.has(far) and not Mast.sheet_end(body):
+			rigs[far] += 1
+	return rigs.values().any(func(n: int) -> bool: return n >= 2)
 
 
 ## Off the board onto the sand, keeping your way: faster than you can run,
 ## you skid. The board goes on as it was going, a body again.
 func step_off() -> void:
+	if vault != null:
+		vault.cancel()
 	if board == null:
 		return
 	var going := Vector3(ride.velocity.x, ride.vy, ride.velocity.y)
@@ -353,8 +409,8 @@ func step_off() -> void:
 
 ## A tick on the board: your keys say where it pushes and carves, move back
 ## digs in, sprint kicks, a jump hops, a crouch tucks you small to the wind
-## and drifts a hard turn. Out of charge you step off; an edge caught throws
-## you off.
+## and drifts a hard turn. Out of charge you step off; an edge caught, a
+## landing too hard or a crash throws you off.
 func _ride(delta: float, input: Vector2) -> void:
 	if not is_instance_valid(board):
 		board = null
@@ -392,40 +448,84 @@ func _ride(delta: float, input: Vector2) -> void:
 	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
 	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
 	if ride != null:
-		Dev.put("player/board", "%.2fm up, %d%%, dug %d%% at %.1f/%.1f" % [ride.gap + _tuning.board_ride_height
-			- ride.dig * _tuning.board_dig_depth, roundi(100.0 * board.charge_share()), roundi(100.0 * ride.dig),
-			ride.edge, _tuning.board_dig_catch])
+		var slid := absf(ride.velocity.angle_to(ride.ahead)) if ride.velocity.length() > 0.5 else 0.0
+		Dev.put("player/board", "%s %.2fm up, %d%%, dug %d%% at %.1f/%.1f%s" % [board.label, ride.gap
+			+ _tuning.board_ride_height * ride.make.height - ride.dig * _tuning.board_dig_depth,
+			roundi(100.0 * board.charge_share()), roundi(100.0 * ride.dig), ride.edge, _tuning.board_dig_catch
+			* ride.make.sturdy, ", skid %d°" % roundi(rad_to_deg(minf(slid, PI - slid))) if ride.skidding else ""])
 
 
-## A caught edge throws you off: you stumble on across the sand with most of
-## your way, knocked and winded, and the board tumbles over its edge behind
-## you. It never takes your last health.
+## An edge caught, a landing too hard or a crash throws you off: you let go
+## of what you held and tumble on over the sand with your way, toward the
+## board's low side, knocked and winded, and the board tumbles away behind
+## you on its own, off what it struck if it struck something. It never takes
+## your last health.
 func wipe_out() -> void:
-	var speed := ride.velocity.length()
+	var how := ride.thrown if ride.thrown != &"" else &"edge"
+	var speed := ride.thrown_at if ride.thrown_at > 0.0 else ride.velocity.length()
+	var struck := ride.struck
 	var low := signf(ride.bank) if ride.bank != 0.0 else 1.0
 	var tumbling := board
 	step_off()
-	velocity *= THROWN_KEEPS
-	own *= THROWN_KEEPS
-	_left = velocity
+	walker.stop()
+	hands.grasp.let_go()
+	hands.drop()
+	tumble = Tumble.new(self, own, how, low, struck * speed * Tumble.REBOUND)
+	motion_mode = MOTION_MODE_FLOATING
 	if is_instance_valid(tumbling):
 		var ahead := -tumbling.global_basis.z
 		tumbling.linear_velocity *= BOARD_KEEPS
+		tumbling.linear_velocity += Vector3(struck.x, 0.0, struck.y) * speed * BOUNCE
 		tumbling.linear_velocity.y = maxf(tumbling.linear_velocity.y, 0.0) + POP
-		tumbling.angular_velocity = ahead * low * TUMBLE
+		tumbling.angular_velocity = (ahead * low - tumbling.global_basis.x * END_OVER) * TUMBLE
 	vitals.health = maxf(vitals.health - _tuning.board_wipeout_hurt, minf(vitals.health, 1.0))
 	stamina = maxf(stamina - _tuning.board_wipeout_winded, 0.0)
-	wiped_out.emit(speed)
+	wiped_out.emit(speed, how)
+
+
+## A tick of your tumble: nothing but the tumble moves you until you're up.
+func _tumble(delta: float) -> void:
+	if not world.has_ground_under(global_position):
+		tumble.wait()
+		return
+	tumble.step(delta)
+	own = tumble.velocity
+	sink = 0.0
+	_hold_above_sand()
+	_left = velocity
+	mode = "tumble"
+	if tumble.up():
+		velocity = Vector3.ZERO
+		own = Vector2.ZERO
+		_left = velocity
+		_get_up()
+	Dev.put("player/mode", mode)
+	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
+
+
+## On your feet again, standing where the tumble left you.
+func _get_up() -> void:
+	tumble = null
+	motion_mode = MOTION_MODE_GROUNDED
+	_jump_queued = false
+	_jump_buffer = 0.0
+	_since_ground = 0.0
 
 
 ## What's at your waist that would hold the board back: every line but a
-## sail's sheet, and a camp's line its rig tows past you.
+## sail's sheet, a camp's line its rig tows past you, and a line from the
+## sheet's own rig, which with the sheet flies it as a kite's lines do.
 func _holding_back() -> Array[RigidBody3D]:
 	var back: Array[RigidBody3D] = []
 	var towed := world.ropes.link_pair()
+	var rigs := []
+	for body in waist.tied:
+		if is_instance_valid(body) and Mast.sheet_end(body) and world.ropes.far_holder(body) != null:
+			rigs.append(world.ropes.far_holder(body))
 	for body in waist.tied:
 		if is_instance_valid(body) and not Mast.sheet_end(body) \
-				and not (towed.size() == 2 and world.ropes.line_at(body) == towed[1]):
+				and not (towed.size() == 2 and world.ropes.line_at(body) == towed[1]) \
+				and not rigs.has(world.ropes.far_holder(body)):
 			back.append(body)
 	return back
 
@@ -449,7 +549,8 @@ func sit(at: Helm) -> bool:
 	_sliding = false
 	_place_at_helm()
 	if Controls.ui != null and Controls.playing():
-		Controls.ui.teach(Helm.HOW_TO, Helm.HOW_TO_SAYS)
+		var teaches := at.how_to()
+		Controls.ui.teach(teaches[0], teaches[1])
 	return true
 
 
@@ -499,8 +600,8 @@ func _at_helm(input: Vector2) -> void:
 		stand_up()
 		return
 	helm.turning = input.x
-	crouched = true
-	low = 1.0
+	crouched = helm.sits
+	low = 1.0 if helm.sits else 0.0
 	_place_at_helm()
 	wind = world.weather.felt_wind(camera.global_position)
 	mode = "helm"
@@ -683,13 +784,18 @@ func _haul(dir: Vector2, pace: float, delta: float) -> float:
 func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool, vy: float) -> void:
 	_on_sand = true
 	var open := true
+	var solid_normal := Vector3.ZERO
 	for i in get_slide_collision_count():
 		var hit := get_slide_collision(i)
 		var normal := hit.get_normal()
-		var sand := hit.get_collider() is StaticBody3D
+		var holder := hit.get_collider_shape() as CollisionShape3D
+		var sand := holder != null and holder.shape is HeightMapShape3D
 		if normal.angle_to(up_direction) <= floor_max_angle:
 			_on_sand = sand
-			open = open and sand
+			var fixed := hit.get_collider() is StaticBody3D
+			open = open and fixed
+			if fixed and not sand:
+				solid_normal = _support_normal(hit)
 			continue
 		open = false
 		var loose := hit.get_collider() as RigidBody3D
@@ -704,9 +810,17 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 				walker.stop()
 	if open and was_on_floor and is_on_floor():
 		var off := meant - Vector2(global_position.x - from.x, global_position.z - from.z)
-		global_position += Vector3(off.x, _slope_at(global_position).dot(off), off.y)
-		velocity.x = meant.x / delta
-		velocity.z = meant.y / delta
+		if solid_normal != Vector3.ZERO:
+			# Keep pace along the real face, sweeping so an edge or nearby wall
+			# still stops the correction. Sand keeps its deterministic path.
+			var slope := -Vector2(solid_normal.x, solid_normal.z) / solid_normal.y
+			move_and_collide(Vector3(off.x, slope.dot(off), off.y))
+			velocity.x = (global_position.x - from.x) / delta
+			velocity.z = (global_position.z - from.z) / delta
+		else:
+			global_position += Vector3(off.x, _slope_at(global_position).dot(off), off.y)
+			velocity.x = meant.x / delta
+			velocity.z = meant.y / delta
 	if is_on_ceiling():
 		vy = minf(vy, 0.0)
 	_touchdown = 0.0
@@ -754,7 +868,31 @@ func _slope_here() -> Vector2:
 	if _on_sand or not is_on_floor():
 		return _slope_at(global_position)
 	var normal := get_floor_normal()
+	for i in get_slide_collision_count():
+		var hit := get_slide_collision(i)
+		if hit.get_normal().angle_to(up_direction) <= floor_max_angle:
+			normal = _support_normal(hit)
+			break
 	return -Vector2(normal.x, normal.z) / maxf(normal.y, 0.1)
+
+
+## At a small box lip, the capsule's rounded contact is steeper than the
+## supporting face. Only an already walkable contact can select a real face.
+func _support_normal(hit: KinematicCollision3D) -> Vector3:
+	var normal := hit.get_normal()
+	if normal.angle_to(up_direction) > floor_max_angle:
+		return normal
+	var holder := hit.get_collider_shape() as CollisionShape3D
+	if not hit.get_collider() is StaticBody3D or holder == null or not holder.shape is BoxShape3D:
+		return normal
+	var pose := holder.global_transform
+	var best := Vector3.ZERO
+	for axis in 3:
+		var face := pose.basis[axis].normalized()
+		face *= 1.0 if face.y >= 0.0 else -1.0
+		if face.y >= cos(floor_max_angle) and face.y > best.y:
+			best = face
+	return best if best != Vector3.ZERO else normal
 
 
 func _slope_at(at: Vector3) -> Vector2:

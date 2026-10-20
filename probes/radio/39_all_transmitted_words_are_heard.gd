@@ -24,12 +24,12 @@ func run() -> void:
 	await physics_frames(5)
 	await get_tree().process_frame
 	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
-	check(radio.spoken != "" and radio.spoken == Radio.speech(radio.reception.words)
-		and broadcast.reading == radio.spoken, "the god's transmitted words reach speech")
+	check(" ".join(radio.spoken) != "" and " ".join(radio.spoken) == Radio.spoken_words(radio.reception.words)
+		and broadcast.reading == " ".join(radio.spoken), "the god's transmitted words reach speech")
 	radio.frequency = Dial.BEACON_KHZ
 	await physics_frames(2)
 	radio.target = {"x": x + 100.0, "z": z, "coord": Vector2i.ZERO, "index": 0}
 	await physics_frames(5)
 	await get_tree().process_frame
-	check(radio.spoken.contains(radio.say_point(radio.beacon_bearing())) and broadcast.reading == radio.spoken,
+	check(" ".join(radio.spoken).contains(radio.say_point(radio.beacon_bearing())) and broadcast.reading == " ".join(radio.spoken),
 		"the beacon's actual bearing reaches speech too")

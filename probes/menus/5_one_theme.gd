@@ -2,8 +2,8 @@ extends MenuProbe
 ## Menus & UI probe 5: one theme. Every UI there is, open at once: in a run,
 ## the bars, the inventory, the look-at readout, the death caption, the keys
 ## list, the dev overlay and the dev console, then the system menu with
-## Options, the controls list, the deeds and a question over it; at the menu, its words
-## and who you come as.
+## Options, the controls list, the deeds, the creative menu and a question
+## over it; at the menu, its words and who you come as.
 ## Every control draws from the one theme: no theme of its own, no override of
 ## a colour, font, size or style, a type the theme defines, and a font of the
 ## theme's. No script in the game reaches past it for a font or a look of its
@@ -32,6 +32,7 @@ func run() -> void:
 	ui.open(ui.options())
 	ui.open(ui.controls())
 	ui.open(ui.deeds())
+	ui.open(ui.creative(world))
 	ui.open(ui.confirm("A question", "No", "Yes", func() -> void: pass))
 	await get_tree().process_frame
 	_look()

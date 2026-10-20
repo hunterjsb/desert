@@ -1,5 +1,6 @@
 extends SavesProbe
-## Profile & saves probe 11: hoses resume. A condenser hosed to a planter, a
+## Profile & saves probe 11: hoses resume. A condenser on its plate, on the
+## plate's battery, hosed to a planter, a
 ## canister on the hose's end at the planter and water in its tank, is saved
 ## mid-flow. Resumed into a fresh world on the same seed, the hose joins the
 ## same two, a hose still, the canister on its end; the water in the tank and
@@ -10,11 +11,13 @@ extends SavesProbe
 func run() -> void:
 	saves = get_node("/root/Saves")
 	await load_storm(0.0)
-	var condenser := Catalog.device(&"condenser") as Condenser
-	world.content.add_child(condenser)
+	var plate := Catalog.device(&"chassis") as Chassis
+	world.content.add_child(plate)
 	var at := ahead(2.0)
-	condenser.global_position = Vector3(at.x, world.height_under(at) + 0.36, at.z)
-	fit_part(condenser, &"battery")
+	plate.global_position = Vector3(at.x, world.height_under(at) + Chassis.THICK * 0.5 + 0.01, at.z)
+	var condenser := Catalog.device(&"condenser") as Condenser
+	Stick.put(plate, plate, Chassis.TOP, Vector2(-0.15, 0.0), 0.0, condenser)
+	Stick.put(plate, plate, Chassis.TOP, Vector2(0.35, 0.3), 0.0, Catalog.part(&"battery"))
 	var planter := Catalog.device(&"planter") as Planter
 	world.content.add_child(planter)
 	at = ahead(4.5)

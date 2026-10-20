@@ -135,7 +135,7 @@ whether the hardest thing is possible before we depend on it.
 function of friction. Everything catches wind by its size: drag grows with the square
 of the wind and with a thing's biggest face, at the rate the rope look-test's floater
 was tuned to. Resting on sand, a thing has a friction of 0.5 to beat, so a breeze
-leaves a crate be and a storm slides it. Floating, nothing holds it, so it drifts off
+leaves a loaded deck be and a storm slides it. Floating, nothing holds it, so it drifts off
 downwind unless it's tied down. That's what rope is for.
 
 ### Instruments and the Console screen (proposed; first version built)
@@ -241,7 +241,8 @@ second of world time.
   "FRONT 1.2 km N", then under it its eta, "5 min", which way it's moving, "8 m/s ESE", and
   "hits 1.8 g/m³". It samples the field round the Console itself rather than reading the wall's
   map, which is centred on you, not on your camp.
-- **A radio on the Console's top mount** adds the forecast it already makes (`Radio.forecast`, 20
+- **A radio on the Console's deck** (on its top mount until the chassis rework) adds the forecast
+  it already makes (`Radio.forecast`, 20
   minutes ahead, read again every 5 s, where the radio is): "FCST 5 min storm", then under it
   where it's from, "WNW", its winds, "27 m/s", and how long it lasts, "9 min". It feeds the Console while it's powered and whole, whatever its
   dial plays aloud.
@@ -428,24 +429,28 @@ From Hunter's [storms, signals & sailing spec](../storms-signals-sailing-2026-10
     ordinary storm (at the probes' heart: load 500%, sand 1.35 g/m³, wind 27 m/s).
 - **The hook** for the map and the Walker's feed: `WeatherField.anomalies_near(x, z, t, reach)`
   lists every heart within reach at a moment, where it is, its reach, when it peaks, how strong it
-  stands and its share at the place. Only the compass reads it now; teaching the Walker is its own
-  quest line.
+  stands and its share at the place. The compass reads it, and once the Walker's taught, every
+  Console's radar map and chart and the Walker's feed (built 2026-10-19,
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)).
+- **Teaching the Walker** (built 2026-10-19, the Walker's quest in Radio): a Console keeps evidence of
+  each tell its system witnesses, by the sensor that sees it: a compass stuck on its deck for the lean,
+  a radio on it for the crackle, and a shield on it for the load, read against its particle sensor's
+  sand. Plugged into the Walker with all three, it teaches it, a world flag the run's save keeps.
 - **The scenario,** "anomaly": clear, its storm due in two and a half to five minutes, the heart's
   full over you within five minutes of the wall, facing upwind beside a camp built for wind: the
   reference camp's deck resting on the sand, moored upwind; a Console reading the wind and the sand;
-  a radio on the weather station; the base shield on one battery, running; and a turbine out in the
-  gale on a strong cable, enough for an ordinary storm. A compass is in your suit. It's searched
+  a radio on the weather station; the base shield on one battery, running, all stuck on the deck;
+  and a turbine out in the gale on a strong cable from the radio's port, enough for an ordinary
+  storm. A compass is in your suit. It's searched
   wherever a heart passes within 60 km of where the run began, from the clock's start for up to 200
   days: hearts are sparse, and 30 km and 30 days found none on one seed in eight (how Hunter met
   it, 2026-10-18), where this finds one within 23 days on each of 60 seeds tried. The dev overlay
   shows the hidden term where you stand (`weather/anom`).
-- **A deed, proposed and not added.** "Survive an anomaly" fits, as the first step of teaching the
-  Walker, but the deeds grid names every deed, so its tile would say anomalies exist before you've
-  learnt them by their tells. The proposal: a hidden deed (the table has the flag; none uses it yet),
-  recorded by Vitals when the term where you stand has reached its full and fallen back to nothing
-  with you alive; or none, leaving the moment to the Walker's quest line.
+- **Its deeds** (agreed 2026-10-18): Eye of the Anomaly and Tells, hidden, in the Weather tree (built
+  2026-10-19), and Taught, hidden, with the Walker's quest (built 2026-10-19, [Profile &
+  saves](profile-and-saves.md#round-two-the-trees-that-tie-it-together-agreed-2026-10-18-step-1-built-2026-10-19)).
 
-## Dune archaeology (agreed, 2026-10-18 spec; not built)
+## Dune archaeology (agreed, 2026-10-18 spec; built 2026-10-19)
 
 From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): the lee, drift and exposure systems talk to each other, so camping
 by a big dune becomes a way to play: let the ruins come to you.
@@ -494,26 +499,74 @@ has the detail):
 - **Finding them in the dust.** What a storm newly lays bare glints through the dust out to 90 m in the
   dust's glow, whichever way it faces you, Skyline's glints let through near; and clangs on the wind now
   and then, heard to 140 m
-  after the sound's trip, duller the further. The particle sensor and ground radar are a hook for now:
-  `sites.newly_exposed` lists the sites a storm has newly laid bare near a place, for the Console to pin.
+  after the sound's trip, duller the further. `sites.newly_exposed` lists the sites a storm has newly
+  laid bare near a place; the ground radar pins them on a Console's survey page (below).
 - **Probes:** kits 3 and 4, loot 7, sightlines 4, saves 23.
 
-## Dune archaeology (agreed, 2026-10-18 spec; not built)
-
-From the [chassis spec](../chassis-kits-dunes-2026-10-18.md): the lee, drift and exposure systems talk to each other, so camping
-by a big dune becomes a way to play: let the ruins come to you.
-- **Exposure gets a dune term:** more stripping on a windward face and crest, more burial in the
-  lee, still stateless.
-- **Dune ruins:** a seeded ruin under each big dune, uncovered only past an intense storm, so nearly
-  every big dune yields something in a big one; seeded, never spawned on noticing the player.
-- **Light loot over the crest:** in a storm it falls out in the lee of crests near camp too, not
-  only at staked lines.
-- **Three ways to play it:** up to the windward crest mid-storm for medium loot; stay in the lee and
-  let light loot come; wait and dig the bared ruin after. **Storm chasing** is the same high tier
-  metered: many freshly bared sites in their window, volume over depth, no new table.
-- **Lazy loading:** a buried site costs nothing at chunk load, a seed only; exposure checks run on a
-  low-priority queue by distance, and a site builds only once bared and you've slowed nearby, so a
-  fast rider never stutters on what they pass.
+**As built (2026-10-19), the rest** ([the world system](../world-system.md#what-storms-do-to-sites-now) has
+the detail):
+- **The dune term.** Where a site lies among the dunes weighs its exposure (`Exposure.dune_at`), -1 to 1,
+  read from the bare dunes along the run's long-term wind, which they face: toward 1 on a windward face or a
+  crest, toward -1 on a slip face or in a crest's lee. On a face or crest the weather strips up to twice as
+  hard, the storm's work off it too; in a lee the sand comes back up to twice as fast, the storm's work onto
+  it too **(defaults)**. Still pure, in the dunes and the field's history. Over three days of seed 1234's
+  weather, halfway up a big dune's windward face 3.6 times the sand is off that open sand would have off, and
+  in its lee a third.
+- **Dune ruins.** One seeded ruin to each 300 m of a big dune's crest, a dune standing 14 m or more over
+  the trough past its slip face, in its own lee: on the flat past the foot of its slip face, where the dune
+  term has the lee deep, a colony's hab pod or now and then a First Kingdoms hut, 5.5 to 6.5 m deep
+  **(defaults)**. 35 of the 40 big dunes within 1.5 km of the start hold one. Their weather is any site's;
+  the lee and the depth keep them: through two days, storms that never bring their heart over one leave it
+  under the sand (8 bared of 1,162), and one whose heart holds over it half an hour or more lays nearly
+  every one bare (136 of 160). Once the storm lets go it's back under in minutes, unless you're standing on
+  it. What they hold is kept whole under the dunes, survey gear among it: sieves on their shelves, a ground
+  radar most often in their deepest cache (`SiteLoot.DUNE`).
+- **Light loot over the crest.** In a storm light things fall out of the slowed wind in the lee of a crest
+  near camp with no line at all: within 24 m of you or a deck of yours, wherever the lee is half or more,
+  0.5 things an hour on a hundred square metres of full lee in a storm's heart, a pile's worth at most (8)
+  lying there **(defaults)**. Under a tall slip face, a storm's hour round its heart lets about 3.6 fall
+  round you, open sand none. It's the open drift's stream, what the wind carries, laid as drift is: on the
+  sand, held there, yours.
+- **Lazy loading.** Checked first: `structure.gd` builds every standing site at chunk load whatever its
+  state, its ground pressed, its look and boxes made and its loot laid. A dune's ruin is a seed only
+  (`DuneRuins`) and costs a chunk's load nothing. While you're slow (under 4.5 m/s for 2 s), a worker at low
+  priority finds where the seeds within 300 m lie and reads how far out of the sand each is, nearest first,
+  each again every 15 s of world time; a ground radar's place is looked over whatever your pace. One a storm
+  has bared builds into the site index once you're within 150 m and slow, the chunks under it pressed afresh
+  with it on a worker **(defaults)**. Ridden past bared at 20 m/s 40 m off, nothing of it is found, read or
+  built, and the seeds cost the frame 0.03 ms. Measured on a 1.5 km ride along the crests at 20 m/s: built
+  as history's are (every one found, bared or not, slow or not), 10 ruins built on the way and the terrain's
+  slowest frame was 4.5 ms (laying their finds 4.2 ms, a worker's turn finding them 28 ms); built lazily,
+  none, and 0.95 ms. Once built a ruin is a site like any other until the sheet lifts it 1.8 km off.
+- **The archaeology setup** (the spec's open question, decided 2026-10-19): a ground radar fitted to a
+  Console, a sand scoop and a sieve, all on one deck ([Devices & mods](devices-and-mods.md#the-ground-radar-and-the-sieve-built-2026-10-19)).
+  Why these: the radar is a Console sensor mod, as the spec asks, and its page the survey Devices & mods
+  already planned; the scoop is the dig there already is (a wreck's packed holds), so the digging tool
+  builds on it rather than adding a second; the sieve is the one new thing, and earns its place by sifting
+  what the scoop digs. One deck, because a setup is a camp you put together, as the home's three are.
+- **Digging a ruin out yourself** (the other open question, decided 2026-10-19). The scoop held on the sand
+  over a site's ground digs it out as a storm would lay it bare: its footprint's area a metre deep at 1.5 s
+  a cubic metre **(default)**, a hab pod a metre in 72 s, rising out of the sand as it goes through the
+  same exposure, ground steps and finds a storm's work does. What's dug is the site's memory, apart from the
+  weather's function, so a storm never undoes it, and never past dug out, so the deepest sockets still want
+  a storm. A wreck's sand is its holds' and the ground's own isn't dug. A dune's ruin still only a seed
+  (found by the radar under the sand) can be dug too, and builds once something of it shows. **It's yours,
+  not a storm's,** when a dune's ruin comes dug out with at least half its depth off by your hand: what the
+  storm took counts against you, so it's a ruin dug after the sand came back, not one a storm handed you.
+  Why: it reads the deed as it's worded and is plain to see. "No digging under the surface" holds: what
+  comes off is the site's own sand, its rooms' fill and the drift on its walls, never the dunes' and never
+  below its floor.
+- **Sifting.** A sieve in your suit, or set down or stuck on a deck within 4 m, sifts what the scoop digs:
+  a light thing of the site's lesser rows for every 50 m³ (0.02 a cubic metre) **(default)**, from its own
+  stream of the site and how many have come, laid at your feet. A dune's ruin dug out yields about five.
+- **The three ways to play,** as built: up the windward crest mid-storm (the dune term strips it hardest);
+  in the lee, letting light things fall round you; and after, the ruin a storm bared, held bare while you
+  stand on it and dug out by hand. Storm chasing is as before, the dune ruins among the sites it reaches.
+- **The `dig` scenario** stands you by a big dune's ruin a storm has just laid bare, a scoop in your hands
+  and a sieve carried.
+- **Probes:** kits 6 (the dune term strips a windward face more than its lee), 7 (a big dune's ruin bares
+  only past an intense storm), 8 (a buried site costs nothing until it's bared and you've slowed by), loot 8
+  (light loot falls in a crest's lee) and loot 7 standing its ruin in the open; Profile & saves 33 and 34.
 
 ## What storms do to everything else
 
@@ -589,69 +642,107 @@ turbine.
   so when the wind turns past a 2° step the camp's 14 points cost about 1 ms in that
   one tick, once every half minute or more.
 - **On the dev overlay,** `lee` beside `shel` shows the share of the wind the ground
-  keeps from you.
+  keeps from you, and a camp's walls with it (below).
 - **The lee scenario** stands you at the foot of a tall slip face, its crest at least
   15 m above you and a lee at least nine-tenths full, facing up it into the wind coming
   over the crest, in the clear with a storm due in two to six minutes.
 
+### A wall's lee (built, 2026-10-19)
+
+Hunter's [spec](../chassis-kits-dunes-2026-10-18.md#wind-on-faces): a camp's upright faces
+catch the wind and shelter what's behind them like a small dune, edge-on to travel and
+broadside as a windbreak when camped. Each deck's faces standing across the wind and still
+in it (a wall, a screen, fabric; Devices & mods, wind on faces) cast a lee, through the same
+felt-weather wrapper as a dune's, so everything that feels the wind feels it: you, crops,
+devices' wear, loose things, ropes, the turbine and other decks' faces.
+
+- **Where it is.** Behind the face along the wind blowing at its deck, full for two of its
+  heights and gone by seven, as a crest's, and across and up as wide and high as the face
+  stands to the wind, fading out within three tenths of its height past its edges. An
+  angled face casts a narrower lee and a weaker one, by how squarely it meets the wind;
+  edge-on, none; a shelf, level, none.
+- **How strong.** A full lee's share, as a dune's: two-thirds of the wind (65%) and a third
+  of a storm's wear and harm (33%). Behind a 1 m wall broadside to a 12 m/s wind, the wind
+  1.5 m back is cut by 65%, and a 3 kg box resting there stays put where the same box in
+  the open slides 1 m in two seconds (probe 22). Under a dune it takes its share of what the
+  ground's lee lets through, and a bubble keeps out its share of what's left.
+- **Its own deck.** A deck's own walls don't shelter its own faces, which shade one another
+  instead, but the rest of it behind them (devices, what's stuck, its pieces' edges) catches
+  only the wind they let through: the Surveyor's camp with its wall upwind catches about half
+  at its middle what it does with the wall to leeward. A frame open away from the wind with
+  its back closed shelters its inside the same way.
+- **As it stands now.** Read as shelters are, at any time asked; worked out again only when
+  the wind's way across the deck turns 3°, and a deck held in your hands casts none. A read
+  costs about 2 µs near a camp's walls and 1 µs elsewhere, on top of the field's wind.
+
 ## Plumes
 
 *Built 2026-10-18, on the `plumes` branch, from Hunter's brief ([geology and
-plumes](../geology-and-plumes-2026-10-18.md)), and a second round after he played it: "vent is cool,
-nice and ashy... i did see the smoke change... works. but i want these epic, distance plumes with booms
-too!" The vents and the gas pockets are the world system's ([Geology](../world-system.md#geology)), and
-so are the brief's ten questions, answered there; the booms are [Radio, sound &
+plumes](../geology-and-plumes-2026-10-18.md)), a second round after he played it ("vent is cool, nice
+and ashy... i did see the smoke change... works. but i want these epic, distance plumes with booms
+too!"), and a third, the look as it is now, when the smoke didn't sit right: "the plumes kinda take me
+out of it too. they dont look great, just like the smoke is weird. i know performant smoke is hard to
+do, thats why i was thinking its mostly emitting gas at this point so its just massive sand plumes that
+are epic from a distance but really just blend into the storm and or the haze when up close cuz theyres
+so big". The vents and the gas pockets are the world system's ([Geology](../world-system.md#geology)),
+and so are the brief's ten questions, answered there; the booms are [Radio, sound &
 atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)'s.*
 
 Han's rift has two live vents, one past each end of the pipes, and the far-side volcano a flank vent
 below its capped summit. Each vents all the time and now and then bursts; round the rift, gas pockets
-blow out a column of dust. They're geological events at one place, not weather: they never come to you,
-a vent has a mouth you can walk to, and from tens of kilometres off a burst is a column standing over the
-horizon, and over the storms, that you can steer by. Storms are horizon-wide ochre walls that advance; a
-plume is a narrow grey column from a point, bending over into a pale ribbon that runs off downwind, and a
-burst a dark column kilometres high spreading out at its top.
+blow out. What comes out is mostly gas, hot and unseen, and what you see is the sand and dust it sweeps
+up from round the mouth and lifts: a vast column of the storms' own dust. They're geological events at
+one place, not weather: they never come to you, a vent has a mouth you can walk to, and from tens of
+kilometres off a column stands over the horizon, and over the storms, that you can steer by. Storms are
+horizon-wide walls that advance; a plume is a column from a point, towering 1.5 to 3 km and bending over
+into a long dusty ribbon downwind, and a burst swells it to 6 to 10 km, spreading out at its top. Up
+close it's no thing at all: walking into it the air thickens round you, as walking into a storm does.
 
 ### The physical abstraction
 
 - **What shows.** The gas doesn't (which gases, and how much of each, is left open: the science
-  brief's guesses are carbon dioxide, sulphur gases and water vapour). What it carries does: a vent's
-  fine basalt ash, dark, falling out over a minute and a half; steam, only where the air is cold enough to
-  hold it (it shows below 30 °C and fully below -5 °C, and lasts from 15 s in the heat to 4 minutes in the
-  cold), so by a hot day a plume is grey and in the cold of night and dawn white at its root; and the pale
-  blue sulphate haze its gas makes over two minutes, which is most of what a far seep is. A pocket's gas
-  comes up cold and dry, carrying the sand it blew out: tan dust, falling out faster, no steam, and lit
-  well into its shaded side, since sand scatters most of the light that reaches it where basalt ash takes it.
+  brief's guesses are carbon dioxide, sulphur gases and water vapour). The sand and dust it lifts do,
+  the storms' own: their colour, their light and their billows. The gas gathers it up round the mouth
+  as it rises, half of it there and all of it by 40 s; the sand falls out of it by e over 150 s,
+  leaving the fine dust, a third of it, that stays up for the column's ten minutes. A burst's ash is
+  a faint trace at its core, darkening it by up to a third and gone in a minute and a half.
 - **How it rises: Briggs's buoyant plume.** Bent over by the wind it climbs as 1.6 F^1/3 x^2/3 / u
   (x downwind, u the wind), and levels where the air's stability stops it, at 2.6 (F / u N²)^1/3, or
   5 F^1/4 N^-3/4 in still air. Levelled, it spreads out sideways as a current does in stable air, a
   quarter of N times its height in metres a second, wider than it's deep: a burst's umbrella. F, its
-  buoyancy flux, is `plume_buoyancy` (25,000 m⁴/s³, a look value: about a gigawatt of heat in thin air)
-  times how hard the source is venting as it leaves; N, the air's stability, is 0.009 /s by day and
-  0.016 /s by night **(defaults)**. So a seep levels about 800 m up in a 10 m/s wind by day, lower and
-  flatter at night. A burst, a vulcanian one at 300 to 2,000 times the seep (7.5 to 50 million m⁴/s³,
-  the strongest an active vent's explosions honestly reach short of a great eruption), climbs for three
-  minutes or so to 6 to 10 km in a breeze and spreads over many kilometres; a pocket's blowout, at 20 to
-  80 times, throws its dust a kilometre or two up. It widens by 0.4 of its rise and spreads by 4% of how
-  far it's gone.
+  buoyancy flux, is `plume_buoyancy` (300,000 m⁴/s³, a look value: tens of gigawatts of heat in thin
+  air, a strongly degassing vent) times how hard the source is venting as it leaves; N, the air's
+  stability, is 0.009 /s by day and 0.016 /s by night **(defaults)**. So a seep's column stands about 2
+  km in a 10 m/s wind by day and 3 km in a calm, lower and flatter at night. A burst, at 25 to 170 times
+  the seep (7.5 to 50 million m⁴/s³, the strongest an active vent's explosions honestly reach short of a
+  great eruption), climbs for three minutes or so to 6 to 10 km in a breeze and spreads over many
+  kilometres, holding its height for a minute and a half and fading by e over four minutes; a pocket's
+  blowout, at 1.7 to 6.7 times, throws a kilometre or two up the sand it bursts
+  through, twelve times a vent's dust for its lift. It rises
+  from 150 m wide, the sand swept up round the mouth, widens by a quarter of its rise and spreads by 4%
+  of how far it's gone.
 - **Gravity and the air.** F goes with gravity, and N² does too, so how high a plume levels doesn't
   change with gravity; only how hard it climbs at first does (the dev gravity switch shows it). Thin
   air lifts more for the same heat; that's folded into `plume_buoyancy`.
 - **Transport.** What left the source at a moment is where the field's own drift has carried it since
   (`drift_at`, exact for the prevailing wind, so the tail curls as the wind has turned), plus a front's
   outflow along it, taken as the mean of then and now. Each point of its streakline (24, from the mouth to
-  ten minutes old) is a moment's parcel; its puffs ride them.
-- **Deposition.** Coarse ash leaves the column low down and falls out downwind at 3 to 9 m/s in dark
-  streaks. What's on the ground is the long record, not the last burst: a fan of grey ash down the
-  long-term wind (the dunes' own) from the nearest live vent within 3.2 km, by e every 260 m, dark cinder
-  within 16 to 44 m of the slot and sulphur in its throat, drawn by the sand's look.
-- **Storms.** A storm between you and any part of a plume hides that part, read from the field itself
-  along the line from your eye, but only under its roof (1.8 km, softened over 450 m either way): what
-  towers over a storm by the vent shows over it, and a burst's column stands over the walls. Inside a
-  storm's dust you see nothing of it; a storm's shadow dims the sun on it, by the storm walls' own
+  ten minutes old) is a moment's parcel; the column is drawn round them.
+- **Deposition.** What's on the ground is the long record of the old eruptions, not today's dust: a
+  fan of grey ash down the long-term wind (the dunes' own) from the nearest live vent within 3.2 km, by
+  e every 260 m, dark cinder within 16 to 44 m of the slot and sulphur in its throat, drawn by the sand's
+  look.
+- **Storms.** A storm's dust between you and any part of a plume hides that part, and from inside a
+  storm you see none of it, as you see nothing far there. Within the storm walls' reach (15 km) it's
+  judged pixel by pixel against the storm pass's own faces and billowed tops, so a column meeting a wall
+  goes into it and what towers over a wall's top shows over it; past that, against the field itself,
+  striding through clear air by how far the nearest dust must be, so no storm is stepped over
+  (`Plume.seen_through`, which the skyline uses too). A storm's dust takes what's behind it as the air
+  in one does: all of it past 400 m. A storm's shadow dims the sun on it, by the storm walls' own
   reading. Storms don't feed it and it doesn't feed them: their outflow bends it, nothing more.
-- **Light.** The storm walls' light, from Weather: the sun, the sky, the eclipse ring, Tu's shine by
-  night, and the same haze. Ash is dark; steam and haze throw the light forward, so a plume between you
-  and a low sun has a bright edge.
+- **Light.** The storm walls': the sun through the column toward it and through any storm, with the
+  walls' share kept on its shaded side; the sky's, less in its creases and deep in it; the eclipse
+  ring's thrown forward; Tu's shine by night; and the same haze.
 
 ### What's built
 
@@ -659,62 +750,112 @@ burst a dark column kilometres high spreading out at its top.
   each kept by its plume while it's in sight. Each frame a plume works out a little of its streakline
   from the time, its source and the weather alone (its young end, which changes fast in a burst, one
   point every other frame, the rest one point in eight frames, a quarter as often past 3 km), all at once
-  after a jump, and the shader (`plume.gdshader`) hangs 248 soft puffs on it: the column, the bent-over
-  body, the thinning tail, the ash falling out, the gas and steam at the mouth. Each puff is a parcel
-  that left at a moment and keeps its place in the plume's cross-section as it ages, so it rises and
-  rolls with the air; spread out, a puff is wider than it's deep. Drawn in age order, the far end first,
-  the order flipped as you go round it. Nothing is simulated or stored: it's a pure function of the time.
-- **Far off.** Past the camera's 4.2 km reach its puffs are drawn nearer and smaller, the same in the
-  view, and it dissolves into the distance between 30 and 45 km (Tuning `plume_fade_m`), much further
-  than the storm walls, since what towers over the haze stands clear of it. Past the skyline's reach (3
-  km) it's a landmark as the skyline's masts and towers are: the haze takes it as if it were only as far
-  as distance to Skyline's landmark power (0.3) says. Dunes in front hide it, as they hide the skyline's
-  stand-ins. The flat world shows it further than a real moon's curve would.
+  after a jump. Nothing is simulated or stored: it's a pure function of the time.
+- **The column** (`PlumeDraw`, `game/weather/plume_draw.gd`): a compute pass after the storm pass,
+  every plume in sight marched at half the screen's size, a quarter of the rays, and brought up to full
+  size by depth, each pixel from the half-size ones nearest it in distance, so a dune's edge in front
+  of it stays sharp. The march runs through the dust round 15 points of the streakline (all of its
+  young end, where a burst's column stands, and every few of its tail), each stretch a cone as wide as
+  the plume there and, levelled, as flat, the stretches blended where they meet so none hands over to
+  the next with a seam. Its face carries the storm walls' own billows, their two big octaves under
+  their slow warp, at its scale: a wall's biggest tile three of its widths, churning slowly up it. Its
+  width swells and narrows along it by up to a sixth seeping and two fifths in a burst, by what left
+  at stronger and weaker moments, so the swellings ride up it. Its dust takes at most five optical
+  depths a width, its face stepped finely where it's that dense, so a face shows its billows' shape;
+  through thin dust the steps lengthen. Lit as a wall is, with its own shadow read half its width
+  toward the sun: dark in its body, its sunlit tops bright. Where a burst began between two points the
+  stretch joining them isn't drawn: the burst's first gas there is thin. The march strides through clear
+  air by how near any stretch may come, never by where its bounds start, so where a ray meets it
+  doesn't hang on them. Each group of rays reads the plumes into its shared memory once.
+- **Up close it dissolves.** Within 120 m none of it is drawn, fading in by 500 m, and the air you stand
+  in takes over: stood in its dust (`Plume.air`, from the column as the shader would find it), the haze
+  closes in to how far that dust lets you see (3 over its dust a metre, 60 m to 4 km), in the storm's
+  fog colour and as thick as the haze can be, the light dims by half a storm's, and Atmosphere's grit
+  and dust parcels blow round you, a storm's grit seven-tenths as thick. At a seeping vent's mouth in a
+  breeze you see about 2.6 km; under its thicker column, or a burst's, far less.
+- **Far off.** Its rays aren't the camera's far plane's: it dissolves into the distance between 30 and
+  45 km (Tuning `plume_fade_m`), much further than the
+  storm walls, since what towers over the haze stands clear of it. Past the skyline's reach (3 km) it's
+  a landmark: the haze takes it as if it were only as far as distance to the 0.3 power says. Dunes in
+  front hide it. The flat world shows it further than a real moon's curve would.
 - **Booms and a roar:** [Radio, sound &
-  atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec).
+  atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec). Each boom
+  now rolls on with a long low roll under it whose low end carries, so from far off a boom is
+  bigger and longer, mostly roll.
+- **Felt near** (`Rumbles`, built 2026-10-19 from the playtest below). Within 5 km of a live vent
+  its ground is felt: fully within 300 m, past it falling as the root of distance (the shaking
+  spreads over the ground, not through the air), gone by 5 km; a gas pocket only booms. Fifty
+  seconds before a burst a deep build starts up from the vent's way (`vent_build.ogg`, a harmonic
+  tremor at 31 Hz over brown rumble), growing as the square of how near the burst is and rising a
+  quarter in pitch, as loud as the burst is big (a vent's least two thirds of its greatest). At the
+  onset the ground jolts, dying by e over 4 s, and roars, dying over 8 s; through the burst's
+  push it trembles on, up to a third. The build trembles the ground up to three fifths of the jolt.
+  The tremble shakes your view by how near and how big (Feel: a few slow waves together, up to
+  2 cm, half a degree tipped and a third of one rolled, on top of any other shake), and a boom
+  arriving within that reach jolts it once more. Loose things on the sand within 40 m of you, up to
+  40 kg, are jostled eight times a second while it trembles past a twentieth: kicked up to 0.35
+  m/s and spun to 0.6 rad/s by the root of how hard, each its own way by where it lies, so a crate
+  hops and rattles; nothing floating or stuck is touched. In the "vent" scenario, 1.5 km off, the
+  build comes in ten seconds after you're stood there and rises 7 LU over the wind and the roar, the
+  ground trembles at a third at the onset, and the boom comes 4.3 s later (the levels are in the
+  [credits](../../assets/audio/CREDITS.md)).
+- **The "vent" dev scenario** stands you 1.5 km across the rift from its live vent, facing it, a
+  minute before a burst in clear daylight, with a charged board at your feet.
 - **The dev overlay** names the nearest live vent drawn, how far and which way, and whether it's
-  seeping or bursting (`weather/vent`), and a pocket blowing (`weather/pocket`); `goto live_vent`,
+  seeping or bursting (`weather/vent`), a pocket blowing (`weather/pocket`), and how hard the
+  ground trembles under you and how loud the build is (`weather/ground`); `goto live_vent`,
   `goto live_vent_2` and `goto flank_vent` stand you by them.
 
 ### What it costs
 
-On the RTX 3070 at 1280 by 720, shared with other work, a game among it (look/plume: the GPU's frame
-time with every plume drawn and without, the median of paired turns): 0.5 to 1.8 ms a frame from 260 m
-under a column or 1.5 km from a burst, the most when a burst fills the view; 0.04 to 0.85 ms from 1.5
-km; 0.05 to 0.6 ms from 7 to 25 km; and 0.3 to 0.8 ms from 1.5 km when a storm over the vent hides it,
-since its puffs are still drawn and only their pixels thrown away. On the main thread a plume in sight
-takes 0.036 to 0.039 ms a frame on CI (wind & storms probe 16, four turns of 120 frames, against its
-0.25 ms bound), and all of them together 0.08 to 0.23 ms in the look-test on a busy desktop; the one
-frame after a jump in time or place works a whole line out at once (4.5 ms on CI).
+On the RTX 3070 at 1280 by 720, measured while Hunter's game held the GPU at 64 to 79% (look/plume:
+the GPU's frame time with every plume drawn and without, the median of paired turns; and the drawing's
+own GPU time from timestamps round its two passes): drawn at half size, walking into it adds 0.8 to
+1.6 ms a frame and standing in it 1.0 to 1.4 ms, a burst at 1.5 km 0.7 to 1.3 ms, a seep at 1.5 km 0.6
+to 1.0 ms, and from 7 to 25 km 0.3 to 1.4 ms; from inside a storm, which hides it before it's marched,
+nothing measurable. Its own timestamps read 1.3 to 2.3 ms near, but they never fall below about 0.8
+ms even with nothing of it in view, the game's work falling between them, so the frame difference is
+the truer reading. Drawn at full size the same views took 3 to 3.7 ms. On the main thread a plume in
+sight takes 0.088 ms a frame on a busy desktop with its share of handing the plumes to the drawing
+(wind & storms probe 16, against its 0.25 ms bound), and all of them together 0.1 to 0.27 ms in the
+look-test; the one frame after a jump in time or place works a whole line out at once.
 
 ### Probes
 
 15. **The plume bends with the wind.** Beside the vent, what left it at each moment lies where the
     field's drift carried it since (within 3°); in a strong wind it stands lower 300 m downwind, under
-    three quarters as high, and runs out half as far again; a storm between you and it hides it and
-    clear air shows it; and with a storm by the vent and clear air nearer you, its foot is lost while
-    what towers 4 km up over the storm's roof shows.
+    three quarters as high, and runs out half as far again; a storm between you and it hides it,
+    clear air shows it, and from inside a storm even what towers 4 km up is lost; and with a storm by
+    the vent and clear air nearer you, its foot is lost while what towers 4 km up over the storm's roof
+    shows.
 16. **The plume through a run.** With the clock stopped it holds still, and paused nothing moves; an
     origin shift leaves it where it was; walked 3.5 km off until its mouth's ground is forgotten it
-    still shows, and back beside it rises from the same place; a storm over the vent hides it and it
+    still shows, and back beside it rises from the same place; stood in its dust at the mouth the haze
+    closes in round you (to 2.6 km at the probe's moment, in a breeze, against 9 km 800 m upwind); a storm over the vent hides it and it
     comes back after; what it shows is the vent's venting at that moment; and it costs the main thread
     under a quarter of a millisecond a frame.
 17. **A burst is heard after it's seen** ([Radio, sound &
     atmosphere](radio-sound-and-atmosphere.md#distant-phenomena-agreed-2026-10-18-spec)).
 18. **A plume from far now and then.** Sitting three hours where each origin starts on six worlds,
     looking every minute: 15 of 18 starts see a plume from 5 km or more (it must be three in four), a
-    median 6% of the time (it must be 3%), most often a burst's column over the storms.
+    median 7% of the time (it must be 3%), most often a burst's column over the storms, which holds its
+    height for a minute and a half.
+25. **The rumble is felt** (2026-10-19). 300 m off the rift's live vent a burst's build grows as it
+    nears (0.20 of its file's loudness 25 s before, 0.64 at 5 s) and the ground trembles at its onset
+    (0.76), jostling a crate on the sand (0.11 m/s); 1.5 km off, less of both (0.35, 0.33); 12 km
+    off, none of either, and the crate lies as still as it did before.
 
 Geology's own probes are the world system's (geology 1 and 2), and the kits' probes take the mouth
 like any piece.
 
 **To see them** (unseen, on a GPU): `look/plume/shoot.sh <dir>` finds moments in the run's own weather
 (the calmest and the windiest clear ones, a burst well risen, a burst over a storm by the vent, dusk, a
-front coming over the vent and a storm over it, night, a pocket blowing, the far side's flank vent),
-stands each shot so its source lands where it's laid for the shots, shoots each from near and far (260
-m to 25 km, the far ones from the crest nearest; the 25 km burst from whichever side of the vent sees
-it, on to the next burst if storms hide it where it's drawn), and the rift vent's mouth up close, times
-each, and builds `~/Desktop/plume.png`.
+front coming over the vent, night, a pocket blowing, the far side's flank vent), stands each shot so its
+source lands where it's laid for the shots, shoots each far and mid (1.5 to 25 km, the far ones from the
+crest nearest; the 25 km burst from whichever side of the vent sees its middle and top, on to the next
+burst if storms hide it where it's drawn), walks into its dust in the calm (450 m) and stands in it (40
+m), shoots from inside a storm, and the rift vent's mouth up close, times each, and builds
+`~/Desktop/plume.png`.
 
 ### Its limits
 
@@ -722,11 +863,12 @@ each, and builds `~/Desktop/plume.png`.
   same wind all the way up and can't punch through a lid or spread under one. Its stability is a day and
   a night value, not the air's own profile, and a burst's 10 km climbs through an atmosphere that doesn't
   thin with height.
-- **Puffs, not a volume.** Billboards sorted by age along the line: seen end on, the column's puffs at
-  one age can draw out of order, and a puff you stand in fades rather than surrounds you.
-- **The storm veil is coarse.** It reads the field's threshold, not the billowed faces the storm pass
-  draws, so a plume right at a wall can show a little in front of a billow or fade a little early, and
-  a roof is a height, not the wall's own top.
+- **Soft, not cauliflower.** Its billows are a wall's at its scale, but its dust is thinner than a
+  wall's, so a burst reads as a soft sunlit mass with lumps on its face rather than hard turrets, most
+  of all against the light. Its steps are staggered by a fixed pattern, a fine regular dither in its
+  densest views.
+- **The far storm veil is coarse.** Past the storm walls' reach the storms between are read at four
+  ages along it, not pixel by pixel, and against the field's threshold, not the billowed faces.
 - **Its mouth hands over.** Past the sheet's reach a vent's plume rises from where it would be laid from
   where you are; laid, from its mouth, which may have slid up to 24 m along the rift, so its root can step
   that far once, about 1.3 km off. The sheet's seams move a far plume a little as you walk (56 to 74 m at
@@ -735,6 +877,13 @@ each, and builds `~/Desktop/plume.png`.
 - **No hazard or reading.** The gas isn't felt or measured yet, and the ash fan doesn't grow with bursts.
 - **The far plume is the weather's.** Storms cover most of the near side most of the time, so from where
   you are a plume shows only now and then (probe 18), and in a gale a seep lies low.
+
+**Playtest (Hunter, 2026-10-19; built 2026-10-19).** "Im finally liking vents, and we should lean
+into the rumble more." The rumble is felt as well as heard: a deep build before a burst, the ground
+trembling under you near a vent, the view shaking by how near and how big, and a boom from far off
+rolling in after the plume. *Built (Felt near, and Booms, above).* **To hear it:**
+`look/rumble/record.tscn` records the "vent" scenario's build and burst and one 12 km off, the whole
+mix and the rumble's own buses, for the meter.
 
 ## Hooks from the sky (proposed, not settled)
 
@@ -850,6 +999,20 @@ All run without a window, with a fixed seed.
 21. **No anomaly in a run's first days** (2026-10-18). A fresh run begins where and when a new one
     would, days into the weather's clock; through its first five days no heart comes within 60 km of
     where it began, where with them lifted, as for a dev run that asks for one, some would.
+22. **A wall shelters what's behind it** (2026-10-19). A camp's wall broadside to a steady wind in a
+    storm, on open sand: just behind it the wind is cut by about a full lee's share and the storm's
+    wear and harm by theirs; beside it, upwind of it and seven heights behind it, nothing is; edge-on
+    it shelters nothing. A light box resting behind it stays put where one in the open slides.
+23. **Evidence needs each tell** (2026-10-19). A Console on a deck in a storm, a radio on and a
+    shield running beside it, keeps nothing in the storm alone; as an anomaly's staged heart comes
+    over it keeps the radio's crackle, but not the shield's load with no particle sensor, nor the
+    compass's lean with no compass on the deck; with a compass stuck on and a particle sensor fitted, all
+    three.
+24. **Teaching flags anomalies** (2026-10-19). The "walker" scenario: a Console with two tells uploads
+    and teaches nothing; its plug put in the Walker's port as it passes, with three, teaches it. Before,
+    no map shows a staged heart 4 km off and the feed says nothing; after, the radar's map and the chart
+    show it, the Walker's feed flags it ("anomaly 4.0 km north-east, full in 10 min"), and the run's save
+    keeps it taught.
 
 ## Out of scope
 

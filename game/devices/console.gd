@@ -9,23 +9,28 @@ extends Device
 ## gear, the finer it is, and with less it coarsens, never going. Then every
 ## reading in detail as a table, the deck's electrics as a panel with each
 ## device's switches, and its log. A shield in the system is smart: with a
-## radar it switches itself on as a front nears. Its messages go out through
-## its Terminal, and its screen draws only when what it shows has changed.
+## radar it switches itself on as a front nears. A ground radar adds a survey
+## page of what lies under the sand round it. Its messages go out through
+## its Terminal, a radio in its system sounding them and saying its battery
+## running out, and its screen draws only when what it shows has changed.
 ## Use on the screen presses the key you aim at, a tab along its foot or a
-## switch; use at the frame works its tray.
+## switch; use at the frame works its deck's trays.
 
 ## Its pages, numbered as older saves knew them: the Shield page's number is
 ## Power's now, so a save on it opens there.
-enum Page { RADAR, POWER, LOG, STATS }
-## The tabs along its foot, in order. A page that wants gear, a survey of
-## what's under the sand, joins them once it's built.
+enum Page { RADAR, POWER, LOG, STATS, SURVEY, CHART }
+## The tabs along its foot, in order; the ground radar's survey joins them
+## while its system has one, and the chart once it has noted a bearing or
+## the Walker's taught.
 const TABS: Array[Page] = [Page.RADAR, Page.STATS, Page.POWER, Page.LOG]
-const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS"]
+const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS", "SURVEY", "CHART"]
 ## The sender its own lines go out under.
 const SENDER := "CON"
 ## What each computer mod is called in its own lines, by the stat it adds.
 const INSTRUMENTS := {"anemometer": "ANEMOMETER", "barometer": "BAROMETER", "hygrometer": "HYGROMETER",
-	"particle_sensor": "PARTICLE SENSOR", "radar": "RADAR"}
+	"particle_sensor": "PARTICLE SENSOR", "radar": "RADAR", "ground_radar": "GROUND RADAR"}
+## The survey lists this many of what lies nearest, two rows each.
+const SURVEY_ROWS := 5
 const POINTS := ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
 ## How hard a storm will hit: the most sand in this far of it past its
 ## front, m, read in these many steps.
@@ -39,6 +44,9 @@ const HISTORY := 20
 const HISTORY_EVERY := 30.0
 ## Storms riding a wind slower than this have no time to them, m/s.
 const CLOSING := 0.5
+## Its battery warnings are said again only once what's left climbs this far
+## back over their line, so a charge wavering on it isn't announced over and over.
+const REARM := 0.02
 ## With no radar, the map estimates this far round it, m: what a storm the
 ## barometer feels, carried by the wind, covers in its warning's reach.
 const ESTIMATE_REACH := 6000.0
@@ -48,6 +56,8 @@ const PICTURE := Vector2(0.58, 1.08)
 ## Slower over the sand than this, m/s, the deck's own way is left out of
 ## what the stats page says of the wind.
 const STILL := 0.5
+## The highest rank the power page sets a device to.
+const MOST_RANK := 5
 
 var page := Page.RADAR
 var terminal := Terminal.new()
@@ -60,6 +70,10 @@ var log_lines: Array:
 ## This Console's own readings, by what reads them; the screen shows those of
 ## every Console linked with it.
 var readings := {}
+## For the Walker (Chart): each anomaly tell its system witnessed, by tell,
+## {t, value}; and the contacts it noted off the Walker's log, {t, lat, lon, brg}.
+var evidence := {}
+var bearings: Array = []
 ## Alerts given for the storm coming now, so each prints once, and whether
 ## the radar had a front within the smart shield's reach at the last read.
 var _alerts := {}
@@ -104,6 +118,8 @@ var _shown := ""
 var _aim := -1
 ## The keys on the screen as last drawn, for what you aim at.
 var _keys: Array = []
+## The first load the power page shows, as it pages through them.
+var _first_load := 0
 
 
 func _ready() -> void:
@@ -184,10 +200,19 @@ func gear() -> Dictionary:
 			continue
 		for key: String in each._fitted():
 			count[key] = count.get(key, 0) + 1
-		for seated in each.mounted():
-			if seated is Radio and seated.powered and not seated.wrecked():
-				count["radio"] = count.get("radio", 0) + 1
+	for radio in radios():
+		count["radio"] = count.get("radio", 0) + 1
 	return count
+
+
+## The running radios in its system: its deck gives a Console a voice.
+func radios() -> Array[Radio]:
+	var found: Array[Radio] = []
+	for device in _system():
+		var radio := device as Radio
+		if radio != null and not radio is SurveyReceiver and radio.powered and not radio.wrecked():
+			found.append(radio)
+	return found
 
 
 ## Cells across its storm map, by the gear in its system: a radar alone
@@ -196,6 +221,8 @@ func gear() -> Dictionary:
 ## coarser still; with nothing to read, there's none.
 func map_cells() -> int:
 	var count := gear()
+	# Under the sand, not the weather.
+	count.erase("ground_radar")
 	if count.is_empty():
 		return 0
 	if not count.has("radar"):
@@ -230,6 +257,8 @@ func _recompute() -> void:
 	for key: String in INSTRUMENTS:
 		if now.has(key) != _instruments.has(key):
 			_say("%s %s" % [INSTRUMENTS[key], "ONLINE" if now.has(key) else "REMOVED"])
+	if now.has("ground_radar") and not _instruments.has("ground_radar") and _root() is Chassis:
+		(_root() as Chassis).deeds()
 	_instruments = now
 	if not now.has("radar"):
 		_sweep.resize(0)
@@ -277,9 +306,12 @@ func _process(_delta: float) -> void:
 	_draw_screen()
 
 
-## Its own instruments, by the stat each adds.
+## Its own instruments, by the stat each adds: built into its frame, or fitted.
 func _fitted() -> Dictionary:
 	var found := {}
+	for key: String in INSTRUMENTS:
+		if frame_stats.get(key, 0) > 0:
+			found[key] = self
 	for part in parts():
 		for key: String in INSTRUMENTS:
 			if part.stats.get(key, 0) > 0:
@@ -370,18 +402,25 @@ func _read(now: Dictionary, t: float) -> void:
 			"was": sand_of(field, field.raw_storm_at(x, z, t - SAND_TREND)), "stormy": field.raw_storm_at(x, z, t) > 0.0}
 	if now.get("radar", 0) > 0 and _swept:
 		readings["front"] = _front(field, x, z, t, now.radar_m)
-	for each in mounted():
-		var radio := each as Radio
-		if radio != null and radio.powered and not radio.wrecked():
-			if t >= _forecast_at + _tuning.radio_forecast_every or t < _forecast_at or not readings.has("forecast"):
-				_forecast_at = t
-				var rx := world.world_x(radio.global_position.x)
-				var rz := world.world_z(radio.global_position.z)
-				var said := Radio.forecast(field, rx, rz, t, _tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP)
-				said["t"] = t
-				_forecast = said
-			readings["forecast"] = _forecast
-			break
+	if now.get("ground_radar", 0) > 0:
+		readings["ground"] = _survey(x, z, now.ground_radar_m)
+	var voices := radios()
+	if not voices.is_empty():
+		var radio := voices[0]
+		if t >= _forecast_at + _tuning.radio_forecast_every or t < _forecast_at or not readings.has("forecast"):
+			_forecast_at = t
+			var rx := world.world_x(radio.global_position.x)
+			var rz := world.world_z(radio.global_position.z)
+			var said := Radio.forecast(field, rx, rz, t, _tuning.radio_forecast_minutes * 60.0, Weather.FORECAST_STEP)
+			said["t"] = t
+			_forecast = said
+		readings["forecast"] = _forecast
+	Chart.witness(self, t)
+
+
+## Plugged into the Walker's port: what it holds goes up to it (Chart).
+func upload() -> void:
+	Chart.upload(self)
 
 
 ## The air's pressure where the storm field stands at `raw`, hPa: it falls as
@@ -591,6 +630,31 @@ func _watch() -> void:
 			_shields_down[shield] = true
 		else:
 			_shields_down.erase(shield)
+	_battery()
+
+
+## Its pool's charge running out, said aloud: low, then critical, each once as
+## what's left to run it on falls past its line (straight past both, only
+## critical), and again once it's back over. What's left is the charge above
+## where it gives way: Power's reserve while something outranks it, a shield.
+func _battery() -> void:
+	var share := world.power.pool_share(self)
+	if is_nan(share):
+		return
+	var dark_at := world.power.gives_way_at(self)
+	var left := (share - dark_at) / (1.0 - dark_at)
+	if left >= _tuning.console_battery_critical + REARM:
+		_alerts.erase("battery_critical")
+	if left >= _tuning.console_battery_low + REARM:
+		_alerts.erase("battery_low")
+	if left < _tuning.console_battery_critical:
+		if not _alerts.has("battery_critical"):
+			_alerts["battery_critical"] = true
+			_alerts["battery_low"] = true
+			_say("!BATTERY CRITICAL · %d%%" % roundi(share * 100.0), [], "Battery critical.")
+	elif left < _tuning.console_battery_low and not _alerts.has("battery_low"):
+		_alerts["battery_low"] = true
+		_say("!BATTERY LOW · %d%%" % roundi(share * 100.0), [], "Battery low.")
 
 
 func _once(key: String, text: String) -> void:
@@ -600,8 +664,9 @@ func _once(key: String, text: String) -> void:
 
 
 ## A line of its own to its terminal, or a form with these fields, and a
-## radio seated in its system gives it a voice.
-func _say(text: String, fields := []) -> void:
+## radio seated in its system gives it a voice: its tones, then `aloud` said
+## in the radio's.
+func _say(text: String, fields := [], aloud := "") -> void:
 	var lead := _lead()
 	var t := world.time if world != null else 0.0
 	if fields.is_empty():
@@ -610,8 +675,10 @@ func _say(text: String, fields := []) -> void:
 		lead.terminal.form(SENDER, text, fields, t, _clock(t))
 	for device in _system():
 		var radio := device as Radio
-		if radio != null and radio.powered and not radio.wrecked() and radio.is_inside_tree():
+		if radio != null and not radio is SurveyReceiver and radio.powered and not radio.wrecked() and radio.is_inside_tree():
 			Sounds.play_at(radio, Sounds.RADIO_TONES, -8.0, Radio.HEARD)
+			if aloud != "":
+				radio.announce(PackedStringArray([aloud]))
 			break
 
 
@@ -710,8 +777,13 @@ func _draw_screen() -> void:
 ## power page's: the deck's electrics. The others': rows as its terminal
 ## prints them, a table's cells apart by tabs.
 func _model(on: Page, all: Dictionary) -> Dictionary:
+	var tabs: Array[Page] = TABS.duplicate()
+	if all.has("ground"):
+		tabs.append(Page.SURVEY)
+	if not bearings.is_empty() or world.taught:
+		tabs.append(Page.CHART)
 	var shown := {"page": PAGE_NAMES[on], "clock": _clock(world.time, true), "aim": _aim,
-		"flip": world.moon.north().z > 0.0, "tabs": TABS.map(func(p: Page) -> Dictionary:
+		"flip": world.moon.north().z > 0.0, "tabs": tabs.map(func(p: Page) -> Dictionary:
 			return {"text": PAGE_NAMES[p], "lit": p == on, "act": _go.bind(p), "device": null, "to": p})}
 	match on:
 		Page.RADAR:
@@ -728,6 +800,10 @@ func _model(on: Page, all: Dictionary) -> Dictionary:
 				shown["history"] = [all.pressure.history, _tuning.air_pressure_hpa]
 		Page.POWER:
 			_panel(shown, all)
+		Page.SURVEY:
+			_survey_page(shown, all)
+		Page.CHART:
+			Chart.model(self, shown)
 		Page.LOG:
 			var rows := PackedStringArray()
 			for line: Dictionary in Terminal.merged(linked().map(func(c: Console) -> Terminal: return c.terminal), 18):
@@ -812,6 +888,7 @@ func _radar(shown: Dictionary, all: Dictionary) -> void:
 				map["front"] = _along(deg_to_rad(front.bearing)) * front.d
 				shown["front"] = "%s · %s" % [_distance(front.d), _span(front.eta)]
 	shown["map"] = map
+	map["anomalies"] = Chart.anomalies(self, map.get("reach", 0.0))
 	if all.has("wind"):
 		shown["wind"] = "%d m/s %s" % [roundi(all.wind.speed), _point(all.wind.from)]
 		map["gyro"] = _gyro(all.wind)
@@ -834,6 +911,72 @@ func _radar(shown: Dictionary, all: Dictionary) -> void:
 			shown["forecast"] = "CLEAR %d MIN AND MORE" % roundi(_tuning.radio_forecast_minutes)
 		else:
 			shown["forecast"] = "STORM IN %s FROM %s" % [_span(r.change - now), _point(r.from)]
+
+
+## The ground radar's sweep, a reading: the old lines under the sand within
+## its reach, and every structure standing on the ground or under it there
+## and each big dune's ruin it finds, built or still only a seed, nearest
+## first, as {at, m east and south of it; name; m of sand over it, 0 once
+## dug out; bared, a storm laying it bare now; dune, a dune's ruin}. Its
+## place is watched while it runs, so the dunes' ruins round it are looked
+## at whatever your pace.
+func _survey(x: float, z: float, reach: float) -> Dictionary:
+	var sites := world.shape.sites
+	sites.dunes.watch(get_instance_id(), x, z, reach, world.time)
+	var lines := []
+	for piece in sites.paths_in(Rect2(x - reach, z - reach, reach * 2.0, reach * 2.0)):
+		var points := PackedVector2Array()
+		for p in piece.points:
+			points.append(p - Vector2(x, z))
+		lines.append(points)
+	var bare := {}
+	for each: Array in sites.newly_exposed(x, z, reach):
+		bare[each[0]] = true
+	var found := []
+	for site in sites.query(Rect2(x - reach, z - reach, reach * 2.0, reach * 2.0), false):
+		var each := site as Structure
+		if each == null or not each.stands() or each.yields == 1 or each.distance_to(x, z) > reach \
+				or each.era == Eras.GEOLOGY:
+			continue
+		found.append({"at": Vector2(each.x - x, each.z - z), "name": _site_name(each), "under": maxf(each.depth - each.taken(), 0.0),
+			"bared": bare.has(each), "dune": each.source == &"dune"})
+	for seed in sites.dunes.near(x, z, reach):
+		if not seed.built:
+			found.append({"at": Vector2(seed.site.x - x, seed.site.z - z), "name": _site_name(seed.site),
+				"under": maxf(seed.site.depth - seed.taken, 0.0), "bared": seed.level > 0.0, "dune": true})
+	found.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.at.length() < b.at.length())
+	return {"reach": reach, "sites": found, "lines": lines}
+
+
+static func _site_name(site: Structure) -> String:
+	return "DUNE RUIN" if site.source == &"dune" else String(site.kind).replace("_", " ").to_upper()
+
+
+## The survey page: what the ground radar finds, on a map round it to its
+## reach, the old lines under the sand and each structure a mark by how far
+## out of the sand it is, and the nearest listed under it with how far,
+## which way and how much sand is over it.
+func _survey_page(shown: Dictionary, all: Dictionary) -> void:
+	if not all.has("ground"):
+		shown["rows"] = PackedStringArray(["NO GROUND RADAR", " fit one to a side port"])
+		return
+	var ground: Dictionary = all.ground
+	shown["survey"] = ground
+	var rows := PackedStringArray()
+	for each: Dictionary in ground.sites.slice(0, SURVEY_ROWS):
+		var at: Vector2 = each.at
+		rows.append(("!" if each.bared else "") + _row(each.name, _distance_parts(at.length())[0],
+			_distance_parts(at.length())[1], _point(Radio.bearing(at))))
+		if each.bared:
+			rows.append("!" + _row(" bared now"))
+		elif each.under <= 0.0:
+			rows.append(_row(" dug out"))
+		else:
+			rows.append(_row(" sand over", "%.1f" % each.under, "m"))
+	if rows.is_empty():
+		rows.append("nothing within %s" % _distance(ground.reach))
+	shown["rows"] = rows
+	shown["cells"] = "%d found · %s" % [ground.sites.size(), _distance(ground.reach)]
 
 
 ## With no radar, the map as its other instruments estimate it: here as it
@@ -911,6 +1054,10 @@ func _readout(all: Dictionary) -> PackedStringArray:
 		var g: float = all.sand.g_m3
 		rows.append(("!" if g >= _tuning.sand_full_g_m3 * 0.5 else "") + _row("SAND", "%.2f" % g, "g/m³",
 			_trend(g - all.sand.was, 0.01)))
+	if all.has("ground"):
+		var sites: Array = all.ground.sites
+		rows.append(_row("GROUND", "%d" % sites.size(), "found", "%d bared" % sites.filter(
+			func(each: Dictionary) -> bool: return each.bared).size()))
 	if all.has("front"):
 		var f: Dictionary = all.front
 		var moving := _row(" moving", "%d" % roundi(f.speed), "m/s", _point(f.moving))
@@ -955,6 +1102,9 @@ func _readout(all: Dictionary) -> PackedStringArray:
 			# storm's, while the wind and sand read ordinary, is an anomaly.
 			var bears := shield.particle_load()
 			rows.append(("!" if bears > 1.0 else "") + _row(" load", "%d" % roundi(bears * 100.0), "%"))
+			if bears > 1.0 and world.player.camera.global_position.distance_to(global_position) \
+					<= _tuning.console_screen_seen_m:
+				Deeds.done(world, &"tells", &"load")
 	return rows
 
 
@@ -969,13 +1119,17 @@ static func _trend(by: float, still: float) -> String:
 	return "▲" if by > still else ("▼" if by < -still else "–")
 
 
-## The deck's electrics, its power pool: what makes power, the batteries and
-## their charge, and what draws it, each with its watts, and a row of
-## switches for each way a device can be worked: a shield's off, on or smart,
-## a radio's dial, a tray floating or resting, a lamp on or off. Each switch
-## works the device as its own use would.
+## The deck's electrics, its power pool: what makes power, each power box
+## with its bays as they stand, the batteries and their charge, and what
+## draws it, each with its watts, and a row of switches for each way a device
+## can be worked: a shield's off, on or smart, a radio's dial, a tray floating
+## or resting, a lamp on or off. Each switch works the device as its own use
+## would. A box that lets it ranks each draw and switches it off here, and a
+## colonial cabinet's bays are set here too, held to charge or supplying.
 func _panel(shown: Dictionary, all: Dictionary) -> void:
 	var pool := world.power.pool_of(self)
+	var can := world.power.control(pool)
+	var places := _places(pool, can)
 	var order: Array[Device] = []
 	for device in _system():
 		if device in pool:
@@ -984,6 +1138,7 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 		if not device in order:
 			order.append(device)
 	var sources := []
+	var boxes := []
 	var loads := []
 	var makes := 0.0
 	var draws := 0.0
@@ -992,22 +1147,26 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 	for device in order:
 		var called := _name(device)
 		var now := device.stats()
-		for cell in device.pooled():
+		for cell in device.supplies():
 			held += cell.charge_wh
 			room += cell.capacity()
 		if now.solar_w > 0.0 or now.turbine_w > 0.0:
 			var made := device.production_w()
 			makes += made
 			sources.append({"row": _row(" " + called, "%d" % roundi(made), "W")})
-		var groups := _switches(device, called, all.has("front"))
+		if device is PowerBox:
+			boxes.append(_box(device as PowerBox, called))
+		var groups := _switches(device, called, all.has("front"), can)
 		var drawn := device.demand_w() if device.powered else 0.0
 		if drawn > 0.0 or not groups.is_empty():
 			draws += drawn
 			# A smart shield says whether it's up now: its switch says only that it's smart.
 			var shield := device as ShieldGenerator
-			var note := "DARK" if not device.powered else ("ON" if shield != null and shield.on
-				and _mode(shield, all.has("front")) == "SMART" else "")
-			loads.append({"row": _row(" " + called, "%d" % roundi(drawn), "W", note),
+			var off: bool = can.switches and device.switched_off
+			var note := "OFF" if off else ("DARK" if not device.powered else ("ON" if shield != null and shield.on
+				and _mode(shield, all.has("front")) == "SMART" else ""))
+			var named := ("%d %s" % [places[device], called]) if can.ranks else called
+			loads.append({"row": _row(" " + named, "%d" % roundi(drawn), "W", note),
 				"dark": not device.powered, "groups": groups})
 	var net := makes - draws
 	var left := INF
@@ -1020,11 +1179,18 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 			else _row("BANK", "none"),
 		"net": _row(" net", "%+d" % roundi(net), "W"),
 		"left": _row(" full" if net > 0.0 else " left", _span_parts(left)[0], _span_parts(left)[1])}
-	shown["panel"] = {"makes": _row("OUTPUT", "%d" % roundi(makes), "W"), "sources": sources, "bank": bank,
-		"draws": _row("DRAWS", "%d" % roundi(draws), "W"), "loads": loads}
+	if _first_load >= loads.size():
+		_first_load = 0
+	shown["panel"] = {"makes": _row("OUTPUT", "%d" % roundi(makes), "W"), "sources": sources, "boxes": boxes,
+		"bank": bank, "draws": _row("DRAWS", "%d" % roundi(draws), "W"), "loads": loads, "first": _first_load,
+		"more": {"text": "", "lit": false, "act": _page_loads, "device": null, "to": &"more"}}
 	var rows := PackedStringArray([shown.panel.makes])
 	for source: Dictionary in sources:
 		rows.append(source.row)
+	for box: Dictionary in boxes:
+		rows.append(box.row)
+		for bay: Dictionary in box.bays:
+			rows.append(bay.line)
 	rows.append_array(PackedStringArray([bank.row, bank.net, bank.left, shown.panel.draws]))
 	for load: Dictionary in loads:
 		var lit := PackedStringArray()
@@ -1036,9 +1202,53 @@ func _panel(shown: Dictionary, all: Dictionary) -> void:
 	shown["rows"] = rows
 
 
+## A power box on the page: its row, its charge as its own, and each bay as
+## it stands, exactly: how full, which way and how hard it flows, or held,
+## dead or empty. A cabinet's bays are keys that hold them or let them supply.
+func _box(box: PowerBox, called: String) -> Dictionary:
+	var bays := []
+	var held := 0.0
+	var room := 0.0
+	var all := box.bays()
+	for i in all.size():
+		var cell := all[i].part as Battery
+		var bay := {"state": 2 if all[i].kind == PowerBox.DEAD else (3 if cell == null else (1 if box.is_held(i) else 0)),
+			"share": 0.0, "flow": 0.0, "pct": "DEAD" if all[i].kind == PowerBox.DEAD else "—", "w": ""}
+		if cell != null:
+			held += cell.charge_wh
+			room += cell.capacity()
+			bay.share = cell.charge_wh / maxf(cell.capacity(), 1e-9)
+			bay.flow = cell.flow_w
+			bay.pct = "%d%%" % roundi(bay.share * 100.0)
+			bay.w = "%+dW" % roundi(cell.flow_w)
+		bay["line"] = _row("  BAY %d" % (i + 1), bay.pct.trim_suffix("%"), "%" if cell != null else "",
+			("HOLD " if bay.state == 1 else "") + bay.w)
+		if box.model().get("screen_bays", false) and bay.state < 2:
+			bay["key"] = {"text": "", "lit": bay.state == 1, "act": _hold_bay.bind(box, i, called), "device": box, "to": i}
+		bays.append(bay)
+	return {"row": _row(" " + called, "%d" % roundi(100.0 * held / room), "%", "%d Wh" % floori(held)) if room > 0.0
+		else _row(" " + called, "none"), "bays": bays}
+
+
+## Where each device in a pool stands in who's served first, 1 the first.
+func _places(pool: Array, can: Dictionary) -> Dictionary:
+	var levels: Array[int] = []
+	for device: Device in pool:
+		var rank := Power.rank_in(device, can)
+		if not levels.has(rank):
+			levels.append(rank)
+	levels.sort()
+	levels.reverse()
+	var places := {}
+	for device: Device in pool:
+		places[device] = levels.find(Power.rank_in(device, can)) + 1
+	return places
+
+
 ## A device's switches on the power page, a row of keys for each way it can
-## be worked, the one lit that says how it stands.
-func _switches(device: Device, called: String, radar: bool) -> Array:
+## be worked, the one lit that says how it stands; and as its pool's boxes
+## allow, its rank up and down and its own switch, joining a row with room.
+func _switches(device: Device, called: String, radar: bool, can := {}) -> Array:
 	var groups := []
 	if device.wrecked():
 		return groups
@@ -1064,6 +1274,22 @@ func _switches(device: Device, called: String, radar: bool) -> Array:
 		groups.append(keys.call([&"float", &"rest"], &"rest" if device.resting else &"float", ["FLOAT", "REST"], _rest))
 	if device.lamp_w() > 0.0:
 		groups.append(keys.call([true, false], device.lamps, ["LAMP ON", "LAMP OFF"], _lamps))
+	if not (device.demand_w() > 0.0 or not groups.is_empty() or device.switched_off):
+		return groups
+	var circuit := []
+	if can.get("ranks", false):
+		circuit += keys.call([&"rank_up", &"rank_down"], &"", ["PRI +", "PRI -"], _rank)
+	# What has a switch of its own is switched there; a Console never blinds itself.
+	if can.get("switches", false) and groups.is_empty() and not device is Console:
+		circuit += keys.call([&"switch_on", &"switch_off"], &"switch_off" if device.switched_off else &"switch_on",
+			["ON", "OFF"], _switch)
+	if circuit.is_empty():
+		return groups
+	for group: Array in groups:
+		if group.size() + circuit.size() <= 5 and group.all(func(k: Dictionary) -> bool: return k.text.length() <= 5):
+			group.append_array(circuit)
+			return groups
+	groups.append(circuit)
 	return groups
 
 
@@ -1105,6 +1331,35 @@ func _rest(device: Device, to: StringName, called: String, text: String) -> void
 func _lamps(device: Device, on: bool, called: String, text: String) -> void:
 	if device.switch_lamps(on):
 		_say("%s %s" % [called, text])
+
+
+## Ranks a device one up or down in who its pool serves first.
+func _rank(device: Device, to: StringName, called: String, _text: String) -> void:
+	var pool := world.power.pool_of(self)
+	var can := world.power.control(pool)
+	var now := Power.rank_in(device, can)
+	device.priority = clampi(now + (1 if to == &"rank_up" else -1), 0, MOST_RANK)
+	if device.priority != now:
+		_say("%s PRI %d" % [called, _places(pool, can)[device]])
+
+
+## Switches a device off at the box, a draw its pool skips, or on again.
+func _switch(device: Device, to: StringName, called: String, text: String) -> void:
+	var off := to == &"switch_off"
+	if off != device.switched_off:
+		device.switched_off = off
+		_say("%s %s" % [called, text])
+
+
+## A cabinet's bay held to charge only, or let supply.
+func _hold_bay(box: PowerBox, i: int, called: String) -> void:
+	if box.hold(i, not box.is_held(i)):
+		_say("%s BAY %d %s" % [called, i + 1, "CHARGE" if box.is_held(i) else "SUPPLY"])
+
+
+## The power page shows its next loads, from the first again after the last.
+func _page_loads(to: int) -> void:
+	_first_load = to
 
 
 ## What the screen calls a device: its catalog's short name, or its label.

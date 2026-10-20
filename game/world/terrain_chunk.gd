@@ -50,13 +50,26 @@ func show_build(build: ChunkBuild) -> void:
 
 
 ## A build of the same ground with what stands in it pressed in afresh: each
-## piece of collision it changed takes its new samples.
-func show_pressed(build: ChunkBuild) -> void:
+## piece of collision it changed takes its new samples, and a structure just
+## laid over it (Terrain.join) is drawn, made solid if the ground is. What it
+## drew new.
+func show_pressed(build: ChunkBuild) -> Array[Structure]:
 	var was := pieces
 	_show_ground(build)
 	for piece in _shapes.size():
 		if piece < was.size() and pieces[piece] != was[piece]:
 			_shapes[piece].map_data = pieces[piece]
+	var new: Array[Structure] = []
+	for each in build.structures:
+		if not _views.has(each):
+			new.append(each)
+	if new.is_empty():
+		return new
+	_show_structures(build.structures)
+	if not _bodies.is_empty():
+		for each in new:
+			_add_boxes(each, _bodies[0])
+	return new
 
 
 func _show_ground(build: ChunkBuild) -> void:
@@ -146,18 +159,22 @@ func add_collision_piece(size: int, sand: PhysicsMaterial) -> bool:
 		# Each structure's boxes are a body of their own, moved as it rises or
 		# sinks: what stands on it is lifted with it.
 		for each in _structures:
-			var level := each.level()
-			var s := StructureKit.Piece.shown_state(level)
-			var boxes := StaticBody3D.new()
-			boxes.physics_material_override = sand
-			each.add_shapes(boxes, s)
-			boxes.transform = each.placed(_at(each, level))
-			body.add_child(boxes)
-			_boxes[each] = [boxes, s]
+			_add_boxes(each, body, sand)
 	add_child(body)
 	_bodies.append(body)
 	_shapes.append(shape)
 	return has_collision()
+
+
+func _add_boxes(each: Structure, body: StaticBody3D, sand: PhysicsMaterial = null) -> void:
+	var level := each.level()
+	var s := StructureKit.Piece.shown_state(level)
+	var boxes := StaticBody3D.new()
+	boxes.physics_material_override = sand if sand != null else body.physics_material_override
+	each.add_shapes(boxes, s)
+	boxes.transform = each.placed(_at(each, level))
+	body.add_child(boxes)
+	_boxes[each] = [boxes, s]
 
 
 ## Freed now, not queued, so the cost lands inside the terrain's frame budget.
@@ -245,3 +262,12 @@ func collision_data() -> PackedFloat32Array:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE and _mesh.is_valid():
 		RenderingServer.free_rid(_mesh)
+
+
+## Exclude triangle-based sand from solid-surface queries; sand has its own
+## analytic height and Jolt reports a heightmap once per intersected triangle.
+func ground_bodies() -> Array[RID]:
+	var out: Array[RID] = []
+	for body in _bodies:
+		out.append(body.get_rid())
+	return out

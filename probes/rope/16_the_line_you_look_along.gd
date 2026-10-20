@@ -1,8 +1,8 @@
 extends SailProbe
 ## Rope & tethering probe 16: reeling works the line you mean. A sail's sheet
-## and a line to a stake both at your waist: looking along the sheet, reeling
-## trims the sail and leaves the stake's line be; looking along the stake's
-## line, reeling draws it in and leaves the sail's trim be.
+## and a line to a stake both at your waist: choosing the sheet reels its
+## inboard, and choosing the stake line reels that instead. Looking elsewhere
+## cannot change the choice; without one, no line is worked.
 
 
 func run() -> void:
@@ -19,16 +19,21 @@ func run() -> void:
 	check(world.player.waist.tied.size() == 2, "the stake's line is at your waist beside the sheet")
 
 	look(eye(), Line._tip(sheet.ends[0]).global_position)
+	check(hands.reel.line() == null and not hands.reel.notch(2) and not world.player.waist.give_back(),
+		"without a choice, no rope reels or unties")
+	hands.reel.choose(sheet.ends[1])
 	var drawn := await _reeled(moored)
 	check(absf(drawn.trim - 2.0 * Reel.NOTCH) < 0.01 and absf(drawn.line) < 0.01,
-		"looking along the sheet, reeling trims the sail, the stake's line left be (%.2f m, %.2f m)" % [drawn.trim, drawn.line])
+		"choosing the sheet, reeling trims the sail, the stake's line left be (%.2f m, %.2f m)" % [drawn.trim, drawn.line])
 	look(eye(), stake.global_position + Vector3.UP * 0.3)
+	check(hands.reel.line() == sheet.rope, "looking elsewhere keeps the chosen sheet")
+	hands.reel.choose(moored.ends[1])
 	drawn = await _reeled(moored)
 	check(absf(drawn.line - 2.0 * Reel.NOTCH) < 0.01 and absf(drawn.trim) < 0.01,
-		"looking along the stake's line, reeling draws it in, the trim left be (%.2f m, %.2f m)" % [drawn.line, drawn.trim])
+		"choosing the stake's line, reeling draws it in, the trim left be (%.2f m, %.2f m)" % [drawn.line, drawn.trim])
 
 
-## Two notches in where you look: how much the sail's trim and the stake's line each took in, m.
+## Two notches on the chosen line: how much the sail's trim and the stake's line each took in, m.
 func _reeled(moored: Line) -> Dictionary:
 	await physics_frames(2)
 	var trim_was := mast.trim
