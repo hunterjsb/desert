@@ -217,6 +217,8 @@ var _since_signal := INF
 ## The track it has on air, and whether its static is: a voice only starts
 ## playing a moment after it's told, so it keeps its own word on what it plays.
 var _on_air: AudioStream
+## The scheduled occurrence, independent of drift in the real-time audio mixer.
+var _on_air_started := NAN
 var _hissing := false
 ## How loud what's on air comes through, 0 to 1, before the volume knob.
 var _level := 1.0
@@ -1018,16 +1020,15 @@ static func _is_song(stream: AudioStream) -> bool:
 ## anyone listens. Another changes over through a burst of static.
 ## A song that keeps its own time says where it is, s into it (`into`).
 func _put_on(song: AudioStream, t: float, into := NAN) -> void:
-	if _on_air == song:
-		# Called up again from its start while it plays: back to its start.
-		if not is_nan(into) and absf(music.get_playback_position() - into) > 1.5:
-			music.play(into)
+	var started := t - into
+	if _on_air == song and (is_nan(into) or is_zero_approx(started - _on_air_started)):
 		return
 	if _on_air != null:
 		_click(Sounds.RADIO_TUNE, -6.0)
 	music.stream = song
 	music.play(into if not is_nan(into) else fposmod(t, song.get_length()))
 	_on_air = song
+	_on_air_started = started
 
 
 ## The song on the air now, if it plays: the music, the hold music or the

@@ -1086,6 +1086,26 @@ it fail specifically at the continuity assertion. After removing that mutation i
 Native macOS verification remains required; Linux diagnostics explain the timing assumption
 but do not establish the failed runner's exact audio schedule.
 
+### Scheduled-song continuity under slow simulation (2026-10-20)
+
+A receiver must keep the same playback throughout one scheduled song occurrence,
+even when the real audio mixer advances faster than capped simulation ticks.
+World time still selects the occurrence and the phase joined on tuning in. A new
+occurrence of the same recording starts a new playback; signal strength, weather
+and normal mixer/simulation drift must not repeatedly restart it.
+
+The previous same-recording path compared the mixer position with world elapsed
+seconds and replayed whenever they differed by more than 1.5 s. A focused
+regression reproduces the resulting identity change by allowing 2.2 real seconds
+of mixing while advancing the scheduled station clock by only 0.1 s. Keep the
+existing weather-transition playback-identity check unchanged.
+
+As built: identify an explicit scheduled occurrence by its start world time
+(`t - into`), using an absolute near-zero comparison. Mixer position no longer
+restarts the same occurrence. The clock-lag regression fails on the old code
+and passes with the fix (5 s), including a distinct replay of the same asset.
+The unchanged weather/Stoker continuity check and Eye song check pass (6 s each).
+
 ## Survey receiver (agreed and built 2026-10-20)
 
 An early, cheaper receiver hears only existing ruin loot beacons. It shares the radio's
