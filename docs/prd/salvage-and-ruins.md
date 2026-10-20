@@ -645,6 +645,13 @@ partly buried/leaning surfaces, plus ceiling and cut-opening regressions.
 box or socket indices: two skimmer ribs, the hopper canopy and two benches,
 and the nomad's tipped deck and rack cover. These shapes use the structure's
 existing placement, exposure and collision retirement; saves need no new fields.
+The hopper's lowered aft ramp is also a shallow 2.41-degree slab whose outer
+edge meets floor level and inner edge retains its 0.08 m deck connection. Its
+existing box index is unchanged; optional local box rotation drives the same
+look and collider. Room floors, exposure profile, openings and loot/socket
+indices stay unchanged. The ramp-edge contact diagnosis and measured actual
+walking checks are recorded in Movement.
+
 The main roof plates already had collision. A systematic partly exposed-world
 sweep found zero misses at 150 exposed broad-plate points across all six kinds
 (21 skimmer, 36 hauler, 9 freight pod, 18 lifeboat, 57 hopper, 9 nomad).

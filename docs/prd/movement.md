@@ -1425,3 +1425,40 @@ it reads the wreck's geometry rather than reproducing the support cache. The
 focused check passes in 10 s. An external control using the old sand-only height
 read travelled 4.63 m without gaining height, put even the player's feet below
 the roof (local 3.136 m against its 3.25 m top), and failed the approach check.
+
+### Hopper ramp edge correction (2026-10-20; agreed before implementation)
+
+Combined CI found one real opening snag in Kits 2: the hopper's lowered aft
+ramp, near world (214.5193, 349.6859) in the fixed fixture. An isolated replay
+reproduced it in both orientations. The capsule's rounded contact against the
+small ramp edge produced normals with Y about 0.744–0.80, interpreted as a
+roughly 40-degree slope despite the box's flat top. With static floors correctly
+separated from sand, this repeatedly requested passive sliding; pace oscillated
+around 0.03–0.25 m/s. The old all-static-as-sand classification had masked it.
+
+Keep sand classification accurate. For an actual walkable contact on a static
+box, read the box face at that contact instead of the capsule's rounded normal;
+a tilted roof keeps its real tilt. Restore missing walking pace along that
+actual support plane with a collision sweep, preserving wall obstruction and
+floor edges. Keep the unchanged full opening traversal check, and add one
+focused actual-player hopper ramp regression in Movement 34.
+
+After-frame tracing also exposed the ramp's geometry: the front of its
+horizontal slab stands about 0.109 m above the approached sand, giving a real
+46.15-degree capsule contact before a walkable top is reached. Do not promote
+that wall contact. Make this existing ramp a shallow inclined slab, lowering
+only its outer edge to floor level and retaining the inner 0.08 m deck
+connection. Draw and collide the same rotated box; preserve its existing box
+index, all openings, loot/socket indices, and exposure/sand profile. Once a real
+walkable contact exists, use the actual upward box face without a nearest-face
+tie that can vary across the rounded edge.
+
+As built, the ramp keeps its original box index. Its shared local box rotation
+is 2.41 degrees; the outer top is approximately 0 m and the inner top 0.08 m
+above the structure's floor. The existing apron covers the roughly 2 mm plan
+extent added by the rotation. Exposure state/profile, room floors, openings,
+loot and socket indices are unchanged. Static-floor pace compensation sweeps
+along the actual plane; sand retains its original deterministic correction.
+Movement 34 passes both actual approaches (four legs, no stuck leg or snag),
+in 21 s; Movement 32 and 33 pass in 10 s each. The unchanged full Kits 2
+traversal remains the acceptance gate for every kind's openings.
