@@ -583,3 +583,12 @@ carry view. Existing dev 2, rope 18 (selected untie) and rope 5 (clean parting) 
 The original reported native crash was not reproduced in source, headless release or an
 unseen graphical release run; this fixes the measured orphan ties, not that unconfirmed
 crash cause. No force, untie duration, save format or deed behavior changed.
+
+## Explicit sailing load paths (agreed, 2026-10-20)
+
+Physical hooks and the boom's real sheet replace the automatic invisible sailing
+tow constraint. A route is an ordinary line through a real guide, with force at
+each endpoint and the guide's bend. When multiple points share one rigid body,
+effective mass uses their summed linear and angular Jacobians; treating those
+points as independent masses misses their cancellation and cross terms. Rope
+strength and closing-speed limits remain unchanged.

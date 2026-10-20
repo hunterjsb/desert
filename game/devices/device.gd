@@ -719,8 +719,8 @@ func _recompute() -> void:
 		moment += frame[0] * frame[1]
 	for socket in sockets():
 		if socket.part != null:
-			weight += socket.part.mass
-			moment += socket.part.mass * _middle(socket.fitted)
+			weight += _fitted_mass(socket)
+			moment += _fitted_mass(socket) * _middle(socket.fitted)
 		elif socket.mounted != null:
 			# Where its weight is: what's stuck high on it raises its host's middle.
 			weight += socket.mounted.mass
@@ -793,6 +793,11 @@ func shape_bounds() -> AABB:
 			_bounds = AABB()
 		_bounds_known = true
 	return _bounds
+
+
+## A separately simulated fitted assembly carries its own mass.
+func _fitted_mass(socket: Socket) -> float:
+	return socket.part.mass
 
 
 ## Its frame's weight and where it sits, in its own frame, as [kg, position]s.

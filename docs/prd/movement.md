@@ -1282,3 +1282,21 @@ probe or gameplay behavior run was performed for this teaching-only change. A la
 1280×720 capture showed the existing mooring stake held and both instruction lines
 fitting at the top of the view. The external helper hit a teardown-only script error
 after saving the image; its call was corrected without changing game code.
+
+## Sailing correction: physical boom and explicit routing (agreed, 2026-10-20)
+
+The user's sailing playtest rejects the one-sided angular latch, diagonal-only
+control and reeling that appears to rotate a yacht magically. Boom control must
+come from actual rope forces and usable hooks. Replace the scalar trim spring
+and its hard angular stop with a physical boom body on a free mast-axis hinge.
+The sail's wind force acts on that body; its hinge and ordinary sheet transmit
+loads to the carrier. Reeling changes the sheet's actual length, never a separate
+trim angle. Collision geometry, rather than an invisible angular limit, bounds
+its travel. Preserve rope strength, injury and closing-speed protections.
+
+This supersedes the hidden automatic tow link described above. An actual line
+routed through a usable hook supplies its visible load path; no automatic hidden
+constraint bypasses the player. Starting rigs provide a real deck guide and
+usable eased sheet geometry, and the Varran carries a mooring stake. Independent
+boom mass must not remain counted in the carrier; save/resume and origin shifts
+retain its relative pose and velocity. Measurements follow implementation.

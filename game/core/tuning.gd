@@ -1188,3 +1188,8 @@ static func current() -> Tuning:
 	if _current == null:
 		_current = load(PATH)
 	return _current
+
+## Physical sail boom: gooseneck rotational damping and the spar's collision
+## clearance round the mast, m. Sail mass remains the fitted part's mass.
+@export var boom_hinge_drag: float = 0.8
+@export var boom_root_clearance: float = 0.12

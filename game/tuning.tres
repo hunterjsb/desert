@@ -172,3 +172,5 @@ face_shaded = 0.1
 face_cup = 1.3
 
 deed_release_lines = 2
+boom_hinge_drag = 0.8
+boom_root_clearance = 0.12

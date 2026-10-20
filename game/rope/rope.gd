@@ -178,6 +178,16 @@ func prepare(h: float, gravity: float) -> void:
 		var arm_p := _rp.cross(turned)
 		_turn_p = body_p.inv_inertia * arm_p
 		k += turned.dot(body_p.inv_mass * turned) + arm_p.dot(_turn_p)
+	# Endpoints on one body have one velocity: include the cross terms of
+	# their summed Jacobian, especially where a sheet returns through its deck.
+	if body_a == body_b:
+		k -= 2.0 * (normal.dot(body_a.inv_mass * normal_b) + arm_a.dot(_turn_b))
+	if through != null:
+		var guide := bend()
+		if body_a == body_p:
+			k += 2.0 * (normal.dot(body_a.inv_mass * guide) + arm_a.dot(_turn_p))
+		if body_b == body_p:
+			k -= 2.0 * (normal_b.dot(body_b.inv_mass * guide) + arm_b.dot(_turn_p))
 	_mass = 1.0 / k if k > 1e-9 else 0.0
 	if h != _h or _stop == Vector3.ZERO:
 		_stop = soft_step(STOP_HERTZ, STOP_DAMPING, h)
