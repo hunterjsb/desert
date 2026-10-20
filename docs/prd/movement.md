@@ -1301,3 +1301,11 @@ all static bodies. Actual controls climbed a partly buried 15.76° skimmer roof
 without a throw; walking remained on it. Existing wall-crash and on-foot
 frame-rate checks pass. The Salvage & ruins account records the measurements
 and synthetic 64-face cost limit.
+
+Movement 33 now keeps that board approach in CI: actual forward input moves
+from sand onto the partly exposed, leaning skimmer roof. It checks the board's
+underside remains above the roof, gains height and progresses without a throw;
+it reads the wreck's geometry rather than reproducing the support cache. The
+focused check passes in 10 s. An external control using the old sand-only height
+read travelled 4.63 m without gaining height, put even the player's feet below
+the roof (local 3.136 m against its 3.25 m top), and failed the approach check.
