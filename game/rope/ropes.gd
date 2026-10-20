@@ -437,8 +437,7 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 	body.expected_spin = Vector3.ZERO
 	var rigid := body.rigid
 	if rigid != null and not rigid.freeze:
-		var state := PhysicsServer3D.body_get_direct_state(rigid.get_rid())
-		body.center = rigid.global_transform * state.center_of_mass_local
+		body.center = holder.global_position
 		body.inv_mass = Vector3.ONE / rigid.mass
 		body.inv_inertia = _inverse_inertia(rigid)
 		body.velocity = rigid.linear_velocity
@@ -675,6 +674,10 @@ func _articulate(live: Array[Rope], h: float) -> void:
 					pivots.append(device.global_transform * Mast.BOOM_AT)
 					axes.append(device.global_basis.y.normalized())
 			if bodies.size() > 1:
+				# Hinged response needs native mass centres; ordinary ropes retain their model.
+				for body in bodies:
+					var state := PhysicsServer3D.body_get_direct_state(body.rigid.get_rid())
+					body.center = body.rigid.global_transform * state.center_of_mass_local
 				var articulation := RopeArticulation.new()
 				articulation.configure(bodies, pivots, axes)
 				_articulations.append(articulation)

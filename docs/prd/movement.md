@@ -1574,3 +1574,23 @@ starting the same driving-sheet policy and selected tick rate. It passes in 70 s
 without changing the 20 m/s² jolt, 1.5 rad/s spin, full health/aboard, or 10% tow
 and 3% yacht distance bounds. This is fixture initialization and normal-rate
 control, not a new production constraint or force correction.
+
+The combined branch also changed the mass reference for every ordinary rope
+body while adding hinged assemblies. An isolated control retaining the existing
+ordinary-body reference passes the unchanged loose-plug and waist-reel checks;
+the broader change fails both. Limit the new native centre-of-mass model to
+actual hinged assemblies, where the coupled response needs it. Ordinary ropes
+retain their established mass-origin approximation; improving that approximation
+is separate work with its own contact and closing-speed evidence. The current
+3 m/s solver closing bound, 5 m/s loose-plug acceptance and waist-reel tolerance
+remain unchanged.
+
+Other combined fixtures retain their actual actions and bounds. The nomad claim
+aims at a real panel within the existing 2.5 m reach, rather than empty air in
+the old spar envelope from 2.8 m away. The fabric comparison sheets the full
+sail broadside to the same world wind with a real cleated line, accounting for
+the deck having turned during the earlier fabric drift; a freely luffing sail
+is not a matched maximum-drive comparison. The quarter-force bound is retained.
+The fitting check puts a removed hook aside before fitting a larger shield;
+strip-and-fit uses the existing edge rings for hooks, preserving panel space
+for batteries and panels. Free placement remains covered through actual hands.
