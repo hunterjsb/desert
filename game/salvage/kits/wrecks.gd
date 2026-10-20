@@ -492,7 +492,9 @@ static func _hopper() -> StructureKit.Piece:
 	StructureKit.box(p, Vector3(-1.6, 2.2, 4.0), Vector3(1.6, 2.4, 5.5), "panel")
 	# The ramp's doorway out the back, and the ramp lowered onto the sand.
 	holed(p, Vector3(-1.6, 0.0, -5.7), Vector3(1.6, 2.8, -5.5), Vector3(-1.2, 0.0, -5.7), Vector3(1.2, 2.4, -5.5), "lime")
-	StructureKit.box(p, Vector3(-1.2, -0.05, -7.6), Vector3(1.2, 0.08, -5.7), "grey")
+	# The leading edge meets the sand; the inner edge retains its deck connection.
+	StructureKit.box(p, Vector3(-1.2, -0.09, -7.6), Vector3(1.2, 0.04, -5.7), "grey",
+		Basis(Vector3.RIGHT, -atan(0.08 / 1.9)))
 	# The cockpit's bulkhead, its door plated shut.
 	holed(p, Vector3(-1.4, 0.0, 1.0), Vector3(1.4, 2.6, 1.2), Vector3(-0.5, 0.3, 1.0), Vector3(0.5, 2.0, 1.2), "panel")
 	# The port wing and its lift-fan nacelle on top of it, cowled at your
