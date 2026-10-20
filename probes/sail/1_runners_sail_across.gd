@@ -9,6 +9,7 @@ func run() -> void:
 	await load_sailing()
 	speed_up(4)
 	var went := {}
+	driving_sheet = true
 	for carried: StringName in [&"skates", &"hover_tray"]:
 		rig(open, heading(), carried)
 		blow(downwind * 10.0)

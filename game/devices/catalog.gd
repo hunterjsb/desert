@@ -33,6 +33,8 @@ const KINDS := {
 ## line's end snaps on. A part sticks on a chassis unless its kind is one
 ## SLOT_ONLY names.
 const PARTS := {
+	&"coalcane_bundle": {"kind": &"fuel", "label": "Preserved coalcane", "mass": 3.0, "size": Vector3(0.4, 0.3, 0.65),
+		"color": Color(0.25, 0.17, 0.08), "stats": {}},
 	&"battery": {"kind": &"battery", "label": "Battery", "mass": 4.0, "size": Vector3(0.22, 0.14, 0.12),
 		"color": Color(0.2, 0.2, 0.22), "stats": {"capacity_wh": 100.0}},
 	&"big_battery": {"kind": &"battery", "label": "Big battery", "mass": 9.0, "size": Vector3(0.26, 0.18, 0.18),
@@ -399,7 +401,7 @@ const DEVICES := {
 	&"mast": {"label": "Mast", "size": Vector3(0.14, 1.3, 0.14), "mass": 8.0, "rig": true,
 		"carryable": true, "on_end": true, "sticks": true, "stands": true, "stats": {"face_m2": 0.18},
 		"sockets": [
-			[&"sail", Vector3(0.0, 0.3, -0.07), Vector3.FORWARD],
+			[&"sail", Mast.BOOM_AT + Vector3(0.0, 0.0, -0.07), Vector3.FORWARD],
 		]},
 	# A skimmer pilot's seat, stuck on a deck: use on it sits you at the helm (Helm).
 	&"helm_seat": {"label": "Helm seat", "short": "Helm", "size": Vector3(0.5, 0.5, 0.55), "mass": 7.0, "helm": true,
@@ -508,8 +510,8 @@ static func part(id: StringName) -> Part:
 		else (Plant.new() if spec.has("crop") \
 		else (Compass.new() if spec.kind == &"compass" \
 		else (Frame.new() if spec.kind == &"frame" \
-		else (Remedy.new() if spec.kind == &"medicine" \
-		else (Flare.new() if spec.kind == &"flare" else Part.new()))))))
+		else (Remedy.new() if spec.kind == &"medicine" else (RopeHook.new() if id == &"hook" \
+		else (RopeTip.new() if id == &"rope_end" else (Flare.new() if spec.kind == &"flare" else Part.new()))))))))
 	made.kind = spec.kind
 	made.label = spec.label
 	made.mass = spec.mass
@@ -559,6 +561,8 @@ static func part(id: StringName) -> Part:
 		made.continuous_cd = true
 	if spec.has("tie"):
 		_add_tie(made, spec.tie, Vector3.BACK)
+		if made is RopeHook:
+			made.guide = RopeEnd.make(made, spec.tie, false)
 	if spec.has("adds"):
 		var adds := Socket.new()
 		adds.kind = spec.adds[0]

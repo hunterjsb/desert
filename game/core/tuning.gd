@@ -21,6 +21,10 @@ static var _current: Tuning
 ## world shifts back, keeping 32-bit positions precise.
 @export var origin_shift_chunks: int = 4
 
+@export_group("Stoker")
+@export var stoker_burn_s: float = 30.0
+@export var stoker_stock: int = 3
+
 @export_group("Spawns")
 ## Every run starts this near the equator, degrees: inside it the clear's
 ## widest swing stays within the suit's limits.
@@ -65,6 +69,8 @@ static var _current: Tuning
 ## Kinds of crop grown, planters towed at once, and chassis pieces in one deck.
 @export var deed_crop_kinds: int = 3
 @export var deed_planters_towed: int = 2
+@export var deed_fairlead_n: float = 10.0
+@export var deed_fairlead_seconds: float = 1.0
 @export var deed_deck_pieces: int = 6
 ## A bulk release counts the live lines actually let go together.
 @export var deed_release_lines: int = 2
@@ -682,6 +688,12 @@ static var _current: Tuning
 @export var throw_speed: float = 6.0
 ## Your strength on what you hold too heavy to carry, or walk into, N.
 @export var hand_strength: float = 400.0
+## A yank is a short reel stroke, with the same strength limit as normal hauling.
+@export var rope_yank_m: float = 0.5
+@export var rope_yank_seconds: float = 0.2
+@export var rope_yank_recover_seconds: float = 0.4
+@export var rope_yank_deed_m: float = 0.1
+@export var rope_yank_deed_n: float = 20.0
 ## Having hold of something, a throw punches it where you look instead, a
 ## small shove to right a tipped rig with, N·s.
 @export var punch_impulse: float = 45.0
@@ -1261,3 +1273,8 @@ static func current() -> Tuning:
 	if _current == null:
 		_current = load(PATH)
 	return _current
+
+## Physical sail boom: gooseneck rotational damping and the spar's collision
+## clearance round the mast, m. Sail mass remains the fitted part's mass.
+@export var boom_hinge_drag: float = 0.8
+@export var boom_root_clearance: float = 0.01

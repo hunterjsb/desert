@@ -40,18 +40,22 @@ func run() -> void:
 
 
 func _supported() -> bool:
-	if not is_instance_valid(mast) or not mast._ring.visible:
+	if not is_instance_valid(mast) or mast.sheet() == null or not is_instance_valid(mast.sheet().through):
 		return false
-	var at := mast._ring.global_transform * (Vector3.DOWN * SheetEye.EYE_UP)
+	var guide := mast.sheet().through
+	var socket: Socket = guide.get_meta(&"socket", null)
+	if socket == null or not socket.part is RopeHook or guide.holder != deck:
+		return false
+	var at := socket.global_position
 	for piece in deck.pieces():
 		var local := (deck.global_transform * piece.pose()).affine_inverse() * at
 		if absf(local.x) + SheetEye.FOOT.x * 0.5 <= Chassis.WIDTH * 0.5 - Chassis.PANEL_INSET \
 				and absf(local.z) + SheetEye.FOOT.y * 0.5 <= Chassis.WIDTH * 0.5 - Chassis.PANEL_INSET \
 				and absf(local.y - Chassis.THICK * 0.5 + Chassis.PANEL_DROP) < 0.001:
-			if mast._inboard.visible:
-				mast._process(0.0)
-				return mast._inboard.shown()[0].distance_to(mast._ring.global_position) < 0.001
-			return true
+			var points := mast.sheet().strand.shown()
+			for point in points:
+				if point.distance_to(guide.global_position) < 0.001:
+					return true
 	return false
 
 
@@ -62,7 +66,7 @@ func _attached() -> bool:
 		if rope == null or not is_instance_valid(rope.a) or not is_instance_valid(rope.b):
 			return false
 		var far := rope.b if ropes.on_you(rope.a.holder) else rope.a
-		if far.holder != deck:
+		if far.holder != deck and far.holder != mast._boom_body:
 			return false
 		count += 1
 	return count == 3

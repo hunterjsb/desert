@@ -4,6 +4,14 @@
 same day, written in another session; this PRD takes it on and fits it to the game as
 built.*
 
+## Halloran's first fire (agreed, 2026-10-20)
+
+**First Fire**, hidden in Far, is recorded when a preserved coalcane bundle is physically consumed
+by the Stoker. The run saves Halloran's stock taken, fuel consumed, burn expiry, service-door
+release and cache items claimed. Missing state in older saves means an untouched encounter.
+These values survive site unloading and reprojection, independently of the transient Structure.
+
+
 ## Why this system exists
 
 Two kinds of thing outlast a sitting. **A run** is one life on one moon: it can be set
@@ -237,6 +245,8 @@ the frame is a part stuck on the deck.
 |---|---|---|---|---|
 | Board | **Yard Sale** (hidden) | Tumble 12 m in one wipeout | Big Air | `Tumble`'s tick: how far you've tumbled since you were thrown off ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-19 |
 | Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
+| Wind | **Fairlead** | Redirect a loaded rope through a fitted hook | | `Line`: a player-routed guide carries at least 10 N sustained load for one second; saved routing retains the real guide reference |
+| Wind | **Quick Haul** | Yank a loaded rope through your hands | | `Reel`: a yank takes in at least 0.1 m against at least 20 N; clicking without an actual haul does not count |
 | Wind | **Hand-Me-Down** | Take the sail off a wrecked nomad rig | Set Sail | `Salvage.claim`: the find a nomad rig always carries (its mast with its sail, the socket `SiteLoot.RIGGED`) becoming yours |
 | Wind | **Telltale** | Trim a sail with a streamer flying on its rig | Hand-Me-Down | `Mast`'s haul: its sheet's inboard taken in or let out a notch, its sail all the way up and yours to sail, with a wind streamer anywhere on its camp, its mast too |
 | Wind | **Close-Hauled** | Make 500 m upwind under sail | Set Sail | `Mast`'s tick: while its sail is all the way up and yours to sail (its sheet on you, or you at the helm of its camp), its camp's way against the field's wind, kept through tacks and never below none; gone once it isn't yours to sail. Kept in the save |
@@ -285,7 +295,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 50 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 53 deeds in eleven families since step 4, Yard Sale and the nomads' gear, each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:

@@ -94,6 +94,7 @@ func _hold(want: Vector2) -> void:
 ## A stage afresh, you standing where its scenario puts you: the camp under
 ## tow with you on the board, its course held, or you at the yacht's helm.
 func _set_up(stage: StringName) -> void:
+	blow(Vector2.ZERO)
 	var player := world.player
 	if player.helm != null:
 		player.stand_up()
@@ -119,17 +120,18 @@ func _set_up(stage: StringName) -> void:
 	deck = kit[0]
 	mast = kit[1]
 	await physics_frames(10)
-	blow(downwind * 10.0)
-	# The sheet left as it's set, so only the ticks differ.
 	hoist(60.0)
-	tending = 0.0
+	driving_sheet = true
+	tending = deg_to_rad(15.0)
 	if stage == &"tow":
 		course = way
 		check(player.get_on(_of(Hoverboard, 0)), "on the board")
 	else:
 		course = Vector2.ZERO
 		check((_of(Helm, 0) as Helm).interact(player), "at the helm")
-	await physics_frames(2)
+	# Each rate begins with the same settled articulated craft and control policy.
+	await simulate(3.0)
+	blow(downwind * 10.0)
 
 
 ## The scenario's n-th thing of a kind, in the order it laid them: the rig

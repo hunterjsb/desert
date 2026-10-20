@@ -27,7 +27,7 @@ static var _kept := [
 	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["raised", "raise", "boom", "boom_spin", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Mast, ["raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
@@ -133,8 +133,10 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# A resumed run has its own things: no new run's kit is set down in it.
 	world.set_meta(&"resumed", true)
 	world.time = data.time
+	world.weather.field.restore_wind(data.get("test_wind", {}))
 	world.began = data.get("began", 0.0)
 	world.taught = data.get("taught", false)
+	world.stoker_state = data.get("stoker", {}).duplicate(true)
 	world.played = data.get("played", NAN)
 	world.counts_deeds = world.counts_deeds and not data.get("dev_run", false)
 	world.set_gravity(data.gravity)
@@ -203,6 +205,7 @@ func finish(data: Dictionary) -> void:
 		if body.get_parent() == null:
 			world.content.add_child(body)
 		body.global_transform = _transform_in(rec.at)
+		PhysicsServer3D.body_set_state(body.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, body.global_transform)
 		body.linear_velocity = rec.v
 		body.angular_velocity = rec.w
 		body.freeze = rec.freeze
@@ -301,7 +304,7 @@ func _take() -> Dictionary:
 	var ropes := world.ropes
 	var player := world.player
 	var hands := player.hands
-	var data := {"seed": world.run_seed, "time": world.time, "began": world.began, "taught": world.taught,
+	var data := {"seed": world.run_seed, "time": world.time, "began": world.began, "taught": world.taught, "stoker": world.stoker_state.duplicate(true),
 		"gravity": world.gravity,
 		"origin": world.origin_chunk,
 		"moon": {"latitude": world.moon.latitude, "longitude": world.moon.longitude,
@@ -329,6 +332,9 @@ func _take() -> Dictionary:
 	you.wounds = {"sick": player.vitals.wounds.sick, "shocks": player.vitals.wounds.shocks,
 		"sicknesses": player.vitals.wounds.sicknesses}
 	data.player = you
+	var test_wind := world.weather.field.wind_state()
+	if not test_wind.is_empty():
+		data.test_wind = test_wind
 	var things := []
 	var lines: Array[Line] = []
 	var cables: Array[Cable] = []
@@ -372,6 +378,7 @@ func _take() -> Dictionary:
 	data.carried = player.suit.carried.filter(_known).map(func(p: RigidBody3D) -> Dictionary: return _body(p, false))
 	var strands := ropes.strands.filter(func(s: RopeStrand) -> bool: return is_instance_valid(s))
 	data.lines = lines.map(func(line: Line) -> Dictionary: return {"state": line.state, "full": line.full,
+		"routed_by_player": line.routed_by_player, "route_loaded_seconds": line.route_loaded_seconds,
 		"first": line._first, "coil": _ref(line.coil) if is_instance_valid(line.coil) else null,
 		"ends": line.ends.map(_ref),
 		"rope": _rope_out(line.rope, strands) if line.rope != null and ropes.ropes.has(line.rope) else null})
@@ -381,9 +388,19 @@ func _take() -> Dictionary:
 	data.strands = strands.map(_strand_out)
 	data.solver = {"tick": ropes._tick, "drag": ropes._drag, "bodies": []}
 	for body: RopeBody in ropes._bodies.values():
-		if is_instance_valid(body.node) and (body.node == player or _refs.has(body.node)):
-			data.solver.bodies.append(["player" if body.node == player else _refs[body.node], body.tick, body.left,
-				body.left_spin])
+		if not is_instance_valid(body.node):
+			continue
+		var ref: Variant = null
+		if body.node == player:
+			ref = "player"
+		elif _refs.has(body.node):
+			ref = _refs[body.node]
+		elif body.node.has_meta(&"boom_mast"):
+			var mast: Mast = body.node.get_meta(&"boom_mast")
+			if _refs.has(mast):
+				ref = {"boom": _refs[mast]}
+		if ref != null:
+			data.solver.bodies.append([ref, body.tick, body.left, body.left_spin])
 	data.waist = {"tied": player.waist.tied.filter(_known).map(_ref), "untying": player.waist.untying,
 		"to_hand": player.waist._to_hand,
 		"taking": _ref(player.waist._taking) if _known(player.waist._taking) else null}
@@ -679,6 +696,8 @@ func _line(rec: Dictionary) -> Line:
 	line.state = rec.state
 	line.full = rec.full
 	line._first = rec.first
+	line.routed_by_player = rec.get("routed_by_player", false)
+	line.route_loaded_seconds = rec.get("route_loaded_seconds", 0.0)
 	if rec.coil != null:
 		line._coil_up()
 		_made[rec.coil] = line.coil
@@ -693,6 +712,8 @@ func _line(rec: Dictionary) -> Line:
 
 func _rope_out(rope: Rope, strands: Array) -> Dictionary:
 	var out := {"strand": strands.find(rope.strand), "index": _world.ropes.ropes.find(rope)}
+	if is_instance_valid(rope.through):
+		out.through = _end_out(rope.through)
 	for key in ROPE:
 		out[key] = rope.get(key)
 	return out
@@ -702,6 +723,8 @@ func _rope_out(rope: Rope, strands: Array) -> Dictionary:
 func _rope_in(rope: Rope, rec: Dictionary) -> RopeStrand:
 	for key in ROPE:
 		rope.set(key, rec[key])
+	rope.through = _end_in(rec.get("through"))
+	rope.strand.through = rope.through
 	return rope.strand
 
 
@@ -768,7 +791,12 @@ func _solver_in(rec: Dictionary) -> void:
 	ropes._tick = rec.tick
 	ropes._drag = rec.drag
 	for entry: Array in rec.bodies:
-		var node: Node3D = _world.player if entry[0] is String else _made.get(entry[0])
+		var node: Node3D
+		if entry[0] is Dictionary:
+			var mast := _made.get(entry[0].get("boom")) as Mast
+			node = mast._boom_body if is_instance_valid(mast) else null
+		else:
+			node = _world.player if entry[0] is String else _made.get(entry[0])
 		if node == null:
 			continue
 		var body := RopeBody.new()

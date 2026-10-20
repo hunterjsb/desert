@@ -583,3 +583,111 @@ carry view. Existing dev 2, rope 18 (selected untie) and rope 5 (clean parting) 
 The original reported native crash was not reproduced in source, headless release or an
 unseen graphical release run; this fixes the measured orphan ties, not that unconfirmed
 crash cause. No force, untie duration, save format or deed behavior changed.
+
+## Explicit sailing load paths (agreed, 2026-10-20)
+
+Physical hooks and the boom's real sheet replace the automatic invisible sailing
+tow constraint. A route is an ordinary line through a real guide, with force at
+each endpoint and the guide's bend. When multiple points share one rigid body,
+effective mass uses their summed linear and angular Jacobians; treating those
+points as independent masses misses their cancellation and cross terms. Rope
+strength and closing-speed limits remain unchanged.
+## Player-routed lines (Hunter, 2026-10-20; built generic routing, sailing integration pending)
+
+A player can pass a real line through a physical hook, as the built-in sheet runs
+through its block. Tie the first end normally, hold the other end, aim at a fitted
+rope hook and Use to pass it through; continue walking and tie that end or put it at
+the waist using the existing actions. Use on the same guide while holding that line
+removes the route. The first bounded implementation has one guide per line; trying a
+different guide explains that the existing route must be removed first. It never
+silently replaces a route or creates another rope.
+
+The line's total paid-out length covers both legs. Its existing three-body rope
+constraint transmits tension to both endpoints and the actual guide holder, including
+its bend load. Visual rope runs through the same ring. Offsetting a visual line alone
+is not routing. A guide that is removed from its mounting remains the physical guide
+while carried or loose; a deleted guide releases the route cleanly. Saves add optional
+route references through existing item/end identity, with old saves defaulting to a
+direct line. Existing hooks and attachment sockets retain their identities and saves.
+
+
+### Generic routing as built
+
+The existing rope-end id now uses `RopeTip.route_at(player)`, also available to a
+bundle's selected end. It answers only when the aim meets a fitted hook. A plain
+label shows the live Use action binding and whether it passes through or removes
+the route. Normal endpoint tying, magnetic sockets, placement and waist transfer
+remain the physical actions. A second guide is refused until the first is removed;
+a laid line too short for a proposed path asks for more payout rather than creating
+rope or deliberately snapping it. Held-end reach subtracts the other leg's length.
+
+Regular ropes initialize the real guide's solver body and draw two legs through
+that guide. Optional saved through references use the existing part/end identity;
+old saves have no route. Player-made routes also keep their deed eligibility and
+loaded time. The Fairlead action hook requires a player-routed line carrying at
+least 10 N sustained load for 1 s (tuning data); deed-table registration is combined
+with the sailing work.
+
+In an unseen 1280×720 interaction fixture: place hook by hand, take a real coil,
+tie the first end, Use at the hook while holding the second, then tie the second
+end normally. Both endpoint ties and routing succeeded. Its two-leg path was
+4.019 m with 4.519 m paid out; the drawn physics point at the ring differed by
+0.0 m. Snapshot saved the physical guide reference and an in-place restore
+reconnected it to the restored physical holder. A separate headless repeat of
+that restore passed without exit cleanup warnings. This is a controlled interaction
+fixture, not an unassisted sailing expedition or a measured boom validation.
+
+The old automatic hidden tow constraint has been removed from the solver. The
+legacy `hidden` value remains null and `link_pair()` returns no inferred connection
+until their old callers/checks are migrated with the sailing integration. Existing
+`_towing()` remains solely the planter-towing deed accounting. Built-in sheets and
+new boom mechanics require the separate sailing integration before full verification.
+
+The solver's rigid-body lever arms and point velocities must be measured from
+the actual centre of mass, including fitted-device mass offsets. Godot's impulse
+application API still takes an offset from the body origin; these two coordinate
+conventions must remain distinct. The physical-boom check exposed the previous
+origin-as-centre assumption.
+
+A freely hinged boom's rope response includes its carrier and every boom on that
+carrier. The custom rope iteration uses the positive mass matrix for total-COM
+translation, carrier rotation and each relative hinge spin, including cross
+terms and parallel-axis inertia. Actual impulses are applied only at real rope
+points; Jolt supplies the hinge reactions. This prevents the rope's stiffness
+and closing prediction from crediting translations or rotations blocked by the
+hinge, without imposing an angle target or duplicating reaction torque.
+## Sailing handling follow-up (Hunter, 2026-10-20)
+
+A sole live connected rope works without an explicit carry-view selection. A held
+line still wins; with several waist ropes the selected line is the one worked.
+Looking around does not change that choice. This supersedes the previous requirement
+to select even a single rope.
+
+The yank action gives the worked rope a short, faster haul through the existing
+strength-limited reel. It changes rope length over physics ticks, never the rig's
+rotation or either body's velocity directly. Its travel, duration and recovery are
+tuning data; slack takes up before a load can turn anything. It shares the physical
+hand stroke and rope sound. Rotating an ordinary held object keeps its existing
+interaction. Carry-view rope labels use the theme's UI type, with numeric readouts
+remaining in the established numeric style elsewhere.
+
+The earlier proposed batch transfer on planting a stake is on hold. Hunter is
+considering holding Use to untie successive waist ends into a hand-held bundle,
+then dropping or fastening the gathered ends through the normal interactions. No
+new dedicated batch-mooring key is wanted. Bundle representation and transfer
+semantics are still a design discussion; the sole-rope fallback and yank do not
+implement them.
+
+As built for this follow-up: the yank requests at most 0.5 m over 0.2 s,
+followed by 0.4 s recovery. The normal tension/hand-strength slowdown still
+applies; any remainder is cancelled when the stroke ends or a menu interrupts
+it. A held ordinary object retains its rotation action. Quick Haul records an
+actual stroke of at least 0.1 m against a measured load of at least 20 N.
+
+Focused checks on Godot 4.7.2: existing Rope 16 passed with the sole-line
+fallback added (7 s), Rope 13's ordinary reeling passed (29 s), and Rope 18's
+selected untie/save passed (9 s). Rope 20 exercised the actual yank binding,
+selected-line isolation, recovery, end of haul and ordinary-held-object priority
+(5 s). Its isolated fixture enables deed counting and earns Quick Haul through
+the physical haul, without calling the deed directly. These checks do not yet
+establish final Varran handling with the new articulated boom.

@@ -248,6 +248,20 @@ func host() -> Device:
 	return get_parent() as Device
 
 
+## Early-working devices need their seats before the carrier's later callback:
+## fresh kinematic bodies can otherwise report the previous world pose.
+func follow_mount() -> void:
+	var on := host()
+	if on == null:
+		return
+	on.follow_mount()
+	for i in on._seats.size():
+		var socket = on._seats[i]
+		if is_instance_valid(socket) and socket.mounted == self:
+			transform = socket.transform * seat_for(socket)
+			return
+
+
 ## Whether its trays hold it up now: they lift its weight, and have the power.
 func hovering() -> bool:
 	return _hovering
@@ -706,8 +720,8 @@ func _recompute() -> void:
 		moment += frame[0] * frame[1]
 	for socket in sockets():
 		if socket.part != null:
-			weight += socket.part.mass
-			moment += socket.part.mass * _middle(socket.fitted)
+			weight += _fitted_mass(socket)
+			moment += _fitted_mass(socket) * _middle(socket.fitted)
 		elif socket.mounted != null:
 			# Where its weight is: what's stuck high on it raises its host's middle.
 			weight += socket.mounted.mass
@@ -780,6 +794,11 @@ func shape_bounds() -> AABB:
 			_bounds = AABB()
 		_bounds_known = true
 	return _bounds
+
+
+## A separately simulated fitted assembly carries its own mass.
+func _fitted_mass(socket: Socket) -> float:
+	return socket.part.mass
 
 
 ## Its frame's weight and where it sits, in its own frame, as [kg, position]s.
