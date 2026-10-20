@@ -17,3 +17,15 @@ func run() -> void:
 	await physics_frames(2)
 	check(Profile.marks() == before, "the receiver does not add unsupported dial marks")
 	check(hands.interact() and not receiver.on, "Use still switches the receiver off")
+	check(world.player.suit.put_in(), "the receiver goes into the suit")
+	await physics_frames(3)
+	world.player.camera.rotate_object_local(Vector3.UP, 1.2)
+	await get_tree().process_frame
+	var eyes := world.player.camera.global_transform
+	var ahead := (receiver.hiss.global_position - eyes.origin).normalized().dot(-eyes.basis.z.normalized())
+	check(receiver.hiss.panning_strength == 0.0 and receiver._signal.panning_strength == 0.0 and ahead > 0.999,
+		"carried receiver sound stays ahead without panning when the camera turns")
+	check(world.player.suit.take_out(stack_of(receiver)), "the receiver comes back out")
+	await physics_frames(3)
+	check(receiver.hiss.panning_strength == 1.0 and receiver.hiss.position == Hands.middle_of(receiver),
+		"taken out, receiver sound returns to its physical speaker")

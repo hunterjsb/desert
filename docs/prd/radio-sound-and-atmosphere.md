@@ -1151,7 +1151,9 @@ supersedes older descriptions of OS speech and the weather-only reader.
 
 Combined checks: radio 14 (schedule/advisories), 23 (native reader), 25 (Walker
 contacts), 29 (litanies), 33 (bookmarks), 39/40 (messages/effects) and 41
-(receiver controls) pass, as does devices 30 (Console battery speech).
+(receiver controls and carried-speaker placement) pass, as does devices 30
+(Console battery speech). The receiver retains its own loop/needle controls,
+but shares the radio's camera-relative carried sound and physical speaker when taken out.
 Three real speech plans were exported and checked with speech recognition: wind
 16 m/s, temperature minus 3, north-north-west, bearing 173 and range 1.2 km
 remain intelligible. This is a recognition check, not a substitute for listening
