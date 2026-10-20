@@ -276,6 +276,9 @@ func _hoist(delta: float, area: float) -> void:
 		if far.has_meta(&"socket") or world.ropes.on_you(far.holder):
 			var inboard := far.global_position.distance_to(pulley.global_position)
 			wanted = clampf(1.0 - (rope.length - inboard - HALYARD_CLEARANCE) / LUFF, 0.0, 1.0)
+			# World-pose rounding must not lift a braked head off its full-height stop.
+			if is_equal_approx(wanted, 1.0):
+				wanted = 1.0
 			# Lifting cloth is internal to the rig; the hand drum still works against its weight.
 			rope.haul_n = sail().mass * world.tuning.gravity
 			_halyard_load = rope

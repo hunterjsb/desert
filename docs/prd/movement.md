@@ -1768,3 +1768,28 @@ tracks its supplied halyard for cleanup; Varran counts and saves its fourth
 line independently from the three waist lines. These checks do not establish
 unassisted straight-line handling. The yacht's keel/no-keel comparison now
 removes both physical keels rather than leaving one in its control fixture.
+
+
+**Hoist fixture correction (2026-10-20).** Sailing fixtures that begin fully
+hoisted must set their actual halyard to the drum's full-haul stop: the tail
+to masthead distance plus the head clearance. Subtracting vertical sail height
+from the initial diagonal path leaves extra rope and does not establish an
+all-the-way-up sail. Wind deed prerequisites and distance thresholds stay
+unchanged; the wind-deed fixture must assert full height before sailing.
+
+An actual-wheel measurement also found world-transform rounding at the brake
+stop: height 0.999999859754 at rest and a minimum of 0.999998878030 across
+3,000 moving frames. Wind progress correctly requires full height and reset
+on those frames. Treat a computed height equal to one within Godot's native
+`is_equal_approx` precision as exactly the physical upper stop. Do not change
+the deed gate or use a tolerance large enough to hide the earlier fixture
+geometry error. The deed fixture will wind with real input, then require exact
+full height throughout both moving routes.
+
+The unchanged Wind 25 fixture reproduced the CI failure (19 s); correcting
+only its initial paid length still failed the exact full-height precondition.
+With the numeric stop snap, actual wheel input followed by both moving routes
+passes all original wind-deed goals and holds exactly full height on every
+one of 3,000 sampled ticks (21 s). The paired-keel yacht check passes (31 s),
+partial-height save/resume passes (11 s), and normal wheel winding, untouched
+sheet, brake and disconnect-lowering pass (13 s). Deed thresholds are unchanged.

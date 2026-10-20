@@ -110,7 +110,9 @@ func hoist(degrees: float) -> void:
 	# Authored fixtures carry a braked halyard; start it at its hauled length.
 	var halyard := mast.halyard()
 	if halyard != null and halyard.through == mast.pulley:
-		halyard.length = halyard.full - Mast.LUFF
+		var head := Line._tip(mast.halyard_socket().part)
+		var tail := halyard.b if halyard.a == head else halyard.a
+		halyard.length = tail.global_position.distance_to(mast.pulley.global_position) + Mast.HALYARD_CLEARANCE
 		halyard.strand.set_length(halyard.length)
 	mast.raised = true
 	mast.raise = 1.0
