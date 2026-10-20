@@ -186,7 +186,7 @@ func at(t: float) -> Vector3:
 ## p's latitude needs), only its plane and its place round it moved: where p
 ## will be among the stars at t, the moon's turn under it and its plane's own
 ## swing taken back, put on its plane, and it there at t. A circle's orbit
-## (the Surveyor's); an ellipse would need its perigee moved too.
+## (the drone's); an ellipse would need its perigee moved too.
 func pass_over(p: Vector3, t: float) -> void:
 	var q := p.rotated(Vector3(0.0, 0.0, 1.0), TAU * t / day_seconds - precession * t)
 	var latitude := Sphere.latitude(q)

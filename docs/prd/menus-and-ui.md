@@ -652,3 +652,19 @@ Combined verification correction: visual booklet spacing belongs in the shared
 theme as a MenuList variation, rather than a per-control override. Origin gear
 counts must include each real starter sheet guide declared by the kit, matching
 the removable hook installed when that waist sheet is laid.
+
+
+## Clear-sky scenario consolidation and drone naming (agreed 2026-10-20)
+
+Consolidate the overlapping clear-day, clear-skies radio and delivery-craft
+setups into one listed clear scenario. It provides a weather-tuned radio,
+charged shield and signal flare, with the drone passing overhead shortly
+after arrival. Preserve the existing weather search and upcoming-storm
+conditions needed to hear both hold music and a later advisory. Old scenario
+names remain console aliases rather than duplicate list entries. Distinct
+storm, nighttime, sailing and other focused scenarios retain their purpose.
+
+Call the delivery craft “the drone” for now to avoid confusion with the
+Surveyor origin and its Guide. Rename player-facing craft descriptions and
+provide a drone console command; keep old technical ids and command aliases
+compatible. This renames no starter kit.

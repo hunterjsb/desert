@@ -1,6 +1,6 @@
 class_name Airdrop
 extends Node3D
-## The Surveyor's care-package cannon (gonkhub, 2026-10-20: "give the
+## The drone's care-package cannon (gonkhub, 2026-10-20: "give the
 ## agricultural survey craft a care-package cannon for firing supplies down
 ## to the moon's surface ... if the player lights the signal flare during the
 ## Surveyor's pass overhead, it will fire the cannon (this should be both
@@ -9,7 +9,7 @@ extends Node3D
 ## lerp from sky to ground, and correct angular velocity coming from where the
 ## surveyor was when it fired the cargo").
 ##
-## The Surveyor is the low crop-survey craft (Constellation &"thermal"). Fired:
+## The drone is the low crop-survey craft (Constellation &"thermal"). Fired:
 ## its muzzle flashes in the sky where it is, and the boom comes from there
 ## as long after as sound takes to cross the distance. The container leaves
 ## the muzzle carrying the craft's own way, then curves down on a smooth
@@ -73,7 +73,7 @@ var _beacon: MeshInstance3D
 var _world: World
 
 
-## Where the Surveyor is from a place in the world at world time t, seen by
+## Where the drone is from a place in the world at world time t, seen by
 ## you there: {up (how high, rad), metres (how far), at (its place in the
 ## engine's space), way (its velocity there, m/s)}.
 static func surveyor(world: World, at: Vector3, t: float) -> Dictionary:
@@ -89,13 +89,13 @@ static func surveyor(world: World, at: Vector3, t: float) -> Dictionary:
 		"way": place.call(t + 0.5) - place.call(t - 0.5)}
 
 
-## Whether the Surveyor is passing high enough over a place at the world's
+## Whether the drone is passing high enough over a place at the world's
 ## time to fire at a flare there.
 static func overhead(world: World, at: Vector3) -> bool:
 	return surveyor(world, at, world.time).up >= deg_to_rad(world.tuning.airdrop_elevation_degrees)
 
 
-## The cannon fired at a place, from wherever the Surveyor is now: the
+## The cannon fired at a place, from wherever the drone is now: the
 ## container on its way down near it. Says the drop.
 static func fire(world: World, at: Vector3) -> Airdrop:
 	var drop := Airdrop.new()
