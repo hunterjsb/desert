@@ -890,8 +890,12 @@ func _look() -> void:
 	var ray := PhysicsRayQueryParameters3D.create(sight_from, sight_to)
 	ray.exclude = _exclusions()
 	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+	var hit_device := hit.get("collider") as Device
+	var hit_shape: Node = hit_device.shape_owner_get_owner(hit_device.shape_find_owner(hit.shape)) if hit_device != null else null
+	var hit_socket := _outermost(hit_device.socket_of(hit_shape)) if hit_device != null else null
+	# A visible fitted part must not be replaced by its carryable host.
 	if hit.is_empty() or not hit.collider is Part:
-		_assist(eye)
+		_assist(eye, hit_device if hit_socket != null and hit_socket.part != null else null)
 	if hit.is_empty():
 		if look_part == null and look_device == null:
 			_under()
@@ -923,11 +927,10 @@ func _look() -> void:
 		look_part = body
 	elif body is Device:
 		look_device = body
-		var met := look_device.shape_owner_get_owner(look_device.shape_find_owner(hit.shape)) as Node
-		look_socket = _outermost(look_device.socket_of(met))
+		look_socket = hit_socket
 		if held == null:
 			_near_tie(hit.position)
-		if look_socket == null and not _low_on(look_device, met as CollisionShape3D, hit.position):
+		if look_socket == null and not _low_on(look_device, hit_shape as CollisionShape3D, hit.position):
 			return
 	if look_part == null and look_socket == null:
 		_under()
@@ -1124,7 +1127,7 @@ static func _outermost(socket: Socket) -> Socket:
 ## Aiming at the sand near a small loose thing takes it, so a battery lying
 ## there needs no pixel-perfect aim: the nearest your aim among those you can
 ## see, and the one it settled on until another is clearly nearer.
-func _assist(eye: Transform3D) -> void:
+func _assist(eye: Transform3D, except_body: RigidBody3D = null) -> void:
 	if held != null:
 		_picked = null
 		return
@@ -1137,7 +1140,7 @@ func _assist(eye: Transform3D) -> void:
 		_picked = null
 	for child in _player.world.content.get_children() + _player.world.salvage.near(eye.origin):
 		var body := child as RigidBody3D
-		if body == null or not (body is Part or (body is Device and (body as Device).carryable)):
+		if body == null or body == except_body or not (body is Part or (body is Device and (body as Device).carryable)):
 			continue
 		var box := _box_of(body)
 		var size := box.size.length() * 0.5

@@ -62,6 +62,17 @@ rings are all blocked says "no room at that ring", and aiming at a frame with wa
 says "take its walls off first". Use at a device with nothing to work says "nothing to use", a
 stake used off the sand says "not sand" or "out of reach", and something you can't shift says
 "it won't shift" as it slips from your hands. Take or use at nothing stays silent.
+
+**A fitted-part hit excludes its host from pickup assistance** (2026-10-20
+correction). If the actual sight ray meets an occupied socket's part, assistance
+must not replace it with the whole carryable host. Visible loose parts nearby still
+receive the existing reach- and occlusion-limited assistance, including a tiny loose
+rope end against a deck hook. A radio's battery remains removable without picking up
+the whole radio, and picking a floor end preserves its other anchor.
+Measured with the focused probes: the direct radio battery check passes (7 s);
+stripping and fitting all 35 parts across 11 finds passes (41 s); taking a loose
+board tie while preserving its other anchor passes (7 s).
+
 - **Take** picks up, takes out, puts in, sticks and puts down. One action takes and lets go
   (Hunter, 2026-10-15, at the Stage 5 gate). Taking something too heavy to carry takes
   hold of it: it follows where you face and turns as you turn, as far as your strength
