@@ -1,0 +1,29 @@
+Kite height on 120 m of line, by wind:
+     2 m/s:   0.0 m up, shortwave + 0.0 dB over the whip  (won't fly)
+     4 m/s:  60.9 m up, shortwave +23.1 dB over the whip
+     6 m/s:  88.3 m up, shortwave +24.7 dB over the whip
+     9 m/s:  88.3 m up, shortwave +24.7 dB over the whip
+    12 m/s:  88.3 m up, shortwave +24.7 dB over the whip
+    16 m/s:  80.4 m up, shortwave +24.3 dB over the whip
+    22 m/s:  65.6 m up, shortwave +23.4 dB over the whip  (pulling hard)
+Twenty minutes flown on 120 m of line (400 flights each): chance something burns out, mean time to the first, kite left
+  calm day, 4 m/s:
+    unearthed        28.2% burn out, first at 942 s, most often the kite dipole; kite  95%
+    earth stake       0.0% burn out; kite  94%
+    bleed resistor    0.0% burn out; kite  94%
+    both              0.0% burn out; kite  94%
+  breezy, 9 m/s:
+    unearthed        99.8% burn out, first at 190 s, most often the shortwave converter; kite  99%
+    earth stake       0.0% burn out; kite  94%
+    bleed resistor    0.0% burn out; kite  94%
+    both              0.0% burn out; kite  94%
+  dust front's outflow, 13 m/s:
+    unearthed       100.0% burn out, first at  32 s, most often the kite dipole; kite  98%
+    earth stake       0.0% burn out; kite  14%
+    bleed resistor  100.0% burn out, first at  56 s, most often the shortwave converter; kite  96%
+    both              0.0% burn out; kite  14%
+  sandstorm, 22 m/s:
+    unearthed        91.8% burn out, first at  21 s, most often the kite dipole; kite  47%
+    earth stake       0.2% burn out, first at  28 s, most often the shortwave converter; kite   0%
+    bleed resistor   66.2% burn out, first at  27 s, most often the shortwave converter; kite  25%
+    both              0.0% burn out; kite   0%
