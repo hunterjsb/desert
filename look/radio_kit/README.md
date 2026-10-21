@@ -1,9 +1,9 @@
 # Radio equipment: tiers, upgrades, shortwave
 
-*A design proposal and a modelling lab, 2026-10-21. Nothing here is in the
-game yet. The models use the game's own kit (`Paint.Pieces` and the worn
-shader). If they're agreed, they move into `game/look/dress.gd` and the
-catalog more or less as they are. Sheets are in `out/`.*
+*A design proposal and a modelling lab, 2026-10-21. Some field-radio ideas
+have since reached the runtime; see Integration status below. The models use
+the game's own kit (`Paint.Pieces` and the worn shader). Proposed equipment
+remains in this lab until selected for gameplay. Sheets are in `out/`.*
 
 What was asked for (gonkhub): three tiers of radio and several visual styles,
 upgrades, and exterior gear. Each band (AM, FM, shortwave) gets its own
