@@ -1200,3 +1200,18 @@ person the helmet, the collar and the shoulder yokes are drawn only for
 their shadow and for others (`Body.OWN_LAYER`). What you see is your arms
 reaching to what you hold, your knees crouched or sat, and your boots
 looking down. Look-test: `look/player_body`.
+
+
+## Surveyor departure cabin (selected 2026-10-21; implementation lane)
+
+A small working room, not a bridge or an empty hangar: bone-white inset hull
+panels in dark ribs, teal supply-rack backs, a yellow loading lane, warm task
+lights and amber computer glass. The six-by-eight-metre room holds one actual
+recoverable PodShell, open at its head and above while docked; its removed
+panels stay visibly retained beside the berth. Supply shelves and a clear floor
+patch stage actual cargo without painted-on equipment. The low launch station
+faces a broad, sealed observation window. That aperture displays the existing
+ArrivalOrbit renderer in an isolated viewport, with its projection following
+the real observer; no painted planet or ground sky substitutes for Zan.
+The same actual player walks on solid floor, walls, shelves and berth ramp.
+Controller, landing choices and cargo accounting remain separate systems.
