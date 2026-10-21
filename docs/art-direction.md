@@ -1224,3 +1224,15 @@ the standard radio and battery carry poses remain a documented limitation in
 Movement. Neither the physics object nor the shoulders move to disguise it.
 The cutter's low rear grip can sit partly below the first-person viewport;
 external views show that actual grasp. This does not add finger articulation.
+
+## Zan's visible scale (agreed 2026-10-21)
+
+The 150 km travel lap must not make Zan look like a tiny asteroid. Preserve the
+large moon: nearly flat ground at standing height, a gentle distant falloff, and
+clear curvature from high up and orbit. The provisional presentation radius is
+3,700 km within the lore's unsettled 3,500–3,900 km leaning. Ground, skyline,
+landmark silhouettes and atmospheric horizon use the shared SurfaceProjection
+scale; local movement/collision remains a tangent approximation. Do not bend the
+orbital globe or inventory previews through the main ground projection. Existing
+Tu angular size, sun direction, worn materials and accepted sand stay the visual
+baseline. This is a presentation correction, not a new gravity or movement scale.
