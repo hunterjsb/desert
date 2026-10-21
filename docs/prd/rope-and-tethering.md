@@ -873,7 +873,7 @@ Use gesture or resumes automatic continuation.
 
 Persistence contract: RopeBundle.prepare(primary, count) recreates the primary's
 ordered own sockets before Snapshot restores its existing added fittings.
-Save the count as optional rope_bundle_slots; absent means the ordinary end.
+Save the count as optional bundle_slots; absent means the ordinary end.
 Reuse the normal precreated Line-end refs and nested socket ownership. After
 ordinary reconstruction, RopeBundle.refresh_mass(primary) restores aggregate
 loose mass or own fitted mass; selection is a separate original-end ref.

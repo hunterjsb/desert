@@ -13,7 +13,8 @@ func _exit_tree() -> void:
 
 
 func use(by: Player, _at: Vector3) -> bool:
-	return route_at(by)
+	var end := by.hands.reel.held_end()
+	return end.route_at(by) if end is RopeTip else route_at(by)
 
 
 func route_at(by: Player) -> bool:

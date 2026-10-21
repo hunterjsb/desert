@@ -449,6 +449,14 @@ func interact() -> bool:
 	return refuse("no use for it there") if look_device != null else false
 
 
+## Continuing a waist return never takes a device's or ground work's Use.
+func gathering_clear() -> bool:
+	_look()
+	return Controls.playing() and held is RopeTip and phase == Phase.HELD and grasp.body == null \
+		and look_device == null and look_part == null and look_work == null \
+		and look_wreck == null and look_scrap == null and not look_bed
+
+
 func _look_hook() -> RopeHook:
 	if look_part is RopeHook and (look_part as RopeHook).socket != null:
 		return look_part as RopeHook
@@ -1517,6 +1525,20 @@ func _grip(part: RigidBody3D) -> void:
 	part.collision_layer = 0
 	part.collision_mask = 0
 	_unblock(part)
+	refresh_held_shape()
+	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
+	_away = _tuning.hold_distance
+	_held_at = _away
+	pull = 0.0
+	socket = null
+	gap = INF
+
+
+## New nested ends change the carried body's real bounds and preview together.
+func refresh_held_shape() -> void:
+	if not is_instance_valid(held):
+		return
+	var part := held
 	_shapes.clear()
 	_skins.clear()
 	var first := true
@@ -1530,12 +1552,6 @@ func _grip(part: RigidBody3D) -> void:
 		_bounds = box if first else _bounds.merge(box)
 		first = false
 	_middle = _bounds.get_center()
-	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
-	_away = _tuning.hold_distance
-	_held_at = _away
-	pull = 0.0
-	socket = null
-	gap = INF
 	_build_ghost(part)
 
 
@@ -1815,6 +1831,11 @@ func _fit(into: Socket) -> void:
 	var part := held as Part
 	_let_go()
 	device.fit(part, into)
+	if part is RopeTip:
+		var anchored := RopeBundle.live_lines(part, _player.world).filter(func(line: Line) -> bool:
+			return line.rope.a.holder != line.rope.b.holder)
+		if anchored.size() >= 2:
+			Deeds.done(_player.world, &"make_fast")
 	if part.has_meta(&"line"):
 		_play(Sounds.TIE)
 	else:
@@ -2222,7 +2243,7 @@ func _show(delta: float) -> void:
 	var said := line()
 	var waisted := _player.waist.release_readout()
 	if waisted == "" and _player.waist.untying >= 0.0:
-		waisted = "Untying line · %.1f s" % _player.waist.untying
+		waisted = ("Gathering line · %.1f s" if _player.waist.gathering() else "Untying line · %.1f s") % _player.waist.untying
 	if waisted != "":
 		said += ("\n" if said != "" else "") + waisted
 	if said != "" and said != _readout.text:

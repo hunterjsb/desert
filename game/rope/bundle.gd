@@ -21,7 +21,7 @@ static func prepare(primary: Part, count: int) -> void:
 	for k in range(own.size(), count):
 		var socket := Socket.new()
 		socket.kind = &"tie"
-		socket.position = Vector3(0.045 * (k + 1), 0.0, 0.0)
+		socket.position = Vector3(Catalog.PARTS[&"rope_end"].size.x * (k + 1), 0.0, 0.0)
 		socket.set_meta(SLOT, true)
 		primary.add_child(socket)
 
@@ -59,3 +59,13 @@ static func gather(primary: Part, end: Part) -> bool:
 	Device.seat_part(end, slots(primary).back())
 	refresh_mass(primary)
 	return true
+
+
+static func live_lines(primary: Part, world: World) -> Array[Line]:
+	var found: Array[Line] = []
+	for member in members(primary):
+		var line: Variant = member.get_meta(&"line", null)
+		if is_instance_valid(line) and line is Line and line.state == Line.State.LAID \
+				and line.rope != null and world.ropes.ropes.has(line.rope) and not found.has(line):
+			found.append(line)
+	return found

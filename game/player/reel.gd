@@ -70,19 +70,28 @@ func line() -> Rope:
 	return connected[0] if connected.size() == 1 else null
 
 
-## Live waist ends that can be worked individually, in tie order.
+## Individual original ends carried at the waist or in the held knot.
 func waist_lines() -> Array[RigidBody3D]:
 	var found: Array[RigidBody3D] = []
-	for body in _player.waist.tied:
-		if _live_waist(body):
-			found.append(body)
+	var roots: Array[RigidBody3D] = _player.waist.tied.duplicate()
+	if _player.hands.held is RopeTip:
+		roots.append(_player.hands.held)
+	for root in roots:
+		if not is_instance_valid(root) or not root is Part:
+			continue
+		for member in RopeBundle.members(root):
+			if _live_rope(_line_of(member)):
+				found.append(member)
 	return found
 
 
-## Count actual connections, including several ropes carried by a waist stake.
+## Count real connections, including knots and the stake carried at the waist.
 func connected_ropes() -> Array[Rope]:
 	var found: Array[Rope] = []
-	for body in _player.waist.tied:
+	var roots: Array[RigidBody3D] = _player.waist.tied.duplicate()
+	if _player.hands.held is RopeTip:
+		roots.append(_player.hands.held)
+	for body in roots:
 		if not is_instance_valid(body):
 			continue
 		for child in body.get_children():
@@ -100,27 +109,41 @@ func _live_rope(on: Rope) -> bool:
 
 ## Explicit selection is lost when its physical tie is lost.
 func chosen_body() -> RigidBody3D:
-	if not is_instance_valid(_chosen) or not _live_waist(_chosen):
+	if not is_instance_valid(_chosen) or not _live_carried(_chosen):
 		_chosen = null
 	return _chosen
 
 
 ## Null clears the choice; selecting never changes a rope or tie.
 func choose(body: RigidBody3D) -> void:
-	_chosen = body if _live_waist(body) else null
+	_chosen = body if _live_carried(body) else null
 
 
-func _live_waist(body: RigidBody3D) -> bool:
-	if not is_instance_valid(body) or not _player.waist.holds(body):
-		return false
-	var on := _line_of(body)
-	return _live_rope(on)
+func _live_carried(body: RigidBody3D) -> bool:
+	return is_instance_valid(body) and waist_lines().has(body)
 
 
 ## The line whose end is in your hand, or null.
 func in_hand() -> Rope:
 	var hands := _player.hands
-	return _line_of(hands.held) if hands.phase == Hands.Phase.HELD and is_instance_valid(hands.held) else null
+	if hands.phase != Hands.Phase.HELD or not is_instance_valid(hands.held):
+		return null
+	return _line_of(held_end()) if hands.held is RopeTip else _line_of(hands.held)
+
+
+## The original end worked inside the knot in hand, without changing any tie.
+func held_end() -> Part:
+	var hands := _player.hands
+	if not hands.held is RopeTip:
+		return null
+	var members := RopeBundle.members(hands.held)
+	var chosen := chosen_body()
+	if members.has(chosen):
+		return chosen
+	for member in members:
+		if _live_rope(_line_of(member)):
+			return member
+	return null
 
 
 ## The waist end explicitly selected for reeling.
@@ -144,7 +167,7 @@ func waist_readout() -> String:
 
 ## The same name and live numbers in the carry view and the sailing readout.
 func waist_description(body: RigidBody3D) -> String:
-	if not _live_waist(body):
+	if not _live_carried(body):
 		return ""
 	var selected := _line_of(body)
 	var label := "Sail sheet" if Mast.sheet_end(body) else "Waist line"
@@ -327,6 +350,12 @@ func _line_of(body: Variant) -> Rope:
 	var laid: Variant = body.get_meta(&"line") if body.has_meta(&"line") else null
 	if laid != null and (not is_instance_valid(laid) or (laid as Line).state != Line.State.LAID):
 		return null
+	if body.has_meta(&"tip"):
+		var tip: RopeEnd = body.get_meta(&"tip")
+		if not is_instance_valid(tip):
+			return null
+		var lines := _player.world.ropes.lines_on(tip)
+		return lines[0] if lines.size() == 1 else null
 	for child in body.get_children():
 		if child is RopeEnd:
 			var lines := _player.world.ropes.lines_on(child)
