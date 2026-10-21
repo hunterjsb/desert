@@ -114,12 +114,18 @@ func hint() -> String:
 	if not is_instance_valid(ship) or is_instance_valid(computer) or world.player.hands.held != null:
 		return ""
 	if world.arrival_state.preflight.seated:
-		return "%s · launch pod   %s · leave seat" % [Controls.key_for(&"interact"), Controls.key_for(&"hands_grab")]
+		var missing := readiness()
+		var action := "launch pod" if missing.is_empty() else "check launch"
+		return "%s · %s   %s · leave seat%s" % [Controls.key_for(&"interact"), action, Controls.key_for(&"hands_grab"), _blockers_hint(missing)]
 	if _computer_aim():
 		return Controls.key_for(&"interact") + " · scout and plan landing"
 	if _pod_aim():
-		return Controls.key_for(&"interact") + " · enter pod"
+		return Controls.key_for(&"interact") + " · enter pod" + _blockers_hint(readiness())
 	return ""
+
+
+func _blockers_hint(missing: PackedStringArray) -> String:
+	return "" if missing.is_empty() else "\nBefore launch: " + "; ".join(missing)
 
 
 func _computer_aim() -> bool:
@@ -184,7 +190,7 @@ func _view_plan() -> void:
 func readiness() -> PackedStringArray:
 	var missing: PackedStringArray = _cargo.call(&"readiness", world, ship)
 	if not world.arrival_state.preflight.get("plan_confirmed", false):
-		missing.insert(0, "Choose a landing zone at the computer")
+		missing.insert(0, "Confirm a landing zone at the computer")
 	var plan: Dictionary = world.arrival_state.landing_plan
 	if not LandingPlan.validate(world.shape, LandingPlan.anchor_for(plan, world.moon.radius), plan):
 		missing.append("Choose a clear landing zone")

@@ -2,7 +2,7 @@ class_name PreflightCargo
 extends RefCounted
 ## Physical ship stores share ordinary catalog bodies and saved arrival identities.
 
-const GEOMETRY_EPS := 0.00001
+const GEOMETRY_EPS := 0.0001
 const CLOSURES := [&"roof_a", &"roof_b", &"hatch"]
 const REQUIRED := [&"water", &"food", &"shield", &"camp_cell"]
 
@@ -95,8 +95,6 @@ static func loaded(world: World, ship: SurveyorShip) -> Array[StringName]:
 
 static func readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
 	var missing := _structure_readiness(world, ship)
-	if not missing.is_empty():
-		return missing
 	var aboard := loaded(world, ship)
 	var named := SurveyorRecovery.named(world)
 	for uid: StringName in REQUIRED:
@@ -145,9 +143,17 @@ static func _structure_readiness(world: World, ship: SurveyorShip) -> PackedStri
 			continue
 		if not role in CLOSURES:
 			return PackedStringArray(["Repair the pod shell"])
-		if panel.deck != null or panel.host() != null or not panel.joined.is_empty() \
-			or panel.get_parent() != world.content or _carried(world, panel) or not face.is_open():
-			return PackedStringArray(["Free the pod " + str(role).replace("_", " ")])
+		var name := "front roof" if role == &"roof_a" else "rear roof" if role == &"roof_b" else "hatch"
+		if _carried(world, panel):
+			return PackedStringArray(["Set down the pod " + name])
+		if not panel.joined.is_empty():
+			return PackedStringArray(["Separate joined panels from the " + name])
+		if panel.deck != null or panel.host() != null:
+			return PackedStringArray(["Detach the pod " + name + " from its other fitting"])
+		if panel.get_parent() != world.content:
+			return PackedStringArray(["Set down the pod " + name])
+		if not face.is_open():
+			return PackedStringArray(["Clear the pod " + name + " attachment face"])
 	return PackedStringArray()
 
 

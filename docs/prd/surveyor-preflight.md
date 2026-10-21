@@ -235,3 +235,27 @@ and an empty suit inventory; omitted rack equipment is not granted. Actual shell
 and supplies remain readable through the current atmosphere. No shader, script or
 resource errors were emitted. Landing/native verification and ordinary player
 acceptance remain pending; this does not declare a release or migrate old saves.
+
+### Launch refusal readability (selected 2026-10-21)
+
+Ordinary play exposed two hidden blockers: a loose rear roof had another real
+panel joined to it, and the untouched ration settled18 micrometres through its
+contact floor, exceeding the previous10 micrometre bounds tolerance. Keep the
+structural/custody safety checks, name the actual repair (separate joined panels
+from the rear roof), and report missing stores alongside structural blockers.
+Show current launch blockers while aiming at the pod before seating as well as
+when seated; the computer consumes the same live readiness list. A visibly
+preselected course still needs an explicit confirmation, clearly named.
+
+Use0.0001m solely as bounds-rounding/contact tolerance; this is0.1mm, not usable
+cargo capacity. A focused check must accept the observed20 micrometre floor
+settlement and refuse a1mm displacement, while preserving ordinary panel repair
+and required-store refusal. No automatic unjoining, store grant or save edit.
+
+Arrival30 first fails on the prior source for all four observed readability and
+contact-containment regressions, then passes4s after the correction. It also
+refuses1mm outside, keeps panel/state unchanged during readiness inspection,
+and permits ordinary same-part separation/return of the ration. Existing
+Arrival16/20/26 remain green5/6/7s. A copied ordinary-player save restores with
+the same rear-roof/hatch join and all four original stores counted; only the
+actionable rear-roof repair remains. The player's save is never rewritten.
