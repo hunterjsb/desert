@@ -1,5 +1,5 @@
 extends SalvageProbe
-## Exclusive on noisy runners
+## Exclusive
 ## Salvage & ruins probe 7: nothing leaks. On world probe 3's 20 km walk, half
 ## straight and half wandering, taking a find where any lies, one a
 ## kilometre at most, and leaving it behind: every find in memory lies on solid ground, the sand's or its ruin's, there
