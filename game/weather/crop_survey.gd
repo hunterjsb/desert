@@ -122,10 +122,17 @@ func _veil(env: Environment, toward: Vector3, slant: float, observer_height := 0
 	var ground_k := -log(1.0 - clampf(env.fog_density, 0.0, 0.99)) / maxf(env.fog_depth_end, 1.0)
 	var moon := SurfaceProjection.radius(_tuning)
 	var dust := _tuning.dust_height_m
-	# Its height over the curved ground, and the dust between.
-	var height := maxf(toward.y * slant + slant * slant * (1.0 - toward.y * toward.y) / (2.0 * moon), 1.0)
-	var column := exp(-observer_height / dust) * dust * (1.0 - exp(-height / dust))
-	_overlay.set_shader_parameter(&"veil", 1.0 - exp(-ground_k * column * slant / height))
+	# Signed travel matters when the observer is higher than the ship.
+	var start := maxf(observer_height, 0.0)
+	var delta := toward.y * slant + slant * slant * (1.0 - toward.y * toward.y) / (2.0 * moon)
+	var finish := maxf(start + delta, 0.0)
+	delta = finish - start
+	var rho_start := exp(-start / dust)
+	var rho_finish := exp(-finish / dust)
+	# The average avoids cancellation; its relative error here is under1e-9.
+	var column := slant * (rho_start + rho_finish) * 0.5 if absf(delta) < dust * 0.0001 \
+		else slant * dust * (rho_start - rho_finish) / delta
+	_overlay.set_shader_parameter(&"veil", 1.0 - exp(-ground_k * column))
 	var behind := _sky_behind(env, toward)
 	_overlay.set_shader_parameter(&"veil_color", Vector3(behind.r, behind.g, behind.b))
 

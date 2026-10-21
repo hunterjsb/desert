@@ -26,3 +26,22 @@ func run() -> void:
 	tuning.moon_circumference = old
 	craft._veil(env, Vector3.RIGHT, 10000.0, 2000.0)
 	check(float(craft._overlay.get_shader_parameter(&"veil")) < ground, "above the dust, observer altitude reduces craft extinction")
+
+	var controlled := Environment.new()
+	controlled.fog_enabled = true
+	controlled.fog_density = 1.0 - exp(-1.0)
+	controlled.fog_depth_end = 1000.0
+	var previous_dust := tuning.dust_height_m
+	tuning.dust_height_m = 1500.0
+	craft._veil(controlled, Vector3.DOWN, 4000.0, 10000.0)
+	var down := float(craft._overlay.get_shader_parameter(&"veil"))
+	# Integral from6km to10km of exp(-h/1500), with extinction1/1000m.
+	var expected := 1.0 - exp(-1.5 * (exp(-4.0) - exp(-20.0 / 3.0)))
+	craft._veil(controlled, Vector3.UP, 4000.0, 6000.0)
+	var up := float(craft._overlay.get_shader_parameter(&"veil"))
+	check(absf(down - expected) < 0.00001 and absf(up - expected) < 0.00001,
+		"downward and reversed vertical Drone paths match actual exponential atmosphere")
+	craft._veil(controlled, Vector3.RIGHT, 4000.0, 10000.0)
+	check(down > 4.9 * float(craft._overlay.get_shader_parameter(&"veil")),
+		"descending through denser air has more dust than staying at the high observer")
+	tuning.dust_height_m = previous_dust

@@ -1202,3 +1202,16 @@ shield captures inspected again, without shader/script/resource errors. Its pair
 full-storm repeat measured low observer 5.323→5.455 ms (+0.132 ms), shield interior
 4.559→4.734 ms (+0.175 ms); high-view differences remained noisy. Cross-run clock
 variation prevents subtracting this directly from the earlier cost measurement.
+
+The high-observer crop veil must integrate signed vertical travel. A downward view
+from 10 km to the Drone at 6 km crosses denser air; treating it as horizontal at
+10 km underestimates the column. The correction retains the analytic exponential column for signed travel using
+the shared parabolic endpoint altitude, clamps physical endpoint altitude at ground,
+and differences bounded endpoint densities. A nearzero interval uses their average
+to avoid cancellation; long ascending paths retain the previous analytic accuracy. Vertical reversed paths must agree
+with their analytic exponential column. No celestial placement or orbit changes.
+
+Weather27 reproduces the downward-column bug before the change (5 s RED), then
+passes with the signed analytic column (6 s GREEN). Reversed vertical 6–10 km
+paths match the analytic exponential integral and each other; the descending path
+has over4.9times the opacity of the horizontal path at10 km.
