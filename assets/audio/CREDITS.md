@@ -17,7 +17,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | storm.ogg | the storm's roar | Sand Game `object_sandstorm.wav`, its harsh top eased | Sand Game | -20 LUFS full, -32 in a bubble | -9 |
 | wind.ogg | the desert wind | Sand Game `ambient_desertwind.wav` | Sand Game | -30 LUFS at a gale | -11 |
 | clang.ogg | metal a storm has just laid bare, banging on the wind, heard through the dust | Sand Game `object_metal_clank-001.wav`, mono, its ring kept, under two short echoes | Sand Game | -19 at 20 m | -7 |
-| step_a–f.ogg | footsteps in sand | Sand Game's sand footsteps | Sand Game | -36 walking, -32 sprinting | -8 to -17 |
+| step_a, b, d–f.ogg | footsteps in sand | Sand Game's sand footsteps | Sand Game | -36 walking, -32 sprinting | -9 to -17 |
 | slide.ogg | sliding down a slip face | Sand Game `player_slide.wav` | Sand Game | -30 at full | -16 |
 | impact.ogg | a hard landing | Sand Game `player_impact1.wav` | Sand Game | -28 hardest | -8 |
 | seat_a.ogg, seat_b.ogg | fitting a part or mod | Sand Game `object_metal_clank-005`/`-002`, ring cut off, under Kenney Interface `click_001`/`click_003` | Sand Game + CC0 | -30 | -11, -16 |
