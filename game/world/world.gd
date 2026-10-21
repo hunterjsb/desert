@@ -20,6 +20,9 @@ var run_seed := 0
 ## The origin chosen at New game, set before the world is made. None for a
 ## world that isn't a player's run, the menu's or a probe's, which starts
 ## where the tuning says with the standard kit.
+var arrival_enabled := false
+var arrival_state: Dictionary = {}
+var arrival: SurveyorArrival
 var kit: Kit
 var shape: TerrainShape
 ## Where the run began, in world metres: flat ground, never a slip face.

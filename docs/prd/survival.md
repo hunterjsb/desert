@@ -1007,3 +1007,34 @@ random stream; creating, handing out and recovering objects belongs to later
 integration. Match structural roles to the real shell. Test saved phase and
 recovery changes without rerolling. The first orbital view is a visual prototype,
 not an implemented arrival, flight model or starter replacement.
+
+### Integrated Surveyor opening (selected 2026-10-20; in progress)
+
+New normal Surveyor runs will use one saved arrival state: orbit, ejection,
+descent, entry, landing and recovery. Developer scenarios, direct World fixtures,
+other origins and old saves retain their existing starts. The production run
+manager selects the new opening explicitly before child nodes initialize, so
+its suit and deck kit are not also granted. Resume never starts a fresh opening.
+
+Render orbit through a separate view while normal terrain preloads the resolved
+landing location. Preserve the real world time, heading and geographic landing
+point. Hold player movement/vitals during the controlled flight; menus and saving
+remain available. Land only after collision is ready. Restore the normal camera,
+input and suit operation when the player can stand clear of the opened pod.
+This is a controlled arrival sequence, with no free-flight or targeting menu.
+
+Materialize each surviving role once as ordinary catalog gear and real shell
+pieces. Apply resolved condition/charge; fit the board's own cell. A landing spill
+may place cargo in clear nearby sand where it does not fit the pod; prevent
+intersections and buried essentials. Open the actual roof/hatch and preserve
+normal salvage/mounting actions. Taking a physical arrival object records its
+recovery at that action and earns a camp deed; merely resolving or loading a
+manifest earns nothing. Persist appearance roles, object references, recovered
+flags, arrival phase and elapsed phase time. Mid-flight and partially dismantled
+saves must resume without rerolling, replacing or duplicating gear.
+
+The integrated opening is developed for 0.3.0-alpha “Sanddune”; the existing
+0.2.4 “Sailboat” release candidate stays separate. Exact arrival timings and
+provisional equipment balance live in tuning. Acceptance includes new Surveyor,
+other-origin/scenario compatibility, mid-flight/landed/recovered save round trips,
+normal recovery and assembly, real GPU captures and combined CI before landing.

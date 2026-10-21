@@ -1,4 +1,7 @@
-## Unreleased — Sanddune development
+## 0.3.0-alpha “Sanddune” — unreleased development
+
+Surveyor orbital arrival is being integrated: ejection, descent, a recoverable
+chassis pod and seeded surviving physical equipment. It is not yet a published release.
 
 - Mark one chassis as Home with a physical beacon. Its claimed camp retains bounded
   terrain, collision and history while you scout; ordinary power and weather keep running.
