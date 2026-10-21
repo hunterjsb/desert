@@ -43,9 +43,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
 
+      # Imported assets can stay unchanged for weeks; scheduling learns every run.
+      - name: Probe durations
+        uses: actions/cache@v4
+        with:
+          path: .godot/probe_times
+          key: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-
+
       - name: The runner can fail
         if: matrix.group == 'probes/foundation probes/world probes/dev'
-        run: scripts/probe.sh selftest
+        run: |
+          scripts/probe-runner-test.sh
+          scripts/probe.sh selftest
 
       - name: Probes
         run: |
@@ -90,9 +100,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
 
+      # Imported assets can stay unchanged for weeks; scheduling learns every run.
+      - name: Probe durations
+        uses: actions/cache@v4
+        with:
+          path: .godot/probe_times
+          key: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-
+
       - name: The runner can fail
         if: matrix.group == 'the rest'
-        run: $BASH_FOR_PROBES scripts/probe.sh selftest
+        run: |
+          $BASH_FOR_PROBES scripts/probe-runner-test.sh
+          $BASH_FOR_PROBES scripts/probe.sh selftest
 
       - name: Probes
         run: |

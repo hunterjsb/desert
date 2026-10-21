@@ -5,6 +5,9 @@ This release is unpublished. Integrated source through the crop-survey radio
 flight plan passed all 21 Linux, native platform and build jobs. Human playtest
 acceptance remains.
 
+- Speed up probe iteration with accelerated ruin traversal, native scheduling for
+  expensive terrain checks, and fresh CI duration history. Package desktop builds
+  faster with light ZIP compression.
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
   collect seeded surviving physical equipment. Other origins, developer scenarios
   and legacy saves retain their existing starts. During a fully eclipsed landing,

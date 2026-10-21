@@ -15,6 +15,7 @@
 #
 # GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds;
 # a probe whose header says "## Time limit: N s" gets N instead.
+# PROBE_TIMES overrides the scheduling history file (default .godot/probe_times).
 # PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
 # suite into parallel jobs and still catch every folder nobody listed.
 # PROBE_JOBS probes run at once (default one per physical core, at least 4, or
@@ -23,7 +24,9 @@
 # the rest, by itself. PROBE_NOISY is for a runner slower and noisier than
 # the machines the probes' timings were set on (CI's macOS and Windows): the
 # probes that run alone are left out, and any other that fails gets one more
-# run by itself, whose verdict counts. Both verdicts are printed.
+# run by itself, whose verdict counts. Both verdicts are printed. A probe marked
+# "## Exclusive on noisy runners" runs alone there on its first attempt too;
+# unlike a real-frame probe, it is never skipped.
 #
 # Bash 3.2 and up, so it runs as it is on macOS and in Git Bash on Windows:
 # no mapfile, wait -n or flock, and no timeout where there's none.
@@ -170,6 +173,8 @@ while IFS= read -r probe; do
 	if grep -q '^## Runs alone' "$probe"; then
 		[[ -z ${PROBE_NOISY:-} ]] || continue
 		alone+=("$probe")
+	elif [[ -n ${PROBE_NOISY:-} ]] && grep -q '^## Exclusive on noisy runners' "$probe"; then
+		alone+=("$probe")
 	else
 		together+=("$probe")
 	fi
@@ -204,7 +209,7 @@ collect() {
 
 # Slowest first, so a long probe never starts last and runs on by itself; one
 # never timed counts as slowest.
-times=.godot/probe_times
+times=${PROBE_TIMES:-.godot/probe_times}
 if ((${#together[@]} > 0)); then
 	sorted=()
 	while IFS= read -r probe; do
@@ -263,6 +268,7 @@ if [[ -n ${PROBE_NOISY:-} ]]; then
 		probe=$(cut -d' ' -f2- "${failed%.failed}.took")
 		printf 'again, by itself: '
 		run_probe "$probe"
+		echo "$took $probe" >"${failed%.failed}.took"
 		if [[ $verdict == pass ]]; then rm -f "$failed"; else show_output; fi
 	done
 fi

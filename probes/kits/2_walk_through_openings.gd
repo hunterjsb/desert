@@ -21,6 +21,8 @@ func run() -> void:
 	# Dug out, as the wind leaves them after a hard storm.
 	Tuning.current().site_return_m = -1.0
 	await load_moving(1234, true)
+	# Walk every physics step; only the wall-clock wait is shorter.
+	set_rate(60, 6)
 	var from := Vector2(world.player_world_x(), world.player_world_z())
 	var stats := {"stuck": 0, "snags": 0, "under": 0.0, "legs": 0}
 	var walked := []

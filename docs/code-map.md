@@ -33,6 +33,8 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | Saves and deeds | `game/saves/snapshot.gd` captures run state; `deeds.gd: TABLE` defines deeds; gameplay systems record the action when it happens | `probes/saves` |
 | Desktop launcher | `launcher/main.py` installs published releases and launches local Git worktrees; `.github/workflows/launcher-release.yml` packages the launcher | Standalone app; see `docs/prd/launcher.md` |
 
+Probe/build performance and scheduling requirements live in `docs/prd/probes-and-builds.md`.
+
 Probe hosts and system helpers live in `probes/lib/`. Use the nearest existing helper and a
 targeted probe for the failure being fixed. `scripts/probe.sh` imports assets before running;
 `scripts/verify.sh` handles whole-suite CI and landing. `AGENTS.md` describes the shared worktree,
