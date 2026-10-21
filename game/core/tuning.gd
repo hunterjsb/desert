@@ -1136,9 +1136,12 @@ static var _current: Tuning
 ## The shortwave band (2 to 30 MHz, through a shortwave converter): a notch of
 ## tuning moves it this far, kHz; a fine step is the AM dial's.
 @export var sw_notch_khz: float = 25.0
+## An antenna reel holds this much wire, m: walked farther from its radio, its
+## clip pops off the set.
+@export var antenna_reel_m: float = 30.0
 ## A shortwave set's long wire: on its converter's terminals alone it hears
-## this share of what's sent from above the ceiling; a line hooked to its ring
-## and strung out this long, m, hears all of it, strung low only this share,
+## this share of what's sent from above the ceiling; an antenna reel's wire
+## strung out this long, m, hears all of it, strung low only this share,
 ## and fully once it's this high over the ground somewhere, m. Under the
 ## ceiling, on the AM dial, a wire adds nothing: the world's own noise is the
 ## floor there, not the set's.

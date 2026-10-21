@@ -262,9 +262,9 @@ var _motif_slot := NAN
 var _wanted := UNHEARD
 ## Tu's roar on shortwave, heard under whatever else plays.
 var roar: AudioStreamPlayer3D
-## Its long wire: a line hooked to its ring and strung out, as a real
-## shortwave set hears on a wire: (how long it's laid, m; its highest point
-## over the ground, m), or zero with none.
+## Its long wire: an antenna reel's wire clipped to its aerial terminal and
+## strung out, as a real shortwave set hears on a wire: (how far it's strung,
+## m; the higher of its two ends over the ground, m), or zero with none.
 var wire := Vector2.ZERO
 var _wire_at := -INF
 ## Natural radio at the bottom of the AM dial: its sferics' clicks, a
@@ -1090,23 +1090,20 @@ func _listen(delta: float) -> void:
 		_hissing = true
 
 
-## Its long wire as it lies now, read every WIRE_EVERY s: the longest line
-## on a tie of its own (a hook in its ring), how long it's laid and how high
-## its strand rises over the ground.
+## Its long wire as it lies now, read every WIRE_EVERY s: the longest strung
+## from a reel clipped to it, and the higher of that wire's ends over the ground.
 func _read_wire() -> void:
-	if world == null or world.ropes == null or absf(world.time - _wire_at) < WIRE_EVERY:
+	if world == null or not is_inside_tree() or absf(world.time - _wire_at) < WIRE_EVERY:
 		return
 	_wire_at = world.time
 	wire = Vector2.ZERO
-	for socket in sockets():
-		if socket.kind != &"tie" or socket.part == null or not socket.part.has_meta(&"tip"):
+	for node in get_tree().get_nodes_in_group(AntennaReel.GROUP):
+		var reel := node as AntennaReel
+		if reel == null or reel.radio != self:
 			continue
-		for rope in world.ropes.lines_on(socket.part.get_meta(&"tip")):
-			var high := 0.0
-			if rope.strand != null:
-				for p in rope.strand.points:
-					high = maxf(high, p.y - world.height_under(p))
-			wire = Vector2(maxf(wire.x, rope.length), maxf(wire.y, high))
+		var tip := reel.end()
+		var high := maxf(global_position.y - world.height_under(global_position), tip.y - world.height_under(tip))
+		wire = Vector2(maxf(wire.x, reel.strung()), maxf(wire.y, high))
 
 
 ## How much of a station on the AM dial its ferrite rod picks up, coming from

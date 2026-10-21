@@ -380,9 +380,10 @@ const DEVICES := {
 			# FM converter and the shortwave converter.
 			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
 			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
-			# A ring on its top for a hook: a line strung from it is its long wire.
-			[&"ring", Vector3(0.1, 0.11, -0.03), Vector3.UP],
 		]},
+	# A reel of aerial wire, clipped to a radio and walked out (AntennaReel).
+	&"antenna_reel": {"label": "Antenna reel", "size": Vector3(0.14, 0.12, 0.08), "mass": 0.8, "antenna_reel": true,
+		"carryable": true, "sticks": true, "sockets": []},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,
 		"sticks": true,
@@ -703,7 +704,8 @@ static func device(id: StringName) -> Device:
 		else (Console.new() if spec.get("console", false) \
 		else (PowerBox.new() if spec.get("power_box", false) \
 		else (Cutter.new() if spec.get("cutter", false) \
-		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new()))))))))))))))
+		else (AntennaReel.new() if spec.get("antenna_reel", false) \
+		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new())))))))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

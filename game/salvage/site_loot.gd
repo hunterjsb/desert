@@ -60,7 +60,7 @@ const ERAS := {
 			[&"big_battery", 1], [&"coil", 1], [&"strong_plug", 1], [&"ration", 2], [&"power_rack", 1]],
 		SHELF: [[&"battery", 2], [&"ration", 2], [&"hook", 1], [&"plug", 1], [&"anemometer", 1],
 			[&"particle_sensor", 1], [&"compass", 1], [&"lamp", 1], [&"sand_scoop", 1], [&"sealant", 1],
-			[&"sw_converter", 1]],
+			[&"sw_converter", 1], [&"antenna_reel", 1]],
 		CACHE: [[&"big_battery", 2], [&"battery", 2], [&"strong_plug", 1], [&"hose_end", 1], [&"med_kit", 1],
 			[&"sealant", 1]],
 		BED: [[&"vat_fungus", 1]],

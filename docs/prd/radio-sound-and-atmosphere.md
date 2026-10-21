@@ -695,21 +695,28 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **Not yet:** a kite to lift the wire; skip and dead zones for ground stations on shortwave; the satellites that belong higher still (VHF, the
   dish's bands); Tu's short bursts, its "popcorn"; gonkhub's own sound for the roar.
 
-**A long wire, as built (2026-10-20, slice E):**
-- **The radio has a ring on its top** for a hook, as a chassis has; a line from it, strung out on the rope
-  system to a stake, a deck's ring or anything with a tie, is its long wire (`Radio.wire`: the longest line
-  on a tie of its own, how long it's laid and how high its strand rises over the ground, read every
-  0.5 s).
-- **On shortwave, the wire is gain** (`Radio.antenna_gain`): on a converter's terminals alone the set hears a
-  quarter of what's sent from above the ceiling (`sw_bare`), so a satellite comes through chewed up and Tu's
-  roar is faint; strung out 10 m (`sw_wire_m`) it hears all of it, three quarters strung low along the sand
-  (`sw_wire_low`) and fully once it's 3 m up somewhere (`sw_wire_high_m`), on a mast or a deck. The line's
-  12 m coil reaches it. On the AM dial a wire adds nothing: the world's own noise is the floor there, as in
-  real radio below a few MHz. Seed 1234: the crop survey overhead, dirt 0.65 on the terminals, 0.03 on
-  10.7 m of wire strung to a stake (radio probe 46).
-- **The deed** Long Wire: hear a satellite clear on a long wire strung from the radio.
-- **Not yet:** a kite to lift the wire, after the Gibson Girl's box kite; the wire's own look where it
-  clips to the converter's terminals.
+**A long wire, as built (2026-10-20, slice E; reworked 2026-10-21 as the antenna reel):**
+- *First built as a rope line hooked to a ring on the radio's top and strung to a stake. gonkhub, playtesting,
+  2026-10-21: "using a rope for a line to the stake doesn't make much sense, and using a stake in this way is
+  not intuitive at all." Chosen instead: a reel now, a kite later to lift it.*
+- **The antenna reel** (`antenna_reel`, `AntennaReel`), after the reel of aerial wire in the WWII survival
+  radios' kit: a drum of copper wire between gunmetal cheeks, 0.8 kg, carried or stuck anywhere. Use it on a
+  radio, in your hands or looked at, and its wire clips to the set's aerial terminal; carry it off and the
+  wire pays out with you, drawn from the set to the reel; set it down or stick it on anything and it stays
+  strung. Use it again and it reels in. Past its 30 m of wire (`antenna_reel_m`) the clip pops off the set.
+  The look-at line gives how far it's strung. In the creative menu beside the converters; found on
+  skimmer-era shelves. The radio's ring is gone.
+- **On shortwave, the wire is gain** (`Radio.antenna_gain`, `Radio.wire`: the longest wire strung from a reel
+  clipped to it, and the higher of that wire's ends over the ground): on a converter's terminals alone the
+  set hears a quarter of what's sent from above the ceiling (`sw_bare`), so a satellite comes through chewed
+  up and Tu's roar is faint; strung out 10 m (`sw_wire_m`) it hears all of it, three quarters with both ends
+  low on the sand (`sw_wire_low`) and fully once an end is 3 m up (`sw_wire_high_m`), the reel stuck on a mast
+  or a deck. On the AM dial a wire adds nothing: the world's own noise is the floor there, as in real radio
+  below a few MHz. Seed 1234: the crop survey overhead, dirt 0.65 on the terminals, 0.03 on 10.4 m of wire
+  (radio probe 46). Probe 49: the reel clips, pays out, reels in and pops off past its end.
+- **The deed** Long Wire: hear a satellite clear on an antenna reel's wire.
+- **Not yet:** the kite, after the Gibson Girl's box kite, to lift the reel's end on the wind; a save keeps
+  the reel and the radio but not the clip between them.
 
 **The ferrite rod's null, as built (2026-10-20, slice F):**
 - **The radio is its own direction finder** (`Radio.rod`): its ferrite rod lies along the set's width, as a
@@ -731,8 +738,8 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 
 **Natural radio, as built (2026-10-20, slice G):**
 - **The bottom of the AM dial**, under 20 kHz and fading out by 30 (`Natural`): nothing is sent there; a long
-  wire hears the moon's own. The ferrite rod hears none of it, as a real one doesn't: only a line on the
-  radio's ring does, all of it at 10 m (`sw_wire_m`).
+  wire hears the moon's own. The ferrite rod hears none of it, as a real one doesn't: only an antenna reel's
+  wire does, all of it strung 10 m (`sw_wire_m`).
 - **Sferics:** each discharge of the sand charging up in a storm is a click (the receiver's tick, pitched
   each time, placeholder), heard far off: the storm field read along eight ways out to 30 km
   (`vlf_reach_m`), each storm counting less the farther it is, and the clicks quickening from 0.4 a second
@@ -744,7 +751,7 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **Your camp hums over it:** gear drawing power in the radio's pool, 10 W of it (`vlf_hum_w`), masks
   natural radio under a hum (the tug's hum, placeholder), so you walk out away from your gear to listen, as
   real VLF listeners do. A Console drawing 4 W: 0.65 of it through (probe 48).
-- **The deed** Whistler: hear one on a long wire, away from your camp's hum.
+- **The deed** Whistler: hear one on an antenna reel's wire, away from your camp's hum.
 - **Not yet:** the dawn chorus near the poles; gonkhub's own sounds for sferics and whistlers.
 
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)

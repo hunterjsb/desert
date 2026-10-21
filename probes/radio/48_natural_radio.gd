@@ -1,10 +1,10 @@
-extends LineProbe
+extends WeatherProbe
 ## Radio probe 48: natural radio. At the bottom of the AM dial a radio on its
-## ferrite rod alone hears nothing; on a long wire the moon's own sferics come
+## ferrite rod alone hears nothing; on an antenna reel's wire the moon's own sferics come
 ## through, ticking faster as a storm nears; and gear drawing power in its pool
 ## hums over them.
 
-## How far off the stake is driven, m; where the storm stands, far and near, m.
+## How far off the reel stands, m; where the storm stands, far and near, m.
 const OUT := 10.5
 const FAR := 20000.0
 const NEAR := 2000.0
@@ -19,8 +19,9 @@ class OneStorm extends WeatherField:
 
 
 func run() -> void:
-	await load_lines()
-	var radio := Scenarios.standing(world, &"radio", [&"battery", &"hook"], [0.0, 2.0]) as Radio
+	await load_weather()
+	world.player.set_physics_process(false)
+	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	radio.on = true
 	radio.frequency = 10.0
@@ -28,7 +29,10 @@ func run() -> void:
 	world.weather.field = field
 	await physics_frames(70)
 	check(radio.natural == 0.0, "on its rod alone it hears none of it")
-	lay(radio, driven_stake(radio.global_position + Vector3(OUT, 0.0, 0.0)))
+	var reel := Scenarios.standing(world, &"antenna_reel", [], [0.0, 2.0]) as AntennaReel
+	reel.freeze = true
+	reel.global_position = radio.global_position + Vector3(OUT, 0.0, 0.0)
+	reel.clip(radio)
 	await physics_frames(70)
 	var clear := radio.natural
 	var x := world.world_x(radio.global_position.x)

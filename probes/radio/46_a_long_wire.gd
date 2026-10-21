@@ -1,16 +1,16 @@
-extends LineProbe
+extends ShieldProbe
 ## Radio probe 46: a long wire. On shortwave, on its converter's terminals
-## alone, a satellite overhead comes through chewed up; a line hooked to the
-## radio's ring and strung out to a stake, it comes through cleaner, as a real
+## alone, a satellite overhead comes through chewed up; an antenna reel clipped
+## to the radio and its wire strung out, it comes through cleaner, as a real
 ## shortwave set hears better on a long wire.
 
-## How far off the stake is driven, m.
+## How far off the reel stands, m.
 const OUT := 10.5
 
 
 func run() -> void:
-	await load_lines()
-	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter", &"hook"], [0.0, 2.0]) as Radio
+	await load_storm(0.0)
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	radio.on = true
 	radio.switch_band()
@@ -25,11 +25,19 @@ func run() -> void:
 	radio.frequency = overhead[0][0]
 	await physics_frames(40)
 	var bare: Dictionary = radio.receive_from(sky.orbits[id], radio.frequency, id, x, z, world.time)
-	var stake := driven_stake(radio.global_position + Vector3(OUT, 0.0, 0.0))
-	lay(radio, stake)
+	_reel_out(radio, OUT)
 	await physics_frames(40)
 	var strung: Dictionary = radio.receive_from(sky.orbits[id], radio.frequency, id, x, z, world.time)
 	print("the %s: dirt %.2f on its terminals; on %.1f m of wire, %.1f m up at most, %.2f" % [id, bare.dirt,
 		radio.wire.x, radio.wire.y, strung.dirt])
-	check(radio.wire.x >= Tuning.current().sw_wire_m, "the line on its ring is its long wire")
+	check(radio.wire.x >= Tuning.current().sw_wire_m, "the reel's wire is its long wire")
 	check(strung.dirt < bare.dirt - 0.2, "on a long wire it comes through cleaner")
+
+
+## An antenna reel stood `out` m off a radio, its wire clipped to the set.
+func _reel_out(radio: Radio, out: float) -> AntennaReel:
+	var reel := Scenarios.standing(world, &"antenna_reel", [], [0.0, 2.0]) as AntennaReel
+	reel.freeze = true
+	reel.global_position = radio.global_position + Vector3(out, 0.0, 0.0)
+	reel.clip(radio)
+	return reel
