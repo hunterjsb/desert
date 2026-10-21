@@ -1066,12 +1066,6 @@ static var _current: Tuning
 @export var lagrange_radii: float = 8.0
 @export var halo_radii: float = 0.9
 @export var halo_minutes: float = 10.0
-## The relay sends the port's music down on the FM band from L1 by a dish aimed
-## at Zan: this many dB over Port Morgan's own station's margin at a kilometre,
-## so from so far it still clears the noise, until the ground near you hides it.
-## The ground toward a satellite is read this far out, m.
-@export var relay_fm_db: float = 55.0
-@export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
 ## Frontier Ag's deliveryship (Deliveryship) is drawn this many times the size
 ## DeliveryshipLooks builds it: 2.3 makes it about 940 m tip to tip, under 2
@@ -1080,8 +1074,8 @@ static var _current: Tuning
 ## The Eye's drone comes now and then out of silences of between these many
 ## minutes, its first one included.
 @export var eye_quiet_minutes: Vector2 = Vector2(2.0, 8.0)
-## How far ahead the weather station reads the storm field, minutes, and how
-## often it reads it again, s of world time.
+## How far ahead Port Morgan Tower reads the storm field at the tower, minutes,
+## and how often it reads it again, s of world time.
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
 ## The weather station reads its report aloud this often, s of world time,
@@ -1089,10 +1083,6 @@ static var _current: Tuning
 ## real life min)"; world time runs at real time); heard this far, m.
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
-## Frontier Ag's deliveryship reads its flight plan this often, s of world
-## time, and at once as you tune in (gonkhub, 2026-10-21: "announce its
-## update every 5 min").
-@export var survey_report_every: float = 300.0
 ## Speech-only station character; weather and local computer speech stay unchanged.
 @export var radio_voice_profiles: Dictionary = {}
 ## Its advisories: a sandstorm riding a prevailing wind this fast or faster,
@@ -1150,8 +1140,20 @@ static var _current: Tuning
 @export var fm_threshold_db: float = 0.0
 @export var fm_quiet_db: float = 14.0
 @export var fm_capture_db: float = 2.0
-## Port Morgan's FM mast, m over the port's ground.
+## Port Morgan's FM mast, m over the port's ground; the living city's, over
+## its deck; a near god's, over its home.
 @export var fm_mast_m: float = 60.0
+@export var fm_city_mast_m: float = 20.0
+@export var fm_god_mast_m: float = 30.0
+## Wrecks calling SOS on the AM dial (Distress): this share of wrecks still
+## call; a radio hears the nearest few within this far, m, on carriers spread
+## either side of 500 kHz, the old maritime distress frequency, this far, kHz;
+## each sends this strong (a god sends 1); and repeats its call this often, s.
+@export var distress_share: float = 0.5
+@export var distress_reach_m: float = 5000.0
+@export var distress_spread_khz: float = 12.0
+@export var distress_power: float = 0.9
+@export var distress_every: float = 12.0
 ## The shortwave band (2 to 30 MHz, through a shortwave converter): a notch of
 ## tuning moves it this far, kHz; a fine step is the AM dial's.
 @export var sw_notch_khz: float = 25.0

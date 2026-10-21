@@ -1,24 +1,25 @@
 extends WeatherProbe
-## Radio probe 1: forecasts are honest. A radio tuned to the weather station,
-## standing off on its own away from you, says when the next storm reaches it,
-## when that storm clears, its strongest steady wind and the way storms come
-## from. Then the clock runs and the storm field does just that where the
-## radio is: the storm reaches a place that way first, and one the other way last.
+## Radio probe 1: forecasts are honest. A radio tuned to the weather, Port
+## Morgan Tower on the relay, says when the next storm reaches the tower, when
+## that storm clears, its strongest steady wind and the way storms come from.
+## Then the clock runs and the storm field does just that at the tower: the
+## storm reaches a place that way first, and one the other way last.
 
 const WARP := 60.0
 ## One tick of the warped clock, plus the forecast's own resolution.
 const TOLERANCE := 1.5
-## Where the radio stands, m east of you, and how far either way of it the
-## storm's way is checked, m.
-const AWAY := 300.0
+## How far either way of the tower the storm's way is checked, m.
 const ASIDE := 500.0
 
 
 func run() -> void:
 	await load_weather()
 	world.player.set_physics_process(false)
-	var x := world.player_world_x() + AWAY
-	var z := world.player_world_z()
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter"], [0.0, 2.0]) as Radio
+	radio.freeze = true
+	var tower := radio.tower_at()
+	var x := tower.x
+	var z := tower.y
 	var horizon := Tuning.current().radio_forecast_minutes * 60.0
 	# A storm reaching the radio in 3 to 10 minutes that clears inside the station's horizon.
 	var start := find_time(func(t: float) -> bool:
@@ -28,11 +29,7 @@ func run() -> void:
 		return arrives > 180.0 and arrives < 600.0 \
 			and field.next_change(x, z, t + arrives + 1.0, horizon - arrives - 60.0, 5.0) < INF)
 	world.time = start
-	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
-	radio.freeze = true
-	radio.global_position = Vector3(world.engine_x(x), world.height_at(x, z) + 0.2, world.engine_z(z))
-	while radio.channel != Radio.WEATHER:
-		radio.sweep()
+	radio.channel = Radio.WEATHER
 	await physics_frames(2)
 	var said := radio.reading.duplicate()
 	check(not said.is_empty() and not said.stormy and said.change < INF and said.back < INF,

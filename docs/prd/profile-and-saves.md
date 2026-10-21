@@ -277,6 +277,7 @@ the frame is a part stuck on the deck.
 | Signals | **Sky Wave** | Hear a satellite clear on an antenna kite flown from a reel | Long Wire | the same tick as Long Wire, with an antenna kite flying from the reel and adding gain (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Grounded** | Have an earth stake take a kite's charge to ground | Long Wire | `AntennaKite`'s tick: an earth stake set down by its reel or set dumping charge past its spark gap (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Storm on Tu** | Hear Tu roar on shortwave | First Light | `Radio`'s tick on the shortwave band: Tu's roar coming in as loud as an anomaly's crackle is a tell, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Mayday** | Hear a wreck's distress call come through whole | First Light | `Radio`'s tick on the AM dial: a wreck calling SOS near 500 kHz coming through whole, the volume up and you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
 | Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
 | Signals | **The Living City** | See the living city's lights | Triangulated | `CityLights`: its lights shown for your eye at night within its chatter's range, in view, over the dunes and past the storms (built 2026-10-19) |
@@ -304,7 +305,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 68 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire, Null and Whistler since 2026-10-20; Flight Plan, Foxhole Radio, Close Listening, Sky Wave and Grounded 2026-10-21), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 69 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire, Null and Whistler since 2026-10-20; Flight Plan, Foxhole Radio, Close Listening, Sky Wave, Grounded and Mayday 2026-10-21), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -822,7 +823,8 @@ the default for saves written before this feature.
 
 Flight Plan (`flight_plan`, signals family, radio icon) records the first time
 you hear Port Morgan Control Tower read the deliveryship's schedule on FM (Radio
-probe 47). With the radio progression's five, the roster is 64 deeds in eleven
+probe 47); since the bands were rebuilt (2026-10-21), hearing Port Morgan Tower's
+report, the weather at the tower and then the schedule. With the radio progression's five, the roster is 64 deeds in eleven
 families.
 
 ### Radio upgrades' deeds (2026-10-21; implemented development)
@@ -831,7 +833,9 @@ Close Listening (`close_listening`, after Foxhole Radio), Sky Wave and Grounded
 (`sky_wave`, `grounded`, both after Long Wire), signals family, radio icon, bring
 the roster to 68 deeds in eleven families (`Deeds.TABLE`; 16 of them signals).
 Close Listening and Sky Wave are recorded by `Radio`'s tick, Grounded by the
-antenna kite's as an earth stake takes its charge (Radio probe 56).
+antenna kite's as an earth stake takes its charge (Radio probe 56). Mayday
+(`mayday`, after First Light), with the bands rebuilt, is hearing a wreck's
+distress call whole on the AM dial: 69 deeds, 17 of them signals.
 
 
 **Combined development resume check (2026-10-20).** The preparatory Sanddune

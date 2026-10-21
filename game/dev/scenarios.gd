@@ -38,8 +38,8 @@ const LIST: Array[Dictionary] = [
 		"day": [0.9, 0.97], "moon": [30.0, 180.0]},
 	# To hear the music go as a storm comes over: at night, when the port's AM comes
 	# round the moon to the far side, the radio on it.
-	{"key": "far_storm", "label": "the far side at night: a radio on the port's music, a storm 1.2 km off",
-		"kind": "front", "distance": 1200.0, "day": [0.8, 0.97], "moon": [30.0, 180.0], "lays": &"music"},
+	{"key": "far_storm", "label": "the far side at night: a radio on the Almanac's sky wave, a storm 1.2 km off",
+		"kind": "front", "distance": 1200.0, "day": [0.8, 0.97], "moon": [30.0, 180.0], "lays": &"far_god"},
 	{"key": "survive", "label": "sealed water at dawn, a deck with a crude condenser and a shield", "kind": "clear",
 		"day": [0.25, 0.3], "lays": &"survive"},
 	{"key": "ruin", "label": "a house ruin's door, finds round it, a bare piece of your own", "kind": "ruin",
@@ -291,7 +291,7 @@ const CONSOLE_RIG := [[&"piece", Vector2i(1, 0)],
 	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, -0.18), 180.0, [&"console", CONSOLE_PARTS], &"console"],
 	[&"stick", Vector2i(0, 0), &"top", Vector2(-0.3, 0.32), 0.0, &"big_battery"],
 	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, 0.32), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, [&"radio", [&"battery"]], &"radio"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, [&"radio", [&"battery", &"fm_converter", &"sw_converter"]], &"radio"],
 	[&"stick", Vector2i(1, 0), &"top", Vector2(-0.2, -0.1), 0.0, &"shield", &"shield"],
 	[&"stick", Vector2i(1, 0), &"top", Vector2(0.27, 0.25), 0.0, &"battery"]]
 const CONSOLE_STAKE := [-0.5, 4.6]
@@ -332,7 +332,7 @@ const SLEEP_RIG := [[&"piece", Vector2i(1, 0)],
 	[&"frame", Vector2i(1, 0), 0],
 	[&"wall", Vector2i(1, 0), &"front"],
 	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, 0.2), 0.0, &"solar_panel"],
-	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, -0.2), 0.0, [&"radio", [&"battery"]], &"radio"]]
+	[&"stick", Vector2i(1, 0), &"top", Vector2(0.0, -0.2), 0.0, [&"radio", [&"battery", &"fm_converter", &"sw_converter"]], &"radio"]]
 
 ## The live vent is looked at from this far across the rift, m, this long
 ## before a burst, s, over at most this many days from the clock's start:
@@ -415,7 +415,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"receiver": dropped = [standing(world, &"survey_receiver", [&"battery"], RADIO_AT)]
 		&"radio": dropped = radio(world)
 		&"weather_station": dropped = weather_station(world)
-		&"music": dropped = music_station(world)
+		&"far_god": dropped = far_god(world)
 		&"afk": dropped = afk(world)
 		&"catch_line": dropped = catch_line(world)
 		&"chassis": dropped = chassis(world)
@@ -1052,7 +1052,7 @@ static func board(world: World) -> Array[Node3D]:
 ## A radio with a full battery on the sand in front of you, switched off, and
 ## a charged shield on its plate beside it, switched off. Returns what it dropped.
 static func radio(world: World) -> Array[Node3D]:
-	var dropped: Array[Node3D] = [standing(world, &"radio", [&"battery"], RADIO_AT)]
+	var dropped: Array[Node3D] = [standing(world, &"radio", [&"battery", &"fm_converter", &"sw_converter"], RADIO_AT)]
 	dropped.append_array(plate(world, [&"shield", &"battery"], RADIO_SHIELD))
 	return dropped
 
@@ -1078,14 +1078,22 @@ static func kite(world: World) -> Array[Node3D]:
 ## switched off.
 static func weather_station(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
-	_on_station(world, dropped[0] as Radio)
+	var tuned := dropped[0] as Radio
+	var reel := standing(world, &"antenna_reel", [], [RADIO_AT[0] - WIRE_M, RADIO_AT[1]]) as AntennaReel
+	reel.clip(tuned)
+	dropped.append(reel)
+	_on_station(world, tuned)
 	return dropped
 
 
-## A radio switched on and tuned to the weather station: the Walker's carrier today.
-static func _on_station(world: World, tuned: Radio) -> void:
-	tuned.on = true
-	tuned.frequency = Radio.gods_of(world).carrier(&"walker", world.time)
+## The weather scenario's antenna reel stands this far off its radio, m.
+const WIRE_M := 10.0
+
+
+## A radio switched on and tuned to the weather: far from Port Morgan, the
+## relay repeating its tower on shortwave.
+static func _on_station(_world: World, tuned: Radio) -> void:
+	tuned.channel = Radio.WEATHER
 
 
 ## Beside the Walker: a clear day where the run's start puts it as the run
@@ -1112,7 +1120,7 @@ static func _before_walker(world: World, scenario: Dictionary) -> Dictionary:
 
 
 ## A Console on a deck of two resting on the sand at your side, its screen,
-## anemometer and particle sensor fitted, a radio on the Walker's carrier, the
+## anemometer and particle sensor fitted, a radio on the Walker's FM station, the
 ## base shield and a compass stuck on it; the Console holding evidence of all
 ## three tells, a cable in its port and the cable's other plug in your hands.
 const WALKER_CONSOLE := [&"screen", &"anemometer", &"particle_sensor"]
@@ -1120,7 +1128,7 @@ const WALKER_DECK := [1.0, 1.2]
 const WALKER_RIG := [[&"piece", Vector2i(-1, 0)],
 	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, -0.18), 180.0, [&"console", WALKER_CONSOLE], &"console"],
 	[&"stick", Vector2i(0, 0), &"top", Vector2(0.0, 0.32), 0.0, &"big_battery"],
-	[&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, [&"radio", [&"battery"]], &"radio"],
+	[&"stick", Vector2i(0, 0), &"top", Vector2(0.3, 0.32), 0.0, [&"radio", [&"battery", &"fm_converter"]], &"radio"],
 	[&"stick", Vector2i(-1, 0), &"top", Vector2(-0.2, -0.1), 0.0, &"shield", &"shield"],
 	[&"stick", Vector2i(-1, 0), &"top", Vector2(0.27, 0.25), 0.0, &"battery"],
 	[&"stick", Vector2i(-1, 0), &"top", Vector2(0.25, -0.3), 0.0, &"compass"]]
@@ -1131,7 +1139,10 @@ static func walker_camp(world: World) -> Array[Node3D]:
 	world.player.suit.restock()
 	var rig := rig_at(world, WALKER_RIG, WALKER_DECK, false)
 	var console: Console = rig.named.console
-	_on_station(world, rig.named.radio)
+	var tuned: Radio = rig.named.radio
+	tuned.on = true
+	tuned.switch_band()
+	tuned.fm_mhz = tuned.fm_of(&"walker")
 	for tell: StringName in Deeds.TELLS:
 		console.evidence[tell] = {"t": world.time, "value": 1.0}
 	var at := console.global_position
@@ -1147,8 +1158,6 @@ static func walker_camp(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## The radio of "radio" switched on and tuned to the music, the relay's
-## carrier, beside its charged shield, switched off.
 ## A flare in your hands, and the deliveryship forced over you in DELIVERYSHIP_LEAD
 ## s: light it as it comes over and its cannon fires. Returns the flare.
 static func deliveryship_pass(world: World) -> Array[Node3D]:
@@ -1169,11 +1178,13 @@ static func deliveryship_over(world: World, lead: float) -> void:
 	orbit.pass_over(Sphere.point(moon.latitude, moon.longitude), world.time + lead)
 
 
-static func music_station(world: World) -> Array[Node3D]:
+## The radio of "radio" switched on and tuned to the Almanac, a far god whose
+## AM comes round the moon past the skip at night.
+static func far_god(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
 	var tuned := dropped[0] as Radio
 	tuned.on = true
-	tuned.frequency = Dial.MUSIC_KHZ
+	tuned.frequency = Radio.gods_of(world).carrier(&"almanac", world.time)
 	return dropped
 
 

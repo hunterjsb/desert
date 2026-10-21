@@ -1,8 +1,8 @@
 extends ShieldProbe
-## Radio probe 4: the storm gets into the music. A radio playing music under
-## a storm over it, at night when the port's comes in clean from afar: in
-## clear skies it plays clean, with no static; as the
-## storm thickens the music comes through dirtier and dirtier, chewed up by
+## Radio probe 4: the storm gets into what it hears. A radio on a far god's
+## carrier under a storm over it, the god's ground wave carrying clean from
+## afar: in clear skies it comes in clean, with no static; as the
+## storm thickens it comes through dirtier and dirtier, chewed up by
 ## its interference chain, still with no static under it while it plays;
 ## once the storm takes it altogether, static is all there is, louder the
 ## stronger the storm. A running bubble round it changes nothing: the static
@@ -12,12 +12,13 @@ const STEPS := [0.0, 0.1, 0.2, 0.3, 0.6, 0.8, 1.0]
 
 
 func run() -> void:
+	Tuning.current().ground_wave_m = 1e9
 	await load_storm(0.0)
-	while world.weather.day.is_day(world.time, world.moon.longitude):
-		world.time += 30.0
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
-	while radio.channel != Radio.MUSIC:
-		radio.sweep()
+	radio.freeze = true
+	radio.on = true
+	broadside(radio, &"quartermaster")
+	radio.frequency = Radio.gods_of(world).carrier(&"quartermaster", world.time)
 	var hiss := PackedFloat32Array()
 	var dirt := PackedFloat32Array()
 	var playing := []
@@ -28,7 +29,7 @@ func run() -> void:
 		dirt.append(radio.dirt)
 		playing.append(Radio.audible(radio.reception) > 0.05)
 	print("storms of %s: dirt %s; playing %s; static %s dB" % [STEPS, dirt, playing, hiss])
-	check(radio.track() != null, "the radio plays music")
+	check(radio.reception.get("id") == &"quartermaster", "the radio hears the Quartermaster")
 	check(dirt[0] < 0.1 and hiss[0] <= -60.0, "clean under clear skies, with no static (%.0f dB)" % hiss[0])
 	var lost := playing.find(false)
 	check(lost > 2, "it still plays through a thin storm")

@@ -2,7 +2,7 @@ extends HandsProbe
 ## Survival probe 12: a device works carried. A radio playing in your hands
 ## goes in with what you carry, whole, and plays on from you on its own
 ## battery. With the inventory open, use on it switches it off, and again on,
-## its dial where it stood and its line of words showing, by frequency alone; use on your canister drinks from it
+## its dial where it stood, playing on; use on your canister drinks from it
 ## where it is, and switches nothing you look at in the world, while use off
 ## the things you carry switches the shield you look at as ever. Clicked, the
 ## radio comes back to your hands, still on.
@@ -10,10 +10,11 @@ extends HandsProbe
 
 func run() -> void:
 	get_window().size = Vector2i(1152, 648)
+	# FM carrying everywhere, so the port's music comes in.
+	Tuning.current().fm_margin_db = 1e6
 	await load_hands()
 	var player := world.player
 	var suit := player.suit
-	var broadcast := player.get_node(^"Broadcast") as Broadcast
 	# A shield on a plate: a chassis with a battery stuck beside it.
 	var plate := device(&"chassis", spot(0.0, -1.5), 0.08) as Chassis
 	fit_part(plate, &"battery")
@@ -24,10 +25,10 @@ func run() -> void:
 	world.content.add_child(radio)
 	radio.global_position = player.global_position + Vector3.UP
 	fit_part(radio, &"battery")
+	fit_part(radio, &"fm_converter")
 	hands.hold(radio)
 	await physics_frames(30)
-	while radio.channel != Radio.MUSIC:
-		radio.sweep()
+	radio.channel = Radio.MUSIC
 	await physics_frames(10)
 	check(radio.playing() and radio.music.playing, "tuned to music in your hands, it plays")
 
@@ -43,7 +44,7 @@ func run() -> void:
 		and radio.global_position.distance_to(player.global_position) < 1.5,
 		"and plays on from you, on its own battery")
 
-	var khz := radio.frequency
+	var mhz := radio.fm_mhz
 	point_at(suit.tile_rect(stack_of(radio)).get_center())
 	press(&"interact")
 	await simulate(1.0)
@@ -51,11 +52,9 @@ func run() -> void:
 	press(&"interact")
 	await simulate(1.0)
 	var swept := radio.channel
-	print("used where it is again: %s at %d kHz; it would say \"%s\"" % [Radio.CHANNELS[swept], roundi(radio.frequency),
-		broadcast.said])
-	check(radio.on and radio.frequency == khz and swept != Radio.OFF
-		and broadcast.said.begins_with("%d kHz · " % roundi(radio.frequency)),
-		"and on again, its dial where it stood, and its words show")
+	print("used where it is again: %s at %.1f MHz" % [Radio.CHANNELS[swept], radio.fm_mhz])
+	check(radio.on and radio.fm_mhz == mhz and swept == Radio.MUSIC and radio.music.playing,
+		"and on again, its dial where it stood, playing")
 	var canister := suit.supply(&"water")
 	var water := canister.amount
 	player.vitals.thirst = 50.0

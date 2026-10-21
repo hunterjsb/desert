@@ -8,14 +8,15 @@ extends HandsProbe
 
 
 func run() -> void:
-	# Clear skies everywhere, so the relay's music comes in steady.
+	# Clear skies everywhere and FM carrying everywhere, so the port's music comes in steady.
 	Tuning.current().storm_threshold = 2.0
+	Tuning.current().fm_margin_db = 1e6
 	await load_hands()
 	var radio := device(&"radio", spot(0.0, -1.2), 0.0, true) as Radio
+	Scenarios.fill(world, radio, [&"fm_converter"])
 	await physics_frames(30)
 	radio.freeze = true
-	while radio.channel != Radio.MUSIC:
-		radio.sweep()
+	radio.channel = Radio.MUSIC
 	await physics_frames(5)
 	look(eye(), radio.global_position)
 	await physics_frames(2)

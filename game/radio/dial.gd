@@ -1,14 +1,17 @@
 class_name Dial
 extends RefCounted
-## The radio's dial, 0 to 2000 kHz, and how a signal on it reaches you: which
-## carriers it holds, how near one you're tuned, how strong a god's comes in
-## from where it stands, and which way it lies. Nothing on the dial says what
-## a carrier is: you learn the dial by listening.
+## The radio's AM dial, 0 to 2000 kHz, and how a signal on it reaches you:
+## which carriers it holds, how near one you're tuned, how strong a god's comes
+## in from where it stands, and which way it lies. Nothing on the dial says
+## what a carrier is: you learn the dial by listening. The AM dial is the
+## barest band (gonkhub, 2026-10-21: "AM: Distress Signals, half the gods, and
+## long distance beacons"): the far gods, the beacon, the wrecks' distress
+## calls (Distress) and natural radio at its bottom; the port's music, the
+## weather, the city and the near gods are on FM (Fm).
 
 const LOWEST := 0.0
 const HIGHEST := 2000.0
-## The two carriers that aren't gods: the music and the beacon.
-const MUSIC_KHZ := 1020.0
+## The beacon's carrier: a ruin's, still running.
 const BEACON_KHZ := 1930.0
 ## A ground wave carries its full reach at or under this, kHz.
 const GROUND_KHZ := 500.0
@@ -17,12 +20,14 @@ const GROUND_KHZ := 500.0
 const EVERYWHERE_M := 4000.0
 
 
-## Every carrier on the dial at world time t, low to high: [kHz, id]. The
-## living city's is one, heard only near it.
+## Every fixed carrier on the dial at world time t, low to high: [kHz, id],
+## the beacon's and the far gods'. The wrecks' calls depend on where you are
+## (Radio.distress_calls).
 static func carriers(gods: Gods, t: float) -> Array[Array]:
-	var out: Array[Array] = [[MUSIC_KHZ, &"music"], [BEACON_KHZ, &"beacon"], [gods.city.carrier(), &"city"]]
+	var out: Array[Array] = [[BEACON_KHZ, &"beacon"]]
 	for id in Gods.ids():
-		out.append([gods.carrier(id, t), id])
+		if not Fm.is_god(id):
+			out.append([gods.carrier(id, t), id])
 	out.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
 	return out
 

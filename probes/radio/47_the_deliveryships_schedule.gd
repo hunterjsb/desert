@@ -1,9 +1,9 @@
 extends WeatherProbe
 ## Radio probe 47: the deliveryship's schedule. Frontier Ag's deliveryship
 ## passes over Port Morgan every lap, its route swinging round the port lap
-## by lap. Port Morgan Control Tower, on FM beside the port, reads the
-## deliveryship's speed, altitude and how long until it's over Port Morgan, and
-## that's when it is; it reads again only once survey_report_every has gone
+## by lap. Port Morgan Tower, on FM beside the port, reads after its weather
+## the deliveryship's speed, altitude and how long until it's over Port Morgan,
+## and that's when it is; it reads again only once radio_report_every has gone
 ## by. Hearing it is Flight Plan.
 
 ## How far from the port's middle the radio stands, m.
@@ -44,21 +44,22 @@ func run() -> void:
 	radio.freeze = true
 	radio.switch_band()
 	radio.on = true
-	radio.fm_mhz = Fm.stations(Radio.gods_of(world), world.run_seed, Tuning.current()).filter(
-		func(each: Dictionary) -> bool: return each.id == Fm.TOWER)[0].mhz
+	radio.fm_mhz = radio.fm_of(Fm.TOWER)
 	await physics_frames(5)
-	print("tuned to the tower: \"%s\"" % radio.said)
-	check(radio.channel == Radio.SURVEY and radio.said.contains("Port Morgan in"), "the tower reads its schedule")
+	var read := " ".join(radio.spoken)
+	print("tuned to the tower: \"%s\", reading \"%s\"" % [radio.said, read])
+	check(radio.channel == Radio.WEATHER and read.contains("Deliveryship") and read.contains("Port Morgan in"),
+		"the tower reads its schedule after its weather")
 	check(get_node(^"/root/Profile").did(&"flight_plan"), "hearing it is Flight Plan")
 	var eta := orbit.until_through(world.time)
 	var off := rad_to_deg(orbit.at(world.time + eta).normalized().angle_to(port))
 	print("over Port Morgan in %.0f s: %.2f° off it then" % [eta, off])
 	check(off < 0.1, "over Port Morgan when it says")
 	var count := radio.spoken_count
-	world.time += world.tuning.survey_report_every * 0.5
+	world.time += world.tuning.radio_report_every * 0.5
 	await physics_frames(3)
 	var early := radio.spoken_count
-	world.time += world.tuning.survey_report_every * 0.5 + 1.0
+	world.time += world.tuning.radio_report_every * 0.5 + 1.0
 	await physics_frames(3)
 	print("read %d times by halfway, %d once its time came" % [early - count, radio.spoken_count - count])
 	check(early == count and radio.spoken_count == count + 1, "it reads again only once its time comes")

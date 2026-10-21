@@ -57,12 +57,14 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 ## to Zan's side it is) and drift (a slow wander of its own). Targets: pitch (scale), volume (dB), cutoff (Hz), drive (0 to 1),
 ## tremolo (Hz, 0 for none) and pulse (s between plays).
 const ROSTER := [
-	# Hung at L1, beside Tu in the near side's sky, looping slowly round it: it sends the
-	# port's music down on the FM band, not this dial (Fm), and glints as it turns.
+	# Hung at L1, beside Tu in the near side's sky, looping slowly round it: it repeats
+	# Port Morgan Tower on shortwave (gonkhub, 2026-10-21: "You need Shortwave upgrade to
+	# hear a satellite rebroadcast of it"), so a good rig hears the weather anywhere on the
+	# near side; it glints as it turns.
 	# (Eleven in all: this, the Pendulum at L2, the five at 29 MHz, the deliveryship flying
 	# low, the ghost, the cinder and the lantern round Tu. The sounder, the lullaby and the
 	# tollgate were scrapped, gonkhub 2026-10-21.)
-	{"id": &"relay", "era": "colonial", "band": Vector2(1020.0, 1020.0),
+	{"id": &"relay", "era": "colonial", "band": Vector2(7250.0, 7250.0),
 		"orbit": {"lagrange": 1},
 		"look": {"color": Color(1.0, 0.97, 0.9), "size": 1.0, "shape": Shape.POINT, "light": 0.35},
 		"sound": {}, "lfo": [], "duty": [], "behave": {"tumble": [0.05, 0.3]}},

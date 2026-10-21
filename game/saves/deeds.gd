@@ -113,6 +113,8 @@ const TABLE := {
 		"family": &"signals", "after": [&"god_heard"], "icon": &"radio"},
 	&"tu_roar": {"name": "Storm on Tu", "asks": "Hear Tu roar on shortwave", "family": &"signals",
 		"after": [&"god_heard"], "icon": &"radio"},
+	&"mayday": {"name": "Mayday", "asks": "Hear a wreck's distress call come through whole",
+		"family": &"signals", "after": [&"god_heard"], "icon": &"radio"},
 	&"close_listening": {"name": "Close Listening", "asks": "Hear a god inside its window on a crystal set, through a headset",
 		"family": &"signals", "after": [&"foxhole"], "icon": &"radio"},
 	&"sky_wave": {"name": "Sky Wave", "asks": "Hear a satellite clear on an antenna kite flown from a reel",

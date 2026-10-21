@@ -129,7 +129,7 @@ func run() -> void:
 			&"clear":
 				check(world.player.hands.held is Flare and world.player.hands.held in dropped,
 					"clear: the deliveryship flare starts in your hands")
-				check(dropped.any(func(n: Node) -> bool: return n is Radio and n.tuned_to() == &"walker"),
+				check(dropped.any(func(n: Node) -> bool: return n is Radio and n.channel == Radio.WEATHER),
 					"clear: the weather radio shares the delivery setup")
 			&"yours": await _ruin_finds(dropped)
 			&"survive": await _survival_starts(dropped)

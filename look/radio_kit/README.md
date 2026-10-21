@@ -45,6 +45,12 @@ Control Tower, an FM station on the port's mast, every 5 minutes. (Built on
 master with the radio progression; the tower is the home for the port's other
 worldbuilding broadcasts.)
 
+*As built since 2026-10-21 (the bands rebuilt, in the radio PRD): AM has the
+far gods, the beacon and wrecks calling SOS; FM has Port Morgan Tower (the
+weather at the tower and the deliveryship's schedule, every 2 minutes), the
+port's music, the living city's chatter and music, and the near gods;
+shortwave has every satellite and the relay repeating the tower.*
+
 ![bands](out/bands.png)
 
 ## Tiers

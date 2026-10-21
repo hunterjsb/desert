@@ -10,7 +10,7 @@ func run() -> void:
 		radio.on = true
 	var words := PackedStringArray(["Wind speed forty.", "Temperature minus three."])
 	var gods := Radio.gods_of(world)
-	first.frequency = gods.carrier(&"ledger", world.time)
+	first.frequency = gods.carrier(&"quartermaster", world.time)
 	second.frequency = gods.carrier(&"almanac", world.time)
 	first._queue(words, words, 0.0)
 	var ledger_bus := first.reader.bus

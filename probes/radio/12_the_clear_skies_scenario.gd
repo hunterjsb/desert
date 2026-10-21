@@ -1,9 +1,10 @@
 extends WeatherProbe
-## Radio probe 12: the clear-skies scenario. It stands you on a clear day with
-## the next storm 9 to 14 minutes off and a radio on, tuned to the weather
-## station: there's nothing to report, so its clear-skies song plays, and the
-## forecast still names the storm on its way. Once the storm comes within
-## radio_calm_minutes, the next reading breaks the song off for the report.
+## Radio probe 12: the clear-skies scenario. It stands you on a clear day
+## with a radio on, tuned to the weather: Port Morgan Tower, far off, on the
+## relay's shortwave carrier and a wire. With no storm due at the tower within
+## radio_calm_minutes there's nothing to report, so its clear-skies song
+## plays; once the storm comes within them, the next reading breaks the song
+## off for the report.
 
 
 func run() -> void:
@@ -19,17 +20,19 @@ func run() -> void:
 	if dropped.is_empty():
 		return
 	var radio: Radio = dropped[0]
-	await physics_frames(10)
+	await physics_frames(60)
 	var t := world.time
 	var due: float = radio.reading.change - t
-	print("on air %s, the storm due in %.0f s: \"%s\"" % [radio.on_air(), due, radio.said])
-	check(radio.tuned_to() == &"walker", "tuned to the weather station")
-	check(due >= 540.0 - 10.0 and due <= 840.0 + 10.0, "the next storm %.1f min off" % (due / 60.0))
-	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES, "with nothing to report, its clear-skies song plays")
-	check(radio.said.contains("a storm from the"), "and the forecast still names the storm on its way")
+	var calm := Tuning.current().radio_calm_minutes * 60.0
+	print("on air %s, the tower's storm due in %.0f s: \"%s\"" % [radio.on_air(), due, radio.said])
+	check(radio.channel == Radio.WEATHER and radio.said.contains("Port Morgan Tower"),
+		"tuned to the weather: Port Morgan Tower, on the relay")
+	check((radio.on_air() == Sounds.RADIO_CLEAR_SKIES) == Transmissions.calm(radio.reading, t),
+		"with nothing to report, its clear-skies song plays, and only then")
+	if radio.reading.change == INF:
+		return
 
 	# Just inside the calm horizon, the next reading has something to report.
-	var calm := Tuning.current().radio_calm_minutes * 60.0
 	world.time = radio.reading.change - calm + 10.0
 	radio.read_at = -INF
 	await physics_frames(5)

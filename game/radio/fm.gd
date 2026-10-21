@@ -11,37 +11,57 @@ extends RefCounted
 ## Two on one frequency don't mix: the stronger takes it (the capture effect).
 ## Pure in the world's shape and the seed.
 
-## Port Morgan Control Tower's station: the deliveryship's schedule (Radio), and
-## later the port's other worldbuilding broadcasts.
+## The band's stations (gonkhub, 2026-10-21: "Combine Weather Station and
+## deliveryship Control Tower frequencies into one Port Morgan Tower station.
+## Also on this band: living city misc chatter, Living city music radio, and
+## half the gods"): Port Morgan Tower, the weather from the tower and the
+## deliveryship's schedule (Radio; the relay repeats it on shortwave); the
+## port's music; the living city's chatter and its music, from wherever it's
+## moored; and the gods that stand near, each heard only near its home.
 const TOWER := &"tower"
+const PORT_MUSIC := &"port_fm"
+const CITY_TALK := &"city"
+const CITY_MUSIC := &"city_music"
+const GODS: Array[StringName] = [&"ledger", &"stoker", &"walker"]
+## Its stations stand this far apart on the dial at least, MHz.
+const APART := 0.8
 const LOWEST := 87.5
 const HIGHEST := 108.0
 ## Light's speed, for a wavelength, m/s over MHz.
 const C_MHZ := 299.792458
 
 
-## Every station on the band, low to high: Port Morgan's own, the port's music
-## on its mast ({id, mhz, at (a point on the sphere), mast_m}); Port Morgan
-## Control Tower on the same mast (TOWER); and the relay at
-## L1 sending the same music down from the sky ({id, mhz, sky (its id in the
-## constellation)}). Each on an odd tenth of a MHz the seed picks (as North
-## America spaces them), apart from each other, and locked there: a station
-## never wanders.
-static func stations(gods: Gods, run_seed: int, tuning: Tuning) -> Array[Dictionary]:
+## Every station on the band at world time t, low to high: {id, mhz, at (its
+## point on the sphere), mast_m}. The port's music and the tower on Port
+## Morgan's mast; the city's two from a short mast wherever it is; each near
+## god from a mast at its home. Each on an odd tenth of a MHz the seed picks
+## (as North America spaces them), APART from the rest, and locked there: a
+## station never wanders on the dial, though the city and the Walker move.
+static func stations(gods: Gods, run_seed: int, tuning: Tuning, t := 0.0) -> Array[Dictionary]:
+	var port: Vector3 = gods.home(&"ledger", 0.0)
+	var city: Vector3 = gods.city.at(t)
+	var out: Array[Dictionary] = [{"id": PORT_MUSIC, "at": port, "mast_m": tuning.fm_mast_m},
+		{"id": TOWER, "at": port, "mast_m": tuning.fm_mast_m},
+		{"id": CITY_TALK, "at": city, "mast_m": tuning.fm_city_mast_m},
+		{"id": CITY_MUSIC, "at": city, "mast_m": tuning.fm_city_mast_m}]
+	for id in GODS:
+		out.append({"id": id, "at": gods.home(id, t), "mast_m": tuning.fm_god_mast_m})
 	var rng := RandomNumberGenerator.new()
-	rng.seed = hash([run_seed, "port_fm"])
-	var port := snappedf(88.1 + 0.2 * rng.randi_range(0, 99), 0.1)
-	# The relay's somewhere else on the band, at least a MHz off the port's.
-	var relay := snappedf(fposmod(port - 88.1 + 1.0 + 0.2 * rng.randi_range(0, 89), 20.0) + 88.1, 0.1)
-	# The tower too, a MHz or more off both.
-	var tower := port
-	while absf(tower - port) < 1.0 or absf(tower - relay) < 1.0:
-		tower = snappedf(fposmod(port - 88.1 + 2.0 + 0.2 * rng.randi_range(0, 89), 20.0) + 88.1, 0.1)
-	var out: Array[Dictionary] = [{"id": &"port_fm", "mhz": port, "at": gods.home(&"ledger", 0.0),
-		"mast_m": tuning.fm_mast_m}, {"id": TOWER, "mhz": tower, "at": gods.home(&"ledger", 0.0),
-		"mast_m": tuning.fm_mast_m}, {"id": &"relay", "mhz": relay, "sky": &"relay"}]
+	rng.seed = hash([run_seed, "fm_dial"])
+	var taken: Array[float] = []
+	for each in out:
+		var mhz := 0.0
+		while mhz == 0.0 or taken.any(func(other: float) -> bool: return absf(other - mhz) < APART):
+			mhz = snappedf(88.1 + 0.2 * rng.randi_range(0, 99), 0.1)
+		taken.append(mhz)
+		each["mhz"] = mhz
 	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.mhz < b.mhz)
 	return out
+
+
+## Whether a station is one of the gods.
+static func is_god(id: StringName) -> bool:
+	return id in GODS
 
 
 ## How far a station's signal clears the noise where it arrives, dB: its
@@ -79,30 +99,6 @@ static func edge_loss(from: Vector2, from_top: float, to: Vector2, to_top: float
 		var above: float = ground.call(at.x, at.y) + bulge - lerpf(from_top, to_top, f)
 		worst = maxf(worst, above * sqrt(2.0 * d / (wave * d1 * d2)))
 	return knife_edge_db(worst)
-
-
-## How far a satellite's signal clears the noise where it arrives, dB: the
-## margin a ground station has at a kilometre, `boost` over it for the dish it
-## aims at Zan, less the spreading over `metres`, less what the ground near you
-## costs it toward the satellite, `elevation` rad up along `bearing` (degrees
-## from -z): read along that way out to fm_sky_reach_m, the ground falling away
-## with the moon's curve as radio sees it, each point against the straight line
-## up to it, a knife edge for the worst. From the radio's antenna `top` m high,
-## at world x, z.
-static func sky_margin(x: float, z: float, top: float, elevation: float, bearing: float, metres: float,
-		boost: float, mhz: float, radius: float, ground: Callable, tuning: Tuning) -> float:
-	var spread := 20.0 * log(maxf(metres, 1.0) / 1000.0) / log(10.0)
-	var wave := C_MHZ / mhz
-	var bend := radius * tuning.fm_bend
-	var dir := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
-	var worst := -INF
-	var points := maxi(tuning.fm_profile_points, 2)
-	for i in range(1, points + 1):
-		var d := tuning.fm_sky_reach_m * float(i) / points
-		var at := Vector2(x, z) + dir * d
-		var above: float = ground.call(at.x, at.y) - d * d / (2.0 * bend) - (top + d * tan(elevation))
-		worst = maxf(worst, above * sqrt(2.0 / (wave * d)))
-	return tuning.fm_margin_db + boost - maxf(spread, 0.0) - knife_edge_db(worst)
 
 
 ## A knife edge's loss, dB, by how far it stands into the way (v, the

@@ -148,6 +148,8 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   ([Devices & mods](devices-and-mods.md)).
 - **Carriers:** the music at 1020 kHz and the beacon at 1930, both behaving as above, and the seven
   gods. The weather station is **the Walker** (Stations, below): its band is where the forecast is.
+  *Superseded 2026-10-21 (The bands rebuilt, below): the AM dial keeps the beacon, the four far gods and the wrecks' distress
+  calls; the music, the weather (Port Morgan Tower), the Ledger, the Stoker and the Walker are on FM.*
 - **Each god's carrier** lies inside its band and wanders each moon day, from the seed, so it has to be
   found; since 2026-10-20 never more than 5 kHz from where it was the day before (`carrier_drift_khz`;
   gonkhub: "ensure a 'home frequency' cannot shift more than 5khz from where it was last"), turning back off
@@ -162,6 +164,10 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 | The Ledger | 880–940 | Port Morgan | About midnight ("berth inventory") | Bearings and ranges to Halloran, the Rim depot and Starcom. It sends strongest |
 | The Stoker | 1180–1240 | Halloran | The hot hours, 13:00–16:00 local | A countdown to the next eclipse, and the peak temperature in the next 5 minutes |
 | The Eye | 1720–1790 | The observatory, at the anti-Tu point | Night where the radio is | Your latitude and longitude, and the local time |
+
+  *Superseded 2026-10-21 (The bands rebuilt, below): the bands in this table stand for the Quartermaster, Mother Cistern, the
+  Almanac and the Eye, still on the AM dial; the Ledger, the Stoker and the Walker are FM stations at
+  their homes, and the forecast is Port Morgan Tower's, at the tower.*
 
   **Clear skies** (Hunter, 2026-10-18: a "'hold' transmission on the weather channel that plays during
   clear weather with nothing to report," "a feel good you have nothing to worry about sound that only
@@ -229,11 +235,14 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   fragments for dynamic readings. No system TTS or HUD transcript is used. `RadioSpeech` preserves
   exact numbers, composes short fragments and spells an unknown name rather than dropping it.
   - **Regular weather:** at tuning and every 120 s (`radio_report_every`), local time, actual wind,
-    temperature and the real outlook where the set stands, with units in words. Clear Skies can
+    temperature and the real outlook where the set stands, with units in words. *Superseded 2026-10-21 (The bands rebuilt, below):
+    Port Morgan Tower reads all of it at the tower, not where the set stands.* Clear Skies can
     continue under a report. The Walker's survey/contact log is included when its weaker channel
     is readable; distant log data stays unavailable.
   - **Advisories:** a fast or large sandstorm interrupts the current reading once per event.
     `advisory_fast_ms` is 14.5 m/s, `advisory_long_minutes` 45, and `advisory_look_minutes` 60.
+    *Superseded 2026-10-21 (The bands rebuilt, below): read at the tower, each with a bearing and distance from it, and an
+    anomaly advisory once the Walker's been taught.*
     These follow the measured upper-tenth prevailing wind and storm duration from the earlier
     twelve-seed survey. Forecasts still never invent an anomaly warning.
   - **Gods and beacons:** their transmitted words and actual compass bearing use the same bundled
@@ -264,7 +273,8 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
 - **Code:** `game/radio/gods.gd`, `dial.gd`, `interference.gd` and `transmissions.gd`, with `radio.gd`.
   A save keeps whether it's on, the dial and the knob. One from before the dial kept a channel, which
   moves the dial to that carrier once the radio is back in its world, the weather station's to the
-  Walker's carrier that day, with the save's version unchanged.
+  Walker's carrier that day, with the save's version unchanged. *Superseded 2026-10-21 (The bands rebuilt, below): the weather goes to
+  the relay on shortwave, or Port Morgan Tower on FM; the music to the port's FM station.*
 - **Probes:** radio 6 (each god has its bearing), 7 (storms garble the gods), 8 (the dial finds each
   god), 9 (useful only in its window), 10 (the volume knob), 11 (clear skies, and the Stoker's song), 12 (the clear-skies scenario), 13 (the relay carries the music), 14 (spoken reports, and the meltdown), 15 (storms tell you which way), 16 (the Eye's drone), 17 (the relay at night), 18 (static sinks under a signal), 19 (the music goes in a far-side
   storm), 20 (tuning shares reel in with the reel) and 23 (the voice comes from the radio). Probes 1, 2, 4 and 5 tune by the dial, and so do Survival 12, Profile & saves 13 and
@@ -383,7 +393,8 @@ they swap to their next saved frequency."*
     about every 3 s: its signal swells and fades to a fifth, and in the sky it dims and flashes.
   - **The relay:** eccentricity 0.3, its plane swinging 40° a lap and its perigee 70°, and a slow tumble,
     the music swelling and fading by up to 30% every 20 s and the point glinting. A run still begins with it
-    over where it began; it still carries the music at 1020 kHz.
+    over where it began; it still carries the music at 1020 kHz. *(Since 2026-10-20 it hangs at L1; since
+    2026-10-21 it repeats Port Morgan Tower on shortwave, 7250 kHz: The bands rebuilt, below.)*
   - **The cinder** (added 2026-10-19), a spent wartime tug: its orbit **decays**, sinking 1.6 radii over five
     laps of 4.4 minutes until a burn throws it back up, over and over (`decay`), on a slight ellipse
     swinging round 160° a lap. Its roar follows how low it is (a new LFO source, `height`, 0 at the lowest
@@ -456,6 +467,9 @@ they swap to their next saved frequency."*
         - The tower is an FM station of its own on the port's mast (`Fm.TOWER`), heard by line of sight as
           the port's music station is, a MHz or more off it and off the relay. Tuned to it, the dial reads
           `Radio.SURVEY`.
+        - *Superseded 2026-10-21 (The bands rebuilt, below): the tower is also the weather station, Port Morgan Tower; it reads
+          the deliveryship's schedule after its weather report every `radio_report_every` (120 s), and
+          `survey_report_every` is gone.*
         - It reads, in the bundled voice, every `survey_report_every` (300 s) and at once as you tune in:
           "Deliveryship · Speed 710 m/s · Elevation 30000 metres · Port Morgan in 2 minutes" (from 6 km it
           read "Surveyor", 395 m/s and 6000 metres; 710 m/s is worked out from its lap, not measured), the
@@ -630,6 +644,10 @@ beacons, the nomads' relics, the living city.
 | L/S, 1–4 GHz | space | dish, LNB and decoder | 5–10 W | a digital bundle; the deliveryship's downlink |
 | X, 8 GHz and up | deep space | a big dish and a cooled amplifier | high | Varran, and the far end of the lane, from the far side's quiet |
 
+*Superseded 2026-10-21 (The bands rebuilt, below): on LW/MW, the far gods, the beacon and wrecks calling SOS round 500 kHz; on FM, Port
+Morgan Tower, the port's music, the living city's chatter and music, and the near gods; on shortwave, every
+satellite and the relay repeating the tower.*
+
 **Three sounds, one a technology.** AM hisses and crackles in a storm, whooshes as it fades at night, whistles where
 two carriers beat, and is thin (about 5 kHz of audio). FM is near silent and full range; where two share a frequency
 the stronger takes it whole (the capture effect) and the weaker is gone, not mixed; at its fringe hiss breaks in
@@ -652,7 +670,8 @@ opposite horizons. The music's relay goes to L1, and the Pendulum to L2.
 
 **Decided with it:**
 - The port also sends the music on 1020 kHz from the ground, thin, carrying as AM does by day and far at night;
-  the relay at L1 sends it full, on the FM band.
+  the relay at L1 sends it full, on the FM band. *Superseded 2026-10-21 (The bands rebuilt, below): the music is on FM only, from the port's
+  mast; the relay repeats Port Morgan Tower on shortwave.*
 - The FM converter is the first step, as the 1960s converters for AM car radios were: it takes FM, turns it to a
   carrier the set already tunes, and plays as thin as the set does. A real FM set is the second.
 - "Always two overhead" (radio probe 34) moves with the formation to the shortwave band's top, where a wire hears
@@ -681,6 +700,7 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
   band and show on the band they're on.
 - **Port Morgan's station**, on its 60 m mast in the port (`fm_mast_m`), on an odd tenth of a MHz the
   seed picks, locked there as real stations are. It plays the port's music, the songs the relay carries.
+  *(Six more stations share the band since 2026-10-21: The bands rebuilt, below.)*
 - **Line of sight** (`Fm.margin`): a station clears the noise by 30 dB a kilometre off with nothing in
   the way (`fm_margin_db`), less 6 dB each time the distance doubles past that, less the worst edge between:
   the ground read at 24 points on the way, raised by the moon's curve as radio sees it (4/3 of the
@@ -727,13 +747,16 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **The relay hangs beside Tu.** From where a run begins it stands a few degrees off Tu all day and never
   sets, looping slowly (radio probe 13); it holds its place while the stars turn past (probe 17). It's
   drawn as before, a glinting point while sunlit. It's never up on the far side.
+- *Superseded 2026-10-21 (The bands rebuilt, below): the relay no longer sends the music on FM; it repeats Port Morgan Tower on shortwave.
+  `relay_fm_db`, `fm_sky_reach_m` and `Fm.sky_margin` are gone. As it was:*
 - **The relay sends the music on the FM band**, on its own odd tenth of a MHz at least 1 MHz off the
   port's (`Fm.stations`). A dish aimed at Zan gives it 55 dB over the port's station (`relay_fm_db`), less
   its spreading over the distance; the ground near you toward it is read out to 3 km
   (`fm_sky_reach_m`), the curve falling away, a knife edge for the worst (`Fm.sky_margin`), so low on the
   horizon, toward the Rim, a dune can hide it. A storm doesn't touch it. With a converter, the music is
   clean anywhere on the near side Tu shows, every hour, as thin as the AM set plays.
-- **The AM music comes from the port's own mast** on 1020 kHz (`Radio.receive_music`), as strongly as the
+- **The AM music comes from the port's own mast** (*gone 2026-10-21: the music is on FM only, and the
+  "far_storm" scenario now tunes the Almanac's night sky wave*) on 1020 kHz (`Radio.receive_music`), as strongly as the
   Ledger sends, carried as AM is: a short ground wave by day at that frequency, round the moon past the
   skip at night, through the storm between as a god's is. At the start, 44 km off, it's faint and chewed
   up by day and clean at night; on the far side it comes only at night (probe 19, the **"far_storm"**
@@ -969,6 +992,67 @@ antenna reel stands in for the lead and the hook, as gonkhub chose the reel over
   sixteen.
 - **Not yet:** the tuning close view's control reminder still has a next-mark line, to be taken out.
 
+### The bands rebuilt (2026-10-21; built)
+
+*gonkhub, 2026-10-21: "Let's just scrap and rebuild our radio frequencies from what we now have. Here is where
+everything should be sorted into: AM: Distress Signals, half the gods, and long distance beacons. FM: Combine
+Weather Station and deliveryship Control Tower frequencies into one Port Morgan Tower station. Also on this
+band: living city misc chatter, Living city music radio, and half the gods. Shortwave (Satellite): All
+satellites or otherwise offworld transmissions." Then: "On FM, you must be near the tower to hear the weather
+broadcast. You need Shortwave upgrade to hear a satellite rebroadcast of it, greatly increasing effective range
+for players with a nice setup. Weather channel reports should be reformatted to give the report from the
+tower's perspective. Wind speed, time, and temperature at the tower's location. When reading out reports for
+weather advisories for anomalous storms, extreme storms, etc, it should give a bearing and distance from the
+tower." Settled with it: distress means wrecks calling SOS; the far gods go on AM and the near ones on FM; the
+port's music is on FM only; the relay repeats the tower on shortwave.*
+
+- **AM, the barest** (`Dial.carriers`): the four far gods (the Quartermaster, Mother Cistern, the Almanac and the
+  Eye, in their bands as before), the beacon on 1930 kHz, natural radio at the dial's bottom, and wrecks calling
+  SOS. `Dial.MUSIC_KHZ` is gone, and so is the city's AM carrier.
+- **Wrecks calling SOS** (`game/radio/distress.gd`): of the freight pods, lifeboats, hulls, tithe haulers,
+  hoppers and nomad rigs in the sand, half still call (`distress_share`, the seed's pick for each). A radio hears
+  the nearest three within 5 km (`distress_reach_m`), each on a whole kHz within 12 kHz either side of 500
+  (`distress_spread_khz`), the old maritime distress frequency, as a low ground wave at 0.9 of a god's strength
+  (`distress_power`), through the storm between and the ferrite rod's null as a god is. Each `distress_every`
+  (12 s) it sends SOS in morse (placeholder pings, short and long), then speaks "S O S · S O S · Latitude … ·
+  Longitude …", the wreck's own fix, so a call leads to salvage. The deed **Mayday**: hear one come through
+  whole.
+- **FM, near and clean** (`Fm.stations`): seven stations, each on its own odd tenth of a MHz the seed picks, at
+  least 0.8 MHz apart (`Fm.APART`), locked there:
+  - **Port Morgan Tower** and **the port's music**, on the port's 60 m mast (`fm_mast_m`);
+  - **the living city's chatter** (its motifs, as before) and **its reed music**, from a 20 m mast wherever the
+    city is (`fm_city_mast_m`); the music strings the city's motifs into a phrase every 1.6 s on a pentatonic
+    scale, in an order the seed and the hour pick (`Radio._reed`);
+  - **the Ledger, the Stoker and the Walker**, each from a 30 m mast at its home (`fm_god_mast_m`), so heard only
+    near it, the Walker's moving as it walks. The Walker reads its log (its survey and contacts) and, once
+    taught, flags an anomaly near; the Stoker's furnace song plays on its station, which FM keeps clear of
+    storms.
+- **Port Morgan Tower** (`Radio._tower_air`, `report_words`): one station for the weather and the deliveryship.
+  It reads the forecast at the tower (`Radio.tower_at`), not where the radio stands, and every 2 minutes
+  (`radio_report_every`) one report: "Port Morgan Tower · Local time · wind · temperature · outlook", all at
+  the tower, then the deliveryship's schedule. `survey_report_every` is gone. With no storm on the tower or due,
+  its clear-skies song plays. **Advisories** (`game/radio/advisories.gd`) are read at the tower and say where
+  things are from it: "bearing NNN, X kilometres from the tower" (a sandstorm's front by its speed and the time
+  until it arrives, or "over the tower"), and, once the Walker's been taught, an anomalous storm within
+  `walker_flag_m` of the tower. Hearing its report is **Flight Plan**.
+- **Shortwave, the sky's:** every satellite and Tu's roar as before, and **the relay** at L1, now on 7250 kHz,
+  repeating Port Morgan Tower. It's heard as a satellite is (`Radio.receive_from`): faint on a bare shortwave
+  converter, better on an antenna reel's wire, best by a kite. So the weather near the port is FM's, and anywhere
+  on the near side with a good rig. The relay's FM music, `relay_fm_db`, `fm_sky_reach_m` and `Fm.sky_margin`
+  are gone.
+- **Old saves and scenarios:** a radio on the weather goes to the relay on shortwave if it has a shortwave
+  converter, else to the Tower on FM if it has an FM converter, else stays where its dial stands; one on the
+  music goes to the port's FM station. Scenario radios carry FM and shortwave converters; the weather scenario
+  strings an antenna reel 10 m; "far_storm" now tunes the Almanac's night sky wave (probe 19, now "a far god
+  goes in a far-side storm"); the "walker" scenario's radio is on the Walker's FM station.
+- **Probe:** radio 58 (each band holds its own: the AM dial's five fixed carriers, FM's seven stations apart, a
+  wreck's call heard near it, the relay repeating the tower to the clear scenario's radio on its wire). Many
+  older radio probes were retuned to the new bands.
+- **Not yet:** the bundled voice bank has no recording of "tower", "morgan", "over" or "deliveryship", so they
+  are spelled letter by letter until the bank is regenerated (`assets/audio/voice/make_words.py` picks up words
+  from `radio.gd` itself; it needs piper, ffmpeg and the voice model). The sleep offer "Until a storm's called"
+  still wakes you by the storm at your camp, while the radio it tunes now reads the tower's weather.
+
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a
@@ -1004,7 +1088,8 @@ frequency, a range and what it says; its signal falls off with distance.
   low enough that its ground wave carries across the whole moon, sending second only to the Ledger,
   and found by sweeping the dial. It gives the forecast where the radio stands, and at dusk or with
   storm news at its feet the long report. Its survey log and contact log are built too (the
-  Walker's quest, below).
+  Walker's quest, below). *Superseded 2026-10-21 (The bands rebuilt, below): the forecast is Port Morgan Tower's; the Walker is an FM
+  station heard only near it as it walks, reading its log, and taught, flagging an anomaly near.*
 - **The living city's chatter:** a few km, for its own scouts; coded tones, no voices ("storm
   coming, tether in", "city moving"), sometimes its own coordinates written as star positions, the
   nomads navigating by the stars. Its frequency is found by exploring (scratched on a radio in the
@@ -1127,6 +1212,8 @@ that teaching it takes evidence for each tell.
   from the Walker. It doesn't read the storms to move: the storm field is laid on the flat world, and
   where a far place lies on it depends on how you walked there, so a city moved by it couldn't be pure.
   Its chatter reads them, where it is as the world lays it.
+- *Superseded 2026-10-21 (The bands rebuilt, below): its chatter is an FM station from a 20 m mast wherever the city is, beside a second
+  with its reed music; neither is on the AM dial, and FM's line of sight sets how near you must be.*
 - **Its chatter** on a carrier of its own, 1480 to 1520 kHz, the seed's (`city_band_khz`), on the dial
   with the gods, a sweep stopping there as at any carrier: heard whole within 3 km and gone past 4.5
   (`city_heard_m`), garbled, slid and cut by storms between as a god is, no sky wave. A motif each 20 s
@@ -1180,7 +1267,7 @@ that teaching it takes evidence for each tell.
 - **The "walker" scenario:** where the run's start puts the Walker on a clear day, 60 m ahead of it on its
   route and 4.5 m off its right, facing it as it comes; a deck of two resting on the sand beside you with a
   Console (its screen, an anemometer and a particle sensor) holding evidence of all three tells, a radio on
-  the Walker's carrier, the base shield and a compass stuck on it; a cable in the Console's port and its
+  the Walker's carrier (its FM station, with an FM converter, since 2026-10-21), the base shield and a compass stuck on it; a cable in the Console's port and its
   other plug in your hands, to put in the Walker's port as it passes.
 - **Probes:** radio 24 (far from the start early), 25 (a contact points at the city), 26 (three bearings
   fix it), 27 (each motif tells the truth), 28 (the city shows only within range, at night); Wind & storms

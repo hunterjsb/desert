@@ -4,8 +4,8 @@ extends WeatherProbe
 ## the rest of the time only noise in its own voice: the Quartermaster through
 ## the eclipse, the Eye at night, Mother Cistern at dawn, the Almanac at
 ## sunrise and sunset, the Ledger about midnight and the Stoker through the
-## hot hours. The Walker, the weather station, always gives the forecast, the
-## radio's own reading of the storm field. What a god says in its window is
+## hot hours. The Walker always reads its log: its survey where it walks, or
+## a contact it keeps. What a god says in its window is
 ## read from the world: the Eye's fix is where the radio is, the Ledger's
 ## bearings are the landmarks', the Stoker's countdown is the next eclipse's.
 
@@ -74,12 +74,9 @@ func run() -> void:
 	check(Transmissions.say(&"stoker", radio, gods, p, x, z, hot).text.contains(
 		"DARK IN %d S" % roundi(day.next_eclipse(hot) - hot)), "the Stoker counts down to the next eclipse")
 
-	radio.on = true
-	radio.frequency = gods.carrier(&"walker", world.time)
-	await physics_frames(2)
 	var walker := Transmissions.say(&"walker", radio, gods, p, x, z, world.time)
-	check(walker.useful and walker.text.begins_with(radio.weather_words(world.time)),
-		"the Walker always gives the station's forecast: \"%s\"" % walker.text)
+	check(walker.useful and walker.text == Transmissions.walker_log(world, gods, world.time).log,
+		"the Walker always reads its log: \"%s\"" % walker.text)
 
 
 func _within(local: float, window: Vector2) -> bool:
