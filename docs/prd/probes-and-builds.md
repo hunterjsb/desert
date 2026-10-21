@@ -133,3 +133,27 @@ full result expansion and job details without script errors or page overflow;
 metric cards rendered all ten actual local samples in a separate preview fixture.
 The production site consumes CI evidence only. Full CI and initial deployment are
 checked when this change lands; local preview measurements are not CI baselines.
+
+A probe opts in with `metric(label, value, unit, optional_budget)`; its existing
+`check()` still owns pass/fail. The metric helper only reports evidence and never
+asserts a limit. Keep labels and units stable for history comparisons. The runner
+prints the verdict before the metric records, associating measurements with the
+correct first attempt or retry. Failed measurements stay marked failed; missing
+ones do not enter passing trend lines.
+
+The initial [Pages deployment](https://github.com/hunterjsb/desert/actions/runs/39669517833)
+published [the observatory](https://hunterjsb.github.io/desert/) with 15 historical
+runs. Checks took 6 s, the cold backfill/build 65 s, and deployment 12 s, excluding
+runner queue delay. Desktop and narrow-layout checks also passed on the public
+site. Linux verification passed all nine groups in
+[39667591018](https://github.com/hunterjsb/desert/actions/runs/39667591018).
+
+The first full run passed 20 of 21 jobs; macOS salvage retention timed out at
+301 s and 300 s before reaching its measurement output. Across 110 passing probes
+in that job, median runtime was 2.1 times the preceding master run; this alone does
+not establish the cause. No assertion or timeout was changed. The
+[completion-triggered refresh](https://github.com/hunterjsb/desert/actions/runs/39675753373)
+succeeded and publicly reported the failed run, both attempts, their 601 s total,
+and 16 available game measurements. Browser checks confirmed those results on the
+live page. Missing measurements stayed absent. A targeted retry of the failed job
+is tracked in [the source run](https://github.com/hunterjsb/desert/actions/runs/39669517959).
