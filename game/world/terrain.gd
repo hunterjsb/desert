@@ -97,6 +97,7 @@ var _home_requested := false
 var _home_kept := Rect2i()
 var _home_next := Rect2i()
 var _home_blocked := false
+var _home_anchor: Sites.Anchor
 
 
 func setup(world: World) -> void:
@@ -370,15 +371,19 @@ func reset_home() -> void:
 	_home_requested = false
 	_home_kept = Rect2i()
 	_home_next = Rect2i()
+	_home_anchor = null
 	_planned = false
 
 
 func _stage_home(policy: TerrainResidency.Policy) -> void:
+	if _home_anchor != _world.home.anchor:
+		reset_home()
+		_home_anchor = _world.home.anchor
 	_home_next = policy.camp_keep
 	_home_blocked = false
 	if not policy.camp_keep.has_area() or not _home_kept.has_area():
 		return
-	var together := policy.camp_keep.merge(_home_kept)
+	var together := policy.camp_keep.merge(_home_kept.grow(-1))
 	if together.get_area() <= _tuning.home_support_chunks:
 		policy.camp_keep = together
 		policy.camp_collision = policy.camp_collision.merge(_home_kept.grow(-1))
