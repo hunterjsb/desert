@@ -31,12 +31,30 @@ func run() -> void:
 	var lines := _lines()
 	var primary := lines[0].ends[1]
 	world.player.waist.untie(primary)
-	for i in range(1, 3):
-		world.player.waist.untie(lines[i].ends[1])
-		check(RopeBundle.gather(primary, lines[i].ends[1]), "the same actual end joins the hand knot")
+	world.player.waist.untie(lines[1].ends[1])
+	check(RopeBundle.gather(primary, lines[1].ends[1]), "the same actual end joins the hand knot")
 	hands._grip(primary)
 	hands.phase = Hands.Phase.HELD
 	hands._ticked = primary.global_transform
+	var waist := world.player.waist
+	waist._bundle_take = true
+	waist._continue_take = true
+	waist._gather_primary = primary
+	waist._taking = lines[2].ends[1]
+	waist._to_hand = true
+	waist.untying = 0.5
+	check(saves.save(world) and waist.gathering() and waist.untying == 0.5,
+		"taking the save leaves the live secondary gathering gesture alone")
+	check(await resume(), "a partially gathered knot resumes")
+	await simulate(0.7)
+	lines = _lines()
+	primary = lines[0].ends[1]
+	check(RopeBundle.members(primary).size() == 2 and world.player.waist.tied.size() == 1
+		and world.player.waist.tied[0] == lines[2].ends[1] and not world.player.waist.gathering()
+		and world.player.waist.untying < 0.0,
+		"only completed membership returns; the pending secondary transfer is cancelled")
+	world.player.waist.untie(lines[2].ends[1])
+	check(RopeBundle.gather(primary, lines[2].ends[1]), "the remaining actual end can still be gathered")
 	hands.reel.choose(lines[2].ends[1])
 	check(saves.save(world) and await resume(), "held group saved and resumed")
 	_check_group("held")

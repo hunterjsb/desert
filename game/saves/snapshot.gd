@@ -450,9 +450,10 @@ func _take() -> Dictionary:
 				ref = {"boom": _refs[mast]}
 		if ref != null:
 			data.solver.bodies.append([ref, body.tick, body.left, body.left_spin])
-	data.waist = {"tied": player.waist.tied.filter(_known).map(_ref), "untying": player.waist.untying,
-		"to_hand": player.waist._to_hand,
-		"taking": _ref(player.waist._taking) if _known(player.waist._taking) else null}
+	var gathering := player.waist.gathering()
+	data.waist = {"tied": player.waist.tied.filter(_known).map(_ref), "untying": -1.0 if gathering else player.waist.untying,
+		"to_hand": player.waist._to_hand and not gathering,
+		"taking": _ref(player.waist._taking) if not gathering and _known(player.waist._taking) else null}
 	data.hands = {}
 	if hands.held != null and _known(hands.held):
 		data.hands = {"held": _ref(hands.held), "carry": hands._carry}
@@ -915,6 +916,7 @@ func _order(order: Array, lines: Array[Line], cables: Array[Cable]) -> void:
 func _clear() -> void:
 	var world := _world
 	var player := world.player
+	player.waist.cancel_gather()
 	if player.hands.held != null:
 		player.hands.stow()
 	player.hands.grasp.let_go()
