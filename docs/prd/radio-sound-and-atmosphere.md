@@ -729,6 +729,24 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **Not yet:** a sense antenna to tell which way along the line, and a loop to take the rod's place for
   sharper bearings; the shortwave and FM bands have no rod.
 
+**Natural radio, as built (2026-10-20, slice G):**
+- **The bottom of the AM dial**, under 20 kHz and fading out by 30 (`Natural`): nothing is sent there; a long
+  wire hears the moon's own. The ferrite rod hears none of it, as a real one doesn't: only a line on the
+  radio's ring does, all of it at 10 m (`sw_wire_m`).
+- **Sferics:** each discharge of the sand charging up in a storm is a click (the receiver's tick, pitched
+  each time, placeholder), heard far off: the storm field read along eight ways out to 30 km
+  (`vlf_reach_m`), each storm counting less the farther it is, and the clicks quickening from 0.4 a second
+  with nothing about to 30 with a storm on you (`vlf_rate`). So you hear a storm coming long before it
+  shows. Seed 1234: 3.7 a second with a storm 20 km off, 28 at 2 km (radio probe 48).
+- **Whistlers:** once in each 40 s (`vlf_whistler_every`) one may come, the likelier the more storm about and
+  likelier by night, falling over 2.2 s (the shield's hum swept down, placeholder): a discharge's crackle
+  caught in the field lines of Tu's magnetosphere and drawn out.
+- **Your camp hums over it:** gear drawing power in the radio's pool, 10 W of it (`vlf_hum_w`), masks
+  natural radio under a hum (the tug's hum, placeholder), so you walk out away from your gear to listen, as
+  real VLF listeners do. A Console drawing 4 W: 0.65 of it through (probe 48).
+- **The deed** Whistler: hear one on a long wire, away from your camp's hum.
+- **Not yet:** the dawn chorus near the poles; gonkhub's own sounds for sferics and whistlers.
+
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a

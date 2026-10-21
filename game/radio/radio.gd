@@ -93,8 +93,10 @@ const UNHEARD := -1
 ## moves); and a tick's move longer than this is the world shifting under it,
 ## not it moving.
 const FM_RECKON_M := 2.0
-## Its long wire is read again this often, s.
+## Its long wire is read again this often, s, and the storms about and its
+## camp's hum for natural radio this often.
 const WIRE_EVERY := 0.5
+const NATURAL_EVERY := 1.0
 const FM_RECKON_S := 1.0
 const FM_JUMP_M := 50.0
 ## Its dial on its face (+Z), m: the band window's middle and size, the band
@@ -265,6 +267,17 @@ var roar: AudioStreamPlayer3D
 ## over the ground, m), or zero with none.
 var wire := Vector2.ZERO
 var _wire_at := -INF
+## Natural radio at the bottom of the AM dial: its sferics' clicks, a
+## whistler's falling tone and its camp's hum, each a voice; how much storm is
+## about and how loud the hum, read every NATURAL_EVERY s; and how much of it
+## comes through now, 0 to 1.
+var sferic: AudioStreamPlayer3D
+var whistle: AudioStreamPlayer3D
+var hum: AudioStreamPlayer3D
+var storms_about := 0.0
+var hum_level := 0.0
+var natural := 0.0
+var _natural_at := -INF
 ## How far it has moved, m, for the fade it passes through on FM; where it was
 ## last tick; and each FM station's margin as last worked out, and where.
 var _moved := 0.0
@@ -301,6 +314,12 @@ func _ready() -> void:
 	roar = _voice()
 	roar.stream = Sounds.RADIO_STATIC
 	roar.pitch_scale = 0.45
+	sferic = _voice()
+	sferic.stream = Sounds.RECEIVER_TICK
+	whistle = _voice()
+	whistle.stream = Sounds.SHIELD_HUM
+	hum = _voice()
+	hum.stream = Sounds.TUG
 	_signal = add_voice(signal_bus())
 	sky = SkyVoices.new()
 	add_child(sky)
@@ -1042,6 +1061,7 @@ func _listen(delta: float) -> void:
 			Deeds.done(world, &"tu_roar")
 	roar.volume_db = linear_to_db(tu + 0.0001) + knob_db()
 	through = maxf(through, tu * 0.5)
+	through = maxf(through, _natural(delta, x, z, t))
 	_show_lamps(through, delta)
 	# Static only while nothing plays (gonkhub, 2026-10-19): interference is in
 	# what you hear, not hiss laid over it.
@@ -1106,6 +1126,47 @@ func rod(bearing: float, sky: bool) -> float:
 	var to := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
 	var across := absf(flat.normalized().cross(to))
 	return lerpf(_tuning.rod_night_null if sky else _tuning.rod_null, 1.0, smoothstep(0.0, _tuning.rod_width, across))
+
+
+## Natural radio this tick, at world place x, z and time t, on the AM dial's
+## bottom and a long wire: a sferic's click as often as the storms about make
+## them, a whistler's fall when one comes, and its camp's hum over both. Says
+## how much comes through, for the lamps and the static to sink under.
+func _natural(delta: float, x: float, z: float, t: float) -> float:
+	natural = 0.0
+	var reach := Natural.share(frequency) * smoothstep(0.0, _tuning.sw_wire_m, wire.x) if band == AM_BAND else 0.0
+	if reach <= 0.0:
+		hum.volume_db = linear_to_db(0.0001)
+		whistle.volume_db = linear_to_db(0.0001)
+		return 0.0
+	if absf(t - _natural_at) >= NATURAL_EVERY:
+		_natural_at = t
+		storms_about = Natural.storms(world.weather.field, x, z, t, _tuning)
+		var drawn := 0.0
+		for other: Device in world.power.pool_of(self):
+			if other != self and other.powered:
+				drawn += other.demand_w(t)
+		hum_level = smoothstep(0.0, _tuning.vlf_hum_w, drawn)
+	natural = reach * (1.0 - hum_level)
+	if natural > 0.0 and randf() < Natural.rate(storms_about, _tuning) * delta:
+		sferic.pitch_scale = randf_range(0.7, 1.6)
+		sferic.volume_db = linear_to_db(natural * randf_range(0.3, 1.0) + 0.0001) + knob_db()
+		sferic.play()
+	var night := not world.weather.day.is_day(t, world.moon.longitude)
+	var falling := Natural.whistler(world.run_seed, t, storms_about, night, _tuning)
+	if falling >= 0.0:
+		whistle.pitch_scale = lerpf(3.2, 0.6, falling)
+		whistle.volume_db = linear_to_db(natural * sin(PI * falling) + 0.0001) + knob_db()
+		if not whistle.playing:
+			whistle.play()
+		if natural >= WHOLE and volume > 0.0 and heard():
+			Deeds.done(world, &"whistler")
+	else:
+		whistle.volume_db = linear_to_db(0.0001)
+	hum.volume_db = linear_to_db(reach * hum_level + 0.0001) + knob_db()
+	if hum_level > 0.0 and not hum.playing:
+		hum.play()
+	return natural * (0.2 + 0.8 * storms_about)
 
 
 ## How much of what's sent from above the ceiling it hears, 0 to 1: on
@@ -1417,7 +1478,7 @@ func on_air() -> AudioStream:
 
 
 func _off_air() -> void:
-	for voice: AudioStreamPlayer3D in [music, hiss, crackle, roar, _signal]:
+	for voice: AudioStreamPlayer3D in [music, hiss, crackle, roar, sferic, whistle, hum, _signal]:
 		voice.stop()
 	_hush()
 	_on_air = null
