@@ -122,6 +122,7 @@ func camp(data: Dictionary, reach: float, most: int) -> Array[Array]:
 func dress() -> void:
 	for pair in _states:
 		_set_state(pair[0], pair[1])
+	_restore_pod_skins()
 
 
 ## First half of a resume, on a fresh world built on the save's seed: the
@@ -129,6 +130,11 @@ func dress() -> void:
 ## memory are put back. Returns where the rest will stand, world metres, so
 ## the caller can wait for the ground there.
 func begin(data: Dictionary) -> Array[Vector2]:
+	_world.set_meta(&"arrival_restoring", true)
+	_world.arrival_state = (data.get("arrival", {}) as Dictionary).duplicate(true)
+	_world.arrival_state.erase("node_refs")
+	_world.arrival_enabled = not _world.arrival_state.is_empty()
+	_world.arrival_nodes.clear()
 	_clear()
 	var world := _world
 	# A resumed run has its own things: no new run's kit is set down in it.
@@ -316,6 +322,15 @@ func finish(data: Dictionary) -> void:
 		if not body.freeze and not world.terrain.has_collision_at(world.world_x(body.global_position.x), world.world_z(body.global_position.z)):
 			body.freeze = true
 			body.set_meta(&"frozen_by_world", true)
+	_restore_pod_skins()
+	var arrival: Dictionary = data.get("arrival", {})
+	for uid: StringName in arrival.get("node_refs", {}):
+		var body := _made.get(arrival.node_refs[uid]) as Node
+		if is_instance_valid(body):
+			world.arrival_nodes[uid] = body
+	world.remove_meta(&"arrival_restoring")
+	if not arrival.is_empty() and is_instance_valid(world.arrival):
+		world.arrival.restore.call_deferred()
 	world.shape.sites.resumed()
 
 
@@ -453,6 +468,13 @@ func _take() -> Dictionary:
 	data.dug = world.shape.sites.dug_memories()
 	data.dunes = world.shape.sites.dunes.memories()
 	data.feral = world.farm.feral.memories()
+	if world.arrival_enabled and not world.arrival_state.is_empty():
+		data.arrival = world.arrival_state.duplicate(true)
+		var node_refs := {}
+		for body: Node in _refs:
+			if is_instance_valid(body) and body.has_meta(&"arrival_uid"):
+				node_refs[body.get_meta(&"arrival_uid")] = _refs[body]
+		data.arrival.node_refs = node_refs
 	return data
 
 
@@ -502,6 +524,9 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.sleeping = body.sleeping
 		out.world_froze = body.get_meta(&"frozen_by_world", false)
 		out.buried = body.has_meta(&"buried")
+	for key: StringName in [&"arrival_uid", &"pod_skin"]:
+		if body.has_meta(key):
+			out[key] = _copy(body.get_meta(key))
 	if body.has_meta(&"layer"):
 		out.found = body.get_meta(&"layer")
 	if body.has_meta(&"lineage"):
@@ -656,6 +681,14 @@ func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 		shield._show()
 
 
+## Decorative shell skins follow their ordinary pieces after joins and mounting resolve.
+func _restore_pod_skins() -> void:
+	for pair in _states:
+		var body := pair[0] as Chassis
+		if is_instance_valid(body) and body.has_meta(&"pod_skin"):
+			PodShell.restore_skin(body)
+
+
 ## A body for a record: one its owner made already (a line's end, a cable's
 ## plug), or a fresh one from the catalog, with what's in its sockets fitted
 ## before it's in the world, so nothing fitting it lifts it off the sand.
@@ -666,6 +699,9 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		body = Catalog.stake() if id == &"stake" else (Catalog.part(id) if Catalog.PARTS.has(id) else Catalog.device(id))
 		_made[rec.ref] = body
 	_states.append([body, rec])
+	for key: StringName in [&"arrival_uid", &"pod_skin"]:
+		if rec.has(key):
+			body.set_meta(key, _copy(rec[key]))
 	if rec.has("found"):
 		Finds.mark(body, rec.found)
 	# Before its parts are fitted and it's in the world, as a find is given it.
