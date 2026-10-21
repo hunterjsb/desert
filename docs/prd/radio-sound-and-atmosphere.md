@@ -1662,3 +1662,9 @@ station/stream and ordinary silence checks. Glitch deliberately drops a dirty
 signal for 0.03–0.18 seconds; a single sampled tick can therefore be silent while
 the actual song is correctly on air. Preserve those real dropouts and callbacks;
 do not pin the instance RNG, disable effects or change production radio gain.
+
+The bounded Radio 16 check passes in 6 seconds on the combined candidate;
+Radio 38 and 47 pass alongside it in 7 and 8 seconds. Production radio code,
+glitch randomness, dropout lengths and the audibility threshold are unchanged.
+The prior CI failure reported the correct Eye stream at exactly -65 dB,
+consistent with its +15 dB base gain during an intentional -80 dB dropout.
