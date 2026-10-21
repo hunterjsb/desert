@@ -453,3 +453,10 @@ The Surveyor guide's scouting page now teaches taking out and mounting the packe
 beacon, marking with free hands, waiting for ready support and opening Home for
 return navigation. Compass, landmarks, mooring and weather preparation remain
 relevant; a saved fix does not provide shield power or protection.
+
+**Admission-limit measurement:** An isolated real CampHome graph with 512 work
+items (511 rigid members, 25 support cells) took 5.462 ms p50 / 5.601 ms p95 to
+refresh across 240 samples after 30 warm-ups; maximum 6.237 ms, initial mark
+6.949 ms. Item 513 refused the whole mark. The fixture used frozen catalog hooks
+and a small footprint, isolating graph CPU cost. It does not establish full
+physics/GPU, heterogeneous-device or maximum-span performance acceptance.
