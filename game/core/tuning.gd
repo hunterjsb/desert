@@ -740,6 +740,8 @@ static var _current: Tuning
 @export var rope_load_seconds: float = 0.3
 ## A found coil's length, m: the longest line it lays.
 @export var rope_coil_length: float = 12.0
+## Shared winding geometry and the gathered display's settling time.
+@export var rope_coil_visual: Dictionary = {}
 ## A line paying out of the coil in your hand runs this much longer than the
 ## way from its first end to you, m.
 @export var rope_pay_slack: float = 0.5

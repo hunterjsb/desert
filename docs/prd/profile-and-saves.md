@@ -806,3 +806,12 @@ Landfall, it brings the integrated development roster to 58 deeds in eleven fami
 three additions). Loading a save must not record it again. Posture
 persists independently of the transient camera transition, with standing as
 the default for saves written before this feature.
+
+
+**Combined development resume check (2026-10-20).** The preparatory Sanddune
+candidate combines Home, Surveyor opening, ground posture and continuous coils.
+Actual Main flight/recovery resume passes (9 s), other-origin/developer-scenario
+and legacy-start compatibility passes (24 s), and posture/legacy/initial-eye
+restoration passes (13 s). Arrival restore guards, resolved survivor references
+and ground-pose restoration coexist in Snapshot. This is focused development
+evidence; combined CI and ordinary-player acceptance remain pending.

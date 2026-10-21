@@ -1,6 +1,6 @@
 ## 0.3.0-alpha “Sanddune” — development, unreleased
 
-This preparatory candidate combines Home, Surveyor arrival and ground rest.
+This preparatory candidate combines Home, Surveyor arrival, ground rest and rope-coil improvements.
 It has not been published; combined CI and playtest acceptance remain pending.
 
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
@@ -17,6 +17,9 @@ It has not been published; combined CI and playtest acceptance remain pending.
   Getting up checks headroom; wind, ropes, slopes and moving decks still move you.
 - Offer the existing safe sleep choices while lying still with empty hands.
   Posture survives saves, and the first ground rest earns A Moment's Rest.
+
+- Continuously unwind and gather the rope coil while preserving its gauge and
+  held-end attachment.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 

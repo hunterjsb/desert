@@ -35,6 +35,8 @@ var _way := 1.0
 var _player: Player
 var _tuning := Tuning.current()
 var _coil: MeshInstance3D
+var _coil_amount := 0.0
+var _coil_line: Rope
 var _sound: AudioStreamPlayer
 var _yank_left := 0.0
 var _yank_wait := 0.0
@@ -270,30 +272,32 @@ func working() -> bool:
 
 
 ## The rope gathered where the line is on you, as a coil growing with it.
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var paying := _paying_in_hand()
 	var now := paying.rope if paying != null else line()
 	var gathered := now.full - now.length + now.haul_gathered if now != null else 0.0
-	_coil.visible = gathered > 0.05
+	var was_visible := _coil.visible
+	_coil.visible = gathered > 0.0
 	if not _coil.visible:
+		_coil_line = null
+		_coil_amount = 0.0
 		return
 	# Before its first tie the rest is on the belt; afterward it pays from the hand.
 	var end := Line._tip(paying.ends[1 - paying._first]) if paying != null else (now.a if _on_you(now.a) else now.b)
-	var at := end.global_position
-	# More gathered rope adds windings, rather than thickening the fibre.
-	var level := clampi(int(gathered / now.full * 3.0), 0, 2)
-	var coil_mesh := Dress.coil(level)
-	if _coil.mesh != coil_mesh:
-		_coil.mesh = coil_mesh
-	var box := coil_mesh.get_aabb()
+	var target := clampf(gathered / now.full, 0.0, 1.0)
+	var settle := 1.0 - exp(-delta / float(_tuning.rope_coil_visual.response_seconds))
+	_coil_amount = lerpf(_coil_amount, target, settle) if _coil_line == now else target
+	_coil_line = now
+	CoilLooks.show_amount(_coil, _coil_amount)
 	var right := _player.global_basis.x
 	var ahead := -_player.global_basis.z
-	# Hanging from where it's held, turned half toward you so it reads as a coil.
 	var axis := (right + ahead).normalized()
 	var across := Vector3.UP.cross(axis).normalized()
 	var basis := Basis(across, axis.cross(across), axis)
-	_coil.global_transform = Transform3D(basis,
-		at + Vector3.DOWN * box.size.y * 0.4 - basis * box.get_center())
+	if was_visible:
+		basis = _coil.global_basis.slerp(basis, settle)
+	# The leading end stays on its live attachment; changing fill never recentres it.
+	_coil.global_transform = Transform3D(basis, end.global_position - basis * CoilLooks.anchor())
 
 
 ## Laying a new line owns its coil display without changing the selected reel.
