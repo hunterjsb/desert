@@ -1200,3 +1200,16 @@ person the helmet, the collar and the shoulder yokes are drawn only for
 their shadow and for others (`Body.OWN_LAYER`). What you see is your arms
 reaching to what you hold, your knees crouched or sat, and your boots
 looking down. Look-test: `look/player_body`.
+
+
+### Held grip surfaces (2026-10-21; bounded suit polish)
+
+Keep gonkhub's rigid Surveyor meshes and their original arm proportions. The
+cutter's right glove targets the existing rear handle, rather than the barrel's
+side; a carried chassis takes both gloves to actual near frame surfaces, not
+its distant center. Item-local anchors follow the real object orientation.
+The fixed-length arms still stop short when an item is physically beyond reach:
+the standard radio and battery carry poses remain a documented limitation in
+Movement. Neither the physics object nor the shoulders move to disguise it.
+The cutter's low rear grip can sit partly below the first-person viewport;
+external views show that actual grasp. This does not add finger articulation.
