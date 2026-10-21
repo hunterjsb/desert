@@ -427,16 +427,28 @@ they swap to their next saved frequency."*
       built in 10 ms, adding 6,450 primitives (0.7%) and 2 draws. Near: 13,304 triangles, 4.7 MB, 56 ms,
       26,600 primitives (2.9%). It casts no shadow; a shadowed light of its own was tried and dropped, since
       from below it showed nothing and cost a shadow pass. It's above the horizon within about 17 km of its track.
-    - **Its schedule** (gonkhub, 2026-10-21: "the surveyor flyer's shortwave broadcast needs to inform the
-      player of when its flyover will occur"). Tuned to its carrier while it's up, the dial reads a channel
-      of its own (`Radio.SURVEY`) and it reads out, in the bundled voice between its drones, when it's next
-      high enough over you to fire at a flare (`airdrop_elevation_degrees`), where to look and how high it
-      comes: "Surveyor · Due in 12 minutes · Bearing south-east · Elevation 56 degrees"; while it's up there,
-      "Surveyor · Here now · Light signal flare". `Airdrop.next_pass` looks four hours ahead, stepping as far
-      as its height can't reach the cannon's sooner (it never climbs faster than 6°/s), and the radio works it
-      out again every 30 s. It's on the survey's own AM carrier until there's shortwave
-      ([radio equipment proposal](../../look/radio_kit/README.md)), where it would move. Hearing it is
-      Flight Plan. Radio probe 47.
+    - **Its route and flight plan** (gonkhub, 2026-10-21: "the surveyor flyer's shortwave broadcast needs to
+      inform the player of when its flyover will occur"; then "Remove the 'here now' announcement from the
+      surveyor. Simply announce its update every 5 min. Update its flight path to ensure it always passes over
+      Port Morgan, letting its path rotate around the moon otherwise. For its flight plan announcement, it
+      should report its current speed, altitude (fluff ...) and ETA to Port Morgan").
+      - **Route:** a great circle through Port Morgan, flown on the moon rather than among the stars
+        (`Satellite._through`). It's over the port every lap, and its plane swings 37° a lap round the port,
+        so the rest of its track sweeps every place in time. At the run's start it's over the start, on the
+        plane through both. `Satellite.until_through` says how long until it's next over the port.
+      - **Flight plan:** tuned to its carrier, the dial reads a channel of its own (`Radio.SURVEY`). It reads,
+        in the bundled voice, every `survey_report_every` (300 s) and at once as you tune in: "Surveyor ·
+        Speed 395 m/s · Elevation 6000 metres · Port Morgan in 2 minutes".
+        - Its speed over the ground is true. Its altitude is a working figure wandering ±220 m about its
+          true 6 km, for flavour.
+        - It says "elevation" because the bundled voice has no "altitude" yet, and spells "Morgan", which
+          has no recording yet. The next run of `make_words.py` records "morgan" from radio.gd; "altitude"
+          needs adding to its word list.
+        - It comes in from over the horizon too, off the sky as shortwave would, at least half strength;
+          its drones are heard only while it's up.
+      - It's on the survey's own AM carrier until there's shortwave
+        ([radio equipment proposal](../../look/radio_kit/README.md)), where it would move. Hearing it is
+        Flight Plan. Radio probe 47.
   - **The lantern** (gonkhub, 2026-10-19: "a satellite orbiting Tu, its broadcast accessible when it is on the
     side of the planet facing Zan. Not visible though"): StarCom's Tu survey probe, circling Tu 60 moon radii
     off, 1.8 of Tu's radii out, a lap in 11 minutes, its plane holding the line to Zan, so it swings round in
@@ -468,7 +480,7 @@ they swap to their next saved frequency."*
   | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
   |---|---|---|---|---|---|---|
   | The relay | colonial | 1020 | white point, glinting | an ellipse (0.3) about 3 radii, 6.5 min, swinging round | the music, as before | a slow tumble: swells and fades every 20 s |
-  | Thermal | Frontier Ag | 320–350 | a great dark hull against its own amber running lights | 6 km up, 7.95 min, swinging 37° a lap; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
+  | Thermal | Frontier Ag | 320–350 | a great dark hull against its own amber running lights | 6 km up, 7.95 min, over Port Morgan every lap, swinging 37° a lap round it; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
   | Sounder | StarCom | 560–590 | lime diamond | formation, plane 1 | the storm's roar | pitch wandering; brighter by day |
   | Lantern | StarCom | 1590–1620 | never seen | round Tu, 60 radii off, 11 min; heard only on Zan's side of Tu | the day song, slowed | faint; clearest straight between Tu and Zan |
   | Pendulum | StarCom | 700–730 | cyan cross | formation, plane 2 | a ping, pulsed | its tick quickening toward the eclipse |

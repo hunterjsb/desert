@@ -811,7 +811,7 @@ the default for saves written before this feature.
 ### Flight Plan (2026-10-21; implemented development)
 
 Flight Plan (`flight_plan`, signals family, radio icon) records the first time
-you hear the Surveyor read out when it's next over you (Radio probe 47),
+you hear the Surveyor read its flight plan (Radio probe 47),
 bringing the integrated development roster to 59 deeds in eleven families.
 
 

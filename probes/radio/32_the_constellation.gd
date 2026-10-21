@@ -29,7 +29,8 @@ func run() -> void:
 		var look: Dictionary = sky.rows[id].look
 		looks[[look.color.to_html(), look.shape, look.size]] = id
 		var orbit: Satellite = sky.orbits[id]
-		laps[[orbit._node.snapped(Vector3.ONE * 0.001), orbit._across.snapped(Vector3.ONE * 0.001)]] = id
+		laps[[orbit._node.snapped(Vector3.ONE * 0.001), orbit._across.snapped(Vector3.ONE * 0.001),
+			orbit._pole.snapped(Vector3.ONE * 0.001)]] = id
 	check(looks.size() == voiced.size(), "each looks its own: colour, shape and size")
 	check(laps.size() == voiced.size(), "each on a route of its own")
 	var colours := {}

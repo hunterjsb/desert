@@ -59,6 +59,14 @@ var _node: Vector3
 var _across: Vector3
 var _phase: float
 
+## Held over a place on the ground instead (the crop survey over Port
+## Morgan): that place, its plane's other axis at the run's start, both on
+## the moon and turning with it, and how fast its plane swings round that
+## place, rad/s. A zero place is an orbit among the stars.
+var _pole := Vector3.ZERO
+var _toward := Vector3.ZERO
+var _swing := 0.0
+
 
 ## Its orbit for a run, passing over `start` (a point on the sphere) at world
 ## time 0. `orbit` gives another satellite's own, {id, altitude (radii),
@@ -91,6 +99,9 @@ func _init(run_seed: int, tuning: Tuning, start: Vector3, orbit := {}) -> void:
 		return
 	if orbit.has("around_tu"):
 		_round_tu(run_seed, tuning, orbit)
+		return
+	if orbit.get("through", Vector3.ZERO) != Vector3.ZERO:
+		_through(run_seed, start, orbit)
 		return
 	var relay: bool = orbit.get("id", &"relay") == &"relay"
 	var rng := RandomNumberGenerator.new()
@@ -127,6 +138,36 @@ func _start_on_ellipse(run_seed: int, orbit: Dictionary) -> void:
 	_mean = eccentric - e * sin(eccentric)
 
 
+## An orbit through one place on the ground every lap (gonkhub, 2026-10-21:
+## "Update its flight path to ensure it always passes over Port Morgan,
+## letting its path rotate around the moon otherwise"): a great circle
+## through it, flown on the moon rather than among the stars (it's a drone,
+## and keeps to its route), its plane swinging round that place by its
+## precess a lap, so the rest of its track sweeps every place in time. At the
+## start it's over `start` on the plane through both, the way the seed sends it.
+func _through(run_seed: int, start: Vector3, orbit: Dictionary) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([run_seed, "satellite", orbit.id])
+	_pole = (orbit.through as Vector3).normalized()
+	_swing = precession
+	precession = 0.0
+	var off := start - _pole * start.dot(_pole)
+	if off.length() < 1e-4:
+		off = _pole.cross(Vector3(0.0, 0.0, 1.0) if absf(_pole.z) < 0.9 else Vector3(1.0, 0.0, 0.0))
+	_toward = off.normalized()
+	if rng.randf() < orbit.get("backward", 0.5):
+		_toward = -_toward
+	_phase = atan2(start.dot(_toward), start.dot(_pole))
+
+
+## How long from world time t until it's next over the place its route holds
+## to, s; INF for an orbit that holds to none.
+func until_through(t: float) -> float:
+	if _pole == Vector3.ZERO:
+		return INF
+	return fposmod(-(_phase + TAU * t / period), TAU) / TAU * period
+
+
 ## An orbit of Tu (gonkhub, 2026-10-19: "an 11th satellite orbiting Tu"): Tu
 ## where it hangs, tu_distance_radii off toward the point under it, its size
 ## the share of the sky tu_degrees gives it; the ring round it so many of Tu's
@@ -160,6 +201,10 @@ func facing(t: float) -> float:
 ## round its ellipse by Kepler's equation, its perigee and plane turned as far
 ## as they've turned, less the turn the moon has made under it since.
 func at(t: float) -> Vector3:
+	if _pole != Vector3.ZERO:
+		var lap := _phase + TAU * t / period
+		var other := _toward.rotated(_pole, _swing * t)
+		return (_pole * cos(lap) + other * sin(lap)) * (1.0 + altitude)
 	if _ring_r > 0.0:
 		var angle := _phase + TAU * t / period
 		return _around + (_ring_u * cos(angle) + _ring_v * sin(angle)) * _ring_r
@@ -188,6 +233,16 @@ func at(t: float) -> Vector3:
 ## swing taken back, put on its plane, and it there at t. A circle's orbit
 ## (the drone's); an ellipse would need its perigee moved too.
 func pass_over(p: Vector3, t: float) -> void:
+	if _pole != Vector3.ZERO:
+		# Its route still through its place: the plane turned to hold p as well.
+		var off := p - _pole * p.dot(_pole)
+		if off.length() > 1e-4:
+			var toward := off.normalized()
+			_toward = toward.rotated(_pole, -_swing * t)
+			_phase = atan2(p.dot(toward), p.dot(_pole)) - TAU * t / period
+		else:
+			_phase = (0.0 if p.dot(_pole) > 0.0 else PI) - TAU * t / period
+		return
 	var q := p.rotated(Vector3(0.0, 0.0, 1.0), TAU * t / day_seconds - precession * t)
 	var latitude := Sphere.latitude(q)
 	var tilt := acos(clampf(_node.cross(_across).z, -1.0, 1.0))

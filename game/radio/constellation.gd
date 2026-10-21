@@ -62,10 +62,10 @@ const ROSTER := [
 	# overhead (gonkhub, 2026-10-19; "6km is better", 2026-10-20). A run begins with it
 	# passing over.
 	{"id": &"thermal", "era": "Frontier Ag", "band": Vector2(320.0, 350.0),
-		# Its lap no whole share of the day, and its plane swinging slowly round, so its
-		# track sweeps over every place in time rather than retracing the same lines.
+		# Over Port Morgan every lap (gonkhub, 2026-10-21), its route swinging 37° a lap
+		# round the port, so the rest of its track sweeps over every place in time.
 		"orbit": {"altitude": 0.2513, "minutes": 7.95, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
-			"precess": 37.0},
+			"precess": 37.0, "through_port": true},
 		"look": {"color": Color(1.0, 0.55, 0.15), "size": 16.0, "shape": Shape.HULK, "light": 0.6, "low": true},
 		"sound": {"track": Sounds.RADIO_EYE_TUNNEL, "db": -2.0, "pulse": 0.0},
 		"lfo": [[&"temperature", &"pitch", 0.7, 1.4], [&"elevation", &"cutoff", 700.0, 7000.0]], "duty": []},
@@ -188,7 +188,9 @@ var _drift: float
 var _fired := {}
 
 
-func _init(seed_value: int, tuning: Tuning, start: Vector3) -> void:
+## `port`: Port Morgan's place on the sphere, which the crop survey's route
+## holds to; zero, its route is an orbit among the stars like the rest.
+func _init(seed_value: int, tuning: Tuning, start: Vector3, port := Vector3.ZERO) -> void:
 	run_seed = seed_value
 	_day_seconds = tuning.day_minutes * 60.0
 	_drift = tuning.carrier_drift_khz
@@ -198,6 +200,8 @@ func _init(seed_value: int, tuning: Tuning, start: Vector3) -> void:
 			orbit.merge(FORMATION)
 		if not orbit.is_empty():
 			orbit["id"] = row.id
+		if orbit.get("through_port", false):
+			orbit["through"] = port
 		orbits[row.id] = Satellite.new(seed_value, tuning, start, orbit)
 		rows[row.id] = row
 

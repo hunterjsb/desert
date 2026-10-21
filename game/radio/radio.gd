@@ -125,9 +125,13 @@ const LAMP_HIGH := Color(1.0, 0.75, 0.2)
 const LAMP_FOLLOW := 10.0
 ## Close up, the view looks at this point on its face.
 const FACE := Vector3(0.0, 0.01, 0.08)
-## The crop survey's next pass is worked out afresh at least this often, s
-## (you move; its plane swings), and every second while it's overhead.
-const PASS_FRESH := 30.0
+## The crop survey's flight plan comes in at least this strong, 0 to 1, from
+## over the horizon.
+const SURVEY_SKY_WAVE := 0.5
+## The crop survey's altitude as it reads it wanders this far about its
+## true one, m, over these periods, s: a working figure, for flavour.
+const SURVEY_WANDER := Vector2(150.0, 70.0)
+const SURVEY_WANDER_S := Vector2(97.0, 31.0)
 
 static var _gods: Gods
 static var _sky: Constellation
@@ -161,9 +165,9 @@ var read_at := -INF
 var reception := {}
 ## What it says now, for the line in view; "" while it plays music, or doesn't play.
 var said := ""
-## The crop survey's next pass over it as last worked out, and when.
-var _pass := {}
-var _pass_at := -INF
+## The crop survey's flight plan as it last read it, and when.
+var _survey_words := ""
+var _survey_at := -INF
 ## The Walker's log entry as it comes through, the line under it; "" off the Walker.
 var logged := ""
 ## The report it reads aloud, as its phrases, how many it has read, and when
@@ -315,7 +319,8 @@ static func gods_of(of: World) -> Gods:
 static func constellation_of(of: World) -> Constellation:
 	var run := [of.run_seed, of.start]
 	if _sky == null or _sky_for != run:
-		_sky = Constellation.new(of.run_seed, Tuning.current(), of.start)
+		var port: Dictionary = of.shape.history.landmark(&"port_morgan") if of.shape != null else {}
+		_sky = Constellation.new(of.run_seed, Tuning.current(), of.start, port.get("p", Vector3.ZERO))
 		_sky_for = run
 	return _sky
 
@@ -637,16 +642,13 @@ func _reads() -> int:
 
 
 ## Whether the dial stands on Frontier Ag's crop survey's carrier while it's
-## up and on the air: it reads out its schedule (gonkhub, 2026-10-21: "the
-## surveyor flyer's shortwave broadcast needs to inform the player of when
-## its flyover will occur"; on its own AM carrier until there's shortwave).
+## on the air: it reads out its flight plan (gonkhub, 2026-10-21). Its plan
+## comes in from over the horizon too, off the sky as shortwave would, though
+## its drones are heard only while it's up (SkyVoices).
 func _on_survey() -> bool:
 	var sky := constellation_of(world)
 	var t := world.time
-	if not sky.on_air(Airdrop.SURVEYOR, t) or absf(frequency - sky.carrier(Airdrop.SURVEYOR, t)) > Dial.reach(_tuning):
-		return false
-	var p := point_at(world.world_x(global_position.x), world.world_z(global_position.z))
-	return sky.orbits[Airdrop.SURVEYOR].seen_from(p, t).elevation > 0.0
+	return sky.on_air(Airdrop.SURVEYOR, t) and absf(frequency - sky.carrier(Airdrop.SURVEYOR, t)) <= Dial.reach(_tuning)
 
 
 ## An old save's channel, or a scenario's, as a place on the dial: the
@@ -694,6 +696,7 @@ func _retuned(before: int) -> void:
 			world.world_z(global_position.z), _tuning, world.salvage.taken)
 	if now != before:
 		read_at = -INF
+		_survey_at = -INF
 		_since_signal = INF
 		# Tuned onto the weather station, it reports at once.
 		spoken_at = -INF
@@ -809,9 +812,14 @@ func _listen(delta: float) -> void:
 		STATIC:
 			said = dial + "static"
 		SURVEY:
-			# Its schedule, read between its drones, as clean as its signal comes.
-			var words := survey_words(t)
-			said = dial + (words if sky.levels.get(Airdrop.SURVEYOR, 0.0) > 0.0 else "static")
+			# Its flight plan, every survey_report_every s and at once as you tune in.
+			if t >= _survey_at + _tuning.survey_report_every or t < _survey_at:
+				_survey_words = survey_words(t)
+				_survey_at = t
+				_say_aloud(_survey_words, false, t)
+				if heard():
+					Deeds.done(world, &"flight_plan")
+			said = dial + _survey_words
 		CITY:
 			reception = receive_city(x, z, t)
 			said = dial + ("· · ·" if reception.cut else ("static" if reception.clean <= 0.0 else reception.text))
@@ -822,10 +830,6 @@ func _listen(delta: float) -> void:
 		_transmit(reception.words, t)
 	elif now == BEACON and not target.is_empty() and voice_level() > 0.0:
 		_transmit(said.trim_prefix(dial), t)
-	elif now == SURVEY and voice_level() > 0.0:
-		_transmit(said.trim_prefix(dial), t)
-		if heard():
-			Deeds.done(world, &"flight_plan")
 	if song != null:
 		_put_on(song, t, into)
 	elif _on_air != null:
@@ -1303,7 +1307,7 @@ func voice_level() -> float:
 	if channel not in [WEATHER, GOD, BEACON, SURVEY]:
 		return 0.0
 	if channel == SURVEY:
-		return sky.levels.get(Airdrop.SURVEYOR, 0.0) if sky != null else 0.0
+		return maxf(sky.levels.get(Airdrop.SURVEYOR, 0.0), SURVEY_SKY_WAVE) if sky != null else 0.0
 	if channel == BEACON:
 		return 0.0 if target.is_empty() else Dial.heard(frequency - Dial.BEACON_KHZ, _tuning)
 	return audible(reception)
@@ -1335,24 +1339,23 @@ func _say_aloud(words: String, urgent: bool, t: float) -> void:
 			_queue(spoken, spoken, 0.0)
 
 
-## The crop survey's schedule as it reads it out, for where the radio stands
-## at world time t: when it's next high enough over you to fire at a flare
-## (Airdrop.next_pass), where to look and how high it comes; or, while it is,
-## to light one. Worked out again only once the last is past or stale.
+## Frontier Ag's crop survey's flight plan as it reads it out at world time t
+## (gonkhub, 2026-10-21): its speed over the ground, its altitude (a working
+## figure wandering about its true one: flavour for now) and how long until
+## it's over Port Morgan, which it passes every lap. Said "elevation": the
+## bundled voice has no "altitude" yet.
 func survey_words(t: float) -> String:
-	var stale := PASS_FRESH if _pass.get("due", 1.0) > t - _pass_at else 1.0
-	if _pass.is_empty() or t < _pass_at or t >= _pass_at + stale:
-		_pass = Airdrop.next_pass(world, global_position, t)
-		_pass_at = t
-	if _pass.is_empty():
-		return "Surveyor · Not due"
-	var due: float = _pass.due - (t - _pass_at)
-	if due <= 0.0:
-		return "Surveyor · Here now · Light signal flare"
-	var when := "%d seconds" % maxi(roundi(due / 10.0) * 10, 10) if due < 60.0 else (
-		"1 minute" if due < 90.0 else "%d minutes" % roundi(due / 60.0))
-	return "Surveyor · Due in %s · Bearing %s · Elevation %d degrees" % [when, say_point(_pass.bearing),
-		roundi(_pass.peak)]
+	var orbit: Satellite = constellation_of(world).orbits[Airdrop.SURVEYOR]
+	var speed := orbit.at(t + 0.5).distance_to(orbit.at(t - 0.5)) * orbit.radius
+	var altitude := orbit.height(t) * orbit.radius + SURVEY_WANDER.x * sin(t / SURVEY_WANDER_S.x) \
+		+ SURVEY_WANDER.y * sin(t / SURVEY_WANDER_S.y)
+	var words := "Surveyor · Speed %d m/s · Elevation %d metres" % [roundi(speed), roundi(altitude / 10.0) * 10]
+	var eta := orbit.until_through(t)
+	if eta == INF:
+		return words
+	var when := "%d seconds" % maxi(roundi(eta / 10.0) * 10, 10) if eta < 60.0 else (
+		"1 minute" if eta < 90.0 else "%d minutes" % roundi(eta / 60.0))
+	return words + " · Port Morgan in " + when
 
 
 ## The weather station's regular report for where the radio stands at world

@@ -30,8 +30,9 @@ native checks; full platform/build checks and human playtest acceptance remain.
 - See Frontier Ag's crop survey as a full model 6 km up: faceted nacelles, solar
   arrays and its care-package cannon, lit by the sun and the sand below and
   hazed by the air between. Its care packages fall for 30 s from the new height.
-- Tune to the crop survey to hear when it's next over you, where to look and how
-  high it comes, and when to light a flare. Hearing it earns Flight Plan.
+- The crop survey now passes over Port Morgan every lap, its route swinging round
+  the moon. Tune to it for its flight plan every 5 minutes: speed, altitude and
+  when it's next over Port Morgan. Hearing it earns Flight Plan.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 

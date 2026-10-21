@@ -1074,6 +1074,10 @@ static var _current: Tuning
 ## real life min)"; world time runs at real time); heard this far, m.
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
+## Frontier Ag's crop survey reads its flight plan this often, s of world
+## time, and at once as you tune in (gonkhub, 2026-10-21: "announce its
+## update every 5 min").
+@export var survey_report_every: float = 300.0
 ## Speech-only station character; weather and local computer speech stay unchanged.
 @export var radio_voice_profiles: Dictionary = {}
 ## Its advisories: a sandstorm riding a prevailing wind this fast or faster,
