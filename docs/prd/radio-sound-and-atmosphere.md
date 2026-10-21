@@ -825,6 +825,33 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **The deed** Whistler: hear one on an antenna reel's wire, away from your camp's hum.
 - **Not yet:** the dawn chorus near the poles; gonkhub's own sounds for sferics and whistlers.
 
+### The radio's tiers and makers' looks (2026-10-21; built)
+
+*From the radio-equipment lab (`look/radio_kit`, its README the proposal): gonkhub asked for "three tiers of
+radio and several visual styles," each band its own colour. Its looks move into the game as they are
+(`game/look/radio_kit_looks.gd`, `radio_band_looks.gd`); the lab keeps its studio, rig and the kite.*
+
+- **The crystal set** (`crystal_set`), tier 0: a coil wound on a can, a cat's whisker on a crystal, an earpiece,
+  on a scrap tray. No power and no slots: it draws nothing and runs on what it hears, at a third of a field
+  radio's strength (`crystal_gain`), so only strong carriers near come through, and it plays 12 dB quieter, into
+  its earpiece (`crystal_quiet_db`). AM only, no marks, its face its own (no live needle or lamps). The deed
+  **Foxhole Radio**: hear a god in its window on one. Seed 1234: the Quartermaster 0.70 on a field radio, 0.25
+  on a crystal set (radio probe 55).
+- **The field radio in makers' looks:** the radio the game always had is company issue (teal and gunmetal), and
+  four more are their own catalog devices, the same set: colonial survey (`radio_colonial`, off-white and orange),
+  skimmer crew (`radio_skimmer`, olive, a plate riveted over a crack, tape), First Kingdoms (`radio_kingdoms`,
+  enamel red, hardwood and brass) and second age (`radio_second_age`, ceramic and saltwood, cord). Each wears the
+  lab's body (`RadioKitLooks.field_radio`, bare: its needle, knobs, lamps and window are the set's own, live).
+- **Its band window recolours as it switches** (`Radio._show_window`, `RadioKitLooks.window`): amber for AM, sea
+  green for FM, violet for shortwave, each numbered for its band with the band's name in its corner, lit while it
+  plays; under it three tells, AM, FM and SW, lit on the band it's on, dim on one its converters reach, capped
+  black on one they don't. Each look made once and kept. This replaces the face's band lamp for these sets.
+- **The survey set** (`survey_set`), tier 2: a colonial three-band receiver, FM built in (no converter needed),
+  two bays on its left side for converters, drawing a watt more than the field radio; its face its own.
+- In the creative menu beside the radio.
+- **Not yet:** the survey set's face lighting its band; the crystal set's slider turning as it tunes; finds for
+  the new sets in ruins; the kite.
+
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a

@@ -171,6 +171,16 @@ var frequency := 0.0
 ## other's top: where the one not in use stood is kept here.
 var band := AM_BAND
 var fm_mhz := Fm.LOWEST
+## Its maker's look (RadioKitLooks.STYLES), whose band window it lights in
+## the band's own colour as it switches, or &"" for a set with its own face;
+## and whether it's a crystal set (no power, weak, in your ear) or a survey
+## set (FM built in), each with a face of its own and no live dial on it.
+var style := &""
+var crystal := false
+var survey := false
+var _window: MeshInstance3D
+var _window_key := []
+static var _windows := {}
 var am_khz := 0.0
 var sw_khz := Shortwave.LOWEST
 ## Where its volume knob stands, 0 silent to 1 full: everything it plays.
@@ -349,7 +359,13 @@ func _ready() -> void:
 	_show_dial()
 	_show_marks()
 	Profile.marks_changed.connect(_show_marks)
-	_make_lamps()
+	if crystal or survey:
+		# Its face is its own: no live needle, knobs or lamps on it.
+		for view in [needle, knob, volume_knob]:
+			view.visible = false
+	else:
+		_make_lamps()
+	_show_window()
 
 
 func _exit_tree() -> void:
@@ -480,6 +496,8 @@ func has_sw() -> bool:
 
 
 func _has(stat: StringName) -> bool:
+	if frame_stats.get(stat, 0) > 0:
+		return true
 	for part in parts():
 		if part.stats.get(stat, 0) > 0:
 			return true
@@ -588,7 +606,7 @@ func switch(up: bool) -> bool:
 
 
 func has_dial_marks() -> bool:
-	return true
+	return not crystal and not survey
 
 
 ## Marks where its dial stands, in a colour of its own, bright and picked at
@@ -701,7 +719,14 @@ func track() -> AudioStream:
 
 
 func demand_w(t := NAN) -> float:
-	return super(t) + (_tuning.radio_w if on and not wrecked() else 0.0)
+	# A crystal set draws nothing: it runs on what it hears.
+	return super(t) + (_tuning.radio_w if on and not wrecked() and not crystal else 0.0)
+
+
+## How much of a station's strength it gets, against a field radio's: a
+## crystal set, with nothing to lift it, only so much.
+func gain() -> float:
+	return _tuning.crystal_gain if crystal else 1.0
 
 
 func stats() -> Dictionary:
@@ -716,6 +741,7 @@ func stats() -> Dictionary:
 
 func _recompute() -> void:
 	super()
+	_show_window()
 	# Its dial lights only while it's on.
 	for view in painted():
 		if view != null:
@@ -748,6 +774,29 @@ static func knob_turn(khz: float) -> float:
 	return TAU * khz / KHZ_A_TURN
 
 
+## Its band window in its maker's look, lit in the band's own colour while
+## it plays, the tells on the bands it can reach dim, built again as any of
+## that changes (RadioKitLooks.window), each look made once.
+func _show_window() -> void:
+	if style == &"":
+		return
+	var reach := []
+	if has_fm():
+		reach.append(FM_BAND)
+	if has_sw():
+		reach.append(SW_BAND)
+	var key := [style, band, on and powered, reach]
+	if key == _window_key:
+		return
+	_window_key = key
+	if not _windows.has(key):
+		_windows[key] = RadioKitLooks.window(style, band, on and powered, reach)
+	if _window == null:
+		_window = _on_face(_windows[key])
+	else:
+		_window.mesh = _windows[key]
+
+
 ## Where the needle stands on its window, as the AM dial's kHz across it:
 ## the FM band spread over the same window.
 func _needle_khz() -> float:
@@ -766,6 +815,9 @@ func _show_dial() -> void:
 
 ## Its band lamp in the seat by the name of the band it's on, in its colour.
 func _show_band() -> void:
+	# A maker's look tells its band by its window and its tells instead.
+	band_lamp.visible = style == &""
+	_show_window()
 	band_lamp.mesh = Dress.band_lamp(band)
 	band_lamp.position = BAND_LAMP_FROM + Vector3(BANDS.find(band) * BAND_LAMP_GAP, 0.0, FACE.z)
 
@@ -998,6 +1050,8 @@ func _listen(delta: float) -> void:
 			if reception.useful and not reception.cut and reception.clean > 0.0 and heard():
 				Deeds.done(world, &"god_heard")
 				Deeds.done(world, &"gods", id)
+				if crystal:
+					Deeds.done(world, &"foxhole")
 			if not reception.cut and reception.broadside >= WHOLE and reception.clean <= 0.0 and volume > 0.0 \
 					and heard():
 				Deeds.done(world, &"null")
@@ -1342,7 +1396,7 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	var slid := Interference.warp(storm, t, id, _tuning)
 	var share := Dial.heard(frequency - khz - slid, _tuning)
 	var turned := rod(ground, Dial.by_sky(khz, metres, night, _tuning))
-	var broadside := Dial.strength(id, khz, metres, night, _tuning)
+	var broadside := Dial.strength(id, khz, metres, night, _tuning) * gain()
 	var power := broadside * turned
 	var strength := share * power
 	# A jammer overhead buries what's near it on the dial.
@@ -1383,7 +1437,7 @@ func receive_city(x: float, z: float, t: float) -> Dictionary:
 	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
 	var slid := Interference.warp(storm, t, &"city", _tuning)
 	var near := 1.0 - smoothstep(_tuning.city_heard_m.x, _tuning.city_heard_m.y, metres)
-	var strength := Dial.pull(frequency - city.carrier() - slid, _tuning.dial_width_khz) * near * rod(ground, false)
+	var strength := Dial.pull(frequency - city.carrier() - slid, _tuning.dial_width_khz) * near * rod(ground, false) * gain()
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning)
 	var heard := {"id": &"city", "khz": city.carrier(), "metres": metres, "bearing": ground, "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, &"city", _tuning),
@@ -1473,7 +1527,7 @@ func receive_music(x: float, z: float, t: float) -> Dictionary:
 	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
 	var slid := Interference.warp(storm, t, &"music", _tuning)
 	var share := Dial.heard(frequency - Dial.MUSIC_KHZ - slid, _tuning)
-	var power := Dial.strength(&"ledger", Dial.MUSIC_KHZ, metres, night, _tuning) \
+	var power := Dial.strength(&"ledger", Dial.MUSIC_KHZ, metres, night, _tuning) * gain() \
 		* rod(ground, Dial.by_sky(Dial.MUSIC_KHZ, metres, night, _tuning))
 	var jammed := constellation_of(world).jamming(frequency, p, t)
 	var through := Interference.let_through(storm, _tuning)
@@ -1963,7 +2017,9 @@ static func span(seconds: float) -> String:
 func knob_db() -> float:
 	if volume <= 0.0:
 		return -80.0
-	return _tuning.radio_loudness_db - _tuning.radio_volume_range_db * (1.0 - volume)
+	# A crystal set plays into its earpiece, quieter.
+	return _tuning.radio_loudness_db - _tuning.radio_volume_range_db * (1.0 - volume) \
+		- (_tuning.crystal_quiet_db if crystal else 0.0)
 
 
 ## The knob on what it plays besides the hiss: the music, a station's tones

@@ -1153,6 +1153,10 @@ static var _current: Tuning
 ## The shortwave band (2 to 30 MHz, through a shortwave converter): a notch of
 ## tuning moves it this far, kHz; a fine step is the AM dial's.
 @export var sw_notch_khz: float = 25.0
+## A crystal set hears at this share of a field radio's strength, with no
+## power to lift it, and plays this many dB quieter, into its earpiece.
+@export var crystal_gain: float = 0.35
+@export var crystal_quiet_db: float = 12.0
 ## An antenna reel holds this much wire, m: walked farther from its radio, its
 ## clip pops off the set.
 @export var antenna_reel_m: float = 30.0

@@ -374,7 +374,9 @@ const DEVICES := {
 	&"survey_receiver": {"label": "Survey receiver", "size": Vector3(0.36, 0.50, 0.26), "mass": 1.4,
 		"radio": true, "receiver": true, "carryable": true, "sticks": true,
 		"sockets": [[&"battery", Vector3(0.0, -0.12, -0.10), Vector3.FORWARD]]},
-	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
+	# The field radio, in its makers' looks (RadioKitLooks.STYLES): the one the
+	# game always had is company issue.
+	&"radio": {"label": "Radio", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true, "style": &"company",
 		"carryable": true, "sticks": true,
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
@@ -383,6 +385,61 @@ const DEVICES := {
 			# FM converter and the shortwave converter.
 			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
 			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
+		]},
+	&"radio_colonial": {"label": "Radio, colonial survey", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
+		"style": &"colonial", "carryable": true, "sticks": true,
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
+			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
+			# Its left side takes two bands' front ends, one over the other: the
+			# FM converter and the shortwave converter.
+			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
+			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
+		]},
+	&"radio_skimmer": {"label": "Radio, skimmer crew", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
+		"style": &"skimmer", "carryable": true, "sticks": true,
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
+			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
+			# Its left side takes two bands' front ends, one over the other: the
+			# FM converter and the shortwave converter.
+			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
+			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
+		]},
+	&"radio_kingdoms": {"label": "Radio, First Kingdoms", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
+		"style": &"kingdoms", "carryable": true, "sticks": true,
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
+			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
+			# Its left side takes two bands' front ends, one over the other: the
+			# FM converter and the shortwave converter.
+			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
+			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
+		]},
+	&"radio_second_age": {"label": "Radio, second age", "size": Vector3(0.32, 0.22, 0.16), "mass": 2.5, "radio": true,
+		"style": &"second_age", "carryable": true, "sticks": true,
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
+			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
+			# Its left side takes two bands' front ends, one over the other: the
+			# FM converter and the shortwave converter.
+			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
+			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
+		]},
+	# Tier 0: a crystal set of scrap, a coil on a can tuned by a slider, a
+	# cat's whisker on a crystal, an earpiece. No power, no slots: it hears
+	# only the strong AM carriers near it, in your ear.
+	&"crystal_set": {"label": "Crystal set", "size": Vector3(0.2, 0.012, 0.13), "mass": 0.5, "radio": true,
+		"crystal": true, "carryable": true, "sticks": true, "sockets": []},
+	# Tier 2: a colonial three-band survey set, FM built in, two bays for a
+	# shortwave converter and another, drawing a watt more than the field radio.
+	&"survey_set": {"label": "Survey set", "size": Vector3(0.42, 0.25, 0.2), "mass": 4.0, "radio": true,
+		"survey": true, "carryable": true, "sticks": true, "stats": {"fm": 1, "draw_w": 1.0},
+		"sockets": [
+			[&"battery", Vector3(0.0, -0.03, -0.1), Vector3.FORWARD],
+			[&"port", Vector3(0.21, -0.06, 0.0), Vector3.RIGHT],
+			[&"radio_mod", Vector3(-0.21, 0.055, 0.0), Vector3.LEFT],
+			[&"radio_mod", Vector3(-0.21, -0.055, 0.0), Vector3.LEFT],
 		]},
 	# A reel of aerial wire, clipped to a radio and walked out (AntennaReel).
 	&"antenna_reel": {"label": "Antenna reel", "size": Vector3(0.14, 0.12, 0.08), "mass": 0.8, "antenna_reel": true,
@@ -715,6 +772,10 @@ static func device(id: StringName) -> Device:
 		else (AntennaReel.new() if spec.get("antenna_reel", false) \
 		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new()))))))))))))))))
 	made.set_meta(&"catalog", id)
+	if made is Radio:
+		(made as Radio).style = spec.get("style", &"")
+		(made as Radio).crystal = spec.get("crystal", false)
+		(made as Radio).survey = spec.get("survey", false)
 	made.label = spec.label
 	made.frame_mass = spec.mass
 	made.frame_middle = spec.get("middle", Vector3.ZERO)

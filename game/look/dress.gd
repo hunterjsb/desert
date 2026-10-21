@@ -521,24 +521,14 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			b.box(Vector3(0.01, 0.05, 0.01), Vector3(h.x + 0.008, -0.02, 0.0), steel, 0.002)
 			b.drum(0.008, 0.03, Vector3(h.x + 0.02, -0.045, 0.0), black, turned, 8)
 			b.box(Vector3(0.02, 0.012, 0.03), Vector3(0.0, h.y - 0.004, h.z - 0.004), Paint.coat(Paint.BRASS, 0.8, 0.7, 0.4), 0.002)
-		&"radio":
-			# A set made to carry: across the top of its face a band scale that
-			# lights while it plays, under it a speaker's slats and the bosses
-			# its knobs turn on; a handle, an aerial up from the back. The
-			# needle and knobs are the radio's own, to turn.
-			b.box(Vector3(size.x - 0.02, size.y - 0.02, size.z - 0.02), Vector3.ZERO, teal, 0.02)
-			for x in [-1, 1]:
-				b.box(Vector3(0.03, size.y, size.z), Vector3(x * (h.x - 0.015), 0.0, 0.0), gun, 0.008)
-				b.box(Vector3(0.02, 0.04, 0.02), Vector3(x * 0.09, h.y + 0.02, 0.0), gun, 0.004)
-			for i in 4:
-				b.box(Vector3(0.14, 0.01, 0.01), Vector3(-0.055, -0.075 + i * 0.02, h.z - 0.004), black, 0.002)
-			_band(b, Vector3(0.0, Radio.BAND_Y, h.z))
-			_lamp_strip(b, h.z)
-			for knob: Vector3 in [Radio.KNOB_AT, Radio.VOLUME_AT]:
-				var r := 0.034 if knob == Radio.KNOB_AT else 0.019
-				b.drum(r, 0.016, knob + Vector3(0.0, 0.0, -0.008), gun, Basis(Vector3.RIGHT, PI / 2.0), 16)
-			b.box(Vector3(0.2, 0.02, 0.025), Vector3(0.0, h.y + 0.045, 0.0), gun, 0.006)
-			b.drum(0.006, 0.3, Vector3(-h.x + 0.045, h.y + 0.15, -h.z + 0.03), Paint.coat(Paint.STEEL, 0.8, 0.6), Basis.IDENTITY, 8)
+		&"radio", &"radio_colonial", &"radio_skimmer", &"radio_kingdoms", &"radio_second_age":
+			# The field radio in its maker's look, its body alone: its needle,
+			# knobs, lamps and band window are the radio's own, live.
+			return RadioKitLooks.field_radio(Catalog.DEVICES[id].style, {}, &"am", false, true)
+		&"crystal_set":
+			return RadioKitLooks.crystal_set()
+		&"survey_set":
+			return RadioKitLooks.survey_set(&"am")
 		&"chassis":
 			# A flatbed's section: rails round a ribbed plate, sticky top and
 			# bottom, caps at the corners where it meets the next, and hazard
