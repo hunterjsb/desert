@@ -120,7 +120,8 @@ prior measured results describe the previous implementation, not acceptance here
 Persist one regulated carrier survey pass, initialized once from the original
 regional anchor so its initial default pulse reaches the validated fallback.
 The powered carrier holds latitude and nearly matches the moon's rotation, with
-a small residual ground-track drift. This is stationkeeping, not an unpowered
+a bounded smooth residual along-track loiter (600 compressed metres each way,
+3 m/s peak speed), so reading or packing cannot permanently exhaust the pass. This is stationkeeping, not an unpowered
 Kepler orbit. It gives ordinary packing time without reanchoring the ship when
 the pulse is confirmed. Do not move the carrier to an unrelated Tu-facing point
 merely to compose the window; the window shows Tu only when that geometry permits.
@@ -146,5 +147,8 @@ seeded footprint and coarse history again. A clear continuous landing point may
 be committed as an ordinary LandingPlan candidate; an unsafe or outside-survey
 point has an explicit unsupported state and cannot be committed. Revalidate at
 actual launch time; stale forecasts need updating at the station. The regulated
-pass's default residual drift is 3 compressed metres per second, leaving minutes
-for packing instead of a few seconds. This is not an indefinite launch guarantee.
+loiter changes the launch forecast continuously without accumulating unbounded
+drift. The overview camera stays inertially fixed so the real rotating geography
+is visible; the cabin camera follows the actual carrier. Unsafe selected pulses
+still require adjustment. The model returns actual timestamps alongside path
+vertices and body-fixed impact forward direction for faithful flight playback.
