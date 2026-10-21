@@ -280,12 +280,15 @@ func working() -> bool:
 
 ## The rope gathered where the line is on you, as a coil growing with it.
 func _process(_delta: float) -> void:
-	var now := line()
+	var paying := _paying_in_hand()
+	var now := paying.rope if paying != null else line()
 	var gathered := now.full - now.length + now.haul_gathered if now != null else 0.0
 	_coil.visible = gathered > 0.05
 	if not _coil.visible:
 		return
-	var at := (now.a if _on_you(now.a) else now.b).global_position
+	# Before its first tie the rest is on the belt; afterward it pays from the hand.
+	var end := Line._tip(paying.ends[1 - paying._first]) if paying != null else (now.a if _on_you(now.a) else now.b)
+	var at := end.global_position
 	var size := 0.06 + 0.035 * sqrt(gathered)
 	var right := _player.global_basis.x
 	var ahead := -_player.global_basis.z
@@ -294,6 +297,20 @@ func _process(_delta: float) -> void:
 	var across := Vector3.UP.cross(axis).normalized()
 	_coil.global_transform = Transform3D(Basis(across, axis, across.cross(axis)).scaled(Vector3.ONE * size),
 		at + Vector3.DOWN * size * 0.8)
+
+
+## Laying a new line owns its coil display without changing the selected reel.
+func _paying_in_hand() -> Line:
+	var held := _player.hands.held
+	if not is_instance_valid(held) or not held.has_meta(&"line"):
+		return null
+	var laid: Variant = held.get_meta(&"line")
+	if not is_instance_valid(laid) or not laid is Line:
+		return null
+	if laid.state in [Line.State.FIRST, Line.State.PAYING] and laid.ends.has(held) \
+			and laid.ends.size() == 2 and _live_rope(laid.rope):
+		return laid
+	return null
 
 
 func _rub() -> void:

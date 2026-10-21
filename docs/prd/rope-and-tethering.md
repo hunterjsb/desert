@@ -753,3 +753,30 @@ end check before the fix; both pass afterward (6 s), including stored length.
 Carried-coil save/restore (13 s), board-end recovery (7 s), and all 35 salvage
 part pickups (40 s) also pass. The held-end motion report is investigated
 separately; these results do not establish its cause.
+
+### Rope display frame check (2026-10-20)
+
+Moving routed lines must meet their visible endpoints and guide in one frame.
+An actual unseen moving-sheet capture checked 89 drawn frames with the current
+project's physics interpolation disabled: interpolated guide queries and current
+transforms matched, with zero displayed guide offset. No strand or shader change
+was justified by that check. It does not establish every rope motion case.
+
+### Coil ownership while laying a line (agreed correction, 2026-10-20)
+
+A fresh line's remaining coil belongs to its paying end. Before the first tie
+that end is on the belt; after attaching the first end, it comes into the hand.
+The visual coil must follow that same end even when an older waist line remains
+selected for reeling. Keep line identity, endpoint ownership, paid length and
+control selection unchanged. Verify the ordinary first tie and walking handoff,
+then using a fitted hook to route without tying down the held end.
+
+**As built and measured.** With an older waist line selected, the ordinary
+new-coil pickup, first tie and two-metre walk reproduced a coil 1.251 m away
+from the held paying end. The end itself moved 1.953 m with the player and
+retained no attachment offer. The visual coil now reads the active laying line
+independently of reel selection and follows its remaining end through the handoff.
+The focused check passes (9 s), as does selected-line reeling (9 s). An actual
+GPU capture places the coil 0.129 m below the held tip; using a real fitted hook
+routes that same line while its paying end remains free in the hand. Strand
+simulation, rope length, reel selection and force response are unchanged.
