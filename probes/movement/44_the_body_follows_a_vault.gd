@@ -1,4 +1,5 @@
 extends "res://probes/movement/43_board_the_powered_chassis.gd"
+## Runs alone
 ## Free hands visibly reach during the actual swept climb, with original
 ## bone lengths and no visual pose write to the physical player's state.
 var frames := 0

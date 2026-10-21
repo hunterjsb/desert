@@ -1009,7 +1009,7 @@ an authored hand target still within the existing 0.61 m arm-and-grip reach.
 Knee gathering follows actual ledge rise; the trailing leg gathers half as far.
 Movement 44 fails the pre-animation Body and passes the correction: across 42
 render frames, the forward grip reaches -0.254 m in body space and a boot rises
-to 0.727 m, with zero measured arm-segment length error. Repeated posing writes
+to 0.727 m, with zero measured arm-segment length error. Posing after the real course writes
 no player transform, velocity or collision shape. Both exact before/after
 30/60-FPS powered-deck courses retain identical physical results: 0.87368 m
 rise, 0.10620 m maximum swept tick, 0.04202 rad/s peak craft spin, standing on
