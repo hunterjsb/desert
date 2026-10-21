@@ -39,6 +39,9 @@ to open the launcher, see the latest available game version, and install or play
   existing `desert-<version>-<platform>.zip` archives.
 - The app must clearly report offline, unsupported-platform, missing-runtime and
   download/extraction errors, with a retry path where useful.
+- Show an edge-to-edge widescreen in-game desert image in a compact banner at the top of
+  the launcher, shared by Play and Source. Keep the launcher title and short line readable
+  over the image, with a dark overlay; the image is atmosphere, not a control.
 
 ## Product decisions still open
 
@@ -91,9 +94,21 @@ they have no checked-out game to launch.
 The app uses a compact orbital monogram rather than the game's dune illustration for its
 window and launcher icon.
 
+The window has a compact, full-width banner above the Play and Source tabs. The banner uses
+a real in-game capture with a storm approaching over the dunes, with the launcher title and
+subtitle over a darkened area for contrast. It adds atmosphere without taking space from
+either page's controls.
+
 The Play browser shows published game releases only. The current source project's
 `project.godot` version can be newer than GitHub's latest published release; the UI
 labels the selected version as the latest **published** release so these states are clear.
+
+**Storm banner, 2026-10-21:** a shared edge-to-edge header now sits above both tabs. Its
+art is a real fixed-seed world capture from `look/dunes/dunes.tscn` (`sea_200m_noon`,
+seed 1234, storm threshold -0.15) at 1920x1080, cropped to
+`launcher/assets/desert-storm-banner.jpg` at 1920x450 (56,479 bytes). A left-side gradient
+keeps the title readable. PyInstaller now bundles the launcher asset directory so the
+banner appears in packaged builds as well as when run from source.
 
 `launcher-release.yml` packages Linux x86_64, Windows x86_64, and macOS arm64 and x86_64
 builds on launcher tags. Its first `workflow_dispatch` packaging run on master passed all
