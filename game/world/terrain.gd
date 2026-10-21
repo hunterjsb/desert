@@ -98,6 +98,7 @@ var _home_kept := Rect2i()
 var _home_next := Rect2i()
 var _home_blocked := false
 var _home_anchor: Sites.Anchor
+var home_ground_ready := false
 
 
 func setup(world: World) -> void:
@@ -372,7 +373,31 @@ func reset_home() -> void:
 	_home_kept = Rect2i()
 	_home_next = Rect2i()
 	_home_anchor = null
+	home_ground_ready = false
 	_planned = false
+
+
+## Save the admitted ground, even when later physical growth needs attention.
+func home_support() -> Rect2i:
+	if _home_kept.has_area():
+		return _home_kept
+	var plan := TerrainResidency.plan(_center, _tuning, _world.home.bounds)
+	if plan.camp_keep.get_area() <= _tuning.home_support_chunks:
+		return plan.camp_keep
+	var at := _world.home.anchor
+	return TerrainResidency.plan(_center, _tuning, Rect2(at.x, at.z, 1.0, 1.0)).camp_keep if at != null else Rect2i()
+
+
+func restore_home(support: Rect2i) -> void:
+	if not support.has_area() or support.get_area() > _tuning.home_support_chunks:
+		support = home_support()
+	_home_kept = support
+	_home_anchor = _world.home.anchor
+
+
+## Outlying admitted bodies restore at their actual poses with ordinary ground safety.
+func home_restores_at(x: float, z: float) -> bool:
+	return _home_kept.grow(-1).has_point(chunk_at(x, z))
 
 
 func _stage_home(policy: TerrainResidency.Policy) -> void:
@@ -381,6 +406,12 @@ func _stage_home(policy: TerrainResidency.Policy) -> void:
 		_home_anchor = _world.home.anchor
 	_home_next = policy.camp_keep
 	_home_blocked = false
+	if policy.camp_keep.get_area() > _tuning.home_support_chunks:
+		policy.camp_keep = _home_kept
+		policy.camp_collision = _home_kept.grow(-1) if _home_kept.has_area() else Rect2i()
+		_home_blocked = true
+		_world.home.attention = "home is spread beyond its supported ground"
+		return
 	if not policy.camp_keep.has_area() or not _home_kept.has_area():
 		return
 	var together := policy.camp_keep.merge(_home_kept.grow(-1))
@@ -399,7 +430,8 @@ func _update_home(policy: TerrainResidency.Policy) -> void:
 	if home.has_home() and home.anchor != null and policy.camp_keep.has_area():
 		_world.shape.sites.retain(&"home", policy.history_rect(_size), home.anchor)
 		_home_requested = true
-		home.supported = not _home_blocked and _home_ready(policy)
+		home_ground_ready = _home_ready(policy)
+		home.supported = not _home_blocked and home_ground_ready
 		if home.supported:
 			_home_kept = _home_next
 	elif _home_requested:
@@ -407,6 +439,7 @@ func _update_home(policy: TerrainResidency.Policy) -> void:
 		_home_requested = false
 		_home_kept = Rect2i()
 		home.supported = false
+		home_ground_ready = false
 
 
 func _home_ready(policy: TerrainResidency.Policy) -> bool:

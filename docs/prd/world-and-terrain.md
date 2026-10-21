@@ -911,3 +911,13 @@ items and a 1.23 ms maximum measured terrain callback. This small fixture does n
 validate the 512-item/128 m worst case or establish a general frame-time guarantee.
 Weather 26 holds camp light and temperature fixed through a 2 km player trip and
 origin shift; player and legacy forecast queries retain local geographic behavior.
+
+Further focused acceptance: History 10–13 pass real Crossing exposure/excavation,
+retained dune-seed cache eviction, duplicate-cell saved placement restoration and
+stationary-player support retirement. Camp 7 passes a full 49-cell one-chunk handoff
+and replacement mark; the handoff keeps required old collision rather than its
+obsolete outer margin. Camp 8 passes a saved overstretched stake assembly without
+expanding the budget or hanging restore. Its unsupported outlier resumes at the
+actual saved pose using ordinary missing-ground safety; supported camps continue
+normal physics. Camp 5 also compares equal 10 s near/far power intervals. Existing
+origin-shift and unmarked camp warning/deletion checks pass (12 s and 129 s).

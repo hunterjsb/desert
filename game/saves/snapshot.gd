@@ -182,9 +182,14 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	world.shape.sites.recall_dug(data.get("dug", []), data.get("dunes", []))
 	world.farm.feral.recall(data.get("feral", []), world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
 	world.terrain.reset_home()
-	world.home.prepare_restore(data.get("home", {}))
+	var home: Dictionary = data.get("home", {})
+	world.home.prepare_restore(home)
+	if not home.is_empty():
+		world.terrain.restore_home(home.get("support_cells", Rect2i()))
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
 	for rec: Dictionary in data.things:
+		if home.get("members", []).has(rec.ref) and not world.terrain.home_restores_at(rec.at[1], rec.at[3]):
+			continue
 		places.append(Vector2(rec.at[1], rec.at[3]))
 	return places
 
@@ -307,6 +312,10 @@ func finish(data: Dictionary) -> void:
 		if is_instance_valid(cargo):
 			Airdrop.recall(world, cargo, _transform_in(drop.at), drop.state)
 	world.home.finish_restore(data.get("home", {}), func(ref: int) -> Node: return _made.get(ref))
+	for body in world.home.members:
+		if not body.freeze and not world.terrain.has_collision_at(world.world_x(body.global_position.x), world.world_z(body.global_position.z)):
+			body.freeze = true
+			body.set_meta(&"frozen_by_world", true)
 	world.shape.sites.resumed()
 
 
@@ -390,6 +399,8 @@ func _take() -> Dictionary:
 	if player.helm != null and _refs.has(player.helm):
 		data.helm = _refs[player.helm]
 	data.home = world.home.snapshot(_ref)
+	if not data.home.is_empty():
+		data.home.support_cells = world.terrain.home_support()
 	data.things = things
 	data.airdrops = drops
 	data.order = order

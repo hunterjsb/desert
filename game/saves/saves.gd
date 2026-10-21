@@ -142,7 +142,7 @@ func _read() -> Dictionary:
 
 ## The ground is solid round you and loaded under everything of yours.
 func _ready_at(world: World, places: Array[Vector2]) -> bool:
-	if world.home.has_home() and not world.home.supported:
+	if world.home.has_home() and not world.terrain.home_ground_ready:
 		return false
 	if not world.terrain.is_settled_around(places[0].x, places[0].y):
 		return false

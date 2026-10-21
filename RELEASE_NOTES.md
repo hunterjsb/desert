@@ -1,3 +1,12 @@
+## Unreleased — Sanddune development
+
+- Mark one chassis as Home with a physical beacon. Its claimed camp retains bounded
+  terrain, collision and history while you scout; ordinary power and weather keep running.
+- Open Home from the carry view for distance, bearing and live or last-known reception.
+  Surveyor kits carry a beacon, surface salvage can supply one, and returning records Home Again.
+- Save and resume distant camps without discarding their excavation or exceeding
+  the support budget. Overstretched camps keep their objects and report unsupported ground.
+
 ## 0.2.4-alpha “Sailboat”
 
 A manual sail hoist, physical salvage rewards and clearer radio handling.
