@@ -943,3 +943,47 @@ Render Zan as a large desert moon with thin dusty air. The 150 km gameplay lap i
 compressed distance, not a claim that the lore body is a tiny asteroid. Follow
 the moon document for the larger physical scale, and preserve Tu's established
 apparent size and illumination rather than enlarging it just for spectacle.
+
+### Large moon, compressed travel and time (agreed 2026-10-21)
+
+Zan's fictional body and the game's travel map have separate scales. The lore has
+not fixed a final size: `world/the-moon.md` leans toward a 3,500–3,900 km radius,
+and `briefs/body-research.md` also compares a 5,800 km option. Use a provisional
+3,700 km visual radius, adjustable in Tuning, without declaring a new lore fact.
+The existing 150 km circumference remains the compressed navigation/history map.
+The existing 20-minute gameplay day represents a longer fictional day (the current
+Tu proposal gives about 77.7 hours); neither compression dictates gravity. Keep
+the existing 9.8 m/s² gameplay gravity and provisional lore gravity separate.
+
+A shared SurfaceProjection supplies the large-moon presentation radius, tangent
+projection/inverse, normals and horizon quantities. Local physics stays on the
+flat streamed sheet. At the existing roughly 500 m real-object handover, curvature
+is under 3.4 cm: the local tangent remains a deliberate approximation. Far ground,
+landmark hills/summits and skyline must agree on the large-radius falloff, rather
+than use the 23.87 km navigation radius as visible curvature. Match CPU and GLSL
+projection, maintain undeformed coordinates for weather/track sampling, expand
+render bounds and anchor the projection to the main observer, including shadows.
+
+The bounded surface projection drops a point by horizontal distance squared over
+twice the visual radius, with a matching inverse and normal transform. Over the
+current 42 km scenery budget its difference from the sphere's tangent sag is
+less than 1 cm. It is not a seamless spherical collision world. Supply a cheap
+continuous background apron through the eye-level horizon; high-altitude views
+remain bounded by haze/draw distance. Ground and sky atmospheric/horizon consumers
+use the same visual radius. Preserve celestial angular ephemerides, existing
+compressed satellite routes and gameplay radio ranges; this pass does not pretend
+all displayed orbital art dimensions and compressed travel are physical metres.
+Orbital and inventory viewports must not inherit the main ground warp.
+
+Local solar time already follows longitude. Westward travel slows its advance;
+eastward travel accelerates it. At latitude phi the westward speed matching the
+sun is circumference/day_seconds * cos(phi): 125*cos(phi) m/s at the defaults.
+Keep this emergence rather than pinning day/night to the player's clock. Near a
+pole the required speed falls, subject to actual craft speed, heading and terrain.
+Checks should exercise real MoonPosition and DayCycle movement, not duplicate a
+formula as its only evidence.
+
+Acceptance: focused CPU projection/inverse/normal and moving-local-time checks;
+inspected GPU low/high-observer terrain, landmarks and skyline captures, including
+origin shifts and unaffected near interaction. Combined verification and native
+checks precede landing. Until measured, this presentation work is in progress.
