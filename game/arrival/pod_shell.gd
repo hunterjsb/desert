@@ -57,7 +57,7 @@ static func _trim(deck: Chassis, owner: Chassis, mesh: Mesh, name: String) -> vo
 		view.set_meta(&"piece", owner)
 	deck.add_child(view)
 	view.transform = owner.pose()
-	view.set_instance_shader_parameter(&"wear", 0.26)
+	view.set_instance_shader_parameter(&"age", 0.26)
 
 
 static func _armor_mesh() -> ArrayMesh:
