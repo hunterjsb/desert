@@ -1031,3 +1031,24 @@ and no apron versus the new shader plus apron. Noon averages 5.319/5.501 ms
 These small median costs are below the run's variability, not a precise isolated
 shader microbenchmark; distant hill/skyline shaders remain the new versions in
 both near-view arms. The cheap apron adds no collision or resident sites.
+
+### Combined surface, sky and atmosphere acceptance (2026-10-21)
+
+The candidate combines terrain/landmark/skyline projection with sky horizon dip
+and inverse-projected storm sampling. World14/15, Weather27 and Radio38/47 pass
+together (5/4/6/7/8 s in the recorded focused run). World15 drives actual
+MoonPosition and DayCycle: westward normal-board travel delays equatorial sunset,
+eastward brings it sooner, and the same westward speed at 81° returns the sun
+above the horizon while the stationary observer has sunset. No movement cap,
+gravity, navigation circumference or global clock was changed.
+
+Combined actual 1280×720 low/high/rebased terrain and 2 km storm-observer views were
+inspected, together with clear shield interior and obscured exterior. Camera
+frames and atmospheric fields remain separate from the unchanged local physical
+sheet. The new capture fixtures drain their worlds before renderer shutdown;
+three pre-existing orphan Shelter nodes remain, reproduced in the unmodified
+horizon fixture. That existing allocation issue is not attributed to this change.
+
+The finite-drone shader/gate follow-up must additionally clear the above-drone
+GPU case before combined verification. Combined CI/native builds and player
+acceptance are pending; this is not a new release or seamless spherical physics.
