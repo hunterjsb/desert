@@ -187,3 +187,18 @@ impact profiles before any physical closure or state change, protecting the
 manifest's geographic assertion. Stronger Arrival20 passes (6 s) for invalid
 point and out-of-range profile refusal with unchanged state; real disk Arrival22
 passes again (13 s). This validates input rather than changing impact balance.
+
+### Structural launch readiness (selected 2026-10-21)
+
+Ordinary dismantling remains available in preparation, so launch must refuse a
+broken or missing pod rather than invent replacement parts or retry landing
+forever. Require the actual two-floor core and fitted supporting frames/panels
+to retain their authored assembly relationships. The retained roof/hatch pieces
+must exist and be available for ordinary automatic closing: not held, worn or
+fitted to some other craft. Intentional parked closure panels remain valid.
+
+Report a short repair/readiness reason, preserve all objects/state on refusal,
+and permit normal repair with the same actual parts. This guard adds no binding,
+part grant, new assembly system or silent reconstruction of dismantled supports.
+A focused check must remove a real support/closure piece, prove refusal without
+mutation, repair it through existing attachment operations and allow launch.
