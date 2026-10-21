@@ -10,7 +10,7 @@ extends Node3D
 ## shoulder yokes) are drawn for their shadow and for others only, on a
 ## layer your own eyes skip. It's only looks: no shapes, nothing to hit. A child of the player.
 
-## Your helmet's layer, which your camera leaves out.
+## Near-camera suit surfaces stay available to external views and shadows.
 const OWN_LAYER := 1 << 17
 ## Each limb's length, m, joint to joint.
 const UPPER_ARM := 0.28
@@ -49,7 +49,7 @@ func _ready() -> void:
 		add_child(view)
 		view.set_instance_shader_parameter(&"age", Paint.ERA_NEW)
 		_parts[name] = view
-	for name: StringName in [&"head", &"collar"]:
+	for name: StringName in [&"head", &"collar", &"trunk", &"hips"]:
 		(_parts[name] as MeshInstance3D).layers = OWN_LAYER
 	if player != null and player.camera != null:
 		player.camera.cull_mask &= ~OWN_LAYER
@@ -64,6 +64,13 @@ func _process(delta: float) -> void:
 	if not visible:
 		_settled = false
 		return
+	# Camera and board already draw between ticks; the suit shares that same visual root.
+	var step := Vector3.ZERO
+	if player.ride != null:
+		step = player.ride.last_step
+	elif player.vault.active:
+		step = player.vault.last_step
+	position = player.global_basis.inverse() * -step * (1.0 - Engine.get_physics_interpolation_fraction())
 	pose(delta)
 
 
@@ -80,7 +87,7 @@ func pose(delta: float) -> void:
 	var pace := clampf((speed - tuning.walk_speed) / maxf(tuning.sprint_speed - tuning.walk_speed, 0.1), 0.0, 1.0)
 	var pitch := player.camera.rotation.x
 	var rest_eye: float = player.posture.standing_eye
-	var drop := clampf(rest_eye - player.camera.position.y, 0.0, rest_eye - 0.2)
+	var drop := clampf(rest_eye - player.feel.steady_eye().y, 0.0, rest_eye - 0.2)
 	var prone := player.ground_pose == &"prone"
 	var sat := player.ground_pose == &"sit" or (player.helm != null and player.helm.sits)
 	# The trunk: from the hips, leaning with your look, set back of your eyes.

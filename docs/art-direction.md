@@ -1200,3 +1200,14 @@ person the helmet, the collar and the shoulder yokes are drawn only for
 their shadow and for others (`Body.OWN_LAYER`). What you see is your arms
 reaching to what you hold, your knees crouched or sat, and your boots
 looking down. Look-test: `look/player_body`.
+
+
+### Comfortable own-camera suit view (2026-10-21; urgent correction)
+
+Keep gonkhub's complete rigid suit in external views and its shadow. Exclude
+hips and trunk, alongside head/collar, from the player's own camera so the
+near plane never slices through the torso while riding. Arms and boots remain
+visible. The body's drawn origin follows the same between-tick translation as
+the board and camera; it does not move the physical player. Posture comes from
+the steady eye rather than camera shake/interpolation. This is a view comfort
+fix, not an anatomical scale change or new body animation.
