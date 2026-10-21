@@ -42,11 +42,14 @@ func run() -> void:
 	point = mast.global_transform * Vector3(0.0, Mast.BOOM_AT.y + Mast.LUFF * mast.extend, 0.0)
 	var gap := point.y - world.height_under(point)
 	var before := at_point(point)
+	var native_before := state.linear_velocity
 	Runners.touch(deck, world, point, 0.6, 1.0 / 60.0)
 	var after := at_point(point)
+	var impulse := (state.linear_velocity - native_before) * deck.mass
 	print("capsized mast contact: gap %.4f m, normal %.3f -> %.3f m/s" % [gap, before.y, after.y])
 	check(gap < 0.0 and before.y < 0.0, "real masthead arrives in sand")
 	check(absf(after.y - Runners.TOUCH_SPEED) < 0.01, "friction preserves the contact's normal recovery")
+	check(impulse.y >= 0.0 and Vector2(impulse.x, impulse.z).length() <= 0.6 * impulse.y + 0.001, "ground contact pushes within its friction cone")
 
 func at_point(point: Vector3) -> Vector3:
 	var model := RopeArticulation.native(deck)

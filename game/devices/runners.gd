@@ -344,8 +344,8 @@ static func _mass(inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> f
 ## dead there, pushed back out of the sand over a few ticks with no bounce,
 ## and drags along it `grip` of that push whichever way it slides. A camp
 ## going over comes to rest on its masthead so.
-static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float) -> void:
-	var gap := point.y - world.height_at(world.world_x(point.x), world.world_z(point.z))
+static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float, clearance := 0.0) -> void:
+	var gap := point.y - world.height_at(world.world_x(point.x), world.world_z(point.z)) - clearance
 	if gap > REACH:
 		return
 	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())

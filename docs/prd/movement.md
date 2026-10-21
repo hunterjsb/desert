@@ -1935,3 +1935,20 @@ law gives 0.500 m/s and passes. The separate tipping check still fails native
 Ubuntu at 1.25 m/s per tick while local Linux and native macOS pass. Its spar
 is 0.408 m above sand at that peak, so spar collision is excluded. Carrier
 frame contact investigation remains pending.
+
+### Capsized carrier frame edges meet the sand
+
+The remaining Ubuntu tipping peak is a real native carrier-frame collision:
+its lowest enabled, non-socket frame corner is 0.0077 m below sand, while the
+physical spar remains 0.408 m clear. The existing capsized contact traversal
+visits mounted devices but omits the carrier's own joined frame. Its runner
+faces are airborne at 97 degrees of heel.
+
+For a chassis, include its actual enabled frame collision shapes in that same
+capsized sand-contact traversal, including joined panels now owned by the root.
+Visit mounted frames once as before. The carrier's native frame uses the
+existing runner clearance, so its point support keeps the same physical sand
+separation ahead of Jolt's speculative skin; frozen mounted-device frames
+retain their existing zero-clearance contact. Use real shape corners and the
+same point-contact law, without extra cushion dimensions, forces or velocity
+limits. Board handling is unchanged. Verification is pending.

@@ -843,22 +843,27 @@ func _physics_process(delta: float) -> void:
 		_rest_seated(delta)
 
 
-## Tipped over, what's seated on it meets the sand too, by the corners of its
-## frame, as any end would: a Console standing on a capsized deck rests on
-## its edge, never through the sand.
+## Tipped over, a chassis and its seated devices meet the sand at their
+## real frame corners, so the camp rests on its edges rather than through sand.
 func _rest_seated(h: float) -> void:
-	var riding := mounted()
+	var riding: Array[Device] = []
+	if self is Chassis:
+		riding.append(self)
+	else:
+		riding.append_array(mounted())
 	while not riding.is_empty():
 		var each: Device = riding.pop_back()
 		riding.append_array(each.mounted())
+		# The native carrier stays ahead of terrain speculation; seated frames are frozen.
+		var clearance := world.tuning.runner_clearance if each == self else 0.0
 		for child in each.get_children():
 			var shape := child as CollisionShape3D
-			if shape == null or shape.shape == null or shape.has_meta(&"socket"):
+			if shape == null or shape.shape == null or shape.disabled or shape.has_meta(&"socket"):
 				continue
 			var box := Catalog.bounds(shape.shape)
 			var to_world := each.global_transform * shape.transform
 			for i in 8:
-				Runners.touch(self, world, to_world * box.get_endpoint(i), 0.6, h)
+				Runners.touch(self, world, to_world * box.get_endpoint(i), 0.6, h, clearance)
 
 
 ## Each tray reads the sand under its face, on average, and pushes straight
