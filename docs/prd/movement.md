@@ -1951,4 +1951,51 @@ existing runner clearance, so its point support keeps the same physical sand
 separation ahead of Jolt's speculative skin; frozen mounted-device frames
 retain their existing zero-clearance contact. Use real shape corners and the
 same point-contact law, without extra cushion dimensions, forces or velocity
-limits. Board handling is unchanged. Verification is pending.
+limits. Board handling is unchanged.
+
+The unchanged tipping check now passes native Ubuntu/macOS/Windows with maximum
+tick changes 0.78/0.80/0.80 m/s, maximum spin 3.56/3.58/3.58 rad/s, maximum
+speed 4.43 m/s, penetration 0.010/0.009/0.009 m, and final heel about 103 degrees.
+The real-contact normal-recovery and friction-cone check passes on all three.
+The final four-minute gust/turn/seam check passes locally in 96 s: maximum
+jolt 0.124 m/s, speed 4.11 m/s, spin 0.73 rad/s, heel 15.5 degrees,
+penetration 0.012 m, eleven seams and three origin shifts. Its 30/60/120 Hz
+comparisons retain 2.907/2.908/2.908 m/s. All existing acceptance bounds remain.
+
+#### Final capsized large-camp cost
+
+A bounded Linux audit compares the original isolated-hull contact path with
+the final assembly response, coupled friction and actual carrier-frame support.
+It uses the existing 108-piece L-deck layout: 54 skates, 54 trays, 18 batteries,
+18 mounted condensers/Consoles/shield generators, and one freely hinged sailing
+mast, 1,772 kg total. From 100 degrees of heel just above real terrain, the camp
+falls freely and settles near 152.5 degrees. There are no contact reports,
+velocity clamps or synthetic repeated contact calls. Terrain streaming is
+paused after loading, rendering capped at 60 Hz, and accelerated physics retains
+a 1/60 s tick. Two runs per implementation, in opposite orders, each sample
+eight seconds falling and eight seconds settled, 480 ticks per sample.
+
+| Per physics tick | Original contact path | Final contact path |
+| --- | ---: | ---: |
+| Candidate frame/mast corners | 153 | 1,017 |
+| Actual near-ground contacts, falling | 2.80 | 12.48 |
+| Actual near-ground contacts, settled | 4 | 8 |
+| Impulses applied, settled | 2 | 3 |
+| Timed near-contact work, falling | 9.6–10.0 µs | 1.94–1.98 ms |
+| Timed near-contact work, settled | 13.9–14.1 µs | 1.32–1.33 ms |
+| Assembly construction within settled work | 0 | 1.20–1.22 ms |
+| Whole-process CPU, falling | 9.38–9.46 ms | 13.46–14.08 ms |
+| Whole-process CPU, settled | 8.83–9.00 ms | 12.48–12.63 ms |
+
+The final geometry adds 864 real carrier-corner candidates; the whole-process
+settled mean increases about 3.64 ms per tick, roughly 41 percent. This is a
+material cost of the correctness repair on this large capsized camp, and
+remains an open performance limit. Both cases settle stably: original/final
+heel 152.52/152.56 degrees, speed 0.039/0.012 m/s, spin 0.0060/0.0014 rad/s.
+The timed near-contact work starts after each terrain-height/reach query;
+whole-process CPU includes those queries and all other engine work. It does
+not isolate native solver CPU or establish budgets for more simultaneous
+contacts, multiple booms, rough terrain, or larger camps. Upright runner support
+does not enter this added chassis path. Further optimization should investigate
+geometry/height-query reuse while preserving impulse order and fresh projected
+velocities; caching the full physics snapshot changes sequential contact response.
