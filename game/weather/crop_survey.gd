@@ -11,6 +11,7 @@ extends Node3D
 ## the scene's fog is for looking across the ground. Its cannon's muzzle
 ## flashes as the constellation fires it.
 
+const WORN_PROXY := preload("res://game/weather/crop_survey_worn.gdshader")
 const BOUNCE := preload("res://game/weather/crop_survey.gdshader")
 ## The sand's albedo, linear, for the light it throws back up at the belly.
 const SAND := Color(0.46, 0.31, 0.16)
@@ -41,7 +42,7 @@ func _init(tuning: Tuning) -> void:
 func _ready() -> void:
 	_view.mesh = CropSurveyLooks.craft(_far)
 	_paint = Paint.worn().duplicate() as ShaderMaterial
-	_paint.set_shader_parameter(&"sky_proxy", true)
+	_paint.shader = WORN_PROXY
 	_view.material_override = _paint
 	_view.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_view)

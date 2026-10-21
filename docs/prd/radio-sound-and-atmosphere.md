@@ -1642,3 +1642,16 @@ vertex path, preserving the engine's ordinary projection/shadow pipeline. A
 dedicated drone shader defines SKY_PROXY and shares the worn source; no runtime
 shader-source rewriting or duplicated paint logic. Verify the ridge case and a
 real ordinary worn-object shadow capture before combined CI.
+
+As validated on the combined body/drone source: the shared paint implementation
+lives in `worn_surface.gdshaderinc`, with tiny ordinary and drone wrappers. Only
+the drone wrapper defines SKY_PROXY; ordinary worn vertex compilation contains
+no POSITION assignment. Directly including a .gdshader resource did not retain
+the required macro behavior in the actual GPU ridge check, so it is not used.
+The .gdshaderinc version yields zero hidden and 81 exposed hull pixels at
+1280x720; its unobstructed hull was inspected. An ordinary worn cube/shadow
+capture matches the pre-fix shader pixel-for-pixel (zero changed pixels), with
+1,957 shadow pixels verified against the same light with shadows disabled.
+Those captures were inspected. Radio 38/47 still pass; combined CI and native
+platform results remain the landing gate. Existing spoken craft-name assets
+and internal Surveyor ids are unchanged by this rendering correction.
