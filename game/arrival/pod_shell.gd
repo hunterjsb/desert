@@ -16,17 +16,21 @@ const PANELS := {
 static var _armor: ArrayMesh
 static var _heatshield: ArrayMesh
 
-static func layout() -> Array:
-	var steps: Array = [[&"piece", Vector2i(1, 0)],
-		[&"frame", Vector2i(0, 0)], [&"frame", Vector2i(1, 0)]]
+static func layout(survives: Dictionary = {}) -> Array:
+	var steps: Array = [[&"piece", Vector2i(1, 0)]]
+	for i in 2:
+		if survives.get(&"frame_a" if i == 0 else &"frame_b", true):
+			steps.append([&"frame", Vector2i(i, 0)])
 	for role: StringName in PANELS:
-		steps.append([&"wall", PANELS[role][0], PANELS[role][1]])
+		var frame: StringName = &"frame_a" if PANELS[role][0].x == 0 else &"frame_b"
+		if survives.get(role, true) and survives.get(frame, true):
+			steps.append([&"wall", PANELS[role][0], PANELS[role][1]])
 	return steps
 
 
 ## Named roles refer to real pieces, so later damage and teardown keep their identity.
-static func build(parent: Node, pose: Transform3D) -> Rig:
-	var rig := Rig.build(parent, layout())
+static func build(parent: Node, pose: Transform3D, survives: Dictionary = {}) -> Rig:
+	var rig := Rig.build(parent, layout(survives))
 	var deck := rig.deck
 	rig.named[&"floor_a"] = deck
 	rig.named[&"floor_b"] = Rig.piece(deck, Vector2i(1, 0))
@@ -40,24 +44,33 @@ static func build(parent: Node, pose: Transform3D) -> Rig:
 		for panel in deck.joined:
 			if panel.joined_at == seat:
 				rig.named[role] = panel
-				_trim(deck, panel, _armor_mesh(), "PodArmor")
+				restore_skin(panel, &"armor")
 	for role in [&"floor_a", &"floor_b"]:
-		_trim(deck, rig.named[role], _heatshield_mesh(), "PodHeatshield")
+		restore_skin(rig.named[role], &"heatshield")
 	deck.global_transform = pose
 	return rig
 
 
-static func _trim(deck: Chassis, owner: Chassis, mesh: Mesh, name: String) -> void:
+## Saved role skins follow the same real panel through joining and teardown.
+static func restore_skin(body: Chassis, kind: StringName = &"") -> void:
+	if kind == &"":
+		kind = body.get_meta(&"pod_skin", &"")
+	if not kind in [&"armor", &"heatshield"]:
+		return
+	body.set_meta(&"pod_skin", kind)
+	var deck := body.deck if body.deck != null else body
+	for child in deck.get_children():
+		if child is MeshInstance3D and child.get_meta(&"pod_skin", &"") == kind \
+			and child.get_meta(&"piece", deck) == body:
+			return
 	var view := MeshInstance3D.new()
-	view.name = name
-	view.mesh = mesh
-	view.set_meta(&"pod_skin", true)
-	# Chassis.detach moves nodes marked with their owning piece, including this skin.
-	if owner != deck:
-		view.set_meta(&"piece", owner)
+	view.mesh = _armor_mesh() if kind == &"armor" else _heatshield_mesh()
+	view.set_meta(&"pod_skin", kind)
+	if body != deck:
+		view.set_meta(&"piece", body)
 	deck.add_child(view)
-	view.transform = owner.pose()
-	view.set_instance_shader_parameter(&"age", 0.26)
+	view.transform = body.pose()
+	view.set_instance_shader_parameter(&"age", Paint.age_for(body, body.durability))
 
 
 static func _armor_mesh() -> ArrayMesh:

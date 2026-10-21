@@ -1503,6 +1503,8 @@ func _take_out(device: Device, from: Socket) -> void:
 
 
 func _grip(part: RigidBody3D) -> void:
+	if _player.world.arrival != null:
+		_player.world.arrival.recover(part)
 	held = part
 	_layers = Vector2i(part.collision_layer, part.collision_mask)
 	_freeze_mode = part.freeze_mode
