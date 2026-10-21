@@ -33,8 +33,8 @@ the existing nine Linux groups, with all failures still blocking landing. Run po
 is once a minute. Documentation-only changes skip CI as before.
 
 Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
-Native probes split arrival, camp and movement into their own parallel group to
-keep the remaining families within the job budget. New folders still join “the rest”.
+Native probes balance survival with arrival/camp/movement, power/farming with
+physical gear, and saves/kits/sailing together to keep each group within budget. New folders still join “the rest”.
 Linux balances radio with foundation/world checks and menus with devices, leaving
 the catch-all group for unlisted folders.
 Probe durations have their own per-platform/group cache so long checks start first.
@@ -48,12 +48,16 @@ and build jobs. Master/tag coverage cannot be disabled by that input.
 
 ## Releasing
 
-Fix releases increment the patch version (for example `0.2.1-alpha`). Alpha
-sub-releases increment the minor version, reset the patch to zero, and always
-have a name. The current 0.2 line is **“Sailboat”**; the next minor release is
-**0.3 “Sanddune”**. Patch releases keep
-their minor release's identity; 0.2.4 is **“Creaky Sailboat”**. Versions change per release, not per commit.
-The [1.0 Alpha roadmap](docs/alpha-roadmap.md) tracks the proposed completion gate.
+Desert uses [milestone versioning](docs/version-policy.md), with compatibility
+stated separately in release notes. A new named playable milestone increments
+the middle number and resets the patch; fixes, tuning, polish and bounded
+improvements within it increment the patch. Patch names retain the milestone's
+base name, with an optional adjective. Versions change per release, not per commit.
+
+The latest published game release is **0.2.4-alpha “Creaky Sailboat”**. Current
+development targets **0.3 “Sanddune”**, followed by **0.4 “Spaceport”**.
+**1.0.0-alpha** earns the [full Alpha roadmap gate](docs/alpha-roadmap.md#full-alpha-acceptance-gate);
+Beta and the public **1.0.0** each have later quality gates in the version policy.
 
 The version lives in one place, `application/config/version` in `project.godot`, and
 shows in the main menu's corner alongside `application/config/release_name`.
