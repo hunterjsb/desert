@@ -360,14 +360,15 @@ func _reroot(to: Chassis) -> Chassis:
 	var view := frame_view
 	frame_view = to.frame_view
 	to.frame_view = view
-	# A null default still errors when the meta is missing.
-	var layer: Variant = get_meta(&"layer") if has_meta(&"layer") else null
-	var theirs: Variant = to.get_meta(&"layer") if to.has_meta(&"layer") else null
-	for pair: Array in [[self, theirs], [to, layer]]:
-		if pair[1] == null:
-			pair[0].remove_meta(&"layer")
-		else:
-			pair[0].set_meta(&"layer", pair[1])
+	# Lineage and arrival roles belong to the panel, not the body's current root.
+	for key in [&"layer", &"arrival_uid", &"pod_skin"]:
+		var mine: Variant = get_meta(key) if has_meta(key) else null
+		var theirs: Variant = to.get_meta(key) if to.has_meta(key) else null
+		for pair: Array in [[self, theirs], [to, mine]]:
+			if pair[1] == null:
+				pair[0].remove_meta(key)
+			else:
+				pair[0].set_meta(key, pair[1])
 	World.of(self).teleport(self, pose_was * shift)
 	_recompute()
 	for seated in mounted():
