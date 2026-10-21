@@ -1688,3 +1688,13 @@ The signed dust column must agree when the same vertical path is reversed.
 Acceptance retains the foreground-ridge test and adds an above-drone observer
 with ground behind it, alongside ordinary shadow/material isolation. This is a
 presentation correction, not a general orbital physics simulation.
+
+As built, `look/drone_horizon` passes on actual Forward+ and Compatibility GPU
+renders. Both keep zero drone pixels over the foreground ridge with 81 exposed
+pixels above it. A 10 km observer sees the actual 6 km drone against farther ground:
+hull 1379 pixels, overlay 731/220 pixels (Forward+/Compatibility), and 4 exposed
+muzzle pixels. The old all-background shader yields zero visible hull/overlay
+pixels in the same high-observer case. Ordinary worn shadows remain pixel-identical
+to the prior shader in both renderers. Within-far depth is preserved; beyond-far
+geometry collapses to a representable far plane, with the Compatibility depth
+buffer's finite precision limit. Combined CI/native acceptance remains pending.

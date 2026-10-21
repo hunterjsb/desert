@@ -936,8 +936,8 @@ DayCycle supplies sun/Tu directions. A bounded first implementation can render a
 orbital proxy sphere and actual pod, resolve a seeded landing point, preload its
 normal terrain patch and transition through entry dust to that local tangent
 scene. Preserve geographic heading and time; do not imply that a general seamless
-planet renderer or orbital physics simulator already exists. The orbital material
-and arrival controller are not built. The generated mockup is an art target only.
+planet renderer or orbital physics simulator already exists. The bounded orbital material and automatic arrival controller are implemented;
+interactive ship preparation remains a separate in-progress feature. The generated mockup is an art target only.
 
 Render Zan as a large desert moon with thin dusty air. The 150 km gameplay lap is
 compressed distance, not a claim that the lore body is a tiny asteroid. Follow
@@ -1049,6 +1049,7 @@ sheet. The new capture fixtures drain their worlds before renderer shutdown;
 three pre-existing orphan Shelter nodes remain, reproduced in the unmodified
 horizon fixture. That existing allocation issue is not attributed to this change.
 
-The finite-drone shader/gate follow-up must additionally clear the above-drone
-GPU case before combined verification. Combined CI/native builds and player
+The finite-drone shader/gate also passes the foreground-ridge and above-drone
+GPU cases on Forward+ and Compatibility; ordinary worn shadows match the prior
+shader exactly. Combined CI/native builds and player
 acceptance are pending; this is not a new release or seamless spherical physics.
