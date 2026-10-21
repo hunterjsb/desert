@@ -47,6 +47,36 @@ recovery, focused phase/save continuity checks, and the normal combined CI gate.
 These changes are planned here; the preceding interactive-preflight baseline is
 already on master and still uses the exterior flight presentation.
 
+### Impact effects helper (private implementation, 2026-10-21)
+
+`ArrivalImpactEffects` samples saved phase/elapsed time without changing it. Its
+normalized aperture rectangle confines heat and dust to the view through the
+capsule; the caller owns that rectangle and the base camera pose. A single recoil
+lobe supplies local camera offset/rotation, with no accumulated transforms,
+random shake, new audio, particle spawning or effect timer. Restore samples the
+remaining effect rather than replaying an impact event.
+
+The existing `surveyor_arrival` tuning dictionary supplies a 0.42 s recoil,
+0.035 m maximum offset, 1.3 degree maximum pitch, 1.15 s dust clearance and 0.65
+entry edge heat. Arrival28 passes (3 s): movement stays within those bounds,
+saved impact sampling is identical, and later restore/recovery has no fresh jolt.
+
+The isolated unseen GPU fixture uses the real shell with its hatch open, pending
+the separate sealed-window integration. At 1280x720, heat changes 109,900 pixels
+and impact dust changes 268,284; zero pixels outside the aperture change. At
+1.16 s the image matches the clear frame exactly. Entry, impact, bounded recoil
+and cleared frames were inspected. This certifies the helper's real shader and
+mask, not the connected first-person launch or the new sealed window.
+
+A separate actual cargo audit selects the standard preload and an externally
+mounted original board on seeds 1234/5678/9012 with shallow/standard/steep profiles.
+The 18/15/15 surviving selected roles stay within 3.006 m of the pod centre after
+180 native physics frames with ordinary world time; all retain their original
+identity and no ground rescue occurs. Joined pieces and fitted parts are measured
+at their actual deck/socket poses, excluding gear forgotten aboard the ship.
+This bounded result requires no scatter change and does not certify arbitrary
+extra cargo, every landing slope or the connected first-person save transition.
+
 ## Limited scouting and trajectory
 
 Initially survey a bounded drop corridor around the starting region. Several
