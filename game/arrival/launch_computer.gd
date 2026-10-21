@@ -50,18 +50,14 @@ func _ready() -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(shade)
 	add_child(_panel)
-	var margin := MarginContainer.new()
-	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 24)
-	_panel.add_child(margin)
-	margin.add_child(_layout)
-	_layout.add_theme_constant_override("separation", 14)
+	_panel.add_child(_layout)
+	_layout.theme_type_variation = &"MenuListApart"
 	_word(_layout, "TILG / DROP CONTROL", &"AsideName")
 	_word(_layout, "Choose your landing", &"MenuWordSide")
 	_word(_layout, "Drop corridor only · coarse structure readings · contents unknown", &"MenuLineLead")
 	_layout.add_child(_body)
 	_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_body.add_theme_constant_override("separation", 24)
+	_body.theme_type_variation = &"Columns"
 	var left := VBoxContainer.new()
 	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_body.add_child(left)
@@ -70,6 +66,7 @@ func _ready() -> void:
 	_chart.draw.connect(_draw_chart)
 	left.add_child(_chart)
 	_choices.columns = 2
+	_choices.theme_type_variation = &"AsideList"
 	left.add_child(_choices)
 	var right := VBoxContainer.new()
 	right.custom_minimum_size.x = 320

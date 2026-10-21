@@ -62,3 +62,8 @@ exposed container overflow on initial layout; fitting after container measuremen
 and scrollable readings corrected it. These checks exercise the independent view,
 not terminal reach, modal interaction with pause/save, trajectory severity or the
 complete physical launch/recovery sequence. Those remain integrated acceptance.
+
+The final layout uses existing MenuListApart, Columns and AsideList theme
+variations and the shared panel padding, with no layout/theme overrides.
+Focused Menus 5 (one theme) and Arrival 19 pass together; refreshed fallback
+and alternate GPU captures were inspected after that correction.
