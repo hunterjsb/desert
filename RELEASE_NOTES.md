@@ -2,11 +2,12 @@
 
 Master combines Home, Surveyor arrival, ground rest and rope-coil improvements.
 This release is unpublished. Combined Linux verification passed; native platform
-checks for Home/arrival and playtest acceptance remain pending.
+checks found a macOS tipping kick under investigation; playtest acceptance remains pending.
 
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
   collect seeded surviving physical equipment. Other origins, developer scenarios
-  and legacy saves retain their existing starts.
+  and legacy saves retain their existing starts. During a fully eclipsed landing,
+  the recovery notice points out the suit headlamp using its current binding.
 - Mark one chassis as Home with a physical beacon. Its claimed camp retains bounded
   terrain, collision and history while you scout; ordinary power and weather keep running.
 - Open Home from the carry view for distance, bearing and live or last-known reception.

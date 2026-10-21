@@ -461,7 +461,7 @@ refresh across 240 samples after 30 warm-ups; maximum 6.237 ms, initial mark
 and a small footprint, isolating graph CPU cost. It does not establish full
 physics/GPU, heterogeneous-device or maximum-span performance acceptance.
 
-### Live expedition acceptance (2026-10-21; checking)
+### Live expedition acceptance (2026-10-21; focused checks passed)
 
 The bounded follow-up keeps a small marked shield/solar/battery camp and a
 claimed loose supply physically active during a 2.1 km scouting departure.
