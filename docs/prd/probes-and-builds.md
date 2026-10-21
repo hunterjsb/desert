@@ -176,3 +176,16 @@ removes the large introductory heading and the separate game-performance section
 and preserves source links and filters. Desktop and 390 px browser checks passed:
 summary rows, limit/no-limit states, absent history, metric search, empty results,
 probe expansion and job details. Five collector checks and JavaScript syntax pass.
+
+
+Combined master [39672634648](https://github.com/hunterjsb/desert/actions/runs/39672634648)
+passed all 21 jobs, including macOS salvage retention. The redundant retry of the
+original run was cancelled; no assertions or budgets changed. The public report
+contains all 18 measurements from the successful combined run.
+
+The plain-table revision passed all nine Linux verification groups in
+[39680975173](https://github.com/hunterjsb/desert/actions/runs/39680975173) and
+[deployed successfully](https://github.com/hunterjsb/desert/actions/runs/39683448632).
+Public desktop/mobile checks confirmed the tables, limit/no-limit labels, filtering,
+and actual earlier-run references; a controlled comparison also verified numeric
+and percentage deltas. Missing history remains explicit rather than implying zero.
