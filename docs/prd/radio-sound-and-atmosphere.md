@@ -1635,3 +1635,10 @@ ridge 600 m away, with 28 exposed hull pixels above it at 960×540. The unobstru
 view is captured separately. Radio probe 47 still passes its real route and
 schedule checks. This controlled ridge fixture tests rendering, not terrain
 collision or a new flight controller.
+
+Before combined landing, isolate the worn proxy projection at shader compile
+time. Ordinary worn materials must have no POSITION override in their compiled
+vertex path, preserving the engine's ordinary projection/shadow pipeline. A
+dedicated drone shader defines SKY_PROXY and shares the worn source; no runtime
+shader-source rewriting or duplicated paint logic. Verify the ridge case and a
+real ordinary worn-object shadow capture before combined CI.
