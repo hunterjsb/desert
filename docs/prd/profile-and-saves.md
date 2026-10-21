@@ -786,3 +786,14 @@ remote footprint before the ground wait and reconnects references after ordinary
 attachments and lines. Old saves without Home keep their previous behavior.
 The focused camp integration check passes a 2.1 km departure, far save/restore and
 safe unmark after return; broader combined verification remains pending.
+
+### Surveyor arrival and recovery (development, 2026-10-20)
+
+Making Landfall adds one camp deed, bringing the integrated development roster to
+57 in eleven families. Hands records it when a physical surviving pod object is
+taken; generation and restoration do not award recovery or construction deeds.
+Snapshot stores arrival phase/elapsed time, resolved survivors and recovery flags,
+and reconnects roles through actual object references, including held objects and
+fitted cells. Shell roles and skins follow their physical panel when a chassis
+reroots. Focused checks cover mid-flight resume, dismantled/held recovery and
+rerooted panel saves; combined CI and playtest acceptance remain pending.

@@ -1034,7 +1034,25 @@ flags, arrival phase and elapsed phase time. Mid-flight and partially dismantled
 saves must resume without rerolling, replacing or duplicating gear.
 
 The integrated opening is developed for 0.3.0-alpha “Sanddune”; the existing
-0.2.4 “Sailboat” release candidate stays separate. Exact arrival timings and
+0.2.4 “Creaky Sailboat” release candidate stays separate. Exact arrival timings and
 provisional equipment balance live in tuning. Acceptance includes new Surveyor,
 other-origin/scenario compatibility, mid-flight/landed/recovered save round trips,
 normal recovery and assembly, real GPU captures and combined CI before landing.
+
+#### Implemented development slice (2026-10-20; not landed)
+
+Main/Runs now select the opening for new normal Surveyors before suit setup.
+The default controlled sequence lasts 16.2 seconds, plus any required terrain
+wait. World time, vitals and player movement resume beside the opened shell.
+Ordinary chassis and catalog survivors retain resolved damage, charge and
+individual recovery; the old inventory/deck grant is suppressed. Existing
+scenarios, other origins and legacy saves retain their starts.
+
+The actual Main opening and flight/recovery save round trips pass focused
+checks (4 and 8 seconds). Rerooted roles fail before metadata transfer and pass
+after it; flight, partial teardown and held-object restoration checks also pass.
+A real GPU run captured all six phases with 24 physical roles and no ground
+rescues for seed 1234. Existing World sounds provide transition cues; dummy
+audio verifies routing and lifetime, not listening balance. Orbital relief is
+illustrative, not exact local dune geometry. Equipment balance, broader opening
+viability, unassisted recovery and combined CI remain acceptance work.
