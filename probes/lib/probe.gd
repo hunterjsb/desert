@@ -36,6 +36,15 @@ func check(condition: bool, what: String) -> void:
 		printerr("CHECK FAILED: ", what)
 
 
+## Measurements survive successful runs without publishing the probe's full log.
+func metric(label: String, value: float, unit: String, budget: float = -1.0) -> void:
+	var sample := {"probe": (get_script() as Script).resource_path.trim_prefix("res://"),
+		"name": label, "value": value, "unit": unit}
+	if budget >= 0.0:
+		sample["budget"] = budget
+	print("PROBE_METRIC ", JSON.stringify(sample))
+
+
 func physics_frames(count: int) -> void:
 	for i in count:
 		await get_tree().physics_frame

@@ -24,6 +24,9 @@ func run() -> void:
 	var slowest := world.terrain.slowest_frame_ms
 	print("slowest streaming frame %.2f ms, %d over %.1f ms; finds the most of one %.2f ms" % [slowest, _over, _limit,
 		world.salvage.slowest_ms])
+	metric("Streaming slowest frame", slowest, "ms")
+	metric("Streaming frames over budget", _over, "frames", 1)
+	metric("Salvage slowest streaming piece", world.salvage.slowest_ms, "ms")
 	check(_over <= 1, "streaming stayed under %.1f ms a frame (%d frames over, slowest %.2f)"
 		% [_limit, _over, slowest])
 

@@ -969,6 +969,30 @@ mostly below the first-person viewport. Radio/battery reach remains unresolved
 as measured above. No finger animation or full carrying redesign is claimed.
 Combined CI and human acceptance remain required.
 
+
+### Riding view comfort correction (selected 2026-10-21)
+
+A playtest reports the chest clipping the first-person view and severe body
+jitter on the hoverboard. Keep the rigid suit and its shadows/external views,
+but put hips and trunk on the existing own-camera exclusion layer alongside
+head/collar. Body's visual root must use the same between-tick ride translation
+that Feel's camera and Ride's rendered board already use. A 20 m/s ride at
+60 Hz otherwise leaves up to 0.333 m relative displacement each tick. Read
+posture from the steady eye, not the render camera's interpolation, bob or
+shake. This is a drawing correction only: no player, board, held-object or rope
+physics changes. Keep boots and arms visible while checking actual riding
+frames at low render rate with unchanged 60 Hz physics.
+
+Movement 42 passes in 12 s: 29 actual post-process frames at 15 FPS/60 Hz,
+reaching 18.42 m/s, have zero measured suit/board rendered-origin error. Exact
+pre-fix master fails the torso-mask checks and has 0.09325 m relative origin
+error under the same fixture. Actual unseen 1280×720 before/after sequences at
+14 FPS/60 Hz cycle interpolation phases while looking 58 and 82 degrees down.
+Inspected six-frame contact sheets reproduce the old chest filling and flashing
+across the view; the corrected frames retain clear board, arms and boots.
+A 24-frame corrected riding clip is retained outside the repository. Existing
+movement physics remain unchanged; combined verification is still required.
+
 ## Rules
 
 1. **The board floats on the ground's one function.** Its hover height follows

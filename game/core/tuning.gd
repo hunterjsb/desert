@@ -13,6 +13,8 @@ static var _current: Tuning
 @export var run_seed: int = 0
 ## Metres round the moon. The one deliberate physics cheat (docs/the-moon.md).
 @export var moon_circumference: float = 150000.0
+## Large-body presentation; the circumference above only compresses travel.
+@export var moon_visual_radius_m: float = 3700000.0
 @export var spawn_latitude_degrees: float = 0.0
 @export var spawn_longitude_degrees: float = 0.0
 ## Surface gravity, m/s². The body research leans toward 0.4-0.5 g; F6 tries it live.
@@ -1395,6 +1397,9 @@ static func current() -> Tuning:
 ## Foot radius and summit rise, metres. Gentle broad approaches remain walkable.
 @export var starcom_mountain := Vector2(2400.0, 600.0)
 @export var observatory_mountain := Vector2(3600.0, 950.0)
+## Cheap background ground beyond the ordinary far ring; geometric radial spacing.
+@export var horizon_apron_rings: int = 20
+@export var horizon_apron_sides: int = 128
 @export var horizon_step := 128.0
 @export var horizon_range := Vector2(24000.0, 42000.0)
 @export var mountain_bedrock_depth := 40.0

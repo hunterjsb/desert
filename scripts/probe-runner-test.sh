@@ -32,6 +32,7 @@ fi
 echo "$name" >>"$RUNNER_TEST_DIR/ran"
 sleep 1
 [[ $name != broken.gd ]] || exit 1
+echo 'PROBE_METRIC {"probe":"probes/fake.gd","name":"Measured tick","value":1.25,"unit":"ms"}'
 echo 'PROBE PASS'
 FAKE
 chmod +x "$scratch/godot"
@@ -42,6 +43,7 @@ printf '## Runs alone\n' >"$scratch/realtime.gd"
 printf '\n' >"$scratch/ordinary.gd"
 PROBE_NOISY=1 scripts/probe.sh "$scratch/ordinary.gd" "$scratch/exclusive.gd" "$scratch/realtime.gd" >"$scratch/out"
 grep -q '^2 probes, 0 not passing$' "$scratch/out"
+grep -q '^PROBE_METRIC .*Measured tick' "$scratch/out"
 grep -q '^exclusive.gd$' "$scratch/ran"
 if grep -q '^realtime.gd$' "$scratch/ran"; then
   echo 'real-frame probe ran on a noisy runner' >&2; exit 1

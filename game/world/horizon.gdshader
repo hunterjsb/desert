@@ -1,4 +1,5 @@
 shader_type spatial;
+#include "res://game/world/surface_projection.gdshaderinc"
 #include "res://game/world/mountain.gdshaderinc"
 // Distant ground has no ripples, tracks or wind-map reads. The real terrain
 // covers its lowered mesh inside the far ring; atmosphere supplies the haze.
@@ -10,6 +11,8 @@ varying vec3 world_normal;
 void vertex() {
 	world_normal = normalize(MODEL_NORMAL_MATRIX * NORMAL);
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	NORMAL = normalize(transpose(mat3(MODEL_MATRIX)) * surface_normal(world_normal, world_pos));
+	VERTEX = (inverse(MODEL_MATRIX) * vec4(surface_project(world_pos), 1.0)).xyz;
 }
 void fragment() {
 	float distance = length(world_pos.xz - CAMERA_POSITION_WORLD.xz);

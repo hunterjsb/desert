@@ -1616,3 +1616,85 @@ second reproduction retained, and radio 10 in 6 s with every original gain
 assertion unchanged. The receiver and Broadcast still execute their ordinary
 callbacks; production radio and audio code are untouched. Combined CI remains
 required.
+
+### Drone horizon occlusion correction (2026-10-21)
+
+The delivery drone must disappear behind intervening terrain. Its nearby angular
+proxy currently writes nearby depth, allowing the hull to paint over distant dunes
+and appear to enter the ground. Keep its existing flight path, angular size,
+lighting and atmospheric veil. Draw the hull, veil and muzzle at background depth,
+preserving their internal depth order, so streamed terrain occludes them. This is
+a rendering correction; the drone remains at its simulated altitude. Verify with
+actual GPU captures of a ridge crossing and an unobstructed overhead view.
+
+As built: a separate worn-material instance opts the hull and muzzle into
+background depth; the atmospheric overlay uses the same depth mapping. Ordinary
+worn objects retain their normal projection. The GPU fixture `look/drone_horizon`
+compares the same scene with and without the drone: zero changed pixels below a
+ridge 600 m away, with 28 exposed hull pixels above it at 960×540. The unobstructed
+view is captured separately. Radio probe 47 still passes its real route and
+schedule checks. This controlled ridge fixture tests rendering, not terrain
+collision or a new flight controller.
+
+Before combined landing, isolate the worn proxy projection at shader compile
+time. Ordinary worn materials must have no POSITION override in their compiled
+vertex path, preserving the engine's ordinary projection/shadow pipeline. A
+dedicated drone shader defines SKY_PROXY and shares the worn source; no runtime
+shader-source rewriting or duplicated paint logic. Verify the ridge case and a
+real ordinary worn-object shadow capture before combined CI.
+
+As validated on the combined body/drone source: the shared paint implementation
+lives in `worn_surface.gdshaderinc`, with tiny ordinary and drone wrappers. Only
+the drone wrapper defines SKY_PROXY; ordinary worn vertex compilation contains
+no POSITION assignment. Directly including a .gdshader resource did not retain
+the required macro behavior in the actual GPU ridge check, so it is not used.
+The .gdshaderinc version yields zero hidden and 81 exposed hull pixels at
+1280x720; its unobstructed hull was inspected. An ordinary worn cube/shadow
+capture matches the pre-fix shader pixel-for-pixel (zero changed pixels), with
+1,957 shadow pixels verified against the same light with shadows disabled.
+Those captures were inspected. Radio 38/47 still pass; combined CI and native
+platform results remain the landing gate. Existing spoken craft-name assets
+and internal Surveyor ids are unchanged by this rendering correction.
+
+Radio 16's night-time Eye acceptance must observe real audibility across a
+bounded half-second listening window, retaining its -20 dB threshold, correct
+station/stream and ordinary silence checks. Glitch deliberately drops a dirty
+signal for 0.03–0.18 seconds; a single sampled tick can therefore be silent while
+the actual song is correctly on air. Preserve those real dropouts and callbacks;
+do not pin the instance RNG, disable effects or change production radio gain.
+
+The bounded Radio 16 check passes in 6 seconds on the combined candidate;
+Radio 38 and 47 pass alongside it in 7 and 8 seconds. Production radio code,
+glitch randomness, dropout lengths and the audibility threshold are unchanged.
+The prior CI failure reported the correct Eye stream at exactly -65 dB,
+consistent with its +15 dB base gain during an intentional -80 dB dropout.
+
+### Finite drone depth under the shared moon model (selected 2026-10-21)
+
+The earlier all-background proxy fix prevents the hull from painting over a
+foreground ridge. That conservative shortcut assumes the observer is below the
+drone: from above, it incorrectly puts the drone behind ground that is farther
+away. Replace it with actual finite depth along the proxy's unchanged camera ray.
+Scale camera-space vertices by slant/proxy_distance before projection and clamp
+only geometry beyond the far clip plane. Hull, atmospheric overlay and muzzle
+share this mapping; ordinary worn materials retain their compiled native path.
+
+The finite target may be below the observer and still above the ground. Determine
+planet occlusion from the segment's minimum altitude against SurfaceProjection,
+not the infinite sky horizon mask. Include observer altitude in the drone sight
+vector, preserving its ephemeris, angular art scale and every other orbital route.
+The signed dust column must agree when the same vertical path is reversed.
+
+Acceptance retains the foreground-ridge test and adds an above-drone observer
+with ground behind it, alongside ordinary shadow/material isolation. This is a
+presentation correction, not a general orbital physics simulation.
+
+As built, `look/drone_horizon` passes on actual Forward+ and Compatibility GPU
+renders. Both keep zero drone pixels over the foreground ridge with 81 exposed
+pixels above it. A 10 km observer sees the actual 6 km drone against farther ground:
+hull 1379 pixels, overlay 731/220 pixels (Forward+/Compatibility), and 4 exposed
+muzzle pixels. The old all-background shader yields zero visible hull/overlay
+pixels in the same high-observer case. Ordinary worn shadows remain pixel-identical
+to the prior shader in both renderers. Within-far depth is preserved; beyond-far
+geometry collapses to a representable far plane, with the Compatibility depth
+buffer's finite precision limit. Combined CI/native acceptance remains pending.

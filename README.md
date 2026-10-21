@@ -34,7 +34,7 @@ is once a minute. Documentation-only changes skip CI as before.
 
 Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
 Native probes balance survival with arrival/camp/movement, power/farming with
-physical gear, and saves/kits/sailing together to keep each group within budget. New folders still join “the rest”.
+saves/kits/sailing, and physical gear together to keep each group within budget. New folders still join “the rest”.
 Linux balances radio with foundation/world checks and menus with devices, leaving
 the catch-all group for unlisted folders.
 Probe durations have their own per-platform/group cache so long checks start first.
@@ -92,3 +92,17 @@ The separate desktop launcher installs and runs published game releases or opens
 checked-out source worktree in Godot. See [launcher/README.md](launcher/README.md) and
 the [launcher PRD](docs/prd/launcher.md). Its cross-platform builds publish from
 `launcher-v*` tags independently of the game version.
+
+## Performance observatory
+
+[The GitHub Pages dashboard](https://hunterjsb.github.io/desert/) refreshes after
+completed master Probes and Release workflows, including failures. It shows
+probe/retry costs, job and build steps, artifact sizes and opt-in game measurements.
+It consumes existing evidence; it never reruns the suite or gates a game release.
+Real-frame metrics are Linux-only and headless, so they do not measure GPU cost.
+
+Refresh manually with `gh workflow run performance-pages.yml`. The site requires
+GitHub Pages configured to use GitHub Actions. Its bounded history cache retains
+40 runs; on cache loss it backfills eight recent runs per workflow. Source and
+checks live in `site/` and `scripts/ci_dashboard/`; requirements and measured results
+live in [Probes and builds](docs/prd/probes-and-builds.md).

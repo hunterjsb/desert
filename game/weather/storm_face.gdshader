@@ -5,6 +5,7 @@
 shader_type spatial;
 render_mode unshaded, depth_test_disabled, depth_draw_never, cull_disabled, fog_disabled, shadows_disabled, blend_mix;
 
+#include "res://game/world/surface_projection.gdshaderinc"
 #include "res://game/weather/storm_field.gdshaderinc"
 #include "res://game/weather/shelter.gdshaderinc"
 
@@ -12,6 +13,7 @@ uniform sampler2D screen_tex : hint_screen_texture, filter_nearest;
 uniform sampler2D depth_tex : hint_depth_texture, filter_nearest;
 
 // Light, from Weather.
+uniform float horizon_dip = 0.0;
 uniform vec3 sun_dir = vec3(0.0, 0.5, -0.86);
 uniform vec3 sun_light = vec3(2.0);
 uniform vec3 sky_light = vec3(0.8);
@@ -302,12 +304,12 @@ void fragment() {
 	if (z <= 0.0) {
 		float c = dot(rd, sun_dir);
 		float behind = smoothstep(tu_edge.x, tu_edge.y, dot(rd, tu_dir));
-		scene += sun_disc * (smoothstep(0.99994, 0.99997, c) * (1.0 - behind)
+		scene += step(-sin(horizon_dip), rd.y) * sun_disc * (smoothstep(0.99994, 0.99997, c) * (1.0 - behind)
 			+ sun_shown * (0.015 * pow(max(c, 0.0), 700.0) + 0.003 * pow(max(c, 0.0), 40.0)));
 	} else {
 		if (storm_map_ready > 0.0) {
 			// A storm's shadow on the ground, relative to the light already there.
-			vec3 pg = ro + rd * scene_t;
+			vec3 pg = surface_unproject(ro + rd * scene_t);
 			float tp = sun_through(storm_sun_path(pg, storm_front_exact(pg.xz), sun_dir));
 			float lit = 1.0 - sun_share + sun_share * tp;
 			scene *= lit / (1.0 - sun_share + sun_share * camera_sun);
@@ -319,12 +321,30 @@ void fragment() {
 	// fade are haze.
 	float roof_max = storm_height + storm_roof_soft + 400.0;
 	float t_end = min(scene_t, far_fade.y);
-	if (rd.y > 0.0) {
-		t_end = min(t_end, max(0.0, (roof_max - ro.y) / rd.y));
-	} else if (ro.y > roof_max) {
+	float t_begin = 0.0;
+	float a = surface_frame.z > 0.0 ? dot(rd.xz, rd.xz) / (2.0 * surface_frame.z) : 0.0;
+	float c_roof = ro.y - roof_max;
+	if (a > 0.0) {
+		// Inverse projection lifts a render ray back over the flat weather sheet.
+		float disc = rd.y * rd.y - 4.0 * a * c_roof;
+		if (disc <= 0.0) {
+			t_end = 0.0;
+		} else {
+			// This form keeps a near root precise when altitude is near the roof.
+			float q = -0.5 * (rd.y + (rd.y >= 0.0 ? 1.0 : -1.0) * sqrt(disc));
+			float r0 = q / a;
+			float r1 = c_roof / q;
+			t_begin = max(0.0, min(r0, r1));
+			t_end = min(t_end, max(r0, r1));
+		}
+	} else if (rd.y > 0.0) {
+		t_end = min(t_end, max(0.0, -c_roof / rd.y));
+	} else if (rd.y < 0.0) {
+		t_begin = max(0.0, -c_roof / rd.y);
+	} else if (c_roof > 0.0) {
 		t_end = 0.0;
 	}
-	float t = t_end > 0.0 && storm_map_ready > 0.0 ? storm_entry(ro, rd, 0.0, t_end) : -1.0;
+	float t = t_end > t_begin && storm_map_ready > 0.0 ? storm_entry(ro, rd, t_begin, t_end) : -1.0;
 	// Stagger starts inside a storm a little, so steps never line up into bands.
 	float jitter = 0.5 * fract(52.9829189 * fract(dot(FRAGCOORD.xy, vec2(0.06711056, 0.00583715))));
 	t += t == 0.0 ? jitter : 0.0;
@@ -344,7 +364,7 @@ void fragment() {
 		// steady while tongues lick through it.
 		float flame = 1.0;
 		if (ring_on) {
-			vec3 pf = ro + rd * FLAME_AT;
+			vec3 pf = surface_unproject(ro + rd * FLAME_AT);
 			vec3 qf = vec3(pf.x + storm_air.x - storm_gust_shift.x, pf.y - storm_time * FLAME_RISE,
 				pf.z + storm_air.y - storm_gust_shift.y);
 			float n = dot(texture(storm_noise, STORM_TILT_B * qf * (1.0 / FLAME_SPAN)).gb, vec2(0.45, 0.55));
@@ -382,7 +402,7 @@ void fragment() {
 			float fine = min(0.75 + t * 0.06, max(4.0, t * 0.004));
 			// Small octaves only where their texels are bigger than a few pixels.
 			vec2 lod = vec2(1.0 - smoothstep(500.0, 1600.0, t), 1.0 - smoothstep(120.0, 450.0, t));
-			vec3 p = ro + rd * t;
+			vec3 p = surface_unproject(ro + rd * t);
 			vec3 f = storm_front(p.xz);
 			if (f.x + STORM_REACH < 0.0) {
 				edge = f.x + STORM_REACH;
@@ -425,7 +445,7 @@ void fragment() {
 				float hi = t;
 				for (int j = 0; j < 6; j++) {
 					float mid = 0.5 * (lo + hi);
-					vec3 pm = ro + rd * mid;
+					vec3 pm = surface_unproject(ro + rd * mid);
 					float top;
 					if (storm_front(pm.xz).x + storm_bulge(pm, lod, head, top) < 0.0) {
 						lo = mid;
@@ -434,7 +454,7 @@ void fragment() {
 					}
 				}
 				t = hi;
-				p = ro + rd * t;
+				p = surface_unproject(ro + rd * t);
 				f = storm_front(p.xz);
 				sigma = storm_density(p, f, lod, head, lod.y * smoothstep(0.0, SHELL_CALM, t - shell_t), edge, face_depth);
 			}
@@ -539,10 +559,10 @@ void fragment() {
 	}
 	vec3 color = light + trans * scene;
 	if (storm_skirt > 0.0 && storm_map_ready > 0.0) {
-		float tau = storm_skirt_depth(ro, rd, face_t) * (1.0 - smoothstep(far_fade.x, far_fade.y, face_t));
+		float tau = storm_skirt_depth_curved(ro, rd, face_t, surface_frame) * (1.0 - smoothstep(far_fade.x, far_fade.y, face_t));
 		// None of the ground's dust is inside a shelter.
 		tau *= 1.0 - shelter_length(ro, rd, face_t) / max(face_t, 1.0e-3);
-		vec3 ps = ro + rd * face_t;
+		vec3 ps = surface_unproject(ro + rd * face_t);
 		ps.y = 3.0;
 		vec3 fs = storm_front_exact(ps.xz);
 		float c = dot(rd, sun_dir);

@@ -5,29 +5,33 @@ extends Node3D
 var _world: World
 var _views := {}
 var _sand: ShaderMaterial
+var _summit: ShaderMaterial
 
 func setup(world: World) -> void:
 	_world = world
-	_sand = ShaderMaterial.new()
-	_sand.shader = preload("res://game/world/horizon.gdshader")
-	_sand.set_shader_parameter("sand", world.tuning.sand_color)
-	_sand.set_shader_parameter("mountain_rock", world.tuning.mountain_rock)
-	_sand.set_shader_parameter("mountain_rock_height", world.tuning.mountain_rock_height)
-	_sand.set_shader_parameter("horizon_near", world.tuning.far_radius - 2.0 * world.tuning.chunk_size)
-	_sand.set_shader_parameter("horizon_range", world.tuning.horizon_range)
+	_sand = ground_material(world)
+	_summit = Paint.worn().duplicate()
+	_summit.shader = preload("res://game/world/horizon_worn.gdshader")
 	world.player.camera.far = maxf(world.player.camera.far, world.tuning.horizon_range.y + world.tuning.observatory_mountain.x)
 
 func _process(_delta: float) -> void:
 	if _world == null:
 		return
+	var eye := _world.player.camera.global_position
+	var frame := Vector3(eye.x, eye.z, SurfaceProjection.radius(_world.tuning))
+	_sand.set_shader_parameter("surface_frame", frame)
+	_summit.set_shader_parameter("surface_frame", frame)
 	for hill in _world.shape.landforms.hills:
 		if not _views.has(hill.id):
 			var ground := MeshInstance3D.new()
+			ground.extra_cull_margin = bounds_margin(_world.tuning)
 			ground.mesh = mesh(hill, _world.tuning.horizon_step, _world.tuning.horizon_drop_m)
 			ground.material_override = _sand
 			ground.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			add_child(ground)
 			var top := MeshInstance3D.new()
+			top.extra_cull_margin = bounds_margin(_world.tuning)
+			top.material_override = _summit
 			top.mesh = StructureKit.piece(StringName(String(hill.id) + "_summit")).mesh(0, 0)
 			top.visibility_range_begin = _world.tuning.skyline_handover_m.y
 			top.visibility_range_begin_margin = _world.tuning.skyline_handover_m.y - _world.tuning.skyline_handover_m.x
@@ -70,3 +74,20 @@ static func mesh(hill: Landforms.Hill, step: float, drop: float) -> ArrayMesh:
 	var made := ArrayMesh.new()
 	made.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	return made
+
+
+static func ground_material(world: World) -> ShaderMaterial:
+	var sand = ShaderMaterial.new()
+	sand.shader = preload("res://game/world/horizon.gdshader")
+	sand.set_shader_parameter("sand", world.tuning.sand_color)
+	sand.set_shader_parameter("mountain_rock", world.tuning.mountain_rock)
+	sand.set_shader_parameter("mountain_rock_height", world.tuning.mountain_rock_height)
+	sand.set_shader_parameter("horizon_near", world.tuning.far_radius - 2.0 * world.tuning.chunk_size)
+	sand.set_shader_parameter("horizon_range", world.tuning.horizon_range)
+	return sand
+
+
+## Native culling sees the unprojected box, not the lowered shader vertices.
+static func bounds_margin(tuning: Tuning) -> float:
+	var reach := tuning.horizon_range.y + maxf(tuning.starcom_mountain.x, tuning.observatory_mountain.x)
+	return reach * reach / (2.0 * SurfaceProjection.radius(tuning))

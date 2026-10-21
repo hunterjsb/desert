@@ -156,15 +156,15 @@ topography later.
 ### A moon, not a plane
 
 The desert is a moon, and the coordinates behave like it. The ground near you is flat
-(we don't render the curve), but your position is tracked as **latitude and longitude**,
+(the local physics uses a tangent approximation), but your position is tracked as **latitude and longitude**,
 updated from how you move. Everything a sphere does follows from that. Walk far enough
 east and you come back to where you started. Circling the moon is shorter near the
 poles. Walk over a pole and you come down the other side, with north becoming south.
 
-**The moon is about 150 km round** (a radius of about 24 km). That's around 30 hours
+**The compressed travel map is about 150 km round** (a navigation radius of about 24 km). That's around 30 hours
 on foot, and about 37 km from the equator to a pole. Circling it is an epic a long run
-can achieve. A real sphere this small would put the horizon about 300 m away. We render
-the ground flat precisely so the big views stay possible.
+can achieve. A real sphere this small would put the horizon about 300 m away. The presentation instead uses the much larger provisional lore radius, preserving
+big views while local physics keeps its tangent approximation.
 
 **The sky follows your point on the moon** (2026-10-17, [the Tu
 spec](../briefs/tu-and-day-2026-10-17.md)). Local time follows longitude, so walking east brings
@@ -936,10 +936,120 @@ DayCycle supplies sun/Tu directions. A bounded first implementation can render a
 orbital proxy sphere and actual pod, resolve a seeded landing point, preload its
 normal terrain patch and transition through entry dust to that local tangent
 scene. Preserve geographic heading and time; do not imply that a general seamless
-planet renderer or orbital physics simulator already exists. The orbital material
-and arrival controller are not built. The generated mockup is an art target only.
+planet renderer or orbital physics simulator already exists. The bounded orbital material and automatic arrival controller are implemented;
+interactive ship preparation remains a separate in-progress feature. The generated mockup is an art target only.
 
 Render Zan as a large desert moon with thin dusty air. The 150 km gameplay lap is
 compressed distance, not a claim that the lore body is a tiny asteroid. Follow
 the moon document for the larger physical scale, and preserve Tu's established
 apparent size and illumination rather than enlarging it just for spectacle.
+
+### Large moon, compressed travel and time (agreed 2026-10-21)
+
+Zan's fictional body and the game's travel map have separate scales. The lore has
+not fixed a final size: `world/the-moon.md` leans toward a 3,500–3,900 km radius,
+and `briefs/body-research.md` also compares a 5,800 km option. Use a provisional
+3,700 km visual radius, adjustable in Tuning, without declaring a new lore fact.
+The existing 150 km circumference remains the compressed navigation/history map.
+The existing 20-minute gameplay day represents a longer fictional day (the current
+Tu proposal gives about 77.7 hours); neither compression dictates gravity. Keep
+the existing 9.8 m/s² gameplay gravity and provisional lore gravity separate.
+
+A shared SurfaceProjection supplies the large-moon presentation radius, tangent
+projection/inverse, normals and horizon quantities. Local physics stays on the
+flat streamed sheet. At the existing roughly 500 m real-object handover, curvature
+is under 3.4 cm: the local tangent remains a deliberate approximation. Far ground,
+landmark hills/summits and skyline must agree on the large-radius falloff, rather
+than use the 23.87 km navigation radius as visible curvature. Match CPU and GLSL
+projection, maintain undeformed coordinates for weather/track sampling, expand
+render bounds and anchor the projection to the main observer, including shadows.
+
+The bounded surface projection drops a point by horizontal distance squared over
+twice the visual radius, with a matching inverse and normal transform. Over the
+current 42 km scenery budget its difference from the sphere's tangent sag is
+less than 1 cm. It is not a seamless spherical collision world. Supply a cheap
+continuous background apron through the eye-level horizon; high-altitude views
+remain bounded by haze/draw distance. Ground and sky atmospheric/horizon consumers
+use the same visual radius. Preserve celestial angular ephemerides, existing
+compressed satellite routes and gameplay radio ranges; this pass does not pretend
+all displayed orbital art dimensions and compressed travel are physical metres.
+Orbital and inventory viewports must not inherit the main ground warp.
+
+Local solar time already follows longitude. Westward travel slows its advance;
+eastward travel accelerates it. At latitude phi the westward speed matching the
+sun is circumference/day_seconds * cos(phi): 125*cos(phi) m/s at the defaults.
+Keep this emergence rather than pinning day/night to the player's clock. Near a
+pole the required speed falls, subject to actual craft speed, heading and terrain.
+Checks should exercise real MoonPosition and DayCycle movement, not duplicate a
+formula as its only evidence.
+
+Acceptance: focused CPU projection/inverse/normal and moving-local-time checks;
+inspected GPU low/high-observer terrain, landmarks and skyline captures, including
+origin shifts and unaffected near interaction. Combined verification and native
+checks precede landing. Until measured, this presentation work is in progress.
+
+### Distant ground implementation slice (2026-10-21; selected, in progress)
+
+Keep the ordinary streamed/collision lattice and 32 m far ring budgets. Project
+their rendered vertices with SurfaceProjection, retaining undeformed samples for
+tracks and weather. A separate coarse annular apron overlaps the outer far ring
+and extends to the existing haze/draw budget; it samples dunes without mountain
+profiles, leaving the two existing distant hill meshes and their summit models
+as the sole mountain presentation. Distant summit material opts into the shared
+worn shader through a compile flag; ordinary worn items remain unchanged.
+Skyline boxes, bushes and glints use the same projection and transformed normals.
+All selected materials receive the actual main observer frame explicitly each
+frame; shader defaults leave standalone icons/orbital views unprojected. Expand
+render bounds conservatively; do not move any physical node or collider.
+
+The apron uses a small fixed polar mesh with geometric ring spacing, built on
+the existing far worker and uploaded within its existing scheduling budget. Its
+coarse ground is presentation only, with the same distant fade as the hills.
+Local interactive objects stay in the tangent approximation documented above.
+This slice does not claim that ordinary distant camp props or weather-volume
+sampling have been projected; those remain integration review work.
+
+As built: World 14 passes (5 s): actual terrain/horizon/summit/skyline/glint
+materials share the main camera frame, including after origin rebasing; the
+projection/inverse and normal agree, physical height is unchanged, the apron
+overlaps the ordinary far ring and reaches beyond the 2 m observer horizon.
+Its 2,688 vertices stay inside the existing 42 km distant budget. Existing
+function/collision, origin-shift and shade-seam checks pass (6/11/3 s).
+
+The actual GPU low and 350 m observer views of Starcom at 15 km were inspected,
+along with the same high view after rebasing. Ground continues into haze and
+the mountain stays grounded; undeformed GPU/CPU ground sampling differs by at
+most 0.00073 m in all three. The current low skyline coverage is incidental to
+that seeded view; this is not an acceptance claim for every distant camp prop.
+
+Paired RTX 3070 measurements at 1920×1080 use the existing sandlight harness,
+nine alternating rounds of 60 measured frames each: exact prior sand shader
+and no apron versus the new shader plus apron. Noon averages 5.319/5.501 ms
+(median paired delta +0.142 ms); a near view filled by sand averages
+4.813/4.910 ms (median +0.092 ms). Individual paired deltas range from
+−0.396 to +1.022 ms and −0.630 to +1.336 ms respectively on the shared desktop.
+These small median costs are below the run's variability, not a precise isolated
+shader microbenchmark; distant hill/skyline shaders remain the new versions in
+both near-view arms. The cheap apron adds no collision or resident sites.
+
+### Combined surface, sky and atmosphere acceptance (2026-10-21)
+
+The candidate combines terrain/landmark/skyline projection with sky horizon dip
+and inverse-projected storm sampling. World14/15, Weather27 and Radio38/47 pass
+together (5/4/6/7/8 s in the recorded focused run). World15 drives actual
+MoonPosition and DayCycle: westward normal-board travel delays equatorial sunset,
+eastward brings it sooner, and the same westward speed at 81° returns the sun
+above the horizon while the stationary observer has sunset. No movement cap,
+gravity, navigation circumference or global clock was changed.
+
+Combined actual 1280×720 low/high/rebased terrain and 2 km storm-observer views were
+inspected, together with clear shield interior and obscured exterior. Camera
+frames and atmospheric fields remain separate from the unchanged local physical
+sheet. The new capture fixtures drain their worlds before renderer shutdown;
+three pre-existing orphan Shelter nodes remain, reproduced in the unmodified
+horizon fixture. That existing allocation issue is not attributed to this change.
+
+The finite-drone shader/gate also passes the foreground-ridge and above-drone
+GPU cases on Forward+ and Compatibility; ordinary worn shadows match the prior
+shader exactly. Combined CI/native builds and player
+acceptance are pending; this is not a new release or seamless spherical physics.

@@ -1196,10 +1196,21 @@ white"), refined in the game's own kit (`SurveyorLooks`, worn shader):
   readout on the back of the left wrist, black boots with gunmetal toe caps.
 
 Rigid pieces on their joints, 5,916 triangles in 16 draws. In first
-person the helmet, the collar and the shoulder yokes are drawn only for
+person the helmet, collar, shoulder yokes, trunk and hips are drawn only for
 their shadow and for others (`Body.OWN_LAYER`). What you see is your arms
 reaching to what you hold, your knees crouched or sat, and your boots
 looking down. Look-test: `look/player_body`.
+
+
+### Comfortable own-camera suit view (2026-10-21; urgent correction)
+
+Keep gonkhub's complete rigid suit in external views and its shadow. Exclude
+hips and trunk, alongside head/collar, from the player's own camera so the
+near plane never slices through the torso while riding. Arms and boots remain
+visible. The body's drawn origin follows the same between-tick translation as
+the board and camera; it does not move the physical player. Posture comes from
+the steady eye rather than camera shake/interpolation. This is a view comfort
+fix, not an anatomical scale change or new body animation.
 
 
 ### Held grip surfaces (2026-10-21; bounded suit polish)
@@ -1250,3 +1261,14 @@ the aperture from the observer's eye; the ground World's sky never appears
 inside it. Aft retainers and the empty rack reserve space for actual cargo.
 Exterior inset panels, dark ribs and yellow corner guards keep the small room
 readable as one industrial pressure compartment rather than a whole ship model.
+## Zan's visible scale (agreed 2026-10-21)
+
+The 150 km travel lap must not make Zan look like a tiny asteroid. Preserve the
+large moon: nearly flat ground at standing height, a gentle distant falloff, and
+clear curvature from high up and orbit. The provisional presentation radius is
+3,700 km within the lore's unsettled 3,500–3,900 km leaning. Ground, skyline,
+landmark silhouettes and atmospheric horizon use the shared SurfaceProjection
+scale; local movement/collision remains a tangent approximation. Do not bend the
+orbital globe or inventory previews through the main ground projection. Existing
+Tu angular size, sun direction, worn materials and accepted sand stay the visual
+baseline. This is a presentation correction, not a new gravity or movement scale.

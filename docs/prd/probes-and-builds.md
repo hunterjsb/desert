@@ -73,6 +73,119 @@ but moved the bottleneck rather than improving the critical path. Its Windows
 saves/kits/sail step fell to 1435 s while the enlarged equipment group took
 2271 s. Power/farming are therefore restored to the saves group; survival stays
 with movement. Kits 3 passed first attempt in 199 s with exclusive scheduling,
-avoiding its previous 400 s timeout plus 196 s retry. Final distribution checks
-are pending. These scheduling changes retain nine Linux and four groups per
-native OS, every probe, and existing timeout limits.
+avoiding its previous 400 s timeout plus 196 s retry. The corrected distribution
+passed all nine Linux groups in
+[run 39654283432](https://github.com/hunterjsb/desert/actions/runs/39654283432).
+All 21 postlanding Linux, native and build checks passed in
+[run 39656106279](https://github.com/hunterjsb/desert/actions/runs/39656106279).
+The corrected Windows critical probe step took 1867 s, versus 2149 s on the
+same-runtime pre-regrouping baseline (13% less); equipment took 1127 s and
+saves/kits/sail/power/farming remained the bottleneck. The slowest Linux probe
+step was 629 s. Export/ZIP took 46 s on this run versus 41 s on the earlier
+landed pass. One macOS job never acquired a hosted runner and required a retry;
+runner queue delay is excluded from these step timings.
+These scheduling changes retain nine Linux and four groups per native OS, every
+probe, and existing timeout limits. No universal native speedup is claimed:
+hosted timing varies, and whole-suite critical path matters more than an
+individual group's improvement.
+
+## Performance dashboard (agreed 2026-10-21)
+
+Publish a small static GitHub Pages site after completed master Probes runs and
+Release runs, including failed runs; allow manual refresh. It reads existing
+Actions evidence and never starts Godot or adds a dependency to release gates.
+A bounded history (40 completed runs, backfilled from the latest eight per workflow
+when empty) lives in a separate Actions cache. Cache loss starts a clearly bounded
+new history rather than inventing measurements. The page links every result to its
+source run and records the commit, platform, attempt, collection time and missing
+log coverage. Retried jobs replace their older attempt's result when refreshed.
+
+Separate CI elapsed/job/step duration, per-probe wall time and retry cost from
+in-game measurements. Expose existing streaming, rope tick and long-walk memory
+measurements as structured probe output even on success. Real-frame checks remain
+Linux-only; headless measurements say explicitly that GPU/shader cost is absent.
+Do not infer frame rate from a probe's runtime. Compare a probe only with earlier
+successful measurements on the same platform/workflow; describe changes as signals
+on variable hosted hardware, not proven game regressions. Failed first attempts
+remain visible even when the retry passes. Missing measurements are never zero.
+
+Show run history, platform/search filters, slow probes, job/step bottlenecks,
+retry cost, exported archive artifact sizes and game measurements with existing
+budgets where applicable. Use accessible, responsive HTML/CSS/JavaScript without
+third-party runtime dependencies. Treat collected logs as data: no execution, no
+raw log publication or HTML interpolation. Publish only trusted default-branch
+site code, with a read-only collection token and Pages/OIDC deploy permissions.
+The dashboard has its own lightweight checks; failure never bypasses game checks.
+
+### First implementation
+
+The collector is Python standard-library code and the page has no runtime packages.
+A six-run real-data preview held 732 KB of JSON; a cached refresh took 1.19 s locally.
+It excludes runner selftests, preserves failed-attempt cost, labels unavailable logs,
+and measures elapsed time from original run creation even after a partial rerun.
+Jobs that never acquired a runner have no execution-time measurement.
+
+Focused streaming, rope, world-walk and salvage-walk checks passed (16, 20, 109 and
+88 s respectively), preserving all assertions and emitting ten structured metrics.
+Five collector checks, runner scheduling/metric retention checks, shell and workflow
+lint pass. Desktop and 390 px browser checks exercised platform/search filtering,
+full result expansion and job details without script errors or page overflow;
+metric cards rendered all ten actual local samples in a separate preview fixture.
+The production site consumes CI evidence only. Full CI and initial deployment are
+checked when this change lands; local preview measurements are not CI baselines.
+
+A probe opts in with `metric(label, value, unit, optional_budget)`; its existing
+`check()` still owns pass/fail. The metric helper only reports evidence and never
+asserts a limit. Keep labels and units stable for history comparisons. The runner
+prints the verdict before the metric records, associating measurements with the
+correct first attempt or retry. Failed measurements stay marked failed; missing
+ones do not enter passing trend lines.
+
+The initial [Pages deployment](https://github.com/hunterjsb/desert/actions/runs/39669517833)
+published [the observatory](https://hunterjsb.github.io/desert/) with 15 historical
+runs. Checks took 6 s, the cold backfill/build 65 s, and deployment 12 s, excluding
+runner queue delay. Desktop and narrow-layout checks also passed on the public
+site. Linux verification passed all nine groups in
+[39667591018](https://github.com/hunterjsb/desert/actions/runs/39667591018).
+
+The first full run passed 20 of 21 jobs; macOS salvage retention timed out at
+301 s and 300 s before reaching its measurement output. Across 110 passing probes
+in that job, median runtime was 2.1 times the preceding master run; this alone does
+not establish the cause. No assertion or timeout was changed. The
+[completion-triggered refresh](https://github.com/hunterjsb/desert/actions/runs/39675753373)
+succeeded and publicly reported the failed run, both attempts, their 601 s total,
+and 16 available game measurements. Browser checks confirmed those results on the
+live page. Missing measurements stayed absent. A targeted retry of the failed job
+is tracked in [the source run](https://github.com/hunterjsb/desert/actions/runs/39669517959).
+
+
+### Plain run report (agreed 2026-10-21)
+
+Replace the large summary cards with a compact selected-run table. Move the game
+measurements into that same report, without a separate “Game performance” section
+or decorative sparklines. Each measurement names its platform, value, assertion
+limit when supplied, and whether it is below, at or above that limit. Keep the
+probe's actual verdict separate: a measurement alone cannot certify a whole probe.
+Without a limit, say “No limit” rather than implying good or bad. Show the nearest
+earlier passing sample on the same platform and workflow, with its source run and
+numeric change; absent history is explicitly “No earlier sample”. Keep history,
+slow probes, job details and artifacts. Favor compact tables over presentation.
+
+The plain report replaces the four summary cards and measurement cards with tables,
+removes the large introductory heading and the separate game-performance section,
+and preserves source links and filters. Desktop and 390 px browser checks passed:
+summary rows, limit/no-limit states, absent history, metric search, empty results,
+probe expansion and job details. Five collector checks and JavaScript syntax pass.
+
+
+Combined master [39672634648](https://github.com/hunterjsb/desert/actions/runs/39672634648)
+passed all 21 jobs, including macOS salvage retention. The redundant retry of the
+original run was cancelled; no assertions or budgets changed. The public report
+contains all 18 measurements from the successful combined run.
+
+The plain-table revision passed all nine Linux verification groups in
+[39680975173](https://github.com/hunterjsb/desert/actions/runs/39680975173) and
+[deployed successfully](https://github.com/hunterjsb/desert/actions/runs/39683448632).
+Public desktop/mobile checks confirmed the tables, limit/no-limit labels, filtering,
+and actual earlier-run references; a controlled comparison also verified numeric
+and percentage deltas. Missing history remains explicit rather than implying zero.

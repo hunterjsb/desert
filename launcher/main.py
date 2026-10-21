@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtGui import QFont, QIcon
+from PySide6.QtGui import QColor, QFont, QIcon, QLinearGradient, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QLabel,
     QHeaderView, QLineEdit, QMainWindow, QMessageBox, QPushButton, QTabWidget,
@@ -300,12 +300,48 @@ class DownloadWorker(QThread):
             self.finished_install.emit("", str(error))
 
 
+class HeroBanner(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.image = QPixmap(str(resource_path("launcher/assets/desert-storm-banner.jpg")))
+        self.setFixedHeight(176)
+        self.title = QLabel("DESERT", self)
+        self.title.setStyleSheet("color: #f4efe6; font-size: 29px; font-weight: 800; background: transparent;")
+        self.subtitle = QLabel("A quiet place in a very large desert.", self)
+        self.subtitle.setStyleSheet("color: #e2d8c8; font-size: 13px; background: transparent;")
+
+    def resizeEvent(self, event):
+        self.title.move(32, self.height() // 2 - 25)
+        self.subtitle.move(34, self.height() // 2 + 14)
+        super().resizeEvent(event)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        if not self.image.isNull():
+            target = self.rect()
+            ratio = target.width() / max(1, target.height())
+            source_height = min(self.image.height(), int(self.image.width() / ratio))
+            source_width = min(self.image.width(), int(self.image.height() * ratio))
+            source = self.image.rect()
+            source.setWidth(source_width)
+            source.setHeight(source_height)
+            source.moveCenter(self.image.rect().center())
+            painter.drawPixmap(target, self.image, source)
+        else:
+            painter.fillRect(self.rect(), Qt.GlobalColor.black)
+        shade = QLinearGradient(0, 0, self.width() * 0.72, 0)
+        shade.setColorAt(0.0, QColor(17, 18, 19, 220))
+        shade.setColorAt(0.54, QColor(17, 18, 19, 90))
+        shade.setColorAt(1.0, QColor(17, 18, 19, 0))
+        painter.fillRect(self.rect(), shade)
+
+
 class Launcher(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(APP_NAME)
         self.setWindowIcon(QIcon(str(resource_path("launcher/assets/desert-launcher.svg"))))
-        self.setMinimumSize(900, 620)
+        self.setMinimumSize(900, 650)
         self.settings = read_settings()
         self.releases: list[Release] = []
         self.release_worker = None
@@ -330,18 +366,18 @@ class Launcher(QMainWindow):
 
         center = QWidget()
         outer = QVBoxLayout(center)
-        outer.setContentsMargins(28, 24, 28, 24)
-        outer.setSpacing(12)
-        title = QLabel("DESERT")
-        title.setObjectName("title")
-        subtitle = QLabel("A quiet place in a very large desert.")
-        subtitle.setObjectName("subtitle")
-        outer.addWidget(title)
-        outer.addWidget(subtitle)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+        outer.addWidget(HeroBanner())
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(20, 14, 20, 20)
+        content_layout.setSpacing(12)
         self.tabs = QTabWidget()
         self.tabs.addTab(self._play_page(), "Play")
         self.tabs.addTab(self._source_page(), "Source")
-        outer.addWidget(self.tabs)
+        content_layout.addWidget(self.tabs)
+        outer.addWidget(content, 1)
         self.setCentralWidget(center)
         self.refresh_releases()
         self.refresh_sources()

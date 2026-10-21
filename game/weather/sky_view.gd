@@ -81,6 +81,9 @@ func setup(world: World, day: DayCycle, environment: Environment, face: StormFac
 func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3, haze: Vector3,
 		tu_light: float, seen_shade: float, dim: float, ring_air: Vector3) -> void:
 	var moon := _world.moon
+	var dip := SurfaceProjection.horizon_dip(maxf(eye.y, 0.0), SurfaceProjection.radius(_world.tuning))
+	material.set_shader_parameter("horizon_dip", dip)
+	_face.set_light(&"horizon_dip", dip)
 	var tu := _day.tu_direction(t, moon.latitude, moon.longitude)
 	var radius := _day.tu_radius()
 	material.set_shader_parameter("sky_glow", glow)
@@ -185,7 +188,11 @@ func _show_satellites(t: float) -> void:
 		var to := orbit.at(t) - p
 		var dir := DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
 		if look.shape == Constellation.Shape.HULK:
-			# Modelled, not drawn on the sky.
+			# Only this finite ship has observer parallax; the ephemerides stay intact.
+			var camera := get_viewport().get_camera_3d()
+			if camera != null:
+				to -= p * (maxf(camera.global_position.y, 0.0) / orbit.radius)
+				dir = DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
 			_show_crop_survey(t, orbit, dir, to.length() * orbit.radius, sky.flash(id, t))
 			dirs.append(dir)
 			colors.append(Color(0.0, 0.0, 0.0, 0.0))
