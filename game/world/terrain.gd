@@ -222,6 +222,10 @@ func chunk_at(world_x: float, world_z: float) -> Vector2i:
 	return Vector2i(floori(world_x / _size), floori(world_z / _size))
 
 
+func keeps_ground_at(x: float, z: float) -> bool:
+	return _policy != null and _policy.keeps_ground(chunk_at(x, z))
+
+
 func has_collision_at(world_x: float, world_z: float) -> bool:
 	var chunk: TerrainChunk = _chunks.get(chunk_at(world_x, world_z))
 	return chunk != null and chunk.has_collision()

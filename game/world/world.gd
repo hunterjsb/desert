@@ -438,7 +438,6 @@ func _release_home_check() -> String:
 
 
 func _keep_bodies_on_ground() -> void:
-	var here := terrain.chunk_at(player_world_x(), player_world_z())
 	for child in content.get_children():
 		var body := child as RigidBody3D
 		# What's on you, or under you on a board, goes where you go.
@@ -446,7 +445,7 @@ func _keep_bodies_on_ground() -> void:
 			continue
 		var x := world_x(body.global_position.x)
 		var z := world_z(body.global_position.z)
-		if not home.contains(body) and (not terrain.is_loaded_at(x, z) or not TerrainResidency.keeps_ground(terrain.chunk_at(x, z), here, tuning)):
+		if not home.contains(body) and (not terrain.is_loaded_at(x, z) or not terrain.keeps_ground_at(x, z)):
 			body.queue_free()
 		elif not terrain.has_collision_at(x, z):
 			if not body.freeze:
