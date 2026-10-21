@@ -912,8 +912,62 @@ existing ground-rest/crawl and headroom probes 36/37 (6 s each). Actual unseen
 prone, through the player's eyes and from outside. Looking down shows the boots;
 helmet/collar do not obscure the first-person view. Held-radio hands still stop
 short of the item at the existing hold distance. Combined CI and human acceptance
-remain pending. Open: bring held things nearer, about 0.6 m, so your hands close
-on them?
+remain pending.
+
+**Holding reach audit (2026-10-21; measured limitation, no runtime change).**
+The existing arm and grip measure 0.28 + 0.25 + 0.08 = 0.61 m. With the real
+radio held at its unchanged distance, a level view puts the current grip target
+1.156 m from the shoulder; even the nearest point anywhere on the radio's
+collision bounds is 1.064 m away. Looking down 25 degrees gives 1.053 m and
+0.959 m respectively. The battery's nearest bounds are 1.090 m / 0.986 m away.
+These nearest-bound distances are optimistic lower bounds, not authored grips.
+A local wrist rotation or ordinary shoulder protraction cannot bridge this gap.
+Do not silently stretch the arms, detach the shoulders, or move held physics
+objects to hide it. Preserve gonkhub's suit and its current interaction poses
+until a carrying-pose decision is made.
+
+For a future coordinated interaction pass, near-side radio grips at a level
+view would require an eye-to-item-center distance of roughly 0.44 m with the
+current shoulder, or roughly 0.52 m with an illustrative 0.08 m forward shoulder
+shift. The current side-at-origin targets require roughly 0.34 m. These are
+geometric options, not adopted tuning; 0.6 m alone does not establish a grip.
+The cutter's separate low-right carry already has reachable bounds (0.512 m
+level, 0.383 m looking down 25 degrees), and the chassis's near edge is 0.550 m
+away looking down 25 degrees. Item-local grip anchors could improve these
+cases independently, but cannot solve the radio or battery at their present
+distance. Their actual handle geometry and wrist pose still need inspection.
+
+**Selected bounded correction (2026-10-21).** Keep the arm lengths and all held
+physics poses. A cutter targets its drawn rear handle in the cutter's own frame,
+not a point beside its barrel. A held chassis targets each hand's nearest point
+on an actual enabled frame box, not the aggregate bounds or its distant middle;
+joined pieces remain separate surfaces. Transform these anchors through the
+actual held item pose so turning it preserves the contact target. The existing
+fixed-length arm solve still refuses targets beyond reach. This improves
+reachable carrying poses without claiming to solve small items held too far
+away. No new interaction, suit system or deed is introduced.
+
+An isolated real-Hands measurement checked radio, battery, cutter and chassis
+at level, 25-degree and 60-degree downward views; actual unseen 1280×720 held-
+radio captures from the player's eyes and outside confirm the visible gap.
+This audit changes documentation only; no new gameplay or physics acceptance
+is claimed.
+
+**Bounded correction as built.** Body now uses the cutter's drawn rear handle
+and the nearest enabled, non-fitting chassis frame box surface for each hand.
+The target follows the object's actual transform; no object, shoulder or bone
+length moves to obtain contact. Movement 41 fails on the exact pre-fix body:
+the cutter misses its handle by 0.10549 m and each chassis hand misses the
+physical frame by 0.02002 m. The corrected real-Hands carry at 25 degrees down
+has less than 0.00001 m contact error for all three gloves. The check also
+retains the original joint lengths and unit bone scales, and repeated posing
+leaves player/item transforms, velocities and collision shapes unchanged.
+It passes in 7 s; existing body probe 39 passes in 10 s. Actual unseen 1280×720
+before/after first-person and exterior captures cover radio, cutter and chassis.
+The chassis gloves meet the near plate; the cutter grasps its rear handle,
+mostly below the first-person viewport. Radio/battery reach remains unresolved
+as measured above. No finger animation or full carrying redesign is claimed.
+Combined CI and human acceptance remain required.
 
 ## Rules
 
