@@ -37,6 +37,8 @@ func _observe() -> void:
 	observer.world = world
 	world.arrival = observer
 	world.add_child(observer)
+	observer.set_physics_process(false)
+	observer.set_process(false)
 
 func resume_arrival() -> bool:
 	var run_seed := world.run_seed
