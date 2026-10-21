@@ -22,9 +22,9 @@ jobs:
       fail-fast: false
       matrix:
         group:
-          - probes/foundation probes/world probes/dev
+          - probes/foundation probes/world probes/dev probes/radio
           - probes/weather probes/salvage
-          - probes/devices
+          - probes/devices probes/menus
           - probes/power probes/farming
           - probes/rope
           - probes/movement
@@ -36,7 +36,7 @@ jobs:
     timeout-minutes: 30
     env:
       REST_EXCEPT: >-
-        probes/foundation probes/world probes/dev probes/weather probes/salvage probes/devices
+        probes/foundation probes/world probes/dev probes/radio probes/weather probes/salvage probes/devices probes/menus
         probes/power probes/farming probes/rope probes/movement probes/survival probes/sail
         probes/saves probes/kits
     steps:
@@ -52,7 +52,7 @@ jobs:
           restore-keys: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-
 
       - name: The runner can fail
-        if: matrix.group == 'probes/foundation probes/world probes/dev'
+        if: matrix.group == 'probes/foundation probes/world probes/dev probes/radio'
         run: |
           scripts/probe-runner-test.sh
           scripts/probe.sh selftest

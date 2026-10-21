@@ -35,6 +35,8 @@ is once a minute. Documentation-only changes skip CI as before.
 Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
 Native probes split arrival, camp and movement into their own parallel group to
 keep the remaining families within the job budget. New folders still join “the rest”.
+Linux balances radio with foundation/world checks and menus with devices, leaving
+the catch-all group for unlisted folders.
 Probe durations have their own per-platform/group cache so long checks start first.
 `## Exclusive on noisy runners` keeps measured contention-sensitive checks out of the
 native parallel pool; those checks still run, unlike real-frame timing checks.

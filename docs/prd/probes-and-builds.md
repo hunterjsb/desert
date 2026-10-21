@@ -25,6 +25,10 @@ on the world walk, 601 + 339 s on warnings, and 301 + 243 s on salvage retention
   cache. Save a fresh per-platform, per-group timing cache after each CI run so
   long probes actually start first on subsequent runs. Retry durations should
   replace the failed attempt's duration, not perpetually record its timeout.
+- Keep nine Linux groups, moving radio into foundation/world/dev and menus into
+  devices. The next master run (39629562854) took 1028 s in the catch-all group
+  against 320 s for foundation and 345 s for devices; radio and menus account
+  for 1370 s of its summed probe time. Its fallback must still include new folders.
 - Measure packaging compression before changing it; preserve archive contents,
   executable permissions, macOS symlinks and all native smoke checks.
 
