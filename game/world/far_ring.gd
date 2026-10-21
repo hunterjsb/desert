@@ -22,7 +22,6 @@ static func ground(shape: TerrainShape, tuning: Tuning, x: float, z: float) -> f
 
 
 static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array:
-	var profiles := shape.landforms.profiles()
 	var size := tuning.chunk_size
 	var step := tuning.far_step
 	var reach := ceili(tuning.far_radius / size) * size
@@ -32,6 +31,8 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 	var hole_hi := tuning.view_radius * size
 	var x0 := float(center.x * size)
 	var z0 := float(center.y * size)
+	var profiles := shape.landforms.profiles_in(Rect2(x0 + lo - step, z0 + lo - step,
+		2 * reach + size + 2 * step, 2 * reach + size + 2 * step))
 
 	var w := cells + 3
 	var bordered := PackedFloat32Array()

@@ -33,7 +33,7 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 	var z0 := float(coord.y * size)
 	# One sample of border, so edge normals match the neighbour's.
 	var w := n + 3
-	var profiles := shape.landforms.profiles()
+	var profiles := shape.landforms.profiles_in(Rect2(x0 - step, z0 - step, size + 2 * step, size + 2 * step))
 	var bordered := PackedFloat32Array()
 	bordered.resize(w * w)
 	for j in w:
@@ -47,9 +47,9 @@ static func make(shape: TerrainShape, coord: Vector2i, size: int, step: int, ski
 ## stands on it.
 static func pressed(shape: TerrainShape, bordered: PackedFloat32Array, coord: Vector2i, size: int, step: int, skirt: float,
 		indices: PackedInt32Array, held: Array[Structure], steps: PackedInt32Array,
-		profiles: Array[Landforms.Hill] = []) -> ChunkBuild:
-	if profiles.is_empty():
-		profiles = shape.landforms.profiles()
+		profiles: Variant = null) -> ChunkBuild:
+	if profiles == null:
+		profiles = shape.landforms.profiles_in(Rect2(coord.x * size - step, coord.y * size - step, size + 2 * step, size + 2 * step))
 	var build := ChunkBuild.new()
 	build.coord = coord
 	build.step = step
