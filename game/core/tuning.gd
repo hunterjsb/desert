@@ -1058,6 +1058,10 @@ static var _current: Tuning
 @export var relay_doppler_khz: float = 1.5
 @export var relay_rise_degrees: float = 8.0
 @export var dust_height_m: float = 1500.0
+## Frontier Ag's crop survey (CropSurvey) is drawn this many times the size
+## CropSurveyLooks builds it: 2.3 makes it about 940 m tip to tip, about 9
+## degrees across straight overhead.
+@export var crop_survey_scale: float = 2.3
 ## The Eye's drone comes now and then out of silences of between these many
 ## minutes, its first one included.
 @export var eye_quiet_minutes: Vector2 = Vector2(2.0, 8.0)
@@ -1108,10 +1112,11 @@ static var _current: Tuning
 ## A signal flare burns this long, s (Flare). The Surveyor fires its
 ## care-package cannon at a lit one it passes this high over, degrees, and the
 ## container takes this long to come down, s, landing this near the flare, m,
-## the least and most (Airdrop).
+## the least and most (Airdrop). From 6 km up, 50 degrees is under 8 km off,
+## and its boom (about 22 s coming) is heard before the container lands.
 @export var flare_burn_seconds: float = 60.0
-@export var airdrop_elevation_degrees: float = 35.0
-@export var airdrop_fall_seconds: float = 14.0
+@export var airdrop_elevation_degrees: float = 50.0
+@export var airdrop_fall_seconds: float = 30.0
 @export var airdrop_land_m: Vector2 = Vector2(12.0, 35.0)
 ## A home frequency wanders inside its band, no farther than this, kHz, from
 ## one moon day (or one hop) to the next (gonkhub, 2026-10-20).

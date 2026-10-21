@@ -120,7 +120,10 @@ func _launch(craft: Dictionary, t: float) -> void:
 	lands_at = t + _world.tuning.airdrop_fall_seconds
 	_metres = craft.metres
 	_from = craft.at - global_position
-	_bend = _from + craft.way * CARRY
+	# Its way level or down: a cannon fired at the ground doesn't climb first.
+	var way: Vector3 = craft.way
+	way.y = minf(way.y, 0.0)
+	_bend = _from + way * CARRY
 	# It comes in from the bend's side: rolling on away from it, end over end.
 	var coming := -_bend
 	coming.y = 0.0
@@ -233,11 +236,27 @@ func _fly(t: float) -> void:
 		_beacon.visible = fmod(t, 1.0) < 0.5
 
 
+## How high its middle sits landing, m, so no corner of it starts in the sand
+## however it's turned (the sand holds a body by its corners).
+func _clearance() -> float:
+	cargo.position = Vector3.ZERO
+	var deepest := 0.0
+	for child in cargo.get_children():
+		var shape := child as CollisionShape3D
+		if shape == null or shape.shape == null:
+			continue
+		var box := Catalog.bounds(shape.shape)
+		for i in 8:
+			var corner := cargo.global_transform * shape.transform * box.get_endpoint(i)
+			deepest = maxf(deepest, _world.height_under(corner) - corner.y)
+	return maxf(deepest + 0.1, 0.7)
+
+
 func _hit(t: float) -> void:
 	landed = true
 	var coming := velocity(t - 0.1)
 	_trail.emitting = false
-	cargo.position = Vector3(0.0, 0.7, 0.0)
+	cargo.position = Vector3(0.0, _clearance(), 0.0)
 	var flat := Vector3(coming.x, 0.0, coming.z)
 	flat = flat.normalized() if flat.length() > 0.01 else Vector3.ZERO
 	cargo.freeze = false

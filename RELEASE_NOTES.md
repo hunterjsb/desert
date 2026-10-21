@@ -21,6 +21,9 @@ checks for Home/arrival and playtest acceptance remain pending.
 
 - Continuously unwind and gather the rope coil while preserving its gauge and
   held-end attachment.
+- See Frontier Ag's crop survey as a full model 6 km up: faceted nacelles, solar
+  arrays and its care-package cannon, lit by the sun and the sand below and
+  hazed by the air between. Its care packages fall for 30 s from the new height.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 

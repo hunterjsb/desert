@@ -51,8 +51,6 @@ uniform float relay_day = 0.0;
 // and its shape (Constellation.Shape) and size, in points; and how far it shows
 // by day too, as relay_day.
 const int SATELLITES = 16;
-// How much of the sky's own glow a low hull's body blots out.
-const float HULL_SHADE = 0.75;
 // By day a satellite bright enough to show is drawn this many times as bright,
 // to stand out against the day sky as a night one does against the dark.
 const float DAY_BOOST = 3.0;
@@ -125,23 +123,6 @@ vec3 through_air(float up) {
 // The fixed field: a cube round the sky in cells, a few holding one star kept
 // clear of its cell's edges, bright ones rare; and the pole marks, a bright
 // star at the north and a close pair at the south.
-// A low hull (the shape HULK), an H: a thin connecting hull between two
-// sharp uprights, each tapering to a point at both ends; all shadow, its dark
-// body blotting out the stars and the sky's glow behind it, unlit (gonkhub,
-// 2026-10-19/20). (how bright, how much it hides). uv in its size's points.
-vec2 hulk(vec2 uv) {
-	// Each upright's half width falls to nothing at its points, UPRIGHT up and down.
-	const float APART = 2.6;
-	const float UPRIGHT = 2.6;
-	float half_width = 1.1 * max(0.0, 1.0 - abs(uv.y) / UPRIGHT);
-	float uprights = smoothstep(half_width + 0.06, half_width - 0.06, abs(abs(uv.x) - APART)) * step(0.02, half_width);
-	float hull = smoothstep(0.5, 0.42, abs(uv.y)) * smoothstep(APART + 0.1, APART - 0.1, abs(uv.x));
-	float solid = max(uprights, hull);
-	// No lights of its own (gonkhub, 2026-10-20: "remove the surveyor's lights"):
-	// only its shadow, and its muzzle's flash when its cannon fires.
-	return vec2(0.0, solid);
-}
-
 // A satellite's shape round its centre, uv in points across the sky: a
 // point, a cross of panels, a bar, a ring, a pair, or a diamond.
 float satellite(vec2 uv, int shape) {
@@ -311,8 +292,6 @@ void sky() {
 		vec3 field = dark > 0.0 && d.y > -0.02 ? stars(to_stars * d, px) * dark : vec3(0.0);
 		// The satellites orbit Zan, far nearer than Tu: they show in front of it.
 		vec3 orbiting = vec3(0.0);
-		// What a low hull's body hides behind it.
-		float hidden = 0.0;
 		// Seen at night, or by day if near and bright enough; brighter against the day.
 		float relay_seen = max(dark, relay_day);
 		if (relay_light > 0.0 && relay_seen > 0.0) {
@@ -333,25 +312,14 @@ void sky() {
 				across = length(across) < 1.0e-4 ? vec3(1.0, 0.0, 0.0) : normalize(across);
 				vec3 up = cross(at, across);
 				vec3 off = d - at;
-				if (dot(d, at) < (int(sat_form[i].x) == 6 ? 0.9 : 0.99)) {
+				if (dot(d, at) < 0.99) {
 					continue;
 				}
 				vec2 uv = vec2(dot(off, across), dot(off, up)) / (px * sat_form[i].y);
-				if (int(sat_form[i].x) == 6) {
-					vec2 hull = hulk(uv);
-					orbiting += sat_color[i].rgb * sat_color[i].a * seen * hull.x;
-					// Its cannon fired: a flash at the hull's middle, while its light is past normal.
-					float muzzle = max(sat_color[i].a - 1.0, 0.0);
-					orbiting += vec3(1.0, 0.92, 0.8) * muzzle * seen * exp(-dot(uv, uv) * 0.6);
-					hidden = max(hidden, hull.y * min(sat_color[i].a * 4.0, 1.0));
-				} else {
-					orbiting += sat_color[i].rgb * sat_color[i].a * seen * satellite(uv, int(sat_form[i].x));
-				}
+				orbiting += sat_color[i].rgb * sat_color[i].a * seen * satellite(uv, int(sat_form[i].x));
 			}
 		}
-		beyond += (field + corona) * (1.0 - cover) * (1.0 - hidden) + orbiting;
-		// A low hull blots out the night's own glow behind it too, so it shows as a
-		// shadow against the sky, not only where it hides a star.
-		COLOR = base * (1.0 - hidden * HULL_SHADE) + air * veil * beyond;
+		beyond += (field + corona) * (1.0 - cover) + orbiting;
+		COLOR = base + air * veil * beyond;
 	}
 }

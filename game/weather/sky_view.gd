@@ -29,6 +29,8 @@ enum { CLEAR, GOING_IN, TOTAL, MISSED }
 const JUMP := 2.0
 
 var material := ShaderMaterial.new()
+## The crop survey, modelled: the one satellite drawn as a thing, not on the sky.
+var crop_survey: CropSurvey
 ## Tu's light on open ground round the camera, as a share of the sun's overhead.
 var tu_seen := 0.0
 ## How the eclipse going on now has been watched, and the clock when last seen.
@@ -41,6 +43,7 @@ var _face: StormFace
 var _sun: DirectionalLight3D
 var _sun_energy: float
 var _tu_shine := DirectionalLight3D.new()
+var _environment: Environment
 
 
 func setup(world: World, day: DayCycle, environment: Environment, face: StormFace, sun: DirectionalLight3D) -> void:
@@ -49,6 +52,7 @@ func setup(world: World, day: DayCycle, environment: Environment, face: StormFac
 	_face = face
 	_sun = sun
 	_sun_energy = sun.light_energy
+	_environment = environment
 	material.shader = preload("res://game/weather/sky.gdshader")
 	# The day's gradient stays the scene's, drawn now under Tu and the stars.
 	var stock := environment.sky.sky_material as ProceduralSkyMaterial
@@ -66,6 +70,8 @@ func setup(world: World, day: DayCycle, environment: Environment, face: StormFac
 	_tu_shine.directional_shadow_max_distance = sun.directional_shadow_max_distance
 	_tu_shine.visible = false
 	add_child(_tu_shine)
+	crop_survey = CropSurvey.new(world.tuning)
+	add_child(crop_survey)
 
 
 ## Every frame, after Weather has worked out the light: where the sun stands
@@ -178,6 +184,13 @@ func _show_satellites(t: float) -> void:
 			continue
 		var to := orbit.at(t) - p
 		var dir := DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
+		if look.shape == Constellation.Shape.HULK:
+			# Modelled, not drawn on the sky.
+			_show_crop_survey(t, orbit, dir, to.length() * orbit.radius, sky.flash(id, t))
+			dirs.append(dir)
+			colors.append(Color(0.0, 0.0, 0.0, 0.0))
+			forms.append(Vector3(look.shape, 0.0, 0.0))
+			continue
 		var up := smoothstep(0.0, deg_to_rad(4.0), asin(clampf(dir.y, -1.0, 1.0)))
 		var near := orbit.nearness(t)
 		var lit := 1.0 if orbit.sunlit(t, sun) else 0.0
@@ -212,6 +225,24 @@ func _show_satellites(t: float) -> void:
 	material.set_shader_parameter("sat_dir", dirs)
 	material.set_shader_parameter("sat_color", colors)
 	material.set_shader_parameter("sat_form", forms)
+
+
+## The crop survey where its orbit has it, `dir` from you and `metres` off,
+## lit by the scene's sun, its muzzle flashing as `flash` (the constellation's,
+## 1 when it isn't firing) says.
+func _show_crop_survey(t: float, orbit: Satellite, dir: Vector3, metres: float, flash: float) -> void:
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		crop_survey.visible = false
+		return
+	var moon := _world.moon
+	var along := DayCycle.local((orbit.at(t + 1.0) - orbit.at(t)).normalized(), moon.latitude, moon.longitude)
+	var up := DayCycle.local(orbit.at(t).normalized(), moon.latitude, moon.longitude)
+	crop_survey.place(camera.global_position, dir, metres, along, up)
+	var ambient := _environment.ambient_light_color * _environment.ambient_light_energy
+	crop_survey.light(-_sun.global_basis.z, _sun.light_color.srgb_to_linear() * _sun.light_energy if _sun.visible
+		else Color.BLACK, ambient)
+	crop_survey.flash((flash - 1.0) / (Constellation.MUZZLE_FLARE - 1.0))
 
 
 func _report(t: float, tu: Vector3) -> void:

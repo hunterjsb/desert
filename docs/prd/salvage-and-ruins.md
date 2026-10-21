@@ -716,27 +716,28 @@ container crashing into the surface near the flare's location. Give the cargo co
 of polish. I want sand kicked up in a cloud, a smooth lerp from sky to ground, and correct angular velocity
 coming from where the surveyor was when it fired the cargo. Right now don't worry about what's inside the
 cargo just get the feature in."* The Surveyor is Frontier Ag's low crop-survey craft, the H-shaped hull
-skimming 1.9 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`).
+flying 6 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`).
 
 - **The signal flare** (`game/survival/flare.gd`, catalog `flare`): a red tube with a black striker cap,
   0.3 kg. Use lights it, held or set down: it burns at its tip for 60 s (`flare_burn_seconds`) with a
   flickering red light reaching 16 m, sparks and a red smoke, and a fizz, then it's spent and won't light
   again (use refuses). How long it has burnt is in its stats, so a spent one stays spent through a save.
   Every kit carries two, and they're surface finds (3 in the weights, beside the lamp's 2).
-- **The cannon** (`game/salvage/airdrop.gd`). While a flare burns, the Surveyor passing 35° or more over
-  it (`airdrop_elevation_degrees`) fires once at it. **Seen:** its muzzle flashes in the sky at the craft,
+- **The cannon** (`game/salvage/airdrop.gd`). While a flare burns, the Surveyor passing 50° or more over
+  it (`airdrop_elevation_degrees`; 35° when it flew 1.9 km up) fires once at it. **Seen:** its muzzle flashes in the sky at the craft,
   twelve times as bright fading over half a second, by day as well as night, a white burst at the hull's
   middle. **Heard:** the boom comes from the craft's way, as long after the shot as sound takes through the
-  air there (the Rumbles' speed of sound: 9.3 s from 3.1 km), quieter the farther.
+  air there (the Rumbles' speed of sound: about 21 s from 7.3 km), quieter the farther.
 - **The fall.** The container leaves the muzzle where the craft is, carrying the craft's own motion for a
   moment, then curves down a quadratic Bezier (the muzzle, a bend 1.2 s along the craft's way, the ground)
-  over 14 s (`airdrop_fall_seconds`), eased so it starts even and gathers speed as it falls. It lands 12
+  over 30 s (`airdrop_fall_seconds`; from 6 km up its boom reaches you before it lands), never climbing
+  first, eased so it starts even and gathers speed as it falls. It lands 12
   to 35 m from the flare (`airdrop_land_m`), toward the craft's side, a little either way. Behind it a smoke
   trail, drawn clear of the haze so it shows a kilometre up and shrinking near the ground; on it a red
   beacon, the same size on screen however far, blinking, so you can follow it down.
 - **Its spin.** It tumbles end over end about the axis across the way it comes in (up crossed with its
   horizontal way), rolling forward, away from where the craft was; the hit hands that roll on to the body
-  (half of it) with 7 m/s along its way and 3 down, so it skids and rolls a little further.
+  (half of it), set down with every corner clear of the sand however it's turned, with 7 m/s along its way and 3 down, so it skids and rolls a little further.
 - **The hit.** A cloud of sand thrown up and swelling, 420 lit puffs 3 to 9 m across, and a ring of it
   thrown out along the ground, 220 more; the impact's boom, a clang and a thud. The container is a body
   again (catalog `cargo`, 80 kg, an orange shell banded in black), its beacon still blinking; after 7 s the

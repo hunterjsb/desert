@@ -34,7 +34,8 @@ func run() -> void:
 	check(Airdrop.surveyor(world, player.global_position, start).up < high, "below the cannon's height as it begins")
 	check(rad_to_deg(peak) > 85.0 and absf(when - Scenarios.SURVEYOR_LEAD) < 1.0,
 		"straight over you %d s later" % roundi(Scenarios.SURVEYOR_LEAD))
-	check(absf(orbit.height(start) * orbit.radius - 1910.0) < 30.0, "its height as it was")
+	var kept: float = Constellation.ROSTER.filter(func(e: Dictionary) -> bool: return e.id == Airdrop.SURVEYOR)[0].orbit.altitude
+	check(absf(orbit.height(start) - kept) < 0.002, "its height as it was")
 
 	# Lit as it comes over, its cannon fires.
 	world.time = start + Scenarios.SURVEYOR_LEAD - 6.0

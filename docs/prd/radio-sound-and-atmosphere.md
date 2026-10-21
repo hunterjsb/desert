@@ -395,23 +395,38 @@ they swap to their next saved frequency."*
   - **Brighter near.** Every satellite looks as bright as the square of how near it is against its mean
     distance, and a little bigger (`Satellite.nearness`, a quarter to four times): the ghost flares four times
     over at perigee and fades to a third at apogee; a circle looks the same all round.
-  - **The crop survey skims low** (gonkhub, 2026-10-19: "an extremely low orbiting object. Low enough that its
+  - **The crop survey flies low** (gonkhub, 2026-10-19: "an extremely low orbiting object. Low enough that its
     silhouette is partially visible against its own lighting, and it's much larger in the night sky than the
     others ... moving slowly near the horizon then quickly crossing the center of the sky"). Thermal left the
-    formation (the sounder, a StarCom ionospheric sounder, took its plane) for an orbit of its own 1.9 km up
-    (0.08 radii), a lap in 6.37 minutes, its plane swinging 37° a lap, so its track sweeps over every place in
-    time instead of retracing the same lines every hour (a 6-minute lap would have). A run begins with it
-    passing over. From below it crawls along near the horizon, about 2°/s, and whips overhead at 17°/s, from
-    the geometry alone. That low it's in Zan's shadow nearly all night, so it lights itself: the sky draws a
-    new shape, HULK, an H (gonkhub: "make it H shaped," "a thin connecting hull attached to two sharp uprights
-    with lights at the ends," then "Remove the glow and dim the lights, and make it larger so it's mostly
-    shadow blocking out the background stars, with only the small orange lights on the uprights"): a dark
-    hull joining two broad uprights that taper to points at both ends, mostly shadow, blotting out the stars
-    behind it and three quarters of the night's own glow (`HULL_SHADE`), unlit: it had a small dim orange
-    light at each of its four points until gonkhub's "remove the surveyor's lights" (2026-10-20), and now
-    it's only a shadow, but for its cannon's muzzle flash ([Salvage](salvage-and-ruins.md)). Drawn 16 points across overhead, as small
-    as a fifth of that out toward the horizon (by how far it is from you), far bigger than any other. It's seen within about 6 km of its track,
-    so from any one place it's a rare, short sight, and overhead rarer still.
+    formation (the sounder, a StarCom ionospheric sounder, took its plane) for an orbit of its own, first
+    1.9 km up, now 6 km (0.2513 radii; gonkhub, 2026-10-20: "It looks too low to the ground when flying",
+    then "6km is better"), a lap in 7.95 minutes (Kepler from the old 6.37), its plane swinging 37° a lap,
+    so its track sweeps over every place in time instead of retracing the same lines every hour. A run
+    begins with it passing over. From below it crawls along near the horizon, about 1.2°/s, and sweeps
+    overhead at about 4.8°/s, from the geometry alone. It was an H drawn by the sky shader (HULK: "make it
+    H shaped," "a thin connecting hull attached to two sharp uprights," mostly shadow, its lights removed by
+    gonkhub's "remove the surveyor's lights", 2026-10-20). Then "ship appearance still too flat. Needs to be
+    modeled out fully this low to the ground, especially with how clearly it can be seen in the daytime"
+    (gonkhub, 2026-10-20): it's now a model (`CropSurveyLooks`, drawn by `CropSurvey` from `SkyView`), the
+    H kept: two long faceted nacelles, sharp at both ends, built in staged tones like a rocket, a survey
+    fairing of lenses under each keel, a fin and dome on top, tanks outboard; between them a ribbed spine
+    with open trusses, four solar arrays, an uplink dish, and at its heart the care-package cannon, a drum
+    ringed with packages and its barrel down ([Salvage](salvage-and-ruins.md)), whose muzzle flashes as it
+    fires. Unlit by any light of its own, by night it's a shadow blotting out the stars.
+    - **How it's drawn.** Inside the camera's reach (at most 380 m, and inside the fog's start), at the same
+      angular size as where it really is, belly to Zan's centre and nose along its track, so it turns and
+      foreshortens as it drops toward the horizon. `crop_survey_scale` (2.3) makes it about 940 m tip to
+      tip, about 9° across overhead and a third of that low down. It wears the worn shader like any device
+      and is lit by the scene's sun; an overlay (`crop_survey.gdshader`) adds the sunlit sand's light thrown
+      up at its belly, the sky's at its sides, and the air between along the real line of sight: dust
+      thinning with height (`dust_height_m`), matched at the ground to the scene's haze and coloured as the
+      sky behind it, so it's crisp overhead (about a fifth veiled) and pale low down.
+    - **What it costs** (measured against a ground-view frame of 896,725 primitives and 137 draws). Two
+      meshes, picked by its size on screen: the far one (no chamfers, round parts at half their sides,
+      sub-pixel parts left off) below 260 px across, the near one above 320. Far: 3,222 triangles, 1.1 MB,
+      built in 10 ms, adding 6,450 primitives (0.7%) and 2 draws. Near: 13,304 triangles, 4.7 MB, 56 ms,
+      26,600 primitives (2.9%). It casts no shadow; a shadowed light of its own was tried and dropped, since
+      from below it showed nothing and cost a shadow pass. It's above the horizon within about 17 km of its track.
   - **The lantern** (gonkhub, 2026-10-19: "a satellite orbiting Tu, its broadcast accessible when it is on the
     side of the planet facing Zan. Not visible though"): StarCom's Tu survey probe, circling Tu 60 moon radii
     off, 1.8 of Tu's radii out, a lap in 11 minutes, its plane holding the line to Zan, so it swings round in
@@ -443,7 +458,7 @@ they swap to their next saved frequency."*
   | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
   |---|---|---|---|---|---|---|
   | The relay | colonial | 1020 | white point, glinting | an ellipse (0.3) about 3 radii, 6.5 min, swinging round | the music, as before | a slow tumble: swells and fades every 20 s |
-  | Thermal | Frontier Ag | 320–350 | a great dark hull against its own amber running lights | skimming 1.9 km up, 6.37 min, swinging 37° a lap; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
+  | Thermal | Frontier Ag | 320–350 | a great dark hull against its own amber running lights | 6 km up, 7.95 min, swinging 37° a lap; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
   | Sounder | StarCom | 560–590 | lime diamond | formation, plane 1 | the storm's roar | pitch wandering; brighter by day |
   | Lantern | StarCom | 1590–1620 | never seen | round Tu, 60 radii off, 11 min; heard only on Zan's side of Tu | the day song, slowed | faint; clearest straight between Tu and Zan |
   | Pendulum | StarCom | 700–730 | cyan cross | formation, plane 2 | a ping, pulsed | its tick quickening toward the eclipse |

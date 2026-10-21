@@ -3,11 +3,12 @@ extends WeatherProbe
 ## Zan: it's on the air only while it's on Zan's side of the planet, about
 ## half of each lap; heard from under Tu, never from Zan's far side, where Tu
 ## never rises; fainter than the rest; and never drawn in the sky. The crop
-## survey skims about two km up: from below it crawls along near the horizon
-## and whips across overhead, many times faster; it's drawn far bigger
-## overhead than low down, and shows as its shadow, even in Zan's.
-## By day only the nearest and brightest show: the low hull always, the dim
-## formation never, the relay only as near as its ellipse brings it.
+## survey flies about six km up: from below it crawls along near the horizon
+## and sweeps across overhead, many times faster; it's modelled (CropSurvey),
+## not drawn on the sky, far bigger overhead than low down, and shows even in
+## Zan's shadow. By day only the nearest and brightest show: the low hull
+## always, the dim formation never, the relay only as near as its ellipse
+## brings it.
 
 
 func run() -> void:
@@ -51,11 +52,11 @@ func run() -> void:
 		never = never and (material.get_shader_parameter("sat_color") as PackedColorArray)[index].a == 0.0
 	check(never, "and never drawn in the sky")
 
-	# Skimming low: crawling at the horizon, whipping overhead.
+	# Flying low: crawling at the horizon, sweeping overhead.
 	var survey: Satellite = sky.orbits[&"thermal"]
 	print("the crop survey flies %.0f to %.0f m up" % [survey.height(0.0) * survey.radius,
 		survey.height(survey.period * 0.5) * survey.radius])
-	check(survey.height(0.0) * survey.radius < 2500.0, "the crop survey skims about two km up")
+	check(absf(survey.height(0.0) * survey.radius - 6000.0) < 1000.0, "the crop survey flies about six km up")
 	var p := world.start
 	var overhead := 0.0
 	var low := 0.0
@@ -69,30 +70,32 @@ func run() -> void:
 			low = maxf(low, rate)
 		t += 0.25
 	print("crossing the sky at %.2f°/s near the horizon, %.2f°/s overhead" % [low, overhead])
-	check(low > 0.0 and overhead > low * 5.0, "it crawls near the horizon and whips across overhead")
+	check(low > 0.0 and overhead > low * 3.0, "it crawls near the horizon and sweeps across overhead")
 
-	# Drawn big overhead, smaller low down, as its shadow.
+	# Modelled, far bigger overhead than low down, and shown sunlit or not.
 	var at := Constellation.voiced().find(&"thermal")
+	var craft := world.weather.sky.crop_survey
 	var up_at := _first(func(u: float) -> bool: return survey.seen_from(p, u).elevation > deg_to_rad(80.0))
 	world.time = up_at
 	await physics_frames(3)
-	var big: float = (material.get_shader_parameter("sat_form") as PackedVector3Array)[at].y
-	var shown: float = (material.get_shader_parameter("sat_color") as PackedColorArray)[at].a
+	var big := _across(craft)
+	var shown := craft.visible
+	var on_sky: float = (material.get_shader_parameter("sat_color") as PackedColorArray)[at].a
 	var down_at := _first(func(u: float) -> bool:
 		var e: float = survey.seen_from(p, u).elevation
 		return e > deg_to_rad(5.0) and e < deg_to_rad(12.0), up_at)
 	world.time = down_at
 	await physics_frames(3)
-	var small: float = (material.get_shader_parameter("sat_form") as PackedVector3Array)[at].y
-	print("drawn %.1f points across overhead, %.1f low down; shown at %.2f overhead, sunlit %s" % [big, small, shown,
+	var small := _across(craft)
+	print("%.2f° across overhead, %.2f° low down; shown %s overhead, sunlit %s" % [big, small, shown,
 		survey.sunlit(up_at, world.weather.day.sun_toward(up_at))])
-	check(big > small * 2.5 and big > 5.0, "drawn far bigger overhead than low down")
-	check(shown > 0.0, "and drawn, its shadow, sunlit or not")
+	check(big > small * 2.0 and big > 5.0, "far bigger overhead than low down")
+	check(shown and on_sky == 0.0, "shown as its model, sunlit or not, and not drawn on the sky")
 	var shade := _first(func(u: float) -> bool:
 		return survey.seen_from(p, u).elevation > deg_to_rad(30.0) and not survey.sunlit(u, world.weather.day.sun_toward(u)))
 	world.time = shade
 	await physics_frames(3)
-	check((material.get_shader_parameter("sat_color") as PackedColorArray)[at].a > 0.0, "even in Zan's shadow")
+	check(craft.visible, "even in Zan's shadow")
 
 	# By day: only the nearest and brightest.
 	var noon := _first(func(u: float) -> bool:
@@ -101,8 +104,8 @@ func run() -> void:
 	await physics_frames(3)
 	var forms := material.get_shader_parameter("sat_form") as PackedVector3Array
 	var sounder := Constellation.voiced().find(&"sounder")
-	print("by day: the survey hull shows %.2f, the sounder %.2f" % [forms[at].z, forms[sounder].z])
-	check(forms[at].z == 1.0 and forms[sounder].z == 0.0, "by day the low hull shows, a dim one of the formation doesn't")
+	print("by day: the survey hull shows %s, the sounder %.2f" % [craft.visible, forms[sounder].z])
+	check(craft.visible and forms[sounder].z == 0.0, "by day the low hull shows, a dim one of the formation doesn't")
 	var relay := sky.relay()
 	var bright := _first(func(u: float) -> bool: return _relay_by_day(relay, p, u) and relay.nearness(u) > 1.6)
 	world.time = bright
@@ -120,6 +123,13 @@ func run() -> void:
 func _relay_by_day(relay: Satellite, p: Vector3, t: float) -> bool:
 	var day := world.weather.day
 	return day.is_day(t, world.moon.longitude) and relay.seen_from(p, t).elevation > deg_to_rad(30.0) 		and relay.sunlit(t, day.sun_toward(t))
+
+
+## How many degrees across the crop survey's model looks from the camera.
+func _across(craft: CropSurvey) -> float:
+	var eye := get_viewport().get_camera_3d().global_position
+	var size := craft.global_basis.get_scale().x * CropSurveyLooks.SPAN
+	return rad_to_deg(2.0 * atan(size * 0.5 / eye.distance_to(craft.global_position)))
 
 
 ## Which way it is in the sky from point p at world time t.

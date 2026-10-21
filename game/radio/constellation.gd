@@ -16,7 +16,7 @@ extends RefCounted
 ## Tracks are placeholders, sounds the game already has, until gonkhub's own:
 ## the cinder's and the metronome's are in.
 
-## How each shows, as the sky draws it.
+## How each shows, as the sky draws it (HULK, the crop survey, is modelled: CropSurvey).
 enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 
 ## Each satellite: id; era; band kHz (its carrier a fresh place inside it each
@@ -51,19 +51,20 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 ## tremolo (Hz, 0 for none) and pulse (s between plays).
 const ROSTER := [
 	# Its orbit long since knocked out of true: an ellipse that swings round, and a slow tumble.
-	# (Thirteen in all: this, the formation's eight, the crop survey skimming low, the ghost,
+	# (Thirteen in all: this, the formation's eight, the crop survey flying low, the ghost,
 	# the cinder and the lantern round Tu.)
 	{"id": &"relay", "era": "colonial", "band": Vector2(1020.0, 1020.0),
 		"orbit": {"eccentricity": 0.3, "precess": 40.0, "apsides": 70.0},
 		"look": {"color": Color(1.0, 0.97, 0.9), "size": 1.0, "shape": Shape.POINT, "light": 0.35},
 		"sound": {}, "lfo": [], "duty": [], "behave": {"tumble": [0.05, 0.3]}},
-	# Frontier Ag's crop survey, skimming the dunes to read the ground's heat: so low it's a
-	# great dark unlit hull blotting out the sky, crawling up from the horizon and
-	# whipping overhead (gonkhub, 2026-10-19). A run begins with it passing over.
+	# Frontier Ag's crop survey, flying low to read the ground's heat: 6 km up, a great
+	# hull modelled and lit (CropSurvey), crawling up from the horizon and sweeping
+	# overhead (gonkhub, 2026-10-19; "6km is better", 2026-10-20). A run begins with it
+	# passing over.
 	{"id": &"thermal", "era": "Frontier Ag", "band": Vector2(320.0, 350.0),
 		# Its lap no whole share of the day, and its plane swinging slowly round, so its
 		# track sweeps over every place in time rather than retracing the same lines.
-		"orbit": {"altitude": 0.08, "minutes": 6.37, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
+		"orbit": {"altitude": 0.2513, "minutes": 7.95, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
 			"precess": 37.0},
 		"look": {"color": Color(1.0, 0.55, 0.15), "size": 16.0, "shape": Shape.HULK, "light": 0.6, "low": true},
 		"sound": {"track": Sounds.RADIO_EYE_TUNNEL, "db": -2.0, "pulse": 0.0},
