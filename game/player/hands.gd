@@ -291,6 +291,8 @@ func _ready() -> void:
 ## is in tug range and put it down if not. Something too heavy to carry, you
 ## take hold of instead, and taking again lets go. Says whether it did anything.
 func grab() -> bool:
+	if _player.world.arrival != null and _player.world.arrival.take():
+		return true
 	if grasp.body != null:
 		if stand != null:
 			_stand_on(stand)
@@ -399,6 +401,8 @@ func grab() -> bool:
 ## nothing else to do, it goes on your waist; empty-handed, the selected line at
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
+	if _player.world.arrival != null and _player.world.arrival.interact():
+		return true
 	_look()
 	if _player.world.stoker != null and _player.world.stoker.interact(_player):
 		return true
@@ -2212,6 +2216,10 @@ func _part_stats(part: Part) -> Dictionary:
 ## What the look-at line says now: why take or use did nothing, why what you
 ## hold won't stick where it's shown or what to mind, else what you look at.
 func line() -> String:
+	if _player.world.arrival != null:
+		var opening := _player.world.arrival.hint()
+		if opening != "":
+			return opening
 	if notice != "":
 		return notice
 	if phase == Phase.HELD and held is Part and held.has_meta(&"line") and _look_hook() != null:

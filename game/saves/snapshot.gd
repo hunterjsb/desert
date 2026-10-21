@@ -132,6 +132,7 @@ func dress() -> void:
 func begin(data: Dictionary) -> Array[Vector2]:
 	_world.set_meta(&"arrival_restoring", true)
 	if is_instance_valid(_world.arrival):
+		_world.arrival.prepare_restore()
 		_world.arrival.restoring = true
 	_world.arrival_state = (data.get("arrival", {}) as Dictionary).duplicate(true)
 	_world.arrival_state.erase("node_refs")

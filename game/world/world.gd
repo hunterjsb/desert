@@ -445,7 +445,7 @@ func _keep_bodies_on_ground() -> void:
 	for child in content.get_children():
 		var body := child as RigidBody3D
 		# What's on you, or under you on a board, goes where you go.
-		if body == null or body == player.board or ropes.on_you(body):
+		if body == null or body == player.board or ropes.on_you(body) or (arrival != null and arrival.transports(body)):
 			continue
 		var x := world_x(body.global_position.x)
 		var z := world_z(body.global_position.z)

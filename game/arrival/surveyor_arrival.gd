@@ -4,6 +4,7 @@ extends Node
 const PHASES: Array[StringName] = [&"orbit", &"ejection", &"descent", &"entry", &"landing", &"recovery"]
 var world: World
 var restoring := false
+var preflight: SurveyorPreflight
 var _view: Node
 var _held := false
 var _warp := 1.0
@@ -27,6 +28,8 @@ func start() -> void:
 	state.elapsed = 0.0
 	state.materialized = false
 	state.flight_warp = world.time_warp
+	if world.tuning.surveyor_preflight.get("enabled", true):
+		state.phase = &"preflight"
 	restore()
 
 func restore() -> void:
@@ -34,6 +37,16 @@ func restore() -> void:
 	if world.arrival_state.is_empty():
 		cancel()
 		return
+	if preparing():
+		if not is_instance_valid(preflight):
+			preflight = SurveyorPreflight.new()
+			add_child(preflight)
+			preflight.setup(self)
+		set_physics_process(false)
+		return
+	if is_instance_valid(preflight):
+		preflight.dispose()
+	preflight = null
 	if active():
 		_hold()
 		_show()
@@ -57,8 +70,40 @@ func recover(body: Node) -> void:
 func active() -> bool:
 	return not world.arrival_state.is_empty() and world.arrival_state.get("phase", &"recovery") != &"recovery"
 
-func cancel() -> void:
+func preparing() -> bool:
+	return world != null and world.arrival_state.get("phase", &"") == &"preflight"
+
+func interact() -> bool:
+	return preparing() and is_instance_valid(preflight) and preflight.interact()
+
+func take() -> bool:
+	return preparing() and is_instance_valid(preflight) and preflight.take()
+
+func hint() -> String:
+	return preflight.hint() if preparing() and is_instance_valid(preflight) else ""
+
+## A bounded saved pod is transported through the arrival, not left to surface streaming.
+func transports(body: RigidBody3D) -> bool:
+	if not active() or not world.arrival_state.has("preflight") or not body.has_meta(&"arrival_uid"):
+		return false
+	var uid: StringName = body.get_meta(&"arrival_uid")
+	if preparing():
+		return true
+	if world.arrival_state.get("materialized", false):
+		return false
+	for entry: Dictionary in world.arrival_state.structure + world.arrival_state.equipment:
+		if StringName(entry.uid) == uid:
+			return true
+	return false
+
+func prepare_restore() -> void:
+	if is_instance_valid(preflight):
+		preflight.dispose()
+	preflight = null
 	_release()
+
+func cancel() -> void:
+	prepare_restore()
 	set_physics_process(false)
 
 func _physics_process(delta: float) -> void:
@@ -95,6 +140,9 @@ func _physics_process(delta: float) -> void:
 	_show()
 
 func _seconds(phase: StringName) -> float:
+	var opening: Dictionary = world.arrival_state.get("preflight", {})
+	if opening.get("launched", false) and phase in [&"descent", &"entry"]:
+		return maxf(float(opening.get("profile", {}).get(String(phase) + "_s", 1.0)), 0.0)
 	return maxf(float(world.tuning.surveyor_arrival.get(String(phase) + "_s", 0.0)), 0.0)
 
 func _landing_ready() -> bool:
@@ -104,18 +152,19 @@ func _landing_ready() -> bool:
 func _land() -> bool:
 	var state := world.arrival_state
 	if not state.get("materialized", false):
-		var materializer: Script = load("res://game/arrival/surveyor_recovery.gd")
+		var materializer: Script = load("res://game/arrival/preflight_cargo.gd" if state.has("preflight") else "res://game/arrival/surveyor_recovery.gd")
 		if materializer == null:
 			return false
 		var counting := world.counts_deeds
 		world.counts_deeds = false
-		world.arrival_nodes = materializer.call(&"materialize", world, state)
+		world.arrival_nodes = materializer.call(&"land" if state.has("preflight") else &"materialize", world, state)
 		world.counts_deeds = counting
 		if not state.get("materialized", false):
 			return false
 	var exit: Vector2 = state.exit_world
 	var position := Vector3(world.engine_x(exit.x), world.height_at(exit.x, exit.y) + world.tuning.surveyor_arrival.landing_clearance_m, world.engine_z(exit.y))
 	world.teleport(world.player, Transform3D(Basis(Vector3.UP, float(state.heading) - PI * 0.5), position))
+	world.player.restore_ground_pose(&"stand")
 	world.player.velocity = Vector3.ZERO
 	world.player.camera.rotation.x = -0.18
 	world.set_meta(&"kit", world.arrival_nodes.values().filter(func(node: Node) -> bool: return is_instance_valid(node)))
