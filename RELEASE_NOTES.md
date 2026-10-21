@@ -1,3 +1,12 @@
+## 0.3.0-alpha “Sanddune” — development, unreleased
+
+- Sit on supported ground or lie down and crawl with physical low clearance.
+  Getting up checks headroom; wind, ropes, slopes and moving decks still move you.
+- Offer the existing safe sleep choices while lying still with empty hands.
+  Posture survives saves, and the first ground rest earns A Moment's Rest.
+- Continuously unwind and gather the rope coil while preserving its gauge and
+  held-end attachment.
+
 ## 0.2.4-alpha “Creaky Sailboat”
 
 A manual sail hoist, physical salvage rewards and clearer radio handling.
