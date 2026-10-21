@@ -1655,3 +1655,10 @@ capture matches the pre-fix shader pixel-for-pixel (zero changed pixels), with
 Those captures were inspected. Radio 38/47 still pass; combined CI and native
 platform results remain the landing gate. Existing spoken craft-name assets
 and internal Surveyor ids are unchanged by this rendering correction.
+
+Radio 16's night-time Eye acceptance must observe real audibility across a
+bounded half-second listening window, retaining its -20 dB threshold, correct
+station/stream and ordinary silence checks. Glitch deliberately drops a dirty
+signal for 0.03–0.18 seconds; a single sampled tick can therefore be silent while
+the actual song is correctly on air. Preserve those real dropouts and callbacks;
+do not pin the instance RNG, disable effects or change production radio gain.
