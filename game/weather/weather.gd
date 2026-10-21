@@ -192,7 +192,8 @@ func walls_at(at: Vector3, except: Object = null) -> float:
 ## Sunlight reaching a place, 0 to 1: the sky's share after Tu and the storm
 ## take theirs. Light passes through a shield, so shelter changes nothing here.
 func felt_light(at: Vector3, t := NAN) -> float:
-	return day.sunlight(_when(t), _world.moon.latitude, _world.moon.longitude) \
+	var point := _world.geographic_at(at)
+	return day.sunlight(_when(t), Sphere.latitude(point), Sphere.longitude(point)) \
 		* (1.0 - _tuning.storm_darkness * field_storm(at, t))
 
 
@@ -227,18 +228,20 @@ func field_wind(at: Vector3, t := NAN) -> Vector3:
 ## day's swing round its mean, wider toward the poles, less while the eclipse
 ## lasts, and blanketed by the storm's dust.
 func field_temperature(at: Vector3, t := NAN) -> float:
-	return temperature_under(field_storm(at, t), t)
+	return temperature_under(field_storm(at, t), t, _world.geographic_at(at))
 
 
 ## The air's temperature, °C, under a storm of this intensity, as if no
-## shelter stood: what a place's is, its storm known.
-func temperature_under(storm: float, t := NAN) -> float:
-	var moon := _world.moon
+## shelter stood: what a place's is, its storm known. Without a geographic
+## point, existing callers ask about the player's current latitude and longitude.
+func temperature_under(storm: float, t := NAN, point := Vector3.ZERO) -> float:
+	var latitude := _world.moon.latitude if point == Vector3.ZERO else Sphere.latitude(point)
+	var longitude := _world.moon.longitude if point == Vector3.ZERO else Sphere.longitude(point)
 	var blanket := 1.0 - _tuning.temperature_storm_blanket * storm
 	var swing := _tuning.temperature_swing \
-		* (1.0 + _tuning.temperature_pole_widen * absf(sin(moon.latitude))) * blanket
-	return _tuning.temperature_mean + swing * cos(TAU * (day.time_of_day(_when(t), moon.longitude) - _tuning.temperature_peak)) \
-		- _tuning.eclipse_chill * day.eclipse_chill(_when(t), moon.latitude, moon.longitude) * blanket
+		* (1.0 + _tuning.temperature_pole_widen * absf(sin(latitude))) * blanket
+	return _tuning.temperature_mean + swing * cos(TAU * (day.time_of_day(_when(t), longitude) - _tuning.temperature_peak)) \
+		- _tuning.eclipse_chill * day.eclipse_chill(_when(t), latitude, longitude) * blanket
 
 
 ## The temperature as a place feels it, °C: a bubble holds its share of the
