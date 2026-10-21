@@ -476,12 +476,10 @@ they swap to their next saved frequency."*
           tower's name on the line. It plays no music; its other worldbuilding tracks are to come.
         - Its speed is true. Its altitude is a working figure wandering ±220 m about its true 30 km, for
           flavour.
-        - **Not yet:** the bundled voice bank (`assets/audio/voice/make_words.py`) has no recording of
-          "deliveryship", so the tower spells it letter by letter. Regenerating the word bank needs piper and
-          its voice model; "deliveryship" goes on its word list with "altitude" and "tower".
-        - It says "elevation" because the bundled voice has no "altitude" yet, and spells "Morgan", which
-          has no recording yet. The next run of `make_words.py` records "morgan" from radio.gd; "altitude"
-          and "tower" need adding to its word list.
+        - *Done 2026-10-21:* the word bank was regenerated (`assets/audio/voice/make_words.py`), so
+          "deliveryship", "Morgan" and "tower" are now recorded words rather than spelled letter by letter.
+        - It says "elevation" because the bundled voice has no "altitude" yet; "altitude" needs adding to
+          `make_words.py`'s word list.
         - The deliveryship's own shortwave carrier (14.2–14.3 MHz) plays only its tunnel drone, heard while
           it's up, as every satellite is.
         - Hearing the tower's schedule is Flight Plan. Radio probe 47.
@@ -1048,9 +1046,9 @@ port's music is on FM only; the relay repeats the tower on shortwave.*
 - **Probe:** radio 58 (each band holds its own: the AM dial's five fixed carriers, FM's seven stations apart, a
   wreck's call heard near it, the relay repeating the tower to the clear scenario's radio on its wire). Many
   older radio probes were retuned to the new bands.
-- **Not yet:** the bundled voice bank has no recording of "tower", "morgan", "over" or "deliveryship", so they
-  are spelled letter by letter until the bank is regenerated (`assets/audio/voice/make_words.py` picks up words
-  from `radio.gd` itself; it needs piper, ffmpeg and the voice model). The sleep offer "Until a storm's called"
+- *Done 2026-10-21:* the bundled voice bank was regenerated with `assets/audio/voice/make_words.py`, so "tower",
+  "morgan", "over" and "deliveryship" are now recorded words rather than spelled letter by letter.
+- **Not yet:** the sleep offer "Until a storm's called"
   still wakes you by the storm at your camp, while the radio it tunes now reads the tower's weather.
 
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
