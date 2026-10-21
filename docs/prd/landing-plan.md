@@ -67,3 +67,16 @@ The final layout uses existing MenuListApart, Columns and AsideList theme
 variations and the shared panel padding, with no layout/theme overrides.
 Focused Menus 5 (one theme) and Arrival 19 pass together; refreshed fallback
 and alternate GPU captures were inspected after that correction.
+
+## Test coverage separation for interactive preparation (selected 2026-10-21)
+
+New Surveyor preparation is the normal production path. Arrival 16 explicitly
+exercises it through Main with preparation enabled. Existing automatic-flight,
+legacy-save, eclipse-notice and surface-recovery fixtures retain their original
+scope by disabling preparation only in their own tuning setup. The shared
+MenuProbe convenience fixture also selects automatic arrival so unrelated menu,
+spawn, dev and save checks can reach the surface without simulating a launch.
+Direct World/run fixtures, other origins and scenarios remain unchanged. No
+production auto-launch or test-mode bypass is added, and existing flight, recovery
+and input assertions remain intact. Interactive launch/cargo/trajectory and its
+save round trips require the dedicated integrated acceptance, not these helpers.

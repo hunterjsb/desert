@@ -1,10 +1,12 @@
 extends MenuProbe
-## An unseen ordinary-action recovery and camp-building walk, with collision on.
+## An automatic-arrival recovery and camp-building walk, with collision on.
 
 var out: String
 var run_seed_now: int
 
 func run() -> void:
+	# Isolate physical surface recovery, not the interactive ship preparation.
+	Tuning.current().surveyor_preflight["enabled"] = false
 	get_window().unfocusable = true
 	AudioServer.set_bus_mute(0, true)
 	out = OS.get_cmdline_user_args()[0]

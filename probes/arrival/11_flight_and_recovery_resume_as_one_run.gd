@@ -2,6 +2,8 @@ extends MenuProbe
 ## Real Main resume continues the saved flight and never grants the survivors twice.
 func run() -> void:
 	var tuning := Tuning.current()
+	# Exercise the saved automatic opening; preparation has separate acceptance.
+	tuning.surveyor_preflight["enabled"] = false
 	tuning.run_seed = 1234
 	tuning.salvage = false
 	for phase in [&"orbit", &"ejection", &"descent", &"entry", &"landing"]:

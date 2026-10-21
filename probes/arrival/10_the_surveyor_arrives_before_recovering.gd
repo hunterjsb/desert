@@ -1,7 +1,9 @@
 extends MenuProbe
-## A real new Surveyor arrives with physical survivors rather than a second starter kit.
+## The automatic Surveyor opening lands physical survivors without a second starter kit.
 func run() -> void:
 	var tuning := Tuning.current()
+	# Preserve the automatic phase baseline; interactive preparation is checked separately.
+	tuning.surveyor_preflight["enabled"] = false
 	tuning.run_seed = 1234
 	tuning.salvage = false
 	for phase in [&"orbit", &"ejection", &"descent", &"entry", &"landing"]:
