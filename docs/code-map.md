@@ -34,6 +34,9 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | Desktop launcher | `launcher/main.py` installs published releases and launches local Git worktrees; `.github/workflows/launcher-release.yml` packages the launcher | Standalone app; see `docs/prd/launcher.md` |
 
 Probe/build performance and scheduling requirements live in `docs/prd/probes-and-builds.md`.
+The Pages observatory uses `scripts/ci_dashboard/collect.py`, `site/`, and
+`.github/workflows/performance-pages.yml`; its focused checks are
+`python3 -m unittest discover -s scripts/ci_dashboard` and `node --check site/app.js`.
 
 Probe hosts and system helpers live in `probes/lib/`. Use the nearest existing helper and a
 targeted probe for the failure being fixed. `scripts/probe.sh` imports assets before running;

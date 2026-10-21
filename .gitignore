@@ -1,3 +1,7 @@
 .godot/
 .probe_tmp/
 build/
+
+.dashboard/
+_site/
+__pycache__/

@@ -88,3 +88,48 @@ These scheduling changes retain nine Linux and four groups per native OS, every
 probe, and existing timeout limits. No universal native speedup is claimed:
 hosted timing varies, and whole-suite critical path matters more than an
 individual group's improvement.
+
+## Performance dashboard (agreed 2026-10-21)
+
+Publish a small static GitHub Pages site after completed master Probes runs and
+Release runs, including failed runs; allow manual refresh. It reads existing
+Actions evidence and never starts Godot or adds a dependency to release gates.
+A bounded history (40 completed runs, backfilled from the latest eight per workflow
+when empty) lives in a separate Actions cache. Cache loss starts a clearly bounded
+new history rather than inventing measurements. The page links every result to its
+source run and records the commit, platform, attempt, collection time and missing
+log coverage. Retried jobs replace their older attempt's result when refreshed.
+
+Separate CI elapsed/job/step duration, per-probe wall time and retry cost from
+in-game measurements. Expose existing streaming, rope tick and long-walk memory
+measurements as structured probe output even on success. Real-frame checks remain
+Linux-only; headless measurements say explicitly that GPU/shader cost is absent.
+Do not infer frame rate from a probe's runtime. Compare a probe only with earlier
+successful measurements on the same platform/workflow; describe changes as signals
+on variable hosted hardware, not proven game regressions. Failed first attempts
+remain visible even when the retry passes. Missing measurements are never zero.
+
+Show run history, platform/search filters, slow probes, job/step bottlenecks,
+retry cost, exported archive artifact sizes and game measurements with existing
+budgets where applicable. Use accessible, responsive HTML/CSS/JavaScript without
+third-party runtime dependencies. Treat collected logs as data: no execution, no
+raw log publication or HTML interpolation. Publish only trusted default-branch
+site code, with a read-only collection token and Pages/OIDC deploy permissions.
+The dashboard has its own lightweight checks; failure never bypasses game checks.
+
+### First implementation
+
+The collector is Python standard-library code and the page has no runtime packages.
+A six-run real-data preview held 732 KB of JSON; a cached refresh took 1.19 s locally.
+It excludes runner selftests, preserves failed-attempt cost, labels unavailable logs,
+and measures elapsed time from original run creation even after a partial rerun.
+Jobs that never acquired a runner have no execution-time measurement.
+
+Focused streaming, rope, world-walk and salvage-walk checks passed (16, 20, 109 and
+88 s respectively), preserving all assertions and emitting ten structured metrics.
+Five collector checks, runner scheduling/metric retention checks, shell and workflow
+lint pass. Desktop and 390 px browser checks exercised platform/search filtering,
+full result expansion and job details without script errors or page overflow;
+metric cards rendered all ten actual local samples in a separate preview fixture.
+The production site consumes CI evidence only. Full CI and initial deployment are
+checked when this change lands; local preview measurements are not CI baselines.
