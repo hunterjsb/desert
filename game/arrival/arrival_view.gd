@@ -77,7 +77,7 @@ func present(state: Dictionary) -> void:
 	_pod.visible = phase in [&"orbit", &"ejection", &"descent", &"entry"]
 	var entry := smoothstep(0.1, 0.85, progress) if phase == &"entry" else 1.0 if phase == &"landing" else 0.0
 	_dust_material.set_shader_parameter(&"strength", entry)
-	_dust_material.set_shader_parameter(&"passage", _world.time)
+	_dust_material.set_shader_parameter(&"passage", seconds)
 	_dust_material.set_shader_parameter(&"veil", 1.0 - smoothstep(0.0, 0.85, progress) if phase == &"landing" else 1.0)
 
 ## First presentation may resume mid-flight; only a later actual transition sounds.
