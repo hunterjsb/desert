@@ -1465,8 +1465,8 @@ only by its actual rise; moving/rotating support does not leave the player behin
 or receive an artificial kick. Large irregular deck support and exposed wreck
 collision are related checks, not a reason to relax vault clearance.
 
-As built in `game/player/ledge_vault.gd`: 0.65 m above current feet, 0.9 m forward,
-0.3 s across three swept phases, 0.02 m clearance and four stamina. The view
+The initial `game/player/ledge_vault.gd` implementation reached 0.65 m above
+current feet, 0.9 m forward, with a 0.42 s nominal climb, 0.02 m clearance and four stamina. The view
 interpolates the real climb between physics ticks; looking remains free. A
 recreated player does not resume a stale climb. Origin shifts preserve the local
 support path. Focused movement 32 passes: ordinary walking refuses, sprint climbs
@@ -1500,6 +1500,40 @@ animation; that visual must follow the movement rather than drive it. Retain
 interrupted-path, removed-top, moving-support and origin-shift safety. Measure
 actual powered chassis sprint/jump approaches at 30 and 60 physics ticks with
 unchanged 0.9 s / 0.08 m boarding acceptance, and inspect real unseen captures.
+
+As built: reach is now 1.1 m above current feet, minimum ledge rise 0.3 m,
+forward reach 0.9 m, top clearance margin 0.18 m and nominal full-height duration
+0.55 s. Find the real top first, then validate the capsule's actual required
+lift and path, rather than demanding clearance for the maximum possible lift.
+Quadratic segments join with continuous tangents above the top; sampled lengths
+map eased travel to an evaluated curve, not chord-to-chord corners. Each tick
+still sweeps real movement using the support's fresh global transform. The
+existing bounded floor seating and physical momentum handoff remain unchanged.
+LedgeVault exposes `active`, smooth normalized `progress` and measured `height`;
+this patch does not add the separate body animation.
+
+A freely supported two-chassis craft with two hover trays and a real battery
+(34 kg) demonstrates the old failure: its top is about 1.13 m above sand, beyond
+0.65 m mantle reach plus the measured 0.422 m jump rise. The identical external
+approach fails on verified 565e1855 and passes on the new source without changing
+its 0.9 s observation or 0.08 m deck-top/floor acceptance. Movement 43 guards that
+actual powered craft at 30/60 render caps with fixed 60 Hz native physics;
+a separate focused diagnostic also passes at 30/60 native ticks. Construction
+and authored repositioning stay clear of the active player's capsule.
+
+On the final clear-light unseen run, both render rates finish with floor true,
+feet 0.06263 m above the deck origin, deck height 1.05783 m, peak climb step
+0.10620 m/tick and peak craft spin 0.04202 rad/s. All eight 1280x720 climb/landing
+captures were inspected. Movement 32 retains blocked-path, removed-top, ceiling,
+saving and moving/rotating-origin-shift checks; its standing/jump boundary fixtures
+move to 1.4 m and the unreachable wall to 2.2 m to reflect the agreed new reach.
+Movement 35 confirms 0.2 m clutter never starts a mantle and an ordinary running
+jump still crosses it. Movement 10/11 pass unchanged; the earlier 27-piece
+mast/rope-loaded battery-depletion/reboarding acceptance also passes unchanged.
+The final clear GPU run exits without resource warnings; earlier diagnostic
+runs emitted teardown warnings. This covers a clear approach to a lightly loaded
+powered deck, not climbing through a frame/attached gear, arbitrary arrangements
+or final human judgment of movement feel and the pending body pose.
 
 ### Large mixed-deck baseline (measured 2026-10-20)
 
