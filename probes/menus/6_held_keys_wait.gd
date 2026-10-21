@@ -8,6 +8,10 @@ const TICKS := 60
 
 func run() -> void:
 	await open_main(false)
+	# Input gating needs open ground, beyond the now physical landing shell.
+	teleport(world.spawn.x - 12.0, world.spawn.y)
+	world.player.rotation.y = PI * 0.5
+	await physics_frames(30)
 	var player := world.player
 	Input.action_press(&"move_forward")
 	press(&"ui_cancel")

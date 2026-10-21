@@ -26,8 +26,11 @@ func run() -> void:
 	press(&"ui_text_submit")
 	check(world.time_warp == 4.0, "warp 4 runs the clock four times as fast (x%.1f)" % world.time_warp)
 
+	var before_sky := Vector2(world.player_world_x(), world.player_world_z())
 	type("scenario dusk")
 	press(&"ui_text_submit")
+	check(Vector2(world.player_world_x(), world.player_world_z()).distance_to(before_sky) < 0.1,
+		"a sky-only scenario keeps the player clear of the physical landing pod")
 	var hour := world.weather.day.time_of_day(world.time, world.moon.longitude)
 	var dusk: Dictionary = Scenarios.by_key("dusk")
 	check(Dev.read("world/scn") == "dusk" and hour >= dusk.day[0] and hour <= dusk.day[1] and main.saves() == null,

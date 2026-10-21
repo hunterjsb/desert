@@ -561,6 +561,9 @@ static func by_key(key: String) -> Dictionary:
 ## no such moment in three days.
 static func find(world: World, scenario: Dictionary) -> Dictionary:
 	var spawn := world.spawn
+	# A sky-only change must not put you back inside the landed pod.
+	if scenario.kind == "sky" and scenario.get("lays", &"") == &"":
+		spawn = Vector2(world.player_world_x(), world.player_world_z())
 	if scenario.kind == "spawn":
 		return {"x": spawn.x, "z": spawn.y, "yaw": 0.0, "time": 0.0}
 	if scenario.kind == "ruin":

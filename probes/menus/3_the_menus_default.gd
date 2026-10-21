@@ -8,7 +8,7 @@ extends MenuProbe
 ## a Normal run, whose
 ## system menu holds Save. Save & quit from that run, somewhere out on the
 ## sand, and back on the menu Resume is there and highlighted. Confirm shows
-## your camp aside as the save holds it, the crate by itself, and the save's
+## your nearby camp pieces aside as the save holds them, and the save's
 ## numbers: time played, when it was saved, its day and who you came as, and
 ## how many deeds show done.
 ## Back goes back. A save from before time played was kept shows the rest;
@@ -55,6 +55,7 @@ func run() -> void:
 		and not main.in_run(), "New game asks which mode, Normal highlighted (%s)" % ", ".join(modes.words()))
 	press(&"ui_accept")
 	await faded_in()
+	await started()
 	check(main.in_run() and main.view == null and not main.ui.is_open() and not Controls.mouse_free,
 		"confirm starts a run, the menu's world gone and the mouse captured")
 	check(not main.ironman(), "a Normal run")
@@ -85,10 +86,11 @@ func run() -> void:
 	var numbers := Snapshot.summary(saves().held())
 	var camp: Array = main.showpiece._built.get(Showpiece.CAMP, [Node3D.new()])
 	print("Resume lists ", view.aside())
-	check(view != menu and view.side and view.shows == Showpiece.CAMP and camp[0].get_child_count() == 1
+	check(view != menu and view.side and view.shows == Showpiece.CAMP
+		and camp[0].get_child_count() == mini(saves().held().things.size(), Showpiece.CAMP_MOST)
 		and camp[0].find_children("*", "GeometryInstance3D", true, false).size() > 20
 		and camp[0].find_children("*", "CollisionObject3D", true, false).is_empty(),
-		"Resume shows your camp aside, the crate by itself and only to look at")
+		"Resume shows the saved nearby camp pieces aside, only to look at")
 	check(view.aside().size() == 5 and numbers.played > 0.0 and view.aside()[2][1] == str(numbers.day)
 		and view.aside()[3][1] == Kit.standard().label and view.aside()[1][1] == UIRoot.when(saves().saved_at(),
 			saves().saved_at()) and view.aside()[4][1] == "0 of %d" % Deeds.TABLE.size(),

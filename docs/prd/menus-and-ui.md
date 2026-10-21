@@ -697,3 +697,19 @@ bearing, relative turn, reception and support separately; failed unmarking expla
 why. Menus 49, one-theme and mouse-inventory checks pass. An actual powered marked
 camp was captured 1 km west, with a live signal and ready collision/history.
 This is a requested known-point view; no permanent overlay or terrain map was added.
+
+### Weather-only scenarios after physical arrival (2026-10-20)
+
+A sky/time scenario with no staged equipment keeps the player's current location
+while selecting its requested sky and facing. Resetting to the original spawn
+can put a Surveyor inside the now physical landing shell. Equipment scenarios
+retain their authored placement and normal replacement flow. Menu/input checks
+must exercise unobstructed movement after landing, without disabling collisions.
+
+The actual console path passes its unchanged held-movement threshold after the
+sky-only placement repair (20 s), and also asserts that the sky change preserves
+the current location. Arrival-aware menu fixtures retain their existing physics,
+input, reach and readability thresholds: they wait for actual scenario staging,
+handle invalidated joined-panel references and inspect the saved multi-piece
+camp instead of assuming the former single starting crate. Focused menu checks
+1/3/6/19 pass (56/28/25/21 s).

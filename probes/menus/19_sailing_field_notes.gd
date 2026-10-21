@@ -12,13 +12,13 @@ func run() -> void:
 	var notes: SailingNotes
 	for i in 600:
 		await get_tree().physics_frame
-		for child in world.content.get_children():
-			if child is SailingNotes:
+		for child in world.get_meta(&"scenario_kit", []):
+			if is_instance_valid(child) and child is SailingNotes and not child is SurveyorGuide:
 				notes = child
-		if notes != null:
+		if is_instance_valid(notes):
 			break
-	check(notes != null, "sail scenario lays a physical booklet")
-	if notes == null:
+	check(is_instance_valid(notes), "sail scenario lays a physical booklet")
+	if not is_instance_valid(notes):
 		return
 	check(notes.global_position.distance_to(world.player.global_position) < 2.5,
 		"notes are within reach at the starting board")

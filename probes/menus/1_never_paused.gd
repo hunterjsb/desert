@@ -29,7 +29,7 @@ func _measure(menu: bool) -> Array:
 	await settle()
 	while not world.has_meta(&"kit"):
 		await get_tree().physics_frame
-	for body: Node in world.get_meta(&"kit", []):
+	for body in world.get_meta(&"kit", []):
 		if is_instance_valid(body):
 			body.free()
 	world.remove_meta(&"kit")
