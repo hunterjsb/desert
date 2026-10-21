@@ -1591,3 +1591,28 @@ one-theme check also passes (6 s).
 meltdown clears any pending interference stutter. A fragment of the previous playback
 must not seek the new song back to an old position. Continuous reception keeps its
 existing glitches. The spoken-report probe exercises a restart during a stutter.
+
+### Radio acceptance observes complete frames and a clear carrier (2026-10-21)
+
+Combined master acceptance exposed two fixture assumptions. With rendering capped
+at five frames per second, radio 39 reproduces both speech assertions failing:
+the receiver already holds the correct god's words and then the correct beacon
+bearing, while Broadcast still holds an empty or previous report. A process-frame
+signal resumes the probe before that frame's ordinary process callbacks. Keep the
+slow-frame reproduction and sample after a complete consumer callback, retaining
+the transmitted-word and bearing checks unchanged. No speech-runtime change.
+
+The volume fixture's clear weather did not establish clear reception: its fixed
+rod orientation measured strength 0.15513, clean 0.08454 and dirt 0.91546. Master's
+full-volume sample was -65 dB, then its tenth-volume sample -39 dB; interference
+can change during the knob exercise. Facing the real carrier broadside alone
+does not remove all reception dirt. Use the existing weather-gain fixture
+pattern of a steady Glitch adapter while keeping the real receiver and audio
+players. This isolates knob gain from random dropouts; interference keeps its
+separate real-fragment coverage. Preserve the original notch, attenuation,
+silence, frequency and restored-full-volume requirements. No gain, interference or reception rules change.
+Focused corrected acceptance passes: radio 39 in 7 s with the five-frame-per-
+second reproduction retained, and radio 10 in 6 s with every original gain
+assertion unchanged. The receiver and Broadcast still execute their ordinary
+callbacks; production radio and audio code are untouched. Combined CI remains
+required.
