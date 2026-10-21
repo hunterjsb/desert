@@ -5,6 +5,8 @@ This release is unpublished. Integrated source through the crop-survey radio
 flight plan passed all 21 Linux, native platform and build jobs. Human playtest
 acceptance remains.
 
+- Publish a GitHub Pages performance observatory with probe retries, build costs,
+  artifact sizes and headless streaming, rope and memory measurements.
 - Speed up probe iteration with accelerated ruin traversal, native scheduling for
   expensive terrain checks, and fresh CI duration history. Package desktop builds
   faster with light ZIP compression.

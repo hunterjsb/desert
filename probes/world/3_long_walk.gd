@@ -57,6 +57,8 @@ func run() -> void:
 	print("chunks <= %d, boxes <= %d, objects %d -> %d, memory %.1f -> %.1f MB, lowest player clearance %.3f m"
 		% [biggest_world, most_boxes, baseline_objects, objects, baseline_memory / 1048576.0,
 			memory / 1048576.0, lowest])
+	metric("World memory growth after 20 km", (memory - baseline_memory) / 1048576.0, "MiB", 64.0)
+	metric("World object growth after 20 km", (objects - baseline_objects) * 100.0 / baseline_objects, "%", 10.0)
 	check(lowest > -0.05, "the player never ended up below the sand (lowest %.3f m)" % lowest)
 	check(biggest_world <= most_chunks, "loaded chunks stay bounded (%d)" % biggest_world)
 	check(most_boxes <= 12, "left-behind boxes are forgotten (most at once %d)" % most_boxes)

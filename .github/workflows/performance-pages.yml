@@ -1,0 +1,75 @@
+name: Performance pages
+
+on:
+  workflow_run:
+    workflows: [Probes, Release]
+    types: [completed]
+  workflow_dispatch:
+  push:
+    paths: ['site/**', 'scripts/ci_dashboard/**', '.github/workflows/performance-pages.yml']
+  pull_request:
+    paths: ['site/**', 'scripts/ci_dashboard/**', '.github/workflows/performance-pages.yml']
+
+permissions:
+  contents: read
+
+# A newer refresh can wait; never interrupt a Pages deployment mid-flight.
+concurrency:
+  group: performance-pages-${{ github.event_name == 'pull_request' && github.ref || 'refresh' }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.head_repository.full_name == github.repository &&
+       (github.event.workflow_run.head_branch == 'master' || github.event.workflow_run.name == 'Release'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'master' || github.ref }}
+      - run: python3 -m unittest discover -s scripts/ci_dashboard -p 'test_*.py'
+      - run: node --check site/app.js
+
+  build:
+    needs: check
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Retained measurements
+        uses: actions/cache@v4
+        with:
+          path: .dashboard/history.json
+          key: performance-history-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: performance-history-v1-
+      - name: Collect completed runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/ci_dashboard/collect.py --repo "$GITHUB_REPOSITORY"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy the observatory
+        id: deploy
+        uses: actions/deploy-pages@v4

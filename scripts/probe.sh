@@ -84,10 +84,12 @@ run_probe() {
 	judge $?
 	took=$((SECONDS - started))
 	say_verdict "$1"
+	# Preserve only opt-in measurements; ordinary successful diagnostics stay quiet.
+	grep '^PROBE_METRIC ' <<<"$output" || true
 }
 
 show_output() {
-	tail -n 30 <<<"$output" | sed 's/^/    /'
+	grep -v '^PROBE_METRIC ' <<<"$output" | tail -n 30 | sed 's/^/    /'
 }
 
 if [[ ${1:-} == smoke ]]; then
