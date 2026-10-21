@@ -139,7 +139,16 @@ gives water a daily rhythm:
 At a fixed longitude a day lasts about 20 minutes, start to finish. Travelling
 changes local solar time: west stretches daylight and east shortens it. Keeping
 pace with sunset requires 125*cos(latitude) m/s westward at the current defaults;
-a 20 m/s traveller can match it near 80.8° latitude. The global clock keeps running. That's compressed game
+a 20 m/s traveller can match it near 80.8° latitude. The global clock keeps running. At the equator a sustained 20 m/s westward journey stretches
+the local day from 20 minutes to about 23 minutes49 seconds; eastward, about
+17 minutes14 seconds. At 80° latitude, matching sunset takes about21.7 m/s,
+and at81° about19.6 m/s. This depends on westward speed along the latitude,
+not total speed in an arbitrary direction. Current zero axial tilt also means
+the high-latitude sun stays low.
+
+The fictional-size proposals and time compression are independent: the current
+9° Tu proposal corresponds to roughly77.7 fictional hours per20-minute game day.
+A 20-minute playable day does not assert a physical20-minute rotation. That's compressed game
 time, the way most survival games handle days. **Zan is tidally locked to Tu** ([the Tu
 spec](../briefs/tu-and-day-2026-10-17.md), 2026-10-17): one face always points at the giant, and the
 real day is one lap round it.

@@ -85,7 +85,7 @@ centimetre.
 |---|---|
 | The travel lap | 150 km (Tuning `moon_circumference`); navigation radius 23.87 km; compressed journeys, not the physical body |
 | Visible curvature | Provisional 3,700 km radius (`moon_visual_radius_m`); lore size remains unsettled in [the moon](the-moon.md) |
-| One degree | 417 m |
+| One travel-map degree | 417 m; this is the compressed navigation scale |
 | The Rim to the point under Tu | a quarter lap, 37.5 km |
 | The point under Tu to the anti-Tu point | half a lap, 75 km |
 | A game day on foot | 20 min at 1.8 m/s, about 2.2 km |
