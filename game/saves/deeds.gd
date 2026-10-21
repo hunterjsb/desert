@@ -29,7 +29,6 @@ const SETUP := [&"ground_radar", &"sand_scoop", &"sieve"]
 ##   landmark, where it's reached, or every landmark for ALL; hidden, ????
 ##   and no picture until it's done, so the grid never says what it is.
 const TABLE := {
-	&"first_recovery": {"name": "Making Landfall", "asks": "recover equipment from your Surveyor pod", "family": &"camp", "after": [], "icon": &"chassis"},
 	&"board_distance": {"name": "Frequent Flyer", "asks": "Ride a board %s m without stepping off", "family": &"board",
 		"icon": &"board", "goal": "deed_board_m", "unit": "m", "step": 250.0},
 	&"board_height": {"name": "Big Air", "asks": "Fly %s m over the sand on a board", "family": &"board",
@@ -64,6 +63,7 @@ const TABLE := {
 		"after": [&"anomaly_eye"], "icon": &"compass", "goal": "tells", "parts": true, "unit": "tells", "hidden": true},
 	&"taught": {"name": "Taught", "asks": "Teach the Walker the anomaly", "family": &"weather", "after": [&"tells"],
 		"icon": &"walker", "hidden": true},
+	&"first_recovery": {"name": "Making Landfall", "asks": "recover equipment from your Surveyor pod", "family": &"camp", "after": [], "icon": &"chassis"},
 	&"home_again": {"name": "Home Again", "asks": "Return to a marked home after scouting beyond its ordinary surroundings",
 		"family": &"camp", "icon": &"home_beacon"},
 	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a battery on one deck", "family": &"camp",
