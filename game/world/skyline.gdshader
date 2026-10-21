@@ -1,4 +1,5 @@
 shader_type spatial;
+#include "res://game/world/surface_projection.gdshaderinc"
 // What stands far off (Skyline): a stand-in's boxes, unit cubes sized to
 // each and drawn at their own size in their coat's finish, and far bushes,
 // mounds sized from their foot. Lit as the ground is. Nothing is drawn
@@ -28,7 +29,9 @@ float pixel_at(vec3 at, mat4 projection, vec2 viewport, vec3 eye) {
 
 void vertex() {
 	vec3 normal = normalize(MODEL_NORMAL_MATRIX * NORMAL);
-	vec3 centre = MODEL_MATRIX[3].xyz;
+	vec3 raw_centre = MODEL_MATRIX[3].xyz;
+	vec3 centre = surface_project(raw_centre);
+	normal = surface_normal(normal, raw_centre);
 	mat3 axes = mat3(MODEL_MATRIX[0].xyz, MODEL_MATRIX[1].xyz, MODEL_MATRIX[2].xyz);
 	float least = thinnest_px * pixel_at(centre, PROJECTION_MATRIX, VIEWPORT_SIZE, CAMERA_POSITION_WORLD);
 	// Widened across the line of sight only, each way the screen runs:
@@ -42,11 +45,12 @@ void vertex() {
 	float by_wide = max(least / max(wide, 1e-4), 1.0);
 	float by_tall = max(least / max(tall, 1e-4), 1.0);
 	mat3 widen = mat3(1.0) + (by_wide - 1.0) * outerProduct(across, across) + (by_tall - 1.0) * outerProduct(up, up);
-	vec3 world = centre + widen * (axes * VERTEX);
+	vec3 world = surface_project(raw_centre + axes * VERTEX);
+	world = centre + widen * (world - centre);
 	tone = COLOR;
 	tone.a /= by_wide * by_tall;
 	if (INSTANCE_CUSTOM.x > 0.5) {
-		tone.a *= smoothstep(handover.x, handover.y, length(CAMERA_POSITION_WORLD - centre));
+		tone.a *= smoothstep(handover.x, handover.y, length(CAMERA_POSITION_WORLD - raw_centre));
 	}
 	tone.a *= texelFetch(veils, ivec2(int(INSTANCE_CUSTOM.w + 0.5), 0), 0).r;
 	finish = vec3(INSTANCE_CUSTOM.yz, 0.5);

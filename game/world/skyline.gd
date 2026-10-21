@@ -900,6 +900,10 @@ func _place() -> void:
 
 ## The sun and the air on the glints, each frame.
 func _shade() -> void:
+	var eye := _world.player.camera.global_position
+	var frame := Vector3(eye.x, eye.z, SurfaceProjection.radius(_tuning))
+	for look in [_box_look, _glint_look, _dust_look]:
+		look.set_shader_parameter("surface_frame", frame)
 	var weather := _world.weather
 	var t := _world.time
 	var moon := _world.moon
