@@ -29,6 +29,7 @@ const SETUP := [&"ground_radar", &"sand_scoop", &"sieve"]
 ##   landmark, where it's reached, or every landmark for ALL; hidden, ????
 ##   and no picture until it's done, so the grid never says what it is.
 const TABLE := {
+	&"first_recovery": {"name": "Making Landfall", "asks": "recover equipment from your Surveyor pod", "family": &"camp", "after": [], "icon": &"chassis"},
 	&"board_distance": {"name": "Frequent Flyer", "asks": "Ride a board %s m without stepping off", "family": &"board",
 		"icon": &"board", "goal": "deed_board_m", "unit": "m", "step": 250.0},
 	&"board_height": {"name": "Big Air", "asks": "Fly %s m over the sand on a board", "family": &"board",

@@ -73,6 +73,7 @@ func _over() -> void:
 	var next: World = WORLD.instantiate()
 	next.run_seed = new_seed()
 	next.kit = old.kit
+	next.arrival_enabled = old.arrival_enabled
 	next.counts_deeds = old.counts_deeds
 	next.name = "World"
 	parent.add_child(next)
@@ -99,6 +100,14 @@ func _process(delta: float) -> void:
 ## Sets the kit down once the sand under it is solid: before, it would be
 ## frozen or forgotten.
 func _equip(at: World) -> void:
+	if at.arrival_enabled:
+		at.arrival = SurveyorArrival.new()
+		at.arrival.world = at
+		at.add_child(at.arrival)
+		if not at.has_meta(&"resumed"):
+			_begin(at)
+			at.arrival.start()
+		return
 	while is_instance_valid(at) and not at.is_queued_for_deletion() \
 			and not at.terrain.is_settled_around(at.spawn.x, at.spawn.y):
 		await get_tree().physics_frame

@@ -97,7 +97,10 @@ func restock() -> void:
 	for thing in carried:
 		thing.free()
 	carried.clear()
-	var kit := Kit.of(World.of(self))
+	var world := World.of(self)
+	if world != null and world.arrival_enabled:
+		return
+	var kit := Kit.of(world)
 	for id in kit.carried_ids():
 		if Catalog.DEVICES.has(id):
 			var device := Catalog.device(id)

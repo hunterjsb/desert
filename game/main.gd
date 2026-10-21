@@ -48,7 +48,9 @@ func _ready() -> void:
 		_show_view()
 		ui.show_main_menu()
 		return
-	_begin(_make(RUN))
+	var first := _make(RUN)
+	(first.get_node("World") as World).arrival_enabled = not _scenario
+	_begin(first)
 	if _scenario:
 		# The world finishes setting up first.
 		await get_tree().process_frame
@@ -67,6 +69,11 @@ static func _scenario_asked() -> String:
 ## scenario's run: never saved, no deed counts in it, and a death in it begins
 ## a new run without touching the save on disk, which is the player's own.
 func start_scenario(scenario: Dictionary) -> void:
+	if world().arrival != null:
+		world().arrival.cancel()
+	world().arrival_enabled = false
+	world().arrival_state.clear()
+	world().arrival_nodes.clear()
 	_scenario = true
 	world().counts_deeds = false
 	run.get_node("Runs").offer = Callable()
@@ -153,6 +160,7 @@ func new_game(ironman := false, after_death := false, kit: Kit = null) -> void:
 	runs.ironman = ironman
 	var made := next.get_node("World") as World
 	made.kit = kit
+	made.arrival_enabled = Kit.of(made).id == &"surveyor"
 	if after_death:
 		made.run_seed = runs.new_seed()
 	await _into(next, false)
@@ -164,6 +172,8 @@ func resume() -> void:
 	var next := _make(RUN)
 	(next.get_node("World") as World).run_seed = saves().run_seed()
 	(next.get_node("World") as World).kit = Kit.named(saves().kit())
+	(next.get_node("World") as World).arrival_enabled = not saves().held().get("arrival", {}).is_empty()
+	next.get_node("World").set_meta(&"resumed", true)
 	next.get_node("Runs").ironman = saves().ironman()
 	await _into(next, true)
 
