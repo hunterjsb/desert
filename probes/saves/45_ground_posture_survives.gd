@@ -3,7 +3,7 @@ extends SavesProbe
 func run() -> void:
 	saves = get_node(^"/root/Saves")
 	await load_world()
-	await simulate(0.3)
+	await physics_frames(20)
 	var awarded := [0]
 	get_node(^"/root/Profile").deed_done.connect(func(id: String) -> void:
 		if id == "ground_rest":
