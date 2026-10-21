@@ -16,11 +16,14 @@ func run() -> void:
 		line.rope.full = _full[i]
 		line.rope.length = _paid[i]
 		line.rope.strand.set_length(_paid[i])
-	var guide := driven_stake(me + Vector3(3, 0, -1))
+	var guide := device(&"chassis", me + Vector3(3, 0, -1), 0.2)
+	guide.freeze = true
 	var hook := fit_part(guide, &"hook") as RopeHook
 	check(_lines()[1].route(hook.guide).is_empty(), "one original line passes through a real hook")
 	hands.reel.choose(_lines()[2].ends[1])
-	check(saves.save(world), "single ends saved")
+	check(saves.save(world) and await resume(), "empty hands and selected waist end resume")
+	check(hands.held == null and hands.reel.chosen_body() == _lines()[2].ends[1],
+		"empty hands retain the chosen individual waist line")
 	var old: Dictionary = SaveFile.read(saves.path(), saves.KIND, saves.VERSION).data
 	old.hands.erase("chosen")
 	SaveFile.write(saves.path(), saves.KIND, saves.VERSION, old)
@@ -75,7 +78,7 @@ func run() -> void:
 		and is_equal_approx(primary.mass, RopeBundle.own_mass(primary)) and hands.reel.chosen_body() == null,
 		"anchor counts every original mass once and has no remote reel choice")
 
-	primary = anchor.take(primary.socket)
+	primary = anchor.pop(primary.socket)
 	primary.global_position = world.player.global_position + Vector3(1, 0.3, 0)
 	check(saves.save(world) and await resume(), "loose group saved and resumed")
 	_check_group("loose")
