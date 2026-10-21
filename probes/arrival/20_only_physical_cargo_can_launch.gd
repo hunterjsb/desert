@@ -12,6 +12,7 @@ func run() -> void:
 	var state := {"phase": &"preflight", "preflight": {"version": 1, "launched": false},
 		"landing_point": Sphere.point(world.moon.latitude, world.moon.longitude)}
 	var nodes := PreflightCargo.stage(world, ship, state)
+	await physics_frames(30)
 	print("CARGO staged", nodes.size(), " loaded", PreflightCargo.loaded(world, ship), " readiness", PreflightCargo.readiness(world, ship))
 	for uid in PreflightCargo.REQUIRED:
 		if nodes.has(uid):

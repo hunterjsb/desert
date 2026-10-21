@@ -14,6 +14,8 @@ static func stage(world: World, ship: SurveyorShip, state: Dictionary) -> Dictio
 	for role: StringName in ship.pod_parts:
 		var body: Node = ship.pod_parts[role]
 		body.set_meta(&"arrival_uid", role)
+		if body is RigidBody3D:
+			body.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 		named[role] = body
 	var made: Array[RigidBody3D] = []
 	for spec: Array in SurveyorManifest.EQUIPMENT:
@@ -160,7 +162,7 @@ static func _external(world: World, ship: SurveyorShip, body: RigidBody3D, box: 
 			if not rules is Dictionary:
 				return false
 			var envelope: AABB = ship.pod_pose * rules.external_cargo_bounds
-			return envelope.encloses(box)
+			return envelope.grow(GEOMETRY_EPS).encloses(box)
 		on = on.host() if on is Device else null
 	return false
 
@@ -198,7 +200,16 @@ static func _carried(world: World, body: RigidBody3D) -> bool:
 
 
 static func _parent_uid(body: RigidBody3D) -> StringName:
-	var parent: Node = body.socket.get_parent() if body is Part and body.socket != null else body.get_parent()
+	var parent: Node
+	var socket: Socket
+	if body is Part and body.socket != null:
+		socket = body.socket
+		parent = socket.get_parent()
+	elif body is Device and body.host() != null:
+		parent = body.host()
+		socket = (parent as Device).seat_of(body)
+	if parent is Chassis and socket != null:
+		parent = (parent as Chassis).own_piece(socket)
 	return parent.get_meta(&"arrival_uid", &"") if parent != null else &""
 
 
