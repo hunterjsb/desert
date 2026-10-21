@@ -1,0 +1,60 @@
+extends MenuProbe
+## The real fresh run waits for the player's computer choice and physical pod entry.
+func run() -> void:
+	var tuning := Tuning.current()
+	tuning.run_seed = 1234
+	tuning.salvage = false
+	tuning.surveyor_preflight["enabled"] = true
+	main = MAIN.instantiate()
+	main.opens_on_menu = false
+	add_child(main)
+	world = main.world()
+	var until := Time.get_ticks_msec() + 60000
+	while (world.arrival == null or not is_instance_valid(world.arrival.preflight)) and Time.get_ticks_msec() < until:
+		await get_tree().physics_frame
+	check(world.arrival != null and is_instance_valid(world.arrival.preflight), "a fresh Surveyor run opens in the physical ship")
+	if world.arrival == null or not is_instance_valid(world.arrival.preflight):
+		return
+	await physics_frames(5)
+	var prep := world.arrival.preflight
+	check(world.arrival.preparing() and world.player.is_physics_processing() and world.time_warp == 0.0,
+		"preparation allows normal movement without advancing the surface clock")
+	check(not prep.readiness().is_empty(), "launch waits for a deliberate landing choice")
+	var pod := prep.ship.pod.deck
+	var board := SurveyorRecovery.named(world).get(&"board") as RigidBody3D
+	stand_at(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
+	await physics_frames(2)
+	press(&"interact")
+	check(world.arrival_state.preflight.seated and not world.player.is_physics_processing(), "use enters the actual pod seat")
+	press(&"interact")
+	check(world.arrival.preparing(), "use cannot bypass the missing landing plan")
+	press(&"hands_grab")
+	check(not world.arrival_state.preflight.seated and world.player.is_physics_processing(), "take leaves the pod and restores walking")
+	stand_at(prep.ship.computer_at.global_position + Vector3(0, -1.03, 0.9), prep.ship.computer_at.global_position)
+	await physics_frames(2)
+	press(&"interact")
+	check(is_instance_valid(prep.computer), "use opens the launch computer through its real collider")
+	if not is_instance_valid(prep.computer):
+		return
+	var computer := prep.computer as LaunchComputer
+	var id: StringName = world.arrival_state.landing_plan.candidates[-1].id
+	computer._buttons[id].pressed.emit()
+	check(world.arrival_state.preflight.plan_confirmed and world.arrival_state.landing_plan.selected_id == id,
+		"the computer's destination control confirms the saved landing choice")
+	press(&"ui_cancel")
+	await get_tree().process_frame
+	check(not is_instance_valid(prep.computer) and world.player.is_physics_processing(), "closing the computer restores walking")
+	check(prep.readiness().is_empty(), "the real preloaded survival stores allow launch after planning")
+	stand_at(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
+	await physics_frames(2)
+	press(&"interact")
+	press(&"interact")
+	check(not world.arrival.preparing() and world.arrival_state.phase == &"ejection", "use launches the prepared pod into the saved flight")
+	check(is_instance_valid(pod) and pod.get_parent() == world.content, "launch carries the original physical pod")
+	await physics_frames(2)
+	check(not is_instance_valid(board), "the optional board left on the ship is not silently granted")
+
+func stand_at(at: Vector3, toward: Vector3) -> void:
+	world.teleport(world.player, Transform3D(Basis.IDENTITY, at))
+	world.player.velocity = Vector3.ZERO
+	world.player.camera.look_at(toward)
