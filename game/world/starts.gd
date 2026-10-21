@@ -87,7 +87,7 @@ static func find(shape: TerrainShape, start: StringName, tuning: Tuning) -> Vect
 ## made of the cells round its places.
 static func holds(shape: TerrainShape, start: StringName, p: Vector3, tuning: Tuning, looked := {}) -> bool:
 	var history := shape.history
-	if not _in_band(p, tuning) or history.from_tu(p) > PI * 0.5 or not _off_landmarks(history, p):
+	if not _in_band(p, tuning) or history.from_tu(p) > PI * 0.5 or not _off_landmarks(history, p, tuning):
 		return false
 	match start:
 		&"artery":
@@ -561,9 +561,14 @@ static func _in_band(p: Vector3, tuning: Tuning, margin := 0.0) -> bool:
 	return absf(Sphere.latitude(p)) <= most
 
 
-static func _off_landmarks(history: History, p: Vector3) -> bool:
+static func _off_landmarks(history: History, p: Vector3, tuning: Tuning) -> bool:
 	for each in history.landmarks:
-		if Sphere.angle(p, each.p) * history.radius < each.radius + LANDMARK_CLEAR:
+		var radius: float = each.radius
+		if each.id == &"starcom":
+			radius = maxf(radius, tuning.starcom_mountain.x)
+		elif each.id == &"observatory":
+			radius = maxf(radius, tuning.observatory_mountain.x)
+		if Sphere.angle(p, each.p) * history.radius < radius + LANDMARK_CLEAR:
 			return false
 	return true
 

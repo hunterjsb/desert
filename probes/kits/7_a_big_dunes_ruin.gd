@@ -42,17 +42,20 @@ func run() -> void:
 	var intense := [0, 0]
 	for site in ruins.slice(0, RUINS):
 		var hard := 0
+		var last_heart := -10000
 		var stormy := false
 		var bared := false
 		for m in range(30, roundi(DAYS * 24.0 * 60.0)):
 			var heart := clampf(field.raw_storm_at(site.x, site.z, m * 60.0) / tuning.exposure_storm_full, 0.0, 1.0)
+			if heart >= HEART:
+				last_heart = m
 			if heart > 0.0 or stormy:
 				bared = bared or Exposure.level(site.depth, site.pure_taken(m * 60.0)) > 0.0
 			if heart > 0.0:
 				stormy = true
 				hard += int(heart >= HEART)
 			elif stormy:
-				var counts: Array = intense if hard >= INTENSE else (weak if hard == 0 else [0, 0])
+				var counts: Array = intense if hard >= INTENSE else (weak if hard == 0 and m - last_heart > tuning.site_surge_window_minutes else [0, 0])
 				counts[0] += 1
 				counts[1] += int(bared)
 				stormy = false

@@ -26,3 +26,6 @@ distribution may require signing/notarization on Windows and macOS.
 
 Launcher settings and managed game installations are stored in the operating system's
 per-user data directory. Game saves remain in Godot's normal per-user save directory.
+
+The launcher is a separate Python application. `.gdignore` keeps its assets out of
+the game’s Godot import and export.

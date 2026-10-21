@@ -28,6 +28,9 @@ func run() -> void:
 	var k := 0
 	for kind: StringName in StructureKit.kinds():
 		var piece := StructureKit.piece(kind)
+		# Forced foundations need their actual flat summit, tested by history/8.
+		if piece.builds == SummitSite:
+			continue
 		var kind_drawn := 0
 		var kind_shown := 0
 		for n in EACH:

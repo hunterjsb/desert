@@ -14,6 +14,11 @@ Includes the sailing, traversal and exploration baseline described below.
 - Pick up Halloran coalcane normally and unlock a physical service cache after the burn.
   Homes, refinery fittings and the connected pipeline gain modeled detail.
 - Add a short illustrated hoisting page to the sailing notes.
+- Reach Starcom's relay mountain and the far-side observatory volcano: hazy distant
+  silhouettes become real slopes, colonial galleries and salvage when approached.
+  The existing volcanic plume rises from the mountain's flank.
+- Storm-stripped ruins refill more slowly in calmer air, leaving a short window to
+  investigate after the dust clears. Strong storms can still bury them again.
 
 ## 0.2.3-alpha “Sailboat”
 

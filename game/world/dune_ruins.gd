@@ -296,6 +296,11 @@ func _ruin(seed: Seed) -> Structure:
 			top = k
 	if top < 0:
 		return null
+	# A volcanic shoulder is not a sand crest a storm can strip away.
+	var crest_u := u0 + top * STEP
+	var rock := shape.landforms.rise(crest_u * down.x - v * down.y, crest_u * down.y + v * down.x)
+	if rock > 0.0 and hs[top] <= rock + 0.01:
+		return null
 	var low := top
 	while low < count and hs[low + 1] <= hs[low]:
 		low += 1

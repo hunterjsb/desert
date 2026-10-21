@@ -978,6 +978,8 @@ static var _current: Tuning
 ## once the storm lets go, minutes; and how far back its work counts, minutes.
 @export var site_surge_m: float = 0.8
 @export var site_surge_return_minutes: float = 5.0
+## Calmer air takes longer to refill a hollow than a storm actively moving sand.
+@export var site_wake_return_minutes: float = 18.0
 @export var site_surge_window_minutes: float = 25.0
 ## Where a site lies among the dunes (Exposure.dune_at): on a windward face
 ## or crest the wind strips this much more, the storm's work off it too; in a
@@ -1292,3 +1294,13 @@ static func current() -> Tuning:
 @export var winch_drum_radius: float = 0.09
 @export var halyard_lower_seconds: float = 1.5
 @export var winch_hoist_deed: float = 0.95
+@export_group("Expedition horizons")
+## Foot radius and summit rise, metres. Gentle broad approaches remain walkable.
+@export var starcom_mountain := Vector2(2400.0, 600.0)
+@export var observatory_mountain := Vector2(3600.0, 950.0)
+@export var horizon_step := 128.0
+@export var horizon_range := Vector2(24000.0, 42000.0)
+@export var mountain_bedrock_depth := 40.0
+@export var horizon_drop_m := 8.0
+@export var mountain_rock := Color(0.38, 0.34, 0.30)
+@export var mountain_rock_height := Vector2(60.0, 180.0)

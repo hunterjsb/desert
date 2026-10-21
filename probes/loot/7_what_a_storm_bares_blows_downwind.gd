@@ -1,12 +1,12 @@
 extends WorldProbe
 ## Loot probe 7: what a storm lays bare blows downwind. A house ruin stood by
 ## hand in the open where a storm will lay it bare, and catch lines across the wind round
-## it, read tick by tick through the storm as lines there would catch:
+## it, read tick by tick relative to the current wind:
 ## downwind, the site's own lesser things arrive, falling just past the line,
 ## more near than far; upwind, off to the side and past the stream's reach,
 ## nothing of the site's; and nothing before the storm lays it bare.
 
-const LINE := 8.0
+const LINE := 32.0
 ## Where the lines stand from the site, m: [downwind, across the wind].
 const NEAR := Vector2(30.0, 0.0)
 const FAR := Vector2(200.0, 0.0)
@@ -46,6 +46,13 @@ func run() -> void:
 	for k in range(floori(storm.before / tick_s), floori(storm.after / tick_s)):
 		for name: String in lines:
 			var line: Array = lines[name]
+			# Read catch lines relative to the current wind: a long clear-air
+			# wake can outlast the direction the storm's peak blew from.
+			var direction := world.weather.field.wind_at(site.x, site.z, k * tick_s).normalized()
+			var offset: Vector2 = {"near": NEAR, "far": FAR, "past": PAST, "upwind": UPWIND, "aside": ASIDE}[name]
+			var centre := Vector2(site.x, site.z) + direction * offset.x + direction.orthogonal() * offset.y
+			line[0] = centre - direction.orthogonal() * LINE * 0.5
+			line[1] = centre + direction.orthogonal() * LINE * 0.5
 			var spec := Drift.caught(world, line[0], line[1], k)
 			for each in Drift.from_sites(world, line[0], line[1], k * tick_s):
 				if each[0] == site:
@@ -64,7 +71,7 @@ func run() -> void:
 	var said := PackedStringArray()
 	for name: String in lines:
 		said.append("%s %d (%.2f expected)" % [name, lines[name][2], lines[name][3]])
-	print("off a house ruin %.1f m deep through its storm, caught on 8 m lines: %s" % [site.depth, ", ".join(said)])
+	print("off a house ruin %.1f m deep through its storm, caught on 32 m lines: %s" % [site.depth, ", ".join(said)])
 	check(lines.near[2] > 0 and lines.near[3] > lines.far[3] and lines.far[3] > 0.0,
 		"downwind its things arrive, more near than far")
 	# Aside only as the wind swings through the storm.

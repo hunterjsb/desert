@@ -55,7 +55,7 @@ func run() -> void:
 		var now := Exposure.taken(one, x, z, t, tuning, memo)
 		jump = maxf(jump, absf(now - last))
 		last = now
-	print("the storm's sand off at %.0f,%.0f: %.2f m half an hour before its height, %.2f at it, %.2f a day after; the most in a frame %.5f m"
+	print("the storm's sand off at %.0f,%.0f: %.2f m before its height, %.2f at it, %.2f after; the most in a frame %.5f m"
 		% [x, z, surge[0], surge[1], surge[2], jump])
 	check(surge[1] > 1.0 and surge[0] < surge[1] * 0.3 and surge[2] < surge[1] * 0.3,
 		"it rises as the storm works and falls once it lets go")

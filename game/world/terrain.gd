@@ -115,6 +115,9 @@ func setup(world: World) -> void:
 	skyline = Skyline.new()
 	add_child(skyline)
 	skyline.setup(world)
+	var horizons := Horizons.new()
+	add_child(horizons)
+	horizons.setup(world)
 	# Structures read their exposure as their ground is built, and hold it
 	# while that ground is loaded.
 	world.shape.sites.set_clock(func() -> float: return world.time)
@@ -639,6 +642,8 @@ func _sand_look() -> Material:
 	sand.shader = SAND_SHADER
 	sand.set_shader_parameter("downwind", Vector2.from_angle(WeatherField.mean_heading(_world.run_seed)))
 	sand.set_shader_parameter("sand", _tuning.sand_color)
+	sand.set_shader_parameter("mountain_rock", _tuning.mountain_rock)
+	sand.set_shader_parameter("mountain_rock_height", _tuning.mountain_rock_height)
 	return sand
 
 

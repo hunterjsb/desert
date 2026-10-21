@@ -148,9 +148,13 @@ func respawn(x: float, z: float, yaw: float, at_time: float) -> void:
 func travel(latitude_degrees: float, longitude_degrees: float, yaw: float) -> void:
 	# Past where the history kept under the old ground could reach.
 	var off := (tuning.history_lay_m + tuning.history_cell_m) * 2.0 + history_due()
+	off += 2.0 * maxf(tuning.starcom_mountain.x, tuning.observatory_mountain.x)
 	var at := flat_near(shape, player_world_x() + off, player_world_z())
 	respawn(at.x, at.y, yaw, time)
 	moon.place(latitude_degrees, longitude_degrees)
+	# A landmark can stand a kilometre above the old sheet's dunes.
+	_follow_history()
+	player.position.y = height_at(at.x, at.y) + 0.1
 
 
 ## How far round you history is laid before any ground is built there: past

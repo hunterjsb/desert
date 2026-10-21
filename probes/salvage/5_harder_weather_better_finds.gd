@@ -50,7 +50,9 @@ func run() -> void:
 					var moments := []
 					for k in MOMENTS:
 						moments.append(rng.randf() * 3.0 * 24.0 * 3600.0)
-					moments.append(_storm_height(field, site, tuning))
+					var extremes := _storm_range(field, site, tuning)
+					moments.append(extremes.x)
+					moments.append(extremes.y)
 					for moment: float in moments:
 						site.decide(moment)
 						var found := SiteLoot.plan(site, shape.height_at)
@@ -71,17 +73,22 @@ func run() -> void:
 	_verdict(sites, ends, drawn, early, loose)
 
 
-## When a storm worked hardest on a site in the first day, world time.
-func _storm_height(field: WeatherField, site: Site, tuning: Tuning) -> float:
+## Least and most stripped in the first day, including calm after a wake.
+func _storm_range(field: WeatherField, site: Site, tuning: Tuning) -> Vector2:
 	var memo := Exposure.Memo.new()
 	var most := -1.0
 	var at := 0
+	var least := INF
+	var low := 0
 	for m in 24 * 60:
-		var s := Exposure.surge_at(field, site.x, site.z, m, tuning, memo)
+		var s := Exposure.taken(field, site.x, site.z, (m + 1) * Exposure.SURGE_STEP_S, tuning, memo, site.dune)
+		if s < least:
+			least = s
+			low = m
 		if s > most:
 			most = s
 			at = m
-	return (at + 1) * Exposure.SURGE_STEP_S
+	return Vector2(low + 1, at + 1) * Exposure.SURGE_STEP_S
 
 
 ## Every socket of history's built sites round the great sites, drawn.

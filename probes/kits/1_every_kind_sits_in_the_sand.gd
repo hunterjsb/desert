@@ -26,7 +26,7 @@ func run() -> void:
 	var tried := 0
 	for kind: StringName in StructureKit.kinds():
 		# The graded city has floor-relative burial, exercised by Halloran probe 10.
-		if kind == &"halloran_route":
+		if kind in [&"halloran_route", &"starcom_summit", &"observatory_summit"]:
 			continue
 		var piece := StructureKit.piece(kind)
 		var lean := deg_to_rad(Eras.TILT.get(piece.era, Vector2.ZERO).y)

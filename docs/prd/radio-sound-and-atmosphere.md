@@ -1290,3 +1290,8 @@ flare before staging its held radio and refuses a held-view capture unless that
 radio is actually in hand. The unified clear setup check passes (6 s), and the
 held 1280×720 frame was inspected again with survival bars visible. The shared
 one-theme check also passes (6 s).
+
+**Playback restart contract (2026-10-20):** changing a song or restarting the Stoker’s
+meltdown clears any pending interference stutter. A fragment of the previous playback
+must not seek the new song back to an old position. Continuous reception keeps its
+existing glitches. The spoken-report probe exercises a restart during a stutter.

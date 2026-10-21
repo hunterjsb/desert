@@ -2,6 +2,58 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Reachable horizons (built, 2026-10-20)
+
+Starcom's relay mountain and the observatory's far-side volcano are real ground at their
+history positions. The observatory remains at the anti-Tu equatorial centre, not a pole.
+Their coarse distant silhouettes must become the same slopes underfoot, through the normal
+far ring and streamed collision. Dunes, ordinary sites, burial and wind shelter continue on
+them; a mountain must not suppress archaeology as an enormous building footprint would.
+The summit structures use the existing kit, salvage and discovery systems. Repairing Starcom
+and the young god's quest remain later work; this slice provides places to reach and explore.
+
+Keep early starts' ordinary salvage cues and their real distances. No beacon, objective arrow,
+visibility unlock or enlarged antenna points beginners at a journey they cannot sustain.
+Mountain and plume visibility follows distance, intervening dust and elevation. Occasional
+silhouettes offer bearings and long-term curiosity; clear nearby salvage stays the useful
+first destination. A mobile camp, provisions and weather reading make an expedition viable.
+The existing vents retain their geological sources, burst timing and atmospheric rendering;
+the far-side vent must rise from the actual mountain slope.
+
+Mountain projections hold still while any nearby ground can be loaded, survive saves and
+origin shifts, and reproject when approached on another lap. The CPU ground and GPU wind
+map must agree. Verify slope access, collision, summit arrival, far/near continuity and
+initial views; inspect actual GPU captures for haze and scale. Audit first-hour exposure
+before adjusting archaeology: distinguish deep storm finds from nearby salvage and measure
+how long a visible post-storm opportunity lasts.
+
+**As built.** `Landforms` projects two immutable, saved terrain profiles: Starcom rises
+600 m over a 2.4 km foot radius, the observatory 950 m over 3.6 km. Bedrock meets the
+procedural dunes with a maximum rather than adding their slopes together. Dunes remain
+at the foot and in hollows; smaller structures still survey and carve normally. Dune
+archaeology excludes exposed bedrock crests: wind does not excavate the volcano itself. Projections
+are pinned within the terrain/far-ring reach, and old loaded sheets retain their ground.
+Taking a worker's profile-array reference is locked against save restoration and reprojection;
+chunk and far-ring jobs hold one snapshot for their entire build. Moon-only relocation also
+defers any new mountain that would intersect loaded ground, preventing rises beneath bodies.
+
+`Horizons` draws 128 m samples beyond the ordinary 3 km far ring, lowered 8 m into its
+overlap. This is a finite approximation, not a second physical surface. Silhouettes fade
+between 24 and 42 km; the camera covers that range. The summit stand-ins reuse the actual
+colonial meshes and hand over across the existing 420–500 m range. Galleries provide roofs,
+beds and ordinary salvage sockets. Starcom's receiving array and the broken elevator rails
+are distinct silhouettes. These are first exterior slices, not completed quests or interiors.
+
+Checks cover radial upper approaches, chunk height agreement, saved projections and streamed
+arrival with cargo resting on physical gallery ground. Twelve loot draws per summit verify
+that surviving supplies are reachable on the actual foundation. GPU captures cover spawn, both summits
+at 15 km and 150 m, and the volcano at 4 km and 800 m. On this approach the broad
+volcanic shoulder hides the observatory from the foot; the rails emerge during the climb,
+visible at 800 m before the near mesh takes over. GPU wind-map heights agree with the CPU within
+7 mm in those captures. Mountain surfaces suppress the shading of dunes buried beneath them.
+The look harness is `look/horizons/horizons.tscn`; `--storm` exercises obscured views,
+and `--surveyor` captures the real new-run location, morning, facing and starting kit.
+
 ## Halloran's first playable ground (built, 2026-10-20)
 
 Aitch–Crossing–furnace is one connected Structure assembly laid with the Halloran landmark unit,

@@ -96,5 +96,7 @@ The Play browser shows published game releases only. The current source project'
 labels the selected version as the latest **published** release so these states are clear.
 
 `launcher-release.yml` packages Linux x86_64, Windows x86_64, and macOS arm64 and x86_64
-builds on launcher tags. Signing and notarization remain open. This is an initial
-implementation; cross-platform CI and desktop interaction have not yet been run.
+builds on launcher tags. Its first `workflow_dispatch` packaging run on master passed all
+four platform jobs on 2026-10-20. The workflow was also updated to label the Windows and
+macOS builds as unsigned, with macOS not notarized. Signing and notarization remain
+open.

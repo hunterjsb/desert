@@ -1674,3 +1674,13 @@ yacht and masthead underneath its crow's nest. The pulley turns eight
 centimetres above the full cloth head, below the basket floor; winch end
 stop and hoist height use the same geometry constant. These checks do not
 establish the old nomad yacht's final sailing balance or replace native CI.
+## Expedition landmarks (agreed, 2026-10-20)
+
+The first hour still leads toward ordinary salvage, shelter and a workable camp. Storm
+archaeology and agriculture support different middle-game lives. Starcom and the far-side
+observatory are optional expedition destinations: real silhouettes, actual traversable
+mountains and colonial remains at the summit. Arrival should offer shelter and the normal
+salvage loop even before their ending quests exist. Discovery uses existing landmark deeds.
+Distant volcanic columns retain their real, dangerous vent mouths. None promises an easy
+rescue or a safe water source. Location can be learned visually or through existing map and
+radio tools; this first slice adds no exposition dump or mandatory travel objective.

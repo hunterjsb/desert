@@ -266,6 +266,11 @@ func _follow() -> bool:
 func _root() -> void:
 	var sites := _world.shape.sites
 	var guess := sites.anchor().place(source.p)
+	var hill := _world.shape.landforms.get_hill(&"observatory")
+	if hill != null:
+		var flank := hill.anchor.place(source.p)
+		if flank.distance_to(hill.at) < hill.radius:
+			guess = flank
 	slot = Vector2.from_angle(sites.anchor().ground_bearing(source.bearing) - PI * 0.5)
 	root = Vector3(guess.x, _world.shape.dunes(guess.x, guess.y), guess.y)
 	if source.state != Geology.LIVE_VENT:

@@ -442,7 +442,7 @@ static func prepare() -> void:
 static func _load() -> void:
 	if not _pieces.is_empty():
 		return
-	for era: Script in [ColonialKit, SkimmerKit, FirstKingdomsKit, SecondAgeKit, GeologyKit, WreckKit, NomadKit, HalloranKit]:
+	for era: Script in [ColonialKit, SkimmerKit, FirstKingdomsKit, SecondAgeKit, GeologyKit, WreckKit, NomadKit, HalloranKit, SummitKit]:
 		for each: Piece in era.pieces():
 			each.finish()
 			_pieces[each.kind] = each

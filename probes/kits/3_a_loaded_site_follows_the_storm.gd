@@ -13,7 +13,7 @@ extends WorldProbe
 
 const KIND := &"house_ruin"
 ## Seconds of weather a frame as you watch.
-const WARP := 3.0
+const WARP := 6.0
 
 
 func run() -> void:
@@ -22,7 +22,7 @@ func run() -> void:
 	var sites := world.shape.sites
 	var from := Vector2(world.player_world_x() + 320.0, world.player_world_z())
 	var stands := func(at: Vector2) -> bool: return sites.by_hand(KIND, at.x, at.y, 0.0, 0.0).stands()
-	var storm := StormSite.find(world.weather.field, world.tuning, from.x, from.y, 2, 100.0, 1.0, 0.5, stands)
+	var storm := StormSite.find(world.weather.field, world.tuning, from.x, from.y, 2, 100.0, 1.0, 0.5, stands, world.shape)
 	check(not storm.is_empty(), "a storm that lays a ruin bare between sand before and after")
 	if storm.is_empty():
 		return
@@ -81,9 +81,10 @@ func run() -> void:
 		await _at(t)
 		fastest = maxf(fastest, last - site.taken())
 		last = site.taken()
-		if site.taken() <= site.pure_taken(t):
+		# The live interpolation keeps its endpoints in a float32 Vector4.
+		if site.taken() <= site.pure_taken(t) + 1e-5:
 			break
-	check(fastest <= world.tuning.site_rebury_m_s * 1.0001 and fastest > 0.0 and site.taken() <= site.pure_taken(t),
+	check(fastest <= world.tuning.site_rebury_m_s * 1.0001 and fastest > 0.0 and site.taken() <= site.pure_taken(t) + 1e-5,
 		"off its ground the sand comes back, no faster than %.2f m/s (%.3f)" % [world.tuning.site_rebury_m_s, fastest])
 
 	# Away until its ground is forgotten, and back.
