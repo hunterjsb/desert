@@ -740,8 +740,8 @@ wheel and a dragged PageBar reach the remaining rows; covered readers do not
 consume another modal's navigation. Rebound bindings update the open reader.
 
 Focused menu 50 passes both routes, viewport bounds, keyboard/wheel/bar scrolling,
-scene-specific controls, input holding while the world advances, and exact menu
-selection on return. Devices 11 checks live rebinding and console coverage; theme
+scene-specific controls, input holding while the world advances, console history
+navigation without moving the covered reader, and exact menu selection on return. Devices 11 checks live rebinding and console coverage; theme
 5 and menu/input/save regressions 3, 6, 7, 8, 18 and saves 9 pass. Actual unseen
 1280×720 captures of the system menu and both ends of the controls reader were
 inspected: text, title, Back and scrollbar remain legible and on screen, with no

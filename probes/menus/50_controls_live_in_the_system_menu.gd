@@ -11,6 +11,7 @@ func run() -> void:
 	_select("CONTROLS")
 	await _layout()
 	var reader := _reader()
+	check(reader != null, "Controls opens its reader")
 	if reader == null:
 		return
 	var screen := get_viewport().get_visible_rect()
@@ -36,6 +37,22 @@ func run() -> void:
 	await _layout()
 	check(Controls.tint("H") in reader.list.text and "fixture control" in reader.list.text,
 		"scene-specific controls join the same reader")
+	var scroll_before_console := reader.scroll
+	press(&"console")
+	var console := main.ui.dev_console
+	type("help")
+	press(&"ui_text_submit")
+	type("scenarios")
+	press(&"ui_text_submit")
+	press(&"ui_up")
+	check(console.visible and console._line.text == "scenarios", "console history owns navigation over the reader")
+	press(&"ui_up")
+	check(console._line.text == "help", "history reaches the earlier command")
+	press(&"ui_down")
+	check(console._line.text == "scenarios" and reader.scroll == scroll_before_console,
+		"history returns forward without scrolling the covered reader")
+	press(&"console")
+	check(reader.is_visible_in_tree() and reader.scroll == scroll_before_console, "closing the console restores the reader at its scroll")
 	var bindings := reader.list.text
 	press(&"ui_cancel")
 	check(main.ui.top() == system and system.highlighted() == system.words().find("CONTROLS"),
