@@ -73,6 +73,18 @@ but moved the bottleneck rather than improving the critical path. Its Windows
 saves/kits/sail step fell to 1435 s while the enlarged equipment group took
 2271 s. Power/farming are therefore restored to the saves group; survival stays
 with movement. Kits 3 passed first attempt in 199 s with exclusive scheduling,
-avoiding its previous 400 s timeout plus 196 s retry. Final distribution checks
-are pending. These scheduling changes retain nine Linux and four groups per
-native OS, every probe, and existing timeout limits.
+avoiding its previous 400 s timeout plus 196 s retry. The corrected distribution
+passed all nine Linux groups in
+[run 39654283432](https://github.com/hunterjsb/desert/actions/runs/39654283432).
+Its postlanding native/build verification is
+[run 39656106279](https://github.com/hunterjsb/desert/actions/runs/39656106279).
+The corrected Windows critical probe step took 1867 s, versus 2149 s on the
+same-runtime pre-regrouping baseline (13% less); equipment took 1127 s and
+saves/kits/sail/power/farming remained the bottleneck. The slowest Linux probe
+step was 629 s. Export/ZIP took 46 s on this run versus 41 s on the earlier
+landed pass. One macOS job never acquired a hosted runner and required a retry;
+runner queue delay is excluded from these step timings.
+These scheduling changes retain nine Linux and four groups per native OS, every
+probe, and existing timeout limits. No universal native speedup is claimed:
+hosted timing varies, and whole-suite critical path matters more than an
+individual group's improvement.
