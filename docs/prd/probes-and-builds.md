@@ -157,3 +157,22 @@ succeeded and publicly reported the failed run, both attempts, their 601 s total
 and 16 available game measurements. Browser checks confirmed those results on the
 live page. Missing measurements stayed absent. A targeted retry of the failed job
 is tracked in [the source run](https://github.com/hunterjsb/desert/actions/runs/39669517959).
+
+
+### Plain run report (agreed 2026-10-21)
+
+Replace the large summary cards with a compact selected-run table. Move the game
+measurements into that same report, without a separate “Game performance” section
+or decorative sparklines. Each measurement names its platform, value, assertion
+limit when supplied, and whether it is below, at or above that limit. Keep the
+probe's actual verdict separate: a measurement alone cannot certify a whole probe.
+Without a limit, say “No limit” rather than implying good or bad. Show the nearest
+earlier passing sample on the same platform and workflow, with its source run and
+numeric change; absent history is explicitly “No earlier sample”. Keep history,
+slow probes, job details and artifacts. Favor compact tables over presentation.
+
+The plain report replaces the four summary cards and measurement cards with tables,
+removes the large introductory heading and the separate game-performance section,
+and preserves source links and filters. Desktop and 390 px browser checks passed:
+summary rows, limit/no-limit states, absent history, metric search, empty results,
+probe expansion and job details. Five collector checks and JavaScript syntax pass.
