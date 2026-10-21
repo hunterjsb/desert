@@ -374,6 +374,7 @@ func hold(coord: Vector2i) -> Array[Structure]:
 func release(where: Variant) -> void:
 	if where is StringName or where is String:
 		_retained.erase(StringName(where))
+		_retire()
 		return
 	var coord: Vector2i = where
 	if not _built:
@@ -492,6 +493,7 @@ func retain(id: StringName, rect: Rect2, from: Anchor) -> void:
 		var at := from.place(mark.p)
 		if Rect2(at - Vector2.ONE * mark.radius, Vector2.ONE * mark.radius * 2).intersects(aligned, true):
 			support.keys[-1 - i] = true
+	_retire()
 	_schedule_support()
 
 
@@ -564,6 +566,9 @@ func _support_put(unit: Unit, support: Support) -> void:
 		if old.ground.intersects(unit.ground, true) and not _same_sheet(old.anchor, unit.anchor):
 			return
 	_index(unit, true)
+	var shape: TerrainShape = _ctx.shape.get_ref()
+	if shape != null:
+		shape._held.clear()
 
 
 # --- The sheet. ---
@@ -583,12 +588,7 @@ func follow(x: float, z: float, latitude: float, longitude: float, facing: float
 	var shape: TerrainShape = _ctx.shape.get_ref()
 	shape.landforms.follow(anchor, jumped, loaded)
 	shape._held.clear()
-	for unit: Unit in _units.values():
-		if _off(unit, x, z) and not _retained_at(unit.ground):
-			_take_up(unit)
-	for unit in _orphans.duplicate():
-		if not _retained_at(unit.ground) and (_off(unit, x, z) or not loaded.call(unit.ground)):
-			_take_up(unit)
+	_retire()
 	var cells := history.cells
 	for cell in cells.within(anchor.p, _lay):
 		_offer(cell, anchor, Sphere.angle(anchor.p, cells.center(cell)) * history.radius - cells.half_diagonal(cell))
@@ -607,6 +607,18 @@ func follow(x: float, z: float, latitude: float, longitude: float, facing: float
 	_ready_at = Vector2(x, z)
 	_ready_m = due
 	_schedule_support()
+
+
+## Bounds can change while the player stands still.
+func _retire() -> void:
+	if _anchor == null:
+		return
+	for unit: Unit in _units.values():
+		if _off(unit, _anchor.x, _anchor.z) and not _retained_at(unit.ground):
+			_take_up(unit)
+	for unit in _orphans.duplicate():
+		if not _retained_at(unit.ground) and (_off(unit, _anchor.x, _anchor.z) or not loaded.call(unit.ground)):
+			_take_up(unit)
 
 
 ## Lays waiting units until the frame's streaming deadline, Time ticks (usec).
@@ -795,23 +807,27 @@ func memories() -> Array:
 ## A resumed run's sheet as it was: each unit laid from its own anchor again.
 ## Loaded ground under anything that changes is built again.
 func recall(memories: Array) -> void:
+	finish()
+	var old := units()
 	var kept := {}
+	var missing: Array[Array] = []
 	for each: Array in memories:
 		var anchor := Anchor.new(each[1], each[2], Sphere.point(each[3], each[4]), each[5], history.radius)
-		var had: Unit = _units.get(each[0])
-		if had != null and _same(had.anchor, anchor):
-			kept[each[0]] = true
-			continue
-		if had != null:
-			_lift_rebuilding(had)
-		_lay_unit(each[0], anchor, true)
-		kept[each[0]] = true
-	for unit: Unit in _units.values():
-		if not kept.has(unit.key):
+		var matched := false
+		for unit in old:
+			if unit.key == each[0] and _same(unit.anchor, anchor):
+				kept[unit] = true
+				matched = true
+				break
+		if not matched:
+			missing.append([each[0], anchor])
+	for unit in old:
+		if not kept.has(unit):
 			_lift_rebuilding(unit)
-	for unit in _orphans.duplicate():
-		_lift_rebuilding(unit)
-	finish()
+	# The same geographic cell may appear in two independently placed sheets.
+	# Keep both identities; only the current sheet's dictionary needs unique keys.
+	for each in missing:
+		_lay_unit(each[0], each[1], _units.has(each[0]))
 	_queue.clear()
 	_queued.clear()
 	_making = null
@@ -897,12 +913,12 @@ static func _survey(made: Array[Site]) -> void:
 
 
 ## All of a unit at once.
-func _lay_unit(key: int, anchor: Anchor, anyway := false) -> void:
+func _lay_unit(key: int, anchor: Anchor, orphan := false) -> void:
 	var unit := _begun(key, anchor)
 	while not unit.todo.is_empty():
 		_make(unit, unit.todo.pop_front())
 	_survey(unit.sites)
-	_put(unit, anyway)
+	_index(unit, orphan)
 
 
 ## A unit begun: a landmark's mark, or a cell's ground and the parts to make.
