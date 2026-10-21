@@ -44,17 +44,8 @@ var _yank_n := 0.0
 
 func _ready() -> void:
 	_player = get_parent().get_parent() as Player
-	var torus := TorusMesh.new()
-	torus.inner_radius = 0.6
-	torus.outer_radius = 1.0
-	torus.rings = 16
-	torus.ring_segments = 6
-	var look := StandardMaterial3D.new()
-	look.albedo_color = Color(0.42, 0.31, 0.2)
-	look.roughness = 0.95
-	torus.material = look
 	_coil = MeshInstance3D.new()
-	_coil.mesh = torus
+	_coil.mesh = Dress.coil()
 	_coil.top_level = true
 	_coil.visible = false
 	add_child(_coil)
@@ -289,14 +280,20 @@ func _process(_delta: float) -> void:
 	# Before its first tie the rest is on the belt; afterward it pays from the hand.
 	var end := Line._tip(paying.ends[1 - paying._first]) if paying != null else (now.a if _on_you(now.a) else now.b)
 	var at := end.global_position
-	var size := 0.06 + 0.035 * sqrt(gathered)
+	# More gathered rope adds windings, rather than thickening the fibre.
+	var level := clampi(int(gathered / now.full * 3.0), 0, 2)
+	var coil_mesh := Dress.coil(level)
+	if _coil.mesh != coil_mesh:
+		_coil.mesh = coil_mesh
+	var box := coil_mesh.get_aabb()
 	var right := _player.global_basis.x
 	var ahead := -_player.global_basis.z
 	# Hanging from where it's held, turned half toward you so it reads as a coil.
 	var axis := (right + ahead).normalized()
 	var across := Vector3.UP.cross(axis).normalized()
-	_coil.global_transform = Transform3D(Basis(across, axis, across.cross(axis)).scaled(Vector3.ONE * size),
-		at + Vector3.DOWN * size * 0.8)
+	var basis := Basis(across, axis.cross(across), axis)
+	_coil.global_transform = Transform3D(basis,
+		at + Vector3.DOWN * box.size.y * 0.4 - basis * box.get_center())
 
 
 ## Laying a new line owns its coil display without changing the selected reel.

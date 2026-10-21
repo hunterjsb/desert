@@ -780,3 +780,15 @@ The focused check passes (9 s), as does selected-line reeling (9 s). An actual
 GPU capture places the coil 0.129 m below the held tip; using a real fitted hook
 routes that same line while its paying end remains free in the hand. Strand
 simulation, rope length, reel selection and force response are unchanged.
+
+The gathered display uses the same cached native coil mesh as loose rope. Three
+visual fill variants correspond to thirds of gathered/full length. Choose a
+variant instead of scaling fibre diameter; orient its local winding axis toward
+the existing hand-facing normal and centre it from its actual mesh bounds.
+This changes appearance only and retains the active-end ownership above.
+
+With the shared mesh adapter, the paying-coil check passes again (8 s). The
+actual unseen handoff/routing fixture passes and its capture shows the layered
+coil aligned with its held endpoint (0.135 m hanging offset), with unchanged
+1.953 m endpoint travel and successful hook routing. Native mesh bounds centre
+each fill variant; their fibre diameter stays fixed.
