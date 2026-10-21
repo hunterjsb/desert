@@ -64,6 +64,15 @@ var _loose := NAN
 ## The wind on its whole faces, and the lee they cast.
 var faces := Faces.new()
 
+class FrameContact:
+	var shape: CollisionShape3D
+	var source: Shape3D
+	var corners := PackedVector3Array()
+
+var _contact_frames: Array[FrameContact] = []
+var _contact_resources: Array[Shape3D] = []
+var _contact_frames_known := false
+
 
 ## Every piece of the deck, the first one first.
 func pieces() -> Array[Chassis]:
@@ -792,6 +801,53 @@ func _shapes_changed() -> void:
 	super()
 	_loose = NAN
 	faces.forget()
+	_forget_contact_frames()
+
+
+func _forget_contact_frames() -> void:
+	_contact_frames_known = false
+
+
+## Chassis children are numerous; only their ordered frame shapes meet tipped sand.
+func _frame_contacts() -> Array[FrameContact]:
+	if not _contact_frames_known:
+		for resource in _contact_resources:
+			resource.changed.disconnect(_forget_contact_frames)
+		_contact_resources.clear()
+		_contact_frames.clear()
+		for child in get_children():
+			if child is CollisionShape3D:
+				var frame := FrameContact.new()
+				frame.shape = child
+				_contact_frames.append(frame)
+		_contact_frames_known = true
+	return _contact_frames
+
+
+func _read_contact_corners(frame: FrameContact) -> void:
+	frame.source = frame.shape.shape
+	var box := Catalog.bounds(frame.source)
+	frame.corners.resize(8)
+	for i in 8:
+		frame.corners[i] = box.get_endpoint(i)
+	if not frame.source.changed.is_connected(_forget_contact_frames):
+		frame.source.changed.connect(_forget_contact_frames)
+		_contact_resources.append(frame.source)
+
+
+func _rest_frame_contacts(h: float, clearance: float) -> void:
+	for frame in _frame_contacts():
+		var shape := frame.shape
+		# Replacing a shape has no child-order notification; use it immediately.
+		if frame.source != null and frame.source != shape.shape:
+			_forget_contact_frames()
+		if shape.shape == null or shape.disabled or shape.has_meta(&"socket"):
+			continue
+		if frame.source != shape.shape or frame.corners.is_empty():
+			_read_contact_corners(frame)
+		var to_world := global_transform * shape.transform
+		for corner in frame.corners:
+			Runners.touch(self, world, to_world * corner, 0.6, h, clearance)
 
 
 func show_wear() -> void:
