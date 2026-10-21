@@ -22,6 +22,8 @@ varying vec3 world_n;
 
 void vertex() {
 	world_n = (MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz;
+	POSITION = PROJECTION_MATRIX * MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
+	POSITION.z = mix(CLIP_SPACE_FAR * POSITION.w, POSITION.z, 0.000001);
 }
 
 void fragment() {

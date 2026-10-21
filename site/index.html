@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desert · Performance observatory</title>
+  <link rel="stylesheet" href="./style.css"><script src="./app.js" defer></script>
+</head>
+<body>
+<header><div class="wordmark">DESERT <span>ENGINEERING</span></div><a href="https://github.com/hunterjsb/desert/actions">GitHub Actions ↗</a></header>
+<main>
+  <div class="eyebrow">PERFORMANCE OBSERVATORY</div>
+  <h1>Where the time goes.</h1>
+  <p class="intro">Probes, builds, and the systems beneath the sand. Measurements from completed CI runs, with the evidence one click away.</p>
+  <p id="freshness" role="status">Loading measurements…</p>
+  <noscript>This dashboard needs JavaScript to filter measurements. <a href="./data.json">Download the collected data.</a></noscript>
+  <div class="controls">
+    <label>Run<select id="run" aria-label="Run"></select></label>
+    <label>Platform<select id="platform" aria-label="Platform"><option>All platforms</option><option>Linux</option><option>Windows</option><option>macOS</option></select></label>
+    <label class="search">Find a probe<input id="search" type="search" placeholder="rope, streaming, long_walk…"></label>
+  </div>
+  <div id="run-info"></div><div id="summary" class="cards"></div>
+  <section><div class="section-title"><h2>Run history</h2><span>Elapsed minutes · includes scheduling and rerun delays</span></div>
+    <div id="history" class="history" aria-label="Run history"></div>
+    <p class="note">Select a bar to inspect a run. Probes and releases have different workloads; compare like with like. This is a bounded history, not every run ever made.</p>
+  </section>
+  <section><div class="section-title"><h2>Game performance</h2><span>Measured inside the probe</span></div>
+    <p class="note">Headless CPU and memory measurements, not player FPS. Shader compilation and GPU rendering are absent. Real-frame checks run on Linux only. Budgets come from the existing assertions; hosted hardware varies.</p>
+    <div id="metrics" class="metric-grid"></div>
+  </section>
+  <section><div class="section-title"><h2>Slow probes & retries</h2><span>Wall-clock cost to CI</span></div>
+    <p class="note">Sorted by total time including failed attempts. Change compares the final passing attempt with the nearest earlier passing sample on the same platform and workflow. It is a lead to investigate, not proof of a game regression.</p>
+    <div class="table-wrap"><table><thead><tr><th>Probe</th><th>Platform</th><th>Result</th><th>Total</th><th>Retry cost</th><th>Change</th></tr></thead><tbody id="probes"></tbody></table></div>
+    <button id="show-all" type="button">Show all matching probes</button><p id="coverage" class="note"></p>
+  </section>
+  <section><div class="section-title"><h2>Job bottlenecks</h2><span>Execution time · expand for steps</span></div>
+    <div id="jobs"></div><p class="note">Start offset is time from workflow start until the job starts; it includes dependencies and runner scheduling, not just queue time. Summed job duration is not billable minutes.</p>
+  </section>
+  <section><div class="section-title"><h2>Build artifacts</h2><span>Download footprint</span></div>
+    <div id="artifacts" class="cards"></div><p class="note">Sizes are GitHub artifact bytes containing the exported ZIP, including artifact overhead. Expired artifacts retain their recorded size. Build and smoke durations appear in the job details.</p>
+  </section>
+</main>
+<footer><span>DESERT / FIELD NOTES FOR A FASTER BUILD</span><a href="./data.json">Measurements as JSON ↗</a></footer>
+</body></html>

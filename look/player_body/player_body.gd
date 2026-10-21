@@ -51,17 +51,19 @@ func _ready() -> void:
 	Input.action_release("move_forward")
 	for i in 30:
 		await get_tree().physics_frame
-	var radio := Catalog.device(&"radio")
-	world.content.add_child(radio)
-	radio.global_position = player.global_position + Vector3(0.0, 1.0, -1.0)
-	await get_tree().physics_frame
-	player.hands.hold(radio)
-	for i in 40:
+	for id: StringName in [&"radio", &"cutter", &"chassis"]:
+		var item := Catalog.device(id)
+		world.content.add_child(item)
+		item.global_position = player.global_position + Vector3(0.0, 1.0, -1.0)
 		await get_tree().physics_frame
-	await _eyes("fp_holding", -25.0)
-	await _from("holding_front", Vector3(-1.2, 1.5, -2.4), Vector3(0.0, 1.2, 0.0))
-	player.hands.drop()
-	radio.queue_free()
+		player.hands.hold(item)
+		for i in 40:
+			await get_tree().physics_frame
+		var suffix := "" if id == &"radio" else "_" + String(id)
+		await _eyes("fp_holding" + suffix, -25.0)
+		await _from("holding_front" + suffix, Vector3(-1.2, 1.5, -2.4), Vector3(0.0, 1.2, 0.0))
+		player.hands.drop()
+		item.queue_free()
 	for i in 10:
 		await get_tree().physics_frame
 	await _from("front", Vector3(0.9, 1.4, -2.6), Vector3(0.0, 1.0, 0.0))

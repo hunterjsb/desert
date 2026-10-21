@@ -33,8 +33,9 @@ on the world walk, 601 + 339 s on warnings, and 301 + 243 s on salvage retention
   for 1370 s of its summed probe time. Its fallback must still include new folders.
 - Balance the existing four native groups after measuring the landed pass. In
   run 39640555594, saves/kits/sail/power/farming/survival took 2101 s while the
-  other Windows groups took 972–1022 s. Move power/farming beside physical gear
-  checks, and survival beside arrival/camp/movement; keep saves/kits/sail together.
+  other Windows groups took 972–1022 s. Move survival beside arrival/camp/movement. Retain power/farming beside
+  saves/kits/sail: moving both beside physical gear made the slowest Windows
+  step worse (2271 s versus 2149 s on the same runtime baseline).
   Kits 3 hit its 400 s limit in the pool then passed alone in 196 s, so mark it
   exclusive on noisy runners. No additional jobs or timeout increases.
 - Measure packaging compression before changing it; preserve archive contents,
@@ -49,7 +50,7 @@ No timeout increases, shorter walks or removed assertions are part of this pass.
 The ruin-opening traversal uses `set_rate(60, 6)`: all tours and per-tick
 assertions remain, while the focused local run fell from 345 s to 88 s (74% less).
 World 3 and salvage 7 run exclusively everywhere; movement 5 does so on native
-runners. Radio 39 retains the shared integration's five-FPS reproduction and observes
+runners, as does kits 3. Radio 39 retains the shared integration's five-FPS reproduction and observes
 two process-frame signals so the speech diagnostic consumer has completed its
 callback. Both god words and the actual beacon bearing remain checked. The runner
 still retries failures and records the retry duration. Scheduling checks exercise
@@ -60,4 +61,75 @@ level 1 instead of the default level 6. Archive contents, CRCs, file sizes and
 Unix attributes (including executable bits and macOS symlinks) match exactly;
 archive integrity checks pass. Downloads grow 4.6% on Linux, 5.9% on Windows and
 6.3% on macOS. The real-engine runner selftest, scheduling checks, shell syntax,
-ShellCheck warnings and actionlint pass. Full combined CI verification pending.
+ShellCheck warnings and actionlint pass. The first landed pass passed all 21 Linux, Windows, macOS and exported-build
+checks in [run 39640555594](https://github.com/hunterjsb/desert/actions/runs/39640555594).
+Its final Linux verification's slowest job fell from 1046 s to 736 s (30% less)
+against the pre-pass baseline; hosted timing varies. CI export/ZIP time fell
+from 52 s to 41 s (21% less).
+
+The native regrouping also passed all 21 checks in
+[run 39648194997](https://github.com/hunterjsb/desert/actions/runs/39648194997),
+but moved the bottleneck rather than improving the critical path. Its Windows
+saves/kits/sail step fell to 1435 s while the enlarged equipment group took
+2271 s. Power/farming are therefore restored to the saves group; survival stays
+with movement. Kits 3 passed first attempt in 199 s with exclusive scheduling,
+avoiding its previous 400 s timeout plus 196 s retry. The corrected distribution
+passed all nine Linux groups in
+[run 39654283432](https://github.com/hunterjsb/desert/actions/runs/39654283432).
+All 21 postlanding Linux, native and build checks passed in
+[run 39656106279](https://github.com/hunterjsb/desert/actions/runs/39656106279).
+The corrected Windows critical probe step took 1867 s, versus 2149 s on the
+same-runtime pre-regrouping baseline (13% less); equipment took 1127 s and
+saves/kits/sail/power/farming remained the bottleneck. The slowest Linux probe
+step was 629 s. Export/ZIP took 46 s on this run versus 41 s on the earlier
+landed pass. One macOS job never acquired a hosted runner and required a retry;
+runner queue delay is excluded from these step timings.
+These scheduling changes retain nine Linux and four groups per native OS, every
+probe, and existing timeout limits. No universal native speedup is claimed:
+hosted timing varies, and whole-suite critical path matters more than an
+individual group's improvement.
+
+## Performance dashboard (agreed 2026-10-21)
+
+Publish a small static GitHub Pages site after completed master Probes runs and
+Release runs, including failed runs; allow manual refresh. It reads existing
+Actions evidence and never starts Godot or adds a dependency to release gates.
+A bounded history (40 completed runs, backfilled from the latest eight per workflow
+when empty) lives in a separate Actions cache. Cache loss starts a clearly bounded
+new history rather than inventing measurements. The page links every result to its
+source run and records the commit, platform, attempt, collection time and missing
+log coverage. Retried jobs replace their older attempt's result when refreshed.
+
+Separate CI elapsed/job/step duration, per-probe wall time and retry cost from
+in-game measurements. Expose existing streaming, rope tick and long-walk memory
+measurements as structured probe output even on success. Real-frame checks remain
+Linux-only; headless measurements say explicitly that GPU/shader cost is absent.
+Do not infer frame rate from a probe's runtime. Compare a probe only with earlier
+successful measurements on the same platform/workflow; describe changes as signals
+on variable hosted hardware, not proven game regressions. Failed first attempts
+remain visible even when the retry passes. Missing measurements are never zero.
+
+Show run history, platform/search filters, slow probes, job/step bottlenecks,
+retry cost, exported archive artifact sizes and game measurements with existing
+budgets where applicable. Use accessible, responsive HTML/CSS/JavaScript without
+third-party runtime dependencies. Treat collected logs as data: no execution, no
+raw log publication or HTML interpolation. Publish only trusted default-branch
+site code, with a read-only collection token and Pages/OIDC deploy permissions.
+The dashboard has its own lightweight checks; failure never bypasses game checks.
+
+### First implementation
+
+The collector is Python standard-library code and the page has no runtime packages.
+A six-run real-data preview held 732 KB of JSON; a cached refresh took 1.19 s locally.
+It excludes runner selftests, preserves failed-attempt cost, labels unavailable logs,
+and measures elapsed time from original run creation even after a partial rerun.
+Jobs that never acquired a runner have no execution-time measurement.
+
+Focused streaming, rope, world-walk and salvage-walk checks passed (16, 20, 109 and
+88 s respectively), preserving all assertions and emitting ten structured metrics.
+Five collector checks, runner scheduling/metric retention checks, shell and workflow
+lint pass. Desktop and 390 px browser checks exercised platform/search filtering,
+full result expansion and job details without script errors or page overflow;
+metric cards rendered all ten actual local samples in a separate preview fixture.
+The production site consumes CI evidence only. Full CI and initial deployment are
+checked when this change lands; local preview measurements are not CI baselines.
