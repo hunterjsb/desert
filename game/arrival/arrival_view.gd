@@ -9,10 +9,15 @@ var _orbit := ArrivalOrbit.new()
 var _dust := ColorRect.new()
 var _dust_material := ShaderMaterial.new()
 var _pod := MeshInstance3D.new()
+var _voice := AudioStreamPlayer.new()
+var _heard_phase: StringName
+var _has_phase := false
 static var _pod_mesh: ArrayMesh
 
 func setup(world: World) -> void:
 	_world = world
+	_voice.bus = Sounds.WORLD
+	add_child(_voice)
 	# Cover the suit and HUD, while system menus and console remain above flight.
 	layer = 100
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -46,6 +51,7 @@ func present(state: Dictionary) -> void:
 	var seconds := float(state.get("elapsed", 0.0))
 	var duration := maxf(float(state.get("phase_seconds", 1.0)), 0.001)
 	var progress := clampf(float(state.get("progress", seconds / duration)), 0.0, 1.0)
+	_phase_audio(phase, progress)
 	_root.visible = phase != &"recovery"
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED if phase in [&"landing", &"recovery"] else SubViewport.UPDATE_ALWAYS
 	_screen.visible = phase not in [&"landing", &"recovery"]
@@ -74,7 +80,32 @@ func present(state: Dictionary) -> void:
 	_dust_material.set_shader_parameter(&"passage", _world.time)
 	_dust_material.set_shader_parameter(&"veil", 1.0 - smoothstep(0.0, 0.85, progress) if phase == &"landing" else 1.0)
 
+## First presentation may resume mid-flight; only a later actual transition sounds.
+func _phase_audio(phase: StringName, progress: float) -> void:
+	var changed := _has_phase and phase != _heard_phase
+	_heard_phase = phase
+	_has_phase = true
+	var settings := _world.tuning.surveyor_arrival
+	if changed:
+		_voice.stop()
+		var stream: AudioStream
+		match phase:
+			&"ejection": stream = Sounds.UNSEAT
+			&"entry": stream = Sounds.BOARD_RUSH
+			&"landing": stream = Sounds.LANDING
+		if stream != null:
+			_voice.stream = stream
+			_voice.volume_db = float(settings.get(str(phase) + "_db", 0.0))
+			_voice.play()
+	if phase == &"entry" and _voice.playing:
+		var envelope := smoothstep(0.0, 0.15, progress) * (1.0 - smoothstep(0.8, 1.0, progress))
+		_voice.volume_db = float(settings.get("entry_db", 0.0)) + linear_to_db(maxf(envelope, 0.001))
+
+
 func dispose() -> void:
+	_voice.stop()
+	_voice.stream = null
+	_world = null
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_root.hide()
 	queue_free()
