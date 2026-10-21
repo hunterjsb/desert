@@ -223,7 +223,9 @@ func chunk_at(world_x: float, world_z: float) -> Vector2i:
 
 
 func keeps_ground_at(x: float, z: float) -> bool:
-	return _policy != null and _policy.keeps_ground(chunk_at(x, z))
+	if _policy != null:
+		return _policy.keeps_ground(chunk_at(x, z))
+	return TerrainResidency.keeps_ground(chunk_at(x, z), chunk_at(_world.player_world_x(), _world.player_world_z()), _tuning)
 
 
 func has_collision_at(world_x: float, world_z: float) -> bool:
