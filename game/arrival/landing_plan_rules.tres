@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="LandingPlanRules" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/arrival/landing_plan_rules.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+candidate_count = 4
+corridor_radius_m = 2800.0
+signal_walk_m = Vector2(250, 750)
+attempts_per_signal = 12
+signal_limit = 64
+footprint_half_m = 5.0
+footprint_rise_m = 0.7
+structure_clear_m = 20.0
+detectable_height_m = 0.5
+distance_band_m = 250.0
+candidate_spacing_m = 180.0
