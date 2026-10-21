@@ -87,7 +87,10 @@ func _physics_process(delta: float) -> void:
 					state.phase_seconds = _seconds(state.phase)
 					if state.phase == &"recovery":
 						_release()
-						world.player.hands.say("Recover your supplies. The pod's panels can become your camp.")
+						var words := "Recover your supplies. The pod's panels can become your camp."
+						if is_zero_approx(world.weather.day.sun_shown(world.time)):
+							words = Controls.key_for(&"headlamp") + " · headlamp. Recover supplies; pod panels become your camp."
+						world.player.hands.say(words)
 						set_physics_process(false)
 	_show()
 

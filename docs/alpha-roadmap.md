@@ -127,11 +127,17 @@ checks and all three release smoke checks passed.
 **0.3 “Sanddune” is development, unreleased.** Ground rest and continuous coils
 landed at `2fe581a7` and passed all 19 platform/build checks. Home retention,
 return navigation and the connected Surveyor opening landed at `49af744f` after
-all nine Linux verification groups passed; its master native/build run is
-[in progress](https://github.com/hunterjsb/desert/actions/runs/39597617052).
-Ordinary three-seed gear recovery/shelter assembly is being checked next.
-Controls are moving from the overlay into the pause menu in a separate change.
-Human playtest acceptance remains; Spaceport's kite is a separate target.
+Linux verification. The subsequent Controls, eclipse guidance and capsized-contact
+candidate `8f6cc9bd` passed all nine Linux groups and focused Ubuntu/macOS/Windows
+tipping/contact checks. Its full [platform/build run](https://github.com/hunterjsb/desert/actions/runs/39609115432)
+is **in progress**.
+
+Ordinary three-seed Surveyor recovery assembles and saves/resumes a powered
+shelter. Small live-powered and loaded nine-piece Home expeditions pass. Controls
+now opens from the pause menu, with the independent overlay removed. A real
+108-piece capsized camp remains a measured performance follow-up: its corrected
+contact path adds about 3.64 ms per tick on the sampled machine. Human playtest
+acceptance remains; Spaceport's kite is a separate target.
 
 ## Consolidated feature register
 

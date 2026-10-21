@@ -274,7 +274,6 @@ func _into(next: Node, resuming: bool) -> void:
 		await _settled()
 	if profile() != null:
 		profile().remember_origin(Kit.of(world()).id)
-	Dev.show_hint(true)
 	Controls.free_mouse(false)
 	await ui.fade(false)
 	while run == next and world() != null and world().arrival != null and world().arrival.active():

@@ -299,7 +299,6 @@ func _unhandled_input(event: InputEvent) -> void:
 ## marked while a deed done hasn't been looked at there.
 func show_main_menu(note := "") -> void:
 	close_all()
-	Dev.show_hint(false)
 	if note == "" and main.save_refused() != "":
 		note = "Your saved run can't be resumed: " + main.save_refused()
 	var menu := Words.new(note, &"Shade")
@@ -373,11 +372,12 @@ static func gear(kit: Kit) -> Array:
 	return rows
 
 
-## Options, Deeds, Save in a Normal run, and Save & quit, over the running game.
+## Options, Controls, Deeds, Save in a Normal run, and Save & quit, over the running game.
 ## Save says how it went in its own word.
 func system_menu() -> Words:
 	var menu := Words.new("")
 	menu.add("Options", func() -> void: open(options()))
+	menu.add("Controls", func() -> void: open(controls()))
 	menu.add("Deeds", _deeds)
 	if main.saves() != null and not main.ironman():
 		var said := ["Save"]
@@ -463,14 +463,10 @@ func options() -> Words:
 	return menu
 
 
-## Every key as it's bound now, beside what it does, as the keys list shows
-## them; remapping comes later.
+## The current bindings, read in the same page from either menu route.
 func controls() -> Words:
 	var menu := _menu("Controls")
-	var list := Controls.keys_label()
-	list.theme_type_variation = &"KeysList"
-	list.text = Controls.help()
-	menu.add_body(list)
+	menu.add_body(ControlsPage.new())
 	menu.add("Back", close_top)
 	return menu
 

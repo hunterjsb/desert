@@ -1082,3 +1082,31 @@ restoration pass (11 s); the added first-frame camera-clearance assertion fails
 before the restore-eye fix and passes after it. Theme and deed ordering pass
 (6 s and 4 s). These checks do not establish ordinary-player comfort or full
 combined verification.
+
+#### Ordinary recovery during an eclipse (2026-10-21; selected)
+
+Keep the Surveyor's seeded eclipse variety. Real GPU landings on seeds 42 and
+9876 are very dark despite a local morning around 0.33 of the day: the sun is
+fully occulted, and the eye is already near its configured maximum 7× exposure.
+Seed 1234 has the full sun and 1× exposure. The dark view is physical eclipse
+lighting. Recovery uses the built-in, free, player-controlled suit headlamp.
+
+When the sun is fully occulted on entering recovery, the existing brief recovery
+notice also names the bound headlamp action. Resolve that action through Controls
+for the plain-text notice. Keep the same take/place/use, collision and power rules.
+The three-seed check walks to actual survivors, fits a recovered cell and shield
+onto a real recovered panel through ordinary actions, and saves/resumes the camp.
+This establishes a bounded powered shelter; sustained solar balance and unassisted
+first-run comprehension remain separate acceptance work.
+
+**Measured acceptance.** The rebound-headlamp check passes through actual New
+Game → Surveyor (8 s). Real Forward+ walks on seeds 1234, 42 and 9876 recover
+the resolved cell and shield with bound take/place actions, mount both on a
+recovered panel, switch on its 2 W shelter and save/resume that powered assembly
+with player collision active. The eclipse runs use the ordinary headlamp action;
+inspected lamp captures make the opened shell, nearby supplies and new camp
+readable. Seed 1234 required walking around an occluding pod frame before taking
+the cell. This is physical line-of-sight behavior, not an inaccessible survivor.
+An initial angled solar-placement attempt overlapped other mounted equipment;
+solar assembly and sustained energy balance are outside this two-part shelter
+check. No generation, lighting, exposure, collision or attachment limit changed.

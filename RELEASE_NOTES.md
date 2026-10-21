@@ -1,12 +1,13 @@
 ## 0.3.0-alpha “Sanddune” — development, unreleased
 
-Master combines Home, Surveyor arrival, ground rest and rope-coil improvements.
-This release is unpublished. Combined Linux verification passed; native platform
-checks for Home/arrival and playtest acceptance remain pending.
+Home, Surveyor arrival, ground rest and rope-coil improvements are integrated.
+This release is unpublished. The latest Controls/contact candidate passed Linux verification and focused
+native checks; full platform/build checks and human playtest acceptance remain.
 
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
   collect seeded surviving physical equipment. Other origins, developer scenarios
-  and legacy saves retain their existing starts.
+  and legacy saves retain their existing starts. During a fully eclipsed landing,
+  the recovery notice points out the suit headlamp using its current binding.
 - Mark one chassis as Home with a physical beacon. Its claimed camp retains bounded
   terrain, collision and history while you scout; ordinary power and weather keep running.
 - Open Home from the carry view for distance, bearing and live or last-known reception.
@@ -21,6 +22,11 @@ checks for Home/arrival and playtest acceptance remain pending.
 
 - Continuously unwind and gather the rope coil while preserving its gauge and
   held-end attachment.
+- Resolve capsized mast contacts against the mass response of the hull and hinged
+  boom, preserve support while applying friction, and support capsized decks on
+  their actual frame edges. Keep the existing upright runner clearance.
+- Read current controls directly from the system menu or Options in a bounded,
+  scrollable page. Remove the separate keys overlay and its persistent footer.
 - See Frontier Ag's crop survey as a full model 6 km up: faceted nacelles, solar
   arrays and its care-package cannon, lit by the sun and the sand below and
   hazed by the air between. Its care packages fall for 30 s from the new height.

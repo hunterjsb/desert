@@ -344,20 +344,53 @@ static func _mass(inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> f
 ## dead there, pushed back out of the sand over a few ticks with no bounce,
 ## and drags along it `grip` of that push whichever way it slides. A camp
 ## going over comes to rest on its masthead so.
-static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float) -> void:
-	var gap := point.y - world.height_at(world.world_x(point.x), world.world_z(point.z))
+static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float, clearance := 0.0) -> void:
+	var gap := point.y - world.height_at(world.world_x(point.x), world.world_z(point.z)) - clearance
 	if gap > REACH:
 		return
 	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())
 	var inv_mass := 1.0 / body.mass
 	var turn := state.inverse_inertia_tensor
-	var arm := point - body.global_transform * body.center_of_mass
-	var moving := state.linear_velocity + Vector3.DOWN * world.gravity * h + state.angular_velocity.cross(arm)
-	var up := _mass(inv_mass, turn, arm, Vector3.UP)
-	var pushed := maxf(0.0, -up * (moving.y + (gap / h if gap > 0.0 else maxf(gap * TOUCH_OUT / h, -TOUCH_SPEED))))
+	var middle := body.global_transform * body.center_of_mass
+	var velocity := state.linear_velocity
+	var spin := state.angular_velocity
+	var model := RopeArticulation.native(body as Device)
+	if model != null:
+		var coupled := model.bodies[0]
+		middle = coupled.center
+		velocity = coupled.velocity
+		spin = coupled.spin
+	var arm := point - middle
+	var moving := velocity + Vector3.DOWN * world.gravity * h + spin.cross(arm)
+	var normal := _contact_response(model, inv_mass, turn, arm, Vector3.UP)
+	if normal.y <= 0.0:
+		return
+	var pushed := maxf(0.0, -(moving.y + (gap / h if gap > 0.0 else maxf(gap * TOUCH_OUT / h, -TOUCH_SPEED))) / normal.y)
 	if pushed <= 0.0:
 		return
-	var flat := Vector3(moving.x, 0.0, moving.z)
+	var supported := moving + normal * pushed
+	var flat := Vector3(supported.x, 0.0, supported.z)
 	var way := flat.normalized() if flat.length() > 1e-4 else Vector3.ZERO
-	var drag := minf(_mass(inv_mass, turn, arm, way) * flat.length(), grip * pushed) if way != Vector3.ZERO else 0.0
+	var drag := 0.0
+	if way != Vector3.ZERO:
+		var friction := _contact_response(model, inv_mass, turn, arm, way)
+		# Friction's normal response is supplied by the same contact's support.
+		var response := friction - normal * (friction.y / normal.y)
+		var slip_response := way.dot(response)
+		if slip_response > 0.0:
+			drag = flat.length() / slip_response
+			# N = N0 + D*Knt/Knn; D <= grip*N gives this sliding bound.
+			var cone := 1.0 - grip * friction.y / normal.y
+			if cone > 0.0:
+				drag = minf(drag, grip * pushed / cone)
+			pushed += drag * friction.y / normal.y
 	body.apply_impulse(Vector3.UP * pushed - way * drag, point - body.global_position)
+
+
+## A point's velocity response includes its freely hinged load through the joint.
+static func _contact_response(model: RopeArticulation, inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> Vector3:
+	var lever := arm.cross(way)
+	if model == null:
+		return way * inv_mass + (turn * lever).cross(arm)
+	var response: Array = model.response([model.bodies[0]], [way], [lever])[0]
+	return response[1] + response[2].cross(arm)

@@ -1879,3 +1879,123 @@ An isolated Ubuntu sailing check 7 with only the clearance change passes unchang
 maximum tick change 0.124 m/s, speed 4.11 m/s, spin 0.73 rad/s, heel 15.5 degrees,
 penetration 0.012 m, 11 seams and three origin shifts. Its 30/60/120 Hz comparisons
 also pass. Combined CI and ordinary play acceptance remain pending.
+
+### Capsized mast contact and the native assembly (2026-10-21)
+
+The masthead's existing approximate sand contact must use the same native
+assembly point mobility and projected velocity as runner support. Its hull is
+freely hinged to a physical boom; treating that hull as isolated understates
+the mass meeting the sand and allows the uncollided upper mast to pass through
+it before the spar lands. Keep the existing contact separation, penetration
+recovery and Coulomb friction law, and apply the impulse only to the real hull
+at the contact's world point. Native hinge reactions remain Jolt's work. No
+velocity clamps, changed acceptance bounds or contact-reporting settings.
+
+An isolated macOS clearance comparison reproduces the landed tipping regression:
+0.02 m passes with maximum tick change 0.32 m/s; the required 0.04 m runner
+clearance fails at 1.09 m/s. Linux reproduces the latter exactly. Clearance
+changes the tipping contact sequence; reverting it would restore the separate
+long-sailing hull-contact failure. The masthead approximation currently assigns
+about 1.43 kg effective contact mass to the 87.3 kg hull and its hinged boom,
+and the uncollided masthead subsequently sinks over a metre.
+
+With the assembly response, unchanged Sail 4 passes both Linux (16 s) and native
+macOS: maximum tick change 0.69 m/s, spin 3.53 rad/s, speed 4.43 m/s; maximum
+collision-shape penetration 0.014/0.012 m and final heel about 101 degrees.
+Contact reporting remains disabled. The unchanged four-minute Sail 7 passes
+in 97 s: 0.124 m/s maximum tick change, 4.11 m/s speed, 0.73 rad/s spin,
+15.5 degrees heel, 0.012 m penetration, eleven seams and three origin shifts.
+The 30/60/120 Hz comparisons retain 2.907/2.908/2.908 m/s. The contact model
+is constructed only after a contact point enters its existing ground reach;
+upright large-deck runner support is unchanged. This does not measure the
+cost of many simultaneous contacts on a large capsized craft.
+
+### Coupled normal and friction at a capsized point (2026-10-21)
+
+The native assembly response exposes an older contact-law omission: normal
+and friction impulses were computed independently from the same incoming
+point velocity. The point mobility has off-diagonal terms. Friction therefore
+changes normal velocity, and normal support changes tangential slip. An isolated
+Ubuntu reproduction retains the tipping failure at 1.14 m/s per tick after
+the assembly correction. A measured penetrating masthead contact targets
++0.5 m/s separation but predicts -0.373 m/s after the summed impulses.
+
+Solve normal support first, then compute slip from the resulting virtual point
+velocity. Eliminate the friction impulse's normal response from its tangential
+mobility and compensate that response in the normal impulse. Bound friction
+by the existing coefficient times this corrected normal impulse. This preserves
+the contact's existing separation/penetration target while reducing tangential
+slip without reversing it along the chosen friction direction. Deliver the
+combined impulse once to the actual hull; do not clamp native velocities or
+change clearance, recovery speeds, restitution, friction, or acceptance bounds.
+The new real hinged-rig contact check places its masthead 0.03 m into sand
+with 3.163 m/s incoming normal speed. The independent impulse law recovers at
+0.572 m/s and fails the unchanged 0.01 m/s target tolerance; the constrained
+law gives 0.500 m/s and passes. The separate tipping check still fails native
+Ubuntu at 1.25 m/s per tick while local Linux and native macOS pass. Its spar
+is 0.408 m above sand at that peak, so spar collision is excluded. Carrier
+frame contact investigation remains pending.
+
+### Capsized carrier frame edges meet the sand
+
+The remaining Ubuntu tipping peak is a real native carrier-frame collision:
+its lowest enabled, non-socket frame corner is 0.0077 m below sand, while the
+physical spar remains 0.408 m clear. The existing capsized contact traversal
+visits mounted devices but omits the carrier's own joined frame. Its runner
+faces are airborne at 97 degrees of heel.
+
+For a chassis, include its actual enabled frame collision shapes in that same
+capsized sand-contact traversal, including joined panels now owned by the root.
+Visit mounted frames once as before. The carrier's native frame uses the
+existing runner clearance, so its point support keeps the same physical sand
+separation ahead of Jolt's speculative skin; frozen mounted-device frames
+retain their existing zero-clearance contact. Use real shape corners and the
+same point-contact law, without extra cushion dimensions, forces or velocity
+limits. Board handling is unchanged.
+
+The unchanged tipping check now passes native Ubuntu/macOS/Windows with maximum
+tick changes 0.78/0.80/0.80 m/s, maximum spin 3.56/3.58/3.58 rad/s, maximum
+speed 4.43 m/s, penetration 0.010/0.009/0.009 m, and final heel about 103 degrees.
+The real-contact normal-recovery and friction-cone check passes on all three.
+The final four-minute gust/turn/seam check passes locally in 96 s: maximum
+jolt 0.124 m/s, speed 4.11 m/s, spin 0.73 rad/s, heel 15.5 degrees,
+penetration 0.012 m, eleven seams and three origin shifts. Its 30/60/120 Hz
+comparisons retain 2.907/2.908/2.908 m/s. All existing acceptance bounds remain.
+
+#### Final capsized large-camp cost
+
+A bounded Linux audit compares the original isolated-hull contact path with
+the final assembly response, coupled friction and actual carrier-frame support.
+It uses the existing 108-piece L-deck layout: 54 skates, 54 trays, 18 batteries,
+18 mounted condensers/Consoles/shield generators, and one freely hinged sailing
+mast, 1,772 kg total. From 100 degrees of heel just above real terrain, the camp
+falls freely and settles near 152.5 degrees. There are no contact reports,
+velocity clamps or synthetic repeated contact calls. Terrain streaming is
+paused after loading, rendering capped at 60 Hz, and accelerated physics retains
+a 1/60 s tick. Two runs per implementation, in opposite orders, each sample
+eight seconds falling and eight seconds settled, 480 ticks per sample.
+
+| Per physics tick | Original contact path | Final contact path |
+| --- | ---: | ---: |
+| Candidate frame/mast corners | 153 | 1,017 |
+| Actual near-ground contacts, falling | 2.80 | 12.48 |
+| Actual near-ground contacts, settled | 4 | 8 |
+| Impulses applied, settled | 2 | 3 |
+| Timed near-contact work, falling | 9.6–10.0 µs | 1.94–1.98 ms |
+| Timed near-contact work, settled | 13.9–14.1 µs | 1.32–1.33 ms |
+| Assembly construction within settled work | 0 | 1.20–1.22 ms |
+| Whole-process CPU, falling | 9.38–9.46 ms | 13.46–14.08 ms |
+| Whole-process CPU, settled | 8.83–9.00 ms | 12.48–12.63 ms |
+
+The final geometry adds 864 real carrier-corner candidates; the whole-process
+settled mean increases about 3.64 ms per tick, roughly 41 percent. This is a
+material cost of the correctness repair on this large capsized camp, and
+remains an open performance limit. Both cases settle stably: original/final
+heel 152.52/152.56 degrees, speed 0.039/0.012 m/s, spin 0.0060/0.0014 rad/s.
+The timed near-contact work starts after each terrain-height/reach query;
+whole-process CPU includes those queries and all other engine work. It does
+not isolate native solver CPU or establish budgets for more simultaneous
+contacts, multiple booms, rough terrain, or larger camps. Upright runner support
+does not enter this added chassis path. Further optimization should investigate
+geometry/height-query reuse while preserving impulse order and fresh projected
+velocities; caching the full physics snapshot changes sequential contact response.
