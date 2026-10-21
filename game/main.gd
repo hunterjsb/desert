@@ -277,6 +277,8 @@ func _into(next: Node, resuming: bool) -> void:
 	Dev.show_hint(true)
 	Controls.free_mouse(false)
 	await ui.fade(false)
+	while run == next and world() != null and world().arrival != null and world().arrival.active():
+		await get_tree().physics_frame
 
 
 func _settled() -> void:

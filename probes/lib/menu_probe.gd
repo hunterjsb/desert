@@ -19,6 +19,7 @@ func open_main(on_menu := true) -> Main:
 	world = main.world()
 	if world != null:
 		await settle(true)
+		await started()
 	return main
 
 
@@ -26,7 +27,7 @@ func open_main(on_menu := true) -> Main:
 ## the start of a tick, whenever the ground finished building.
 func started() -> void:
 	await get_tree().physics_frame
-	while not world.has_meta(&"kit"):
+	while not world.has_meta(&"kit") or (world.arrival != null and world.arrival.active()):
 		await get_tree().physics_frame
 
 

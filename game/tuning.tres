@@ -275,8 +275,7 @@ surveyor_arrival = {
 "board_charge": Vector2(0.5, 0.85),
 "supply_fill": Vector2(1, 1),
 "usable_min": 0.25,
-"rope_m": 6.0
-,
+"rope_m": 6.0,
 "orbit_s": 3.0,
 "ejection_s": 2.0,
 "descent_s": 7.0,
