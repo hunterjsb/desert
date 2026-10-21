@@ -22,6 +22,7 @@ var run_seed := 0
 ## where the tuning says with the standard kit.
 var arrival_enabled := false
 var arrival_state: Dictionary = {}
+var arrival_nodes: Dictionary = {}
 var arrival: SurveyorArrival
 var kit: Kit
 var shape: TerrainShape

@@ -276,4 +276,15 @@ surveyor_arrival = {
 "supply_fill": Vector2(1, 1),
 "usable_min": 0.25,
 "rope_m": 6.0
+,
+"orbit_s": 3.0,
+"ejection_s": 2.0,
+"descent_s": 7.0,
+"entry_s": 3.0,
+"landing_s": 1.2,
+"spill_gap_m": 0.18,
+"landing_clearance_m": 0.04,
+"spill_columns": 5,
+"spill_attempts": 80,
+"exit_offset_m": 3.2
 }
