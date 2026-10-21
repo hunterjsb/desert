@@ -129,11 +129,12 @@ landed at `2fe581a7` and passed all 19 platform/build checks. Home retention,
 return navigation and the connected Surveyor opening landed at `49af744f` after
 all nine Linux verification groups passed; its master native/build run is
 [native run](https://github.com/hunterjsb/desert/actions/runs/39597617052)
-found a reproducible macOS tipping kick in Sail 4. Landing further source changes
-waits for that fix and combined platform verification. Small live-powered Home
-expedition checks pass; ordinary three-seed gear recovery/shelter assembly is
-being checked next.
-Controls are moving from the overlay into the pause menu in a separate change.
+found a reproducible macOS tipping kick in Sail 4. The repair passes focused
+Linux/macOS tipping and sustained-sailing checks; combined verification is next.
+Small live-powered and loaded nine-piece Home expeditions pass. Ordinary
+three-seed Surveyor recovery assembles a powered shelter and saves/resumes it.
+The same candidate moves Controls from the overlay into the pause menu; its
+separate nine-group Linux verification passed.
 Human playtest acceptance remains; Spaceport's kite is a separate target.
 
 ## Consolidated feature register

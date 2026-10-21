@@ -2,7 +2,8 @@
 
 Master combines Home, Surveyor arrival, ground rest and rope-coil improvements.
 This release is unpublished. Combined Linux verification passed; native platform
-checks found a macOS tipping kick under investigation; playtest acceptance remains pending.
+checks found a macOS tipping kick. Its contact repair passes focused native
+checks; combined verification and playtest acceptance remain pending.
 
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
   collect seeded surviving physical equipment. Other origins, developer scenarios
@@ -22,6 +23,8 @@ checks found a macOS tipping kick under investigation; playtest acceptance remai
 
 - Continuously unwind and gather the rope coil while preserving its gauge and
   held-end attachment.
+- Resolve capsized mast contacts against the mass response of the hull and hinged
+  boom, avoiding the sudden kick while preserving upright runner clearance.
 - Read current controls directly from the system menu or Options in a bounded,
   scrollable page. Remove the separate keys overlay and its persistent footer.
 
