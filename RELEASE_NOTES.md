@@ -1,9 +1,8 @@
 ## 0.3.0-alpha “Sanddune” — development, unreleased
 
-Master combines Home, Surveyor arrival, ground rest and rope-coil improvements.
-This release is unpublished. Combined Linux verification passed; native platform
-checks found a macOS tipping kick. Its contact repair passes focused native
-checks; combined verification and playtest acceptance remain pending.
+Home, Surveyor arrival, ground rest and rope-coil improvements are integrated.
+This release is unpublished. Controls and capsized-contact fixes are being
+verified; full platform checks and playtest acceptance remain required.
 
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
   collect seeded surviving physical equipment. Other origins, developer scenarios
@@ -24,7 +23,8 @@ checks; combined verification and playtest acceptance remain pending.
 - Continuously unwind and gather the rope coil while preserving its gauge and
   held-end attachment.
 - Resolve capsized mast contacts against the mass response of the hull and hinged
-  boom, avoiding the sudden kick while preserving upright runner clearance.
+  boom, preserve support while applying friction, and support capsized decks on
+  their actual frame edges. Keep the existing upright runner clearance.
 - Read current controls directly from the system menu or Options in a bounded,
   scrollable page. Remove the separate keys overlay and its persistent footer.
 
