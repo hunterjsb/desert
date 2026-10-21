@@ -171,7 +171,7 @@ func _physics_process(delta: float) -> void:
 				state = State.LAID
 		State.LAID:
 			var taken := ends.find(hands.held) if hands.held is Part else -1
-			if taken != -1 and _loose(ends[1 - taken]):
+			if taken != -1 and RopeBundle.members(ends[taken]).size() == 1 and _loose(ends[1 - taken]):
 				# Loose at both ends: it rolls up onto your belt, to lay again.
 				_first = taken
 				_world.player.waist.tie(ends[1 - taken])
@@ -266,7 +266,8 @@ func _coil_up() -> void:
 ## Only an entirely loose line can be gathered from its middle.
 func recoverable() -> bool:
 	return state == State.LAID and rope != null and _world.ropes.ropes.has(rope) \
-		and ends.size() == 2 and ends.all(func(end: Part) -> bool: return is_instance_valid(end) and _loose(end))
+		and ends.size() == 2 and ends.all(func(end: Part) -> bool: return is_instance_valid(end) and RopeBundle.members(end).size() == 1) \
+		and ends.all(func(end: Part) -> bool: return is_instance_valid(end) and _loose(end))
 
 
 func gather(at: Vector3) -> Part:
@@ -363,7 +364,9 @@ func _lost() -> void:
 	for end in ends:
 		if is_instance_valid(end):
 			# A bare end left after a lost line is no longer a waist tether.
-			if _world.player.waist.holds(end):
-				_world.player.waist.untie(end)
+			var tip := _tip(end)
+			var holder := tip.holder if is_instance_valid(tip) else end
+			if _world.player.waist.holds(holder) and not _world.player.waist.carries_line(holder):
+				_world.player.waist.untie(holder)
 			end.remove_meta(&"line")
 	queue_free()

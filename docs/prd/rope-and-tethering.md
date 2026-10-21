@@ -843,3 +843,48 @@ world strand active throughout: the held line reels from 3.463 m to 1.463 m and
 pays back to 3.463 m without losing its end. It captures 150 rendered frames,
 including the gathered coil and live strand together. This complements the
 isolated synthetic fill sweep; neither is a GPU frame-time measurement.
+
+## Gather waist ends in hand (Hunter, selected 2026-10-21)
+
+With empty hands and no more specific Use interaction, begin the existing
+one-second untie for the selected waist line (or the sole live line). A tap
+still returns that end normally. Deliberately keep Use held after it arrives
+to untie further waist ends, one full second each, in their existing tie order.
+Releasing Use, opening a menu or aiming at device/ground work cancels the next
+transfer, leaving ends already gathered in hand. No dedicated action, instant
+waist-wide transfer, line fusion or automatic simultaneous reeling. A fresh
+Use with the held knot retains the ordinary waist/guide/device interaction.
+An already formed knot tied at the waist is one physical tie: returning it
+uses the existing one-second untie, like a stake carrying several lines.
+
+The first actual RopeTip remains the carried body. Each further original end
+is fitted into a real marked child Socket using the existing nested-part
+mechanism, as a loose hook already carries its end. Every Line/Rope, tip,
+length, strength and fairlead route remains distinct. Loose knot mass includes
+all its original ends; fitted ends contribute their own mass through ordinary
+device sockets, exactly once. Dropping gives the whole knot the normal player
+momentum. Fitting it to an existing free anchor is the ordinary take action.
+Taking the primary knot uses the ordinary group-preserving pop path, so the
+whole knot returns to hand; deliberately aiming at a secondary end's own
+geometry can still remove that individual fitting.
+
+The carry-view rope picker and reel retain an individual active member; a held
+group takes priority over waist ropes and its first live member is the fallback.
+Gathering itself never changes a rope's length or applies a body impulse. The
+original timed release-all behavior remains available. A resumed game restores
+physical nested fittings and the active member, but never fabricates a held
+Use gesture or resumes automatic continuation.
+
+Persistence contract: RopeBundle.prepare(primary, count) recreates the primary's
+ordered own sockets before Snapshot restores its existing added fittings.
+Save the count as optional bundle_slots; absent means the ordinary end.
+Reuse the normal precreated Line-end refs and nested socket ownership. After
+ordinary reconstruction, RopeBundle.refresh_mass(primary) restores aggregate
+loose mass or own fitted mass; selection is a separate original-end ref.
+Implemented in the development candidate. Rope 29 passes the actual held-input
+continuation, full per-end delays, cancellation, original identity/lengths, loose
+mass and selected member (11 s). Rope 30 passes ordinary Hands anchoring and
+retrieval, exact fitted/loose masses, Make Fast and drop momentum (7 s). Existing
+selected untie, yank and last-on/first-off checks pass. Save 46 passes real disk
+roundtrips for held, anchored and loose knots (19 s; Survival). Combined CI and
+actual visual inspection remain pending; these timings are focused checks.

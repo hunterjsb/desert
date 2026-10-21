@@ -1110,3 +1110,31 @@ the cell. This is physical line-of-sight behavior, not an inaccessible survivor.
 An initial angled solar-placement attempt overlapped other mounted equipment;
 solar assembly and sustained energy balance are outside this two-part shelter
 check. No generation, lighting, exposure, collision or attachment limit changed.
+
+### Gathered rope ends and saved ownership (2026-10-21; agreed, in progress)
+
+Gathered waist lines remain their original independent Lines and real end Parts.
+One primary end is carried, fitted to an anchor, or left loose; additional ends
+sit in ordered, marked sockets added to that primary. Save the dynamic socket
+count before nested contents so restore can create those sockets before seating
+the existing precreated Line ends. Preserve each end's identity, paid and full
+lengths, fairlead route, and the selected member; do not clone Lines or merge
+their lengths. Restore aggregate loose mass after all members are seated, and
+count only the primary's own mass when fitted to another device.
+
+The continuation timer for gathering is an interrupted action: resuming a save
+does not continue gathering, while taking a save leaves the live action alone.
+Menu entry cancels continuation; completed physical membership survives. The
+selected member is restored only for a group still in hand or at the waist;
+anchored and loose groups do not retain a remote reel target. Saves from before
+gathering retain ordinary single-line behavior with no added sockets or choice.
+Focused save 46 passes (19 s) through real disk saves and fresh-world restores:
+empty hands keep the chosen waist line; a legacy record without a choice remains
+unselected; a two-end knot survives with a third transfer cancelled, while taking
+that save leaves the live timer unchanged. Three independent original Lines then
+retain exact paid/full lengths, endpoint ownership and a real fitted-hook route
+through held, anchored and loose states. The held group works the saved member
+rope; anchored and loose groups clear remote choice. Loose mass sums all three
+ends and the anchor retains its exact pre-save mass with each end counted once.
+This focused fixture uses the normal fitting and save systems; ordinary gesture
+and pickup acceptance is covered by the rope interaction checks.

@@ -3,8 +3,18 @@ extends Part
 ## A line end can pass through a fairlead before it is tied at its destination.
 
 
+func _enter_tree() -> void:
+	RopeBundle.refresh_mass(self)
+
+
+func _exit_tree() -> void:
+	# Off-tree fitted parts are counted individually by their device's sockets.
+	mass = RopeBundle.own_mass(self)
+
+
 func use(by: Player, _at: Vector3) -> bool:
-	return route_at(by)
+	var end := by.hands.reel.held_end()
+	return end.route_at(by) if end is RopeTip else route_at(by)
 
 
 func route_at(by: Player) -> bool:

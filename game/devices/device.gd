@@ -856,6 +856,9 @@ func _rest_seated(h: float) -> void:
 		riding.append_array(each.mounted())
 		# The native carrier stays ahead of terrain speculation; seated frames are frozen.
 		var clearance := world.tuning.runner_clearance if each == self else 0.0
+		if each == self and self is Chassis:
+			(self as Chassis)._rest_frame_contacts(h, clearance)
+			continue
 		for child in each.get_children():
 			var shape := child as CollisionShape3D
 			if shape == null or shape.shape == null or shape.disabled or shape.has_meta(&"socket"):
