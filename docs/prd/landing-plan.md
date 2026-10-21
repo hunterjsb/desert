@@ -42,3 +42,23 @@ For seed 1234 the model resolves four sites with 0.326–0.592 m footprint rise.
 Readings include real pylon stubs, a relay mast and a nomad rig, at coarse bands;
 contents are uninspected. Planning does not join sites, move history anchors,
 change the world or promise that any particular find will be intact on arrival.
+
+## Computer measured 2026-10-21
+
+LaunchComputer exposes `setup(world, plan, changed)`, `closed` and `dispose()`.
+The owner suspends cabin movement and owns launch; the modal commits destination,
+approach and trajectory through independent plain-data copies. Closing consumes
+the cancel action and restores the previous mouse mode. Selection preserves
+control focus; readings scroll with the shared PageBar, and repeated structure
+classes show their nearest coarse band. The regional diagram marks candidate
+coordinates and the selected approach, with no illustrative surface imagery.
+
+Arrival 19 passes actual button/heading/profile callbacks, caller-data isolation,
+initial viewport containment at 1280x720 and closing/restored mouse state. Arrival
+17 also confirms a validated fallback on each of its three seeds. Inspected unseen
+1280x720 captures show fallback and alternate selections using actual seed 1234;
+that GPU run passes without script or resource teardown errors. A first capture
+exposed container overflow on initial layout; fitting after container measurement
+and scrollable readings corrected it. These checks exercise the independent view,
+not terminal reach, modal interaction with pause/save, trajectory severity or the
+complete physical launch/recovery sequence. Those remain integrated acceptance.

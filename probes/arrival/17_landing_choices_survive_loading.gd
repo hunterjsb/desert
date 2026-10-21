@@ -11,6 +11,8 @@ func run() -> void:
 		var plan := LandingPlan.build(shape, anchor)
 		print("LANDING_PLAN ", run_seed, " ", plan.candidates.size(), " candidates")
 		check(plan.candidates.size() >= 3 and plan.candidates.size() <= 5, "the drop corridor has several actual choices")
+		check(plan.candidates.any(func(c: Dictionary) -> bool: return c.id == &"fallback"),
+			"the known start remains an actually validated fallback")
 		if plan.candidates.is_empty():
 			continue
 		for candidate: Dictionary in plan.candidates:
