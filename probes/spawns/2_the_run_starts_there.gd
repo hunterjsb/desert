@@ -45,10 +45,15 @@ func run() -> void:
 		var today := world.weather.day.day(world.time, world.moon.longitude, world.began)
 		check(today == 1, "the %s's run begins on its day 1 (day %d, %.1f days on the clock)"
 			% [kit.label, today, world.time / day])
-		var carried := PackedStringArray(world.player.suit.carried.map(func(b: Node) -> String: return str(b.get_meta(&"catalog"))))
-		check(_made(world.get_meta(&"kit", [])) == _wanted(kit)
-			and carried == PackedStringArray(kit.carried_ids().map(func(id: StringName) -> String: return str(id))),
-			"the %s's kit is beside you (%s) and on you (%s)" % [kit.label, _made(world.get_meta(&"kit", [])), ", ".join(carried)])
+		if world.arrival_enabled:
+			check(world.arrival_state.get("phase") == &"recovery" and world.arrival_state.get("materialized", false)
+				and world.player.suit.carried.is_empty(), "the Surveyor lands before recovery without a duplicate carried kit")
+			_check_survivors()
+		else:
+			var carried := PackedStringArray(world.player.suit.carried.map(func(b: Node) -> String: return str(b.get_meta(&"catalog"))))
+			check(_made(world.get_meta(&"kit", [])) == _wanted(kit)
+				and carried == PackedStringArray(kit.carried_ids().map(func(id: StringName) -> String: return str(id))),
+				"the %s's kit is beside you (%s) and on you (%s)" % [kit.label, _made(world.get_meta(&"kit", [])), ", ".join(carried)])
 		var why := _round_you(kit, spawn, tuning)
 		check(why == "", "the %s's history is laid round you%s" % [kit.label, "" if why == "" else ": " + why])
 		await main._quit_to_menu()
@@ -104,3 +109,18 @@ func _round_you(kit: Kit, spawn: Vector2, tuning: Tuning) -> String:
 					func(piece: Sites.Piece) -> bool: return piece.carries & PathNetwork.ROAD):
 				return "no road underfoot"
 	return ""
+
+
+## A resolved survivor is actual equipment at this start, not a fresh legacy grant.
+func _check_survivors() -> void:
+	var count := 0
+	for entry: Dictionary in world.arrival_state.structure + world.arrival_state.equipment:
+		var body: Variant = world.arrival_nodes.get(entry.uid)
+		if entry.survives:
+			count += 1
+			check(is_instance_valid(body) and body.get_meta(&"arrival_uid", &"") == entry.uid
+				and body.get_meta(&"catalog", &"") == entry.id,
+				"the Surveyor's surviving %s is physical with its saved identity" % entry.uid)
+		else:
+			check(not is_instance_valid(body), "lost cargo does not receive a physical duplicate")
+	check(world.arrival_nodes.size() == count, "the Surveyor receives exactly its resolved survivors")

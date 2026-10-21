@@ -29,6 +29,8 @@ func run() -> void:
 	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "DEEDS", "SAVE & QUIT"]), "and its system menu has no Save")
 	press(&"ui_cancel")
 
+	# The resumed opening holds vitals until the player can leave the pod.
+	await started()
 	var old := world
 	var old_seed := world.run_seed
 	var player := world.player

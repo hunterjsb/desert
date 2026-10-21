@@ -9,7 +9,9 @@ func run() -> void:
 	await open_main(false)
 	var console := main.ui.dev_console
 	press(&"toggle_keys")
-	await get_tree().process_frame
+	# process_frame resumes before the keys overlay has run its process callback.
+	for i in 2:
+		await get_tree().process_frame
 	var keys: String = Dev._keys.text
 	print("take %s, throw %s, keys %s, console %s" % [Controls.key_for(&"hands_grab"), Controls.key_for(&"hands_throw"),
 		Controls.key_for(&"toggle_keys"), Controls.key_for(&"console")])

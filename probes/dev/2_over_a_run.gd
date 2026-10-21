@@ -8,7 +8,7 @@ extends MenuProbe
 func run() -> void:
 	await open_main(false)
 	await started()
-	Scenarios.apply(world, Scenarios.by_key("radio"))
+	main.start_scenario(Scenarios.by_key("radio"))
 	var dropped := await _landed()
 	check(dropped.size() == 3 and dropped[0] is Radio and dropped[1] is Chassis and dropped[2] is ShieldGenerator,
 		"radio: its radio and the shield on its plate land over the run's kit")
@@ -24,14 +24,14 @@ func run() -> void:
 	for i in 30:
 		await get_tree().physics_frame
 	check(world.player.suit.put_in(), "the radio goes in your suit")
-	Scenarios.apply(world, Scenarios.by_key("board"))
+	main.start_scenario(Scenarios.by_key("board"))
 	var board := await _landed()
 	check(not board.is_empty() and board[0] is Hoverboard and (not is_instance_valid(shield) or shield.is_queued_for_deletion()),
 		"board: its own things in place of the radio's")
 	check(is_instance_valid(radio) and not radio.is_queued_for_deletion() and radio in world.player.suit.carried,
 		"the radio you put in your suit stays yours")
 	# A fresh suit's kit takes the place of what you carry.
-	Scenarios.apply(world, Scenarios.by_key("console"))
+	main.start_scenario(Scenarios.by_key("console"))
 	await _landed()
 	check(not is_instance_valid(radio) and not world.player.suit.carried.is_empty(),
 		"console: a fresh suit's kit in place of the radio")
