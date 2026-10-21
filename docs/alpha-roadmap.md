@@ -113,6 +113,7 @@ rigging; preserve the player's control and the working physical constraints.
 | --- | --- |
 | Manual sail hoist | Implemented; all nine Linux groups passed in the isolated playtest candidate, landing and native checks pending: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. Starter/scenario and kept Nomad rigs include usable hardware; old saves retain their controls until converted. Unclaimed Nomad rig lines unload with their find and become ordinary saved lines when claimed. |
 | Sail removal, board-line detachment and ground-rope recovery | Implemented; all nine Linux groups passed in the isolated candidate, landing and native checks pending. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
+| Coil recovery and presentation | Implemented; focused pickup, save, reeling and first-tie handoff checks pass; combined CI pending. Loose coils reopen independently of find ownership. Remaining coils follow the active paying end and use shared layered windings, inspected in actual ground and held captures. |
 | Clear scenarios and craft naming | Landed; native checks pending. One clear-weather/radio/flare/drone setup, old names as aliases. Delivery craft is “the drone”; Surveyor origin and Guide retain their names. |
 | Vault feel | Landed after all nine Linux verification groups passed; native checks and human acceptance pending. Focused checks and the GPU fixture pass. Climb the measured ledge height with continuous travel through rounded corners, retaining obstruction and moving-deck checks. |
 | Radio controls and voices | Landed after all nine Linux groups passed; native acceptance pending. Focused checks and 720p captures pass: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
@@ -124,8 +125,9 @@ source eventually passed all platform checks, publication was withheld after a
 repeated-report interference bug was reproduced. The isolated 0.2.4 playtest
 candidate passed all nine Linux groups; its latest playtest exposed coil pickup
 and held-rope presentation follow-ups. These corrections require a fresh combined
-verification. Distant mountains and post-storm exposure changes are being verified
-separately. None of this marks camp retention, kites or pod starts as built.
+verification. Distant mountains and post-storm exposure changes have landed
+separately; their integration with these corrections is included in that check.
+Camp retention, kites and pod starts remain planned.
 
 ## Consolidated feature register
 
