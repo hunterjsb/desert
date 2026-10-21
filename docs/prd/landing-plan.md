@@ -80,3 +80,12 @@ Direct World/run fixtures, other origins and scenarios remain unchanged. No
 production auto-launch or test-mode bypass is added, and existing flight, recovery
 and input assertions remain intact. Interactive launch/cargo/trajectory and its
 save round trips require the dedicated integrated acceptance, not these helpers.
+
+Combined preflight-controller acceptance (2026-10-21): Arrival 10/11/13/14 pass
+in 6/10/26/10 seconds. Arrival 11 now enables preparation for new games after
+saving an automatic flight and before resuming it: the exact saved phase and
+elapsed time reconnect, survivors remain identical, and no preflight state or
+ship controller appears. Its subsequent partially recovered resume still keeps
+the actual food in hand with no duplicate inventory grant. This establishes
+legacy compatibility under the new default; it does not replace interactive
+ship/cargo/launch or modal pause/save acceptance.
