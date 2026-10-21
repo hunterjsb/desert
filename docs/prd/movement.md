@@ -912,8 +912,36 @@ existing ground-rest/crawl and headroom probes 36/37 (6 s each). Actual unseen
 prone, through the player's eyes and from outside. Looking down shows the boots;
 helmet/collar do not obscure the first-person view. Held-radio hands still stop
 short of the item at the existing hold distance. Combined CI and human acceptance
-remain pending. Open: bring held things nearer, about 0.6 m, so your hands close
-on them?
+remain pending.
+
+**Holding reach audit (2026-10-21; measured limitation, no runtime change).**
+The existing arm and grip measure 0.28 + 0.25 + 0.08 = 0.61 m. With the real
+radio held at its unchanged distance, a level view puts the current grip target
+1.156 m from the shoulder; even the nearest point anywhere on the radio's
+collision bounds is 1.064 m away. Looking down 25 degrees gives 1.053 m and
+0.959 m respectively. The battery's nearest bounds are 1.090 m / 0.986 m away.
+These nearest-bound distances are optimistic lower bounds, not authored grips.
+A local wrist rotation or ordinary shoulder protraction cannot bridge this gap.
+Do not silently stretch the arms, detach the shoulders, or move held physics
+objects to hide it. Preserve gonkhub's suit and its current interaction poses
+until a carrying-pose decision is made.
+
+For a future coordinated interaction pass, near-side radio grips at a level
+view would require an eye-to-item-center distance of roughly 0.44 m with the
+current shoulder, or roughly 0.52 m with an illustrative 0.08 m forward shoulder
+shift. The current side-at-origin targets require roughly 0.34 m. These are
+geometric options, not adopted tuning; 0.6 m alone does not establish a grip.
+The cutter's separate low-right carry already has reachable bounds (0.512 m
+level, 0.383 m looking down 25 degrees), and the chassis's near edge is 0.550 m
+away looking down 25 degrees. Item-local grip anchors could improve these
+cases independently, but cannot solve the radio or battery at their present
+distance. Their actual handle geometry and wrist pose still need inspection.
+
+An isolated real-Hands measurement checked radio, battery, cutter and chassis
+at level, 25-degree and 60-degree downward views; actual unseen 1280×720 held-
+radio captures from the player's eyes and outside confirm the visible gap.
+This audit changes documentation only; no new gameplay or physics acceptance
+is claimed.
 
 ## Rules
 
