@@ -846,3 +846,14 @@ bringing the development roster from 64 to 65 in the same eleven families;
 the real placement check passes (Rope 30, 7 s) and real save/resume passes
 (Save 46, 19 s). Gathering alone does not award it; ordinary anchoring does.
 Combined candidate verification remains pending.
+
+## Surveyor preflight deeds (selected 2026-10-21; candidate)
+
+Plot a Course records an actual valid choice through the ship's launch computer;
+Drop In records successful committed launch from the loaded pod. Both belong to
+Camp, with Drop In following Plot a Course, using existing Console/chassis art.
+Restoring a plan, reconstructing the cabin or resuming flight records neither.
+These two add a candidate roster of 67 deeds in the same eleven families; the
+separate Spaceport kite prototype's deeds are not integrated in this count.
+Preflight saves retain actual object references and the selected plan/cargo,
+not a second kit grant. Integrated evidence remains pending.

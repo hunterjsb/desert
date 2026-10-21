@@ -65,6 +65,8 @@ const TABLE := {
 		"after": [&"anomaly_eye"], "icon": &"compass", "goal": "tells", "parts": true, "unit": "tells", "hidden": true},
 	&"taught": {"name": "Taught", "asks": "Teach the Walker the anomaly", "family": &"weather", "after": [&"tells"],
 		"icon": &"walker", "hidden": true},
+	&"plot_course": {"name": "Plot a Course", "asks": "Choose a landing zone at the ship's launch computer", "family": &"camp", "icon": &"console"},
+	&"pod_launch": {"name": "Drop In", "asks": "Launch a loaded Surveyor pod", "family": &"camp", "after": [&"plot_course"], "icon": &"chassis"},
 	&"first_recovery": {"name": "Making Landfall", "asks": "recover equipment from your Surveyor pod", "family": &"camp", "after": [], "icon": &"chassis"},
 	&"home_again": {"name": "Home Again", "asks": "Return to a marked home after scouting beyond its ordinary surroundings",
 		"family": &"camp", "icon": &"home_beacon"},

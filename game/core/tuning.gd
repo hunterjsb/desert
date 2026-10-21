@@ -1415,6 +1415,8 @@ static func current() -> Tuning:
 @export_group("Surveyor arrival")
 ## Provisional recovery rules for the integrated development opening.
 @export var surveyor_arrival: Dictionary = {}
+## Cabin preparation and bounded approach/impact choices.
+@export var surveyor_preflight: Dictionary = {}
 
 
 @export_group("Ground posture")
