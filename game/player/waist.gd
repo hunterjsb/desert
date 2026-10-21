@@ -24,6 +24,11 @@ var _falling: Array[RigidBody3D] = []
 var _only: Array[RigidBody3D] = []
 ## The sheet's how-to has had its chance this session.
 var _taught := false
+## Only the uninterrupted gesture that began this return can gather more ends.
+var _continue_take := false
+var _bundle_take := false
+var _gather_primary: Part
+
 
 
 func _ready() -> void:
@@ -91,6 +96,9 @@ func give_back() -> bool:
 		return false
 	untying = _tuning.untie_seconds
 	_to_hand = true
+	_continue_take = true
+	_bundle_take = false
+	_gather_primary = null
 	return true
 
 
@@ -135,7 +143,52 @@ func carries_line(body: Node) -> bool:
 	return false
 
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_released("interact"):
+		cancel_gather()
+
+
+## Continuation is a held gesture, never a persistent or resumed command.
+func cancel_gather() -> void:
+	_continue_take = false
+	_gather_primary = null
+	if _bundle_take:
+		untying = -1.0
+		_taking = null
+		_bundle_take = false
+
+
+func gathering() -> bool:
+	return _bundle_take
+
+
+func _continue_gather() -> void:
+	var hands := _player.hands
+	if not _continue_take or untying >= 0.0:
+		return
+	if not is_instance_valid(_gather_primary) or hands.held != _gather_primary:
+		cancel_gather()
+		return
+	if hands.phase != Hands.Phase.HELD:
+		return
+	if not hands.gathering_clear():
+		cancel_gather()
+		return
+	for body in tied:
+		if is_instance_valid(body) and body is RopeTip and not RopeBundle.live_lines(body, _player.world).is_empty():
+			_taking = body
+			untying = _tuning.untie_seconds
+			_bundle_take = true
+			_to_hand = true
+			return
+	cancel_gather()
+
+
 func _physics_process(delta: float) -> void:
+	if not Controls.held(&"interact"):
+		cancel_gather()
+	if _bundle_take and (not _player.hands.gathering_clear() or _player.hands.held != _gather_primary):
+		cancel_gather()
 	for i in range(tied.size() - 1, -1, -1):
 		if not is_instance_valid(tied[i]):
 			_was.erase(tied[i])
@@ -146,6 +199,7 @@ func _physics_process(delta: float) -> void:
 			untying = -1.0
 		elif untying < 0.0:
 			_undone()
+	_continue_gather()
 	_place()
 	_clear_of_you()
 	if not _taught and Controls.ui != null and Controls.playing() and tied.any(Mast.sheet_end):
@@ -162,8 +216,19 @@ func _process(_delta: float) -> void:
 func _undone() -> void:
 	var hands := _player.hands
 	if _to_hand:
-		if hands.held == null and is_instance_valid(_taking) and tied.has(_taking):
+		if _bundle_take:
+			if is_instance_valid(_gather_primary) and hands.held == _gather_primary \
+					and is_instance_valid(_taking) and tied.has(_taking):
+				var end := untie(_taking) as Part
+				if RopeBundle.gather(_gather_primary, end):
+					hands.refresh_held_shape()
+					_player.world.ropes._towing()
+				else:
+					tie(end)
+			_bundle_take = false
+		elif hands.held == null and is_instance_valid(_taking) and tied.has(_taking):
 			hands.hold(untie(_taking))
+			_gather_primary = hands.held as RopeTip
 		_taking = null
 		return
 	var going: Array[RigidBody3D] = tied.duplicate()
