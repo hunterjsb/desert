@@ -1314,3 +1314,7 @@ static func current() -> Tuning:
 @export var home_beacon_w: float = 1.0
 @export var home_depart_m: float = 700.0
 @export var home_return_m: float = 30.0
+
+@export_group("Surveyor arrival")
+## Provisional recovery rules for the isolated pod manifest, not a replacement kit yet.
+@export var surveyor_arrival: Dictionary = {}
