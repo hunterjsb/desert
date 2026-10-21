@@ -235,12 +235,13 @@ func _move_transport(at: Vector2) -> void:
 		if not is_instance_valid(body) or body.get_parent() != world.content:
 			continue
 		if not wanted.has(uid):
+			world.content.remove_child(body)
 			body.queue_free()
 		else:
 			world.teleport(body, body.global_transform.translated(delta))
 	world.teleport(world.player, world.player.global_transform.translated(delta))
 	world.player.velocity = Vector3.ZERO
-	world.arrival_nodes = objects
+	world.arrival_nodes = SurveyorRecovery.named(world)
 
 
 func _seat() -> void:
