@@ -17,13 +17,16 @@ uniform vec3 sky_side = vec3(0.0);
 // The sky's colour behind it, and how much of it the air lays over it.
 uniform vec3 veil_color = vec3(0.0);
 uniform float veil = 0.0;
+uniform float sky_proxy_distance_scale = 1.0;
 
 varying vec3 world_n;
 
 void vertex() {
 	world_n = (MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz;
-	POSITION = PROJECTION_MATRIX * MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
-	POSITION.z = mix(CLIP_SPACE_FAR * POSITION.w, POSITION.z, 0.000001);
+	vec4 proxy_view = MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
+	proxy_view.xyz *= sky_proxy_distance_scale;
+	POSITION = PROJECTION_MATRIX * proxy_view;
+	POSITION.z = max(POSITION.z, (CLIP_SPACE_FAR + 0.0000000001) * POSITION.w);
 }
 
 void fragment() {
