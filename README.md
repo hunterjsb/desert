@@ -27,12 +27,17 @@ Sand Game, the prototype this replaces, lives on the
 Work in a sibling worktree. Copy `scripts/verify.sh` outside the checkout, then run
 that copy from the worktree with `<name>` (or `<name> --land` after merging current
 `origin/master`). It pushes `verify-<name>` and waits only for that branch's exact
-commit in `probes.yml`, accepting push or manual-dispatch runs. If no push run appears
-within about 30 seconds, it dispatches the same branch with `full_platforms=false`:
-the existing nine Linux groups, with all failures still blocking landing. Run polling
-is once a minute. Documentation-only changes skip CI as before.
+commit, accepting push or manual-dispatch runs. Changes confined to `site/`,
+`scripts/ci_dashboard/` and `.github/workflows/performance-pages.yml` (plus docs)
+wait for `performance-pages.yml` checks. Other code and infrastructure changes wait
+for `probes.yml`. If no push run appears within about 30 seconds, it dispatches the
+selected workflow on the same branch; game verification uses `full_platforms=false`
+for the existing nine Linux groups. Failures block landing. Run polling is once a
+minute. Documentation-only changes skip CI.
 
-Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
+Game-affecting master pushes and tags run Linux, native macOS/Windows probes and
+build smoke checks. Dashboard-only master pushes check and deploy Pages without
+running the game suite. Manual Probes dispatches retain their existing coverage.
 Native probes balance survival with arrival/camp/movement, power/farming with
 saves/kits/sailing, and physical gear together to keep each group within budget. New folders still join “the rest”.
 Linux balances radio with foundation/world checks and menus with devices, leaving

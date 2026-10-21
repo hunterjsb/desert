@@ -189,3 +189,23 @@ The plain-table revision passed all nine Linux verification groups in
 Public desktop/mobile checks confirmed the tables, limit/no-limit labels, filtering,
 and actual earlier-run references; a controlled comparison also verified numeric
 and percentage deltas. Missing history remains explicit rather than implying zero.
+
+
+### Dashboard-only verification (agreed 2026-10-21)
+
+Changes confined to `site/`, `scripts/ci_dashboard/`, and the Performance pages
+workflow, optionally alongside documentation, run dashboard checks instead of the
+game suite. Push and pull-request filters exclude these paths from Probes;
+manual Probes dispatch and tag coverage remain available. The copied verifier
+selects Performance pages for this narrow scope, waits for the exact branch and
+commit, and lands only on success. Its fallback dispatches the selected workflow.
+Any game, probe, shared runner, verifier or other infrastructure change retains
+game verification. Documentation alone still skips CI. Master dashboard pushes
+run checks, collect existing evidence and deploy, without starting Godot.
+
+
+Eight local-remote checks prove dashboard routing/landing, mixed and shared-runner
+changes retaining game checks, moving game files into dashboard paths retaining
+game checks, failure blocking, both fallback dispatches, and docs-only skipping.
+Shell syntax, ShellCheck and both affected workflow lints pass. The routing change
+itself changes shared CI infrastructure and therefore takes the game-check path.
