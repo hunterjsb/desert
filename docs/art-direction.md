@@ -1225,6 +1225,26 @@ Movement. Neither the physics object nor the shoulders move to disguise it.
 The cutter's low rear grip can sit partly below the first-person viewport;
 external views show that actual grasp. This does not add finger articulation.
 
+### Cord on the suit (2026-10-21; visual correction)
+
+A waist tie now reads as two plaited turns around gonkhub's existing belt,
+with a small crossing, muted teal whipping and a lead to the real attachment.
+Use the current rope-end fibre gauge and colour. Cached tip render copies share
+the existing mesh while at the waist; the original loose/held tip and current
+continuous item coil return unchanged when untied. No invented belt hardware,
+new force attachment or extra physical rope constraint is introduced. Actual
+unseen belt-close, whole-player, own-waist and held-coil views were inspected.
+
+### A body during the vault (2026-10-21; bounded pose)
+
+The existing rigid suit now gives the swept climb a free-hand reach and a
+leading knee gather, then releases into its ordinary stance. Use the real
+climb's progress and rise. Fixed limb lengths, meshes, colour and camera
+comfort exclusions stay in place; carried-item hand poses take precedence.
+Actual first-person captures show the gloves entering the lower view while
+external captures show the knee gather. These are visual gestures, not
+physical hand anchors or a new locomotion controller.
+
 ## Zan's visible scale (agreed 2026-10-21)
 
 The 150 km travel lap must not make Zan look like a tiny asteroid. Preserve the
@@ -1237,12 +1257,3 @@ orbital globe or inventory previews through the main ground projection. Existing
 Tu angular size, sun direction, worn materials and accepted sand stay the visual
 baseline. This is a presentation correction, not a new gravity or movement scale.
 
-### Cord on the suit (2026-10-21; visual correction)
-
-A waist tie now reads as two plaited turns around gonkhub's existing belt,
-with a small crossing, muted teal whipping and a lead to the real attachment.
-Use the current rope-end fibre gauge and colour. Cached tip render copies share
-the existing mesh while at the waist; the original loose/held tip and current
-continuous item coil return unchanged when untied. No invented belt hardware,
-new force attachment or extra physical rope constraint is introduced. Actual
-unseen belt-close, whole-player, own-waist and held-coil views were inspected.

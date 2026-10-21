@@ -993,6 +993,33 @@ across the view; the corrected frames retain clear board, arms and boots.
 A 24-frame corrected riding clip is retained outside the repository. Existing
 movement physics remain unchanged; combined verification is still required.
 
+### Body follows the swept vault (selected 2026-10-21)
+
+Use the existing LedgeVault active state, normalized progress and measured ledge
+height for a bounded visual gesture. Empty hands reach forward during the climb;
+the leading knee gathers farther than the trailing one, in proportion to the
+actual rise, then boots settle back into the normal pose. Retain fixed limb
+lengths and the existing pose easing. Held-item grips take precedence, so this
+never moves a carried thing or pretends the hands are free. The gesture reaches
+toward the ledge; it does not claim a planted physical glove contact. No camera,
+capsule, climb trajectory, force, stamina or input changes belong to Body.
+
+As built: a free-hand reach holds through the middle of the swept climb, with
+an authored hand target still within the existing 0.61 m arm-and-grip reach.
+Knee gathering follows actual ledge rise; the trailing leg gathers half as far.
+Movement 44 fails the pre-animation Body and passes the correction: across 42
+render frames, the forward grip reaches -0.254 m in body space and a boot rises
+to 0.727 m, with zero measured arm-segment length error. Posing after the real course writes
+no player transform, velocity or collision shape. Both exact before/after
+30/60-FPS powered-deck courses retain identical physical results: 0.87368 m
+rise, 0.10620 m maximum swept tick, 0.04202 rad/s peak craft spin, standing on
+the still-hovering deck at completion. Actual unseen 1280×720 external and
+first-person captures inspect the reach, knee gather and hand release. A first
+render showed the reach below the own-camera frame; the adjusted authored pose
+now visibly enters it without stretching the arm. This is a gesture toward the
+ledge, not a simulated planted handhold. Combined verification and human feel
+acceptance remain required.
+
 ## Rules
 
 1. **The board floats on the ground's one function.** Its hover height follows
@@ -1543,8 +1570,8 @@ only by its actual rise; moving/rotating support does not leave the player behin
 or receive an artificial kick. Large irregular deck support and exposed wreck
 collision are related checks, not a reason to relax vault clearance.
 
-As built in `game/player/ledge_vault.gd`: 0.65 m above current feet, 0.9 m forward,
-0.3 s across three swept phases, 0.02 m clearance and four stamina. The view
+The initial `game/player/ledge_vault.gd` implementation reached 0.65 m above
+current feet, 0.9 m forward, with a 0.42 s nominal climb, 0.02 m clearance and four stamina. The view
 interpolates the real climb between physics ticks; looking remains free. A
 recreated player does not resume a stale climb. Origin shifts preserve the local
 support path. Focused movement 32 passes: ordinary walking refuses, sprint climbs
@@ -1557,6 +1584,61 @@ Movement 10 and 11 pass unchanged (ordinary jump/gravity and on-foot frame-rate
 checks). Real unseen 1280×720 captures of approach, rise, crossing and landing
 were inspected in clear light on a simple collision fixture; this validates the
 visible path/clearance, not final craft art or a human judgment of movement feel.
+
+### Reachable chassis and a smooth climb (selected 2026-10-21)
+
+Player testing finds the vault too low for an ordinarily powered chassis, with
+choppy/jumpy motion and unwanted activation on tiny ground objects. Boarding a
+floating chassis is the primary target: raise measured mantle reach as required
+by that actual craft, while jumping contributes only its real gained height.
+Introduce a minimum ledge rise; small ground clutter remains ordinary collision
+and jumping rather than consuming stamina and entering a mantle. This revises
+the earlier 0.2 m automatic step-over expectation, not the physical boarding
+acceptance tolerance or observation time.
+
+Keep a continuously curved swept path with tangent continuity around the lift
+and crossing, enough top clearance for the whole capsule, and fresh support
+transforms each tick. Do not teleport, hide a force, change the craft's motion,
+extend the arms, or bypass tumble to make a check pass. Expose actual ledge
+`height` and normalized smooth `progress` on LedgeVault for a separate body
+animation; that visual must follow the movement rather than drive it. Retain
+interrupted-path, removed-top, moving-support and origin-shift safety. Measure
+actual powered chassis sprint/jump approaches at 30 and 60 physics ticks with
+unchanged 0.9 s / 0.08 m boarding acceptance, and inspect real unseen captures.
+
+As built: reach is now 1.1 m above current feet, minimum ledge rise 0.3 m,
+forward reach 0.9 m, top clearance margin 0.18 m and nominal full-height duration
+0.55 s. Find the real top first, then validate the capsule's actual required
+lift and path, rather than demanding clearance for the maximum possible lift.
+Quadratic segments join with continuous tangents above the top; sampled lengths
+map eased travel to an evaluated curve, not chord-to-chord corners. Each tick
+still sweeps real movement using the support's fresh global transform. The
+existing bounded floor seating and physical momentum handoff remain unchanged.
+LedgeVault exposes `active`, smooth normalized `progress` and measured `height`;
+this patch does not add the separate body animation.
+
+A freely supported two-chassis craft with two hover trays and a real battery
+(34 kg) demonstrates the old failure: its top is about 1.13 m above sand, beyond
+0.65 m mantle reach plus the measured 0.422 m jump rise. The identical external
+approach fails on verified 565e1855 and passes on the new source without changing
+its 0.9 s observation or 0.08 m deck-top/floor acceptance. Movement 43 guards that
+actual powered craft at 30/60 render caps with fixed 60 Hz native physics;
+a separate focused diagnostic also passes at 30/60 native ticks. Construction
+and authored repositioning stay clear of the active player's capsule.
+
+On the final clear-light unseen run, both render rates finish with floor true,
+feet 0.06263 m above the deck origin, deck height 1.05783 m, peak climb step
+0.10620 m/tick and peak craft spin 0.04202 rad/s. All eight 1280x720 climb/landing
+captures were inspected. Movement 32 retains blocked-path, removed-top, ceiling,
+saving and moving/rotating-origin-shift checks; its standing/jump boundary fixtures
+move to 1.4 m and the unreachable wall to 2.2 m to reflect the agreed new reach.
+Movement 35 confirms 0.2 m clutter never starts a mantle and an ordinary running
+jump still crosses it. Movement 10/11 pass unchanged; the earlier 27-piece
+mast/rope-loaded battery-depletion/reboarding acceptance also passes unchanged.
+The final clear GPU run exits without resource warnings; earlier diagnostic
+runs emitted teardown warnings. This covers a clear approach to a lightly loaded
+powered deck, not climbing through a frame/attached gear, arbitrary arrangements
+or final human judgment of movement feel and the pending body pose.
 
 ### Large mixed-deck baseline (measured 2026-10-20)
 
