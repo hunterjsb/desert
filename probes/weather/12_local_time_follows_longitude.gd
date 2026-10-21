@@ -15,7 +15,7 @@ func run() -> void:
 		"where a run begins it's the hour the run began on")
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	while radio.channel != Radio.MUSIC:
-		radio.interact(world.player)
+		radio.sweep()
 	var at := world.player.global_position
 	# A clear morning where a run begins: noon to the east, past midnight to the west.
 	world.time = find_time(func(t: float) -> bool:

@@ -402,10 +402,6 @@ func interact() -> bool:
 	_look()
 	if _player.world.stoker != null and _player.world.stoker.interact(_player):
 		return true
-	# A radio in your hands with frequencies marked: use goes to the next.
-	if held is Radio and phase == Phase.HELD and (held as Radio).next_mark():
-		_player.close_up.tuned(held)
-		return true
 	if look_bed and held == null and look_device == null and look_part == null:
 		return _player.world.sleep.offer(_player)
 	if look_work != null:

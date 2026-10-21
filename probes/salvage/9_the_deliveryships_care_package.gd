@@ -1,7 +1,7 @@
 extends HandsProbe
-## Salvage probe 9: the Surveyor's care package. A signal flare lights with
+## Salvage probe 9: the deliveryship's care package. A signal flare lights with
 ## use and burns flare_burn_seconds, then it's spent and won't light again.
-## Lit while the Surveyor is low over the horizon, nothing comes. Lit as it
+## Lit while the deliveryship is low over the horizon, nothing comes. Lit as it
 ## passes high over, its cannon fires once: its muzzle flashes in the sky, its
 ## boom comes no sooner than sound takes to come from it, and a cargo
 ## container leaves the muzzle where the craft is and comes down a smooth
@@ -19,7 +19,7 @@ func run() -> void:
 	tuning.flare_burn_seconds = 4.0
 	speed_up(4)
 
-	# A run begins with the Surveyor passing over: away from it first, the craft below the horizon.
+	# A run begins with the deliveryship passing over: away from it first, the craft below the horizon.
 	var start := player.global_position
 	world.time = _first(func(u: float) -> bool: return _away(start, u))
 
@@ -35,24 +35,24 @@ func run() -> void:
 	flare.use(player, Vector3.ZERO)
 	check(not flare.lit, "and won't light again: use refuses")
 
-	# Lit while the Surveyor is low: nothing comes.
+	# Lit while the deliveryship is low: nothing comes.
 	var at := player.global_position
 	var high := deg_to_rad(tuning.airdrop_elevation_degrees)
 	# After a pass, sinking: it won't rise past the cannon's height while we wait.
 	var low_t := _first(func(u: float) -> bool:
-		var e: float = Airdrop.surveyor(world, at, u).up
-		return e > 0.0 and e < high * 0.5 and Airdrop.surveyor(world, at, u + 10.0).up < e)
+		var e: float = Airdrop.deliveryship(world, at, u).up
+		return e > 0.0 and e < high * 0.5 and Airdrop.deliveryship(world, at, u + 10.0).up < e)
 	world.time = low_t
 	var second := _new_flare(player)
 	second.use(player, Vector3.ZERO)
 	await simulate(2.0)
-	check(_drops().is_empty() and not second.called, "lit with the Surveyor low, nothing comes")
+	check(_drops().is_empty() and not second.called, "lit with the deliveryship low, nothing comes")
 	second.burnt = 9999.0
 	await simulate(0.2)
 
 	# Lit as it passes high over.
 	tuning.flare_burn_seconds = 60.0
-	var pass_t := _first(func(u: float) -> bool: return Airdrop.surveyor(world, at, u).up > high)
+	var pass_t := _first(func(u: float) -> bool: return Airdrop.deliveryship(world, at, u).up > high)
 	world.time = pass_t - 1.0
 	var third := _new_flare(player)
 	third.use(player, Vector3.ZERO)
@@ -62,15 +62,15 @@ func run() -> void:
 		drops = _drops()
 		if not drops.is_empty():
 			break
-	check(drops.size() == 1 and third.called, "lit as the Surveyor passes high over, its cannon fires")
+	check(drops.size() == 1 and third.called, "lit as the deliveryship passes high over, its cannon fires")
 	if drops.is_empty():
 		return
 	var drop := drops[0]
 	var fired := drop.fired_at
-	var craft := Airdrop.surveyor(world, third.global_position, fired)
+	var craft := Airdrop.deliveryship(world, third.global_position, fired)
 	var sky := Radio.constellation_of(world)
 	print("fired from %.0f m, %.0f° up; down in %.1f s" % [craft.metres, rad_to_deg(craft.up), drop.lands_at - fired])
-	check(sky.flash(&"thermal", fired + 0.1) > 2.0 and sky.flash(&"thermal", fired + 2.0) == 1.0,
+	check(sky.flash(&"deliveryship", fired + 0.1) > 2.0 and sky.flash(&"deliveryship", fired + 2.0) == 1.0,
 		"its muzzle flashes in the sky, and fades")
 	check(drop.to_global(drop.along(0.0)).distance_to(craft.at) < 1.0, "the container leaves the muzzle, where the craft is")
 
@@ -144,9 +144,9 @@ func run() -> void:
 	speed_up(1)
 
 
-## Whether the Surveyor is well below the horizon from a place at world time t, and stays so a while.
+## Whether the deliveryship is well below the horizon from a place at world time t, and stays so a while.
 func _away(at: Vector3, t: float) -> bool:
-	return Airdrop.surveyor(world, at, t).up < -0.2 and Airdrop.surveyor(world, at, t + 30.0).up < -0.1
+	return Airdrop.deliveryship(world, at, t).up < -0.2 and Airdrop.deliveryship(world, at, t + 30.0).up < -0.1
 
 
 func _new_flare(player: Player) -> Flare:

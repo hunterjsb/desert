@@ -14,10 +14,10 @@ extends RefCounted
 ## bound the wind, m/s; due is when a storm comes, s, in place of ten clear
 ## minutes; moon is [latitude, degrees east of the point under Tu], so
 ## [30, 180] is the far side, 30° north. lays names what's laid.
-const SURVEYOR_LEAD := 30.0
+const DELIVERYSHIP_LEAD := 60.0
 const LIST: Array[Dictionary] = [
 	{"key": "spawn", "label": "where and when the run began", "kind": "spawn"},
-	{"key": "clear", "label": "clear skies, weather radio, a flare and the drone passing overhead in 30 s",
+	{"key": "clear", "label": "clear skies, weather radio, a flare and the deliveryship passing overhead in a minute",
 		"kind": "clear", "day": [0.35, 0.55], "due": [540.0, 840.0], "lays": &"clear"},
 	{"key": "wall", "label": "a storm's wall on the horizon, 3 km off", "kind": "front", "distance": 3000.0,
 		"day": [0.35, 0.5]},
@@ -72,6 +72,10 @@ const LIST: Array[Dictionary] = [
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail_tow"},
 	{"key": "yacht", "label": "a floating 3x2 deck with a keel, a mast and a helm seat, a breeze", "kind": "sail",
 		"day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"yacht"},
+	# A shortwave set, its reel clipped and set out, an earth stake by it and the
+	# antenna kite in your hands: use it on the reel to fly it.
+	{"key": "kite", "label": "a shortwave radio, its reel set out, an earth stake, a kite in hand, a breeze",
+		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"kite"},
 	{"key": "wreck", "label": "every wreck in a fan ahead, dug out, and what strips them at your feet",
 		"kind": "clear", "day": [0.36, 0.5], "calm": 6.0, "lays": &"wrecks"},
 	# Far enough off that the radar sees the front coming before the smart
@@ -402,8 +406,8 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 	match lays:
 		&"clear":
 			dropped = weather_station(world)
-			dropped.append_array(surveyor_pass(world))
-		&"surveyor": dropped = surveyor_pass(world)
+			dropped.append_array(deliveryship_pass(world))
+		&"deliveryship": dropped = deliveryship_pass(world)
 		&"yours": dropped = yours(world)
 		&"survive": dropped = survive(world)
 		&"farm": dropped = farm(world)
@@ -418,6 +422,7 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"sail": dropped = sail(world)
 		&"sail_tow": dropped = sail_tow(world)
 		&"yacht": dropped = yacht(world)
+		&"kite": dropped = kite(world)
 		&"wrecks": dropped = await wrecks(world)
 		&"console": dropped = console(world)
 		&"anomaly_camp": dropped = anomaly_camp(world)
@@ -546,7 +551,7 @@ static func moon_at(world: World, scenario: Dictionary) -> Vector2:
 
 static func by_key(key: String) -> Dictionary:
 	# Existing console histories and capture scripts still reach the one setup.
-	if key in ["clear_skies", "surveyor", "drone"]:
+	if key in ["clear_skies", "deliveryship"]:
 		key = "clear"
 	for scenario in LIST:
 		if scenario.key == key:
@@ -1052,6 +1057,23 @@ static func radio(world: World) -> Array[Node3D]:
 	return dropped
 
 
+## A radio with a shortwave converter, switched on to shortwave; an antenna
+## reel clipped to it and set out to its side, an earth stake beside that, and
+## the antenna kite in your hands.
+static func kite(world: World) -> Array[Node3D]:
+	var shortwave := standing(world, &"radio", [&"battery", &"sw_converter"], RADIO_AT) as Radio
+	shortwave.on = true
+	shortwave.switch_band()
+	var reel := standing(world, &"antenna_reel", [], [RADIO_AT[0] + 3.0, RADIO_AT[1]]) as AntennaReel
+	reel.clip(shortwave)
+	var stake := standing(world, &"earth_stake", [], [RADIO_AT[0] + 3.5, RADIO_AT[1] + 0.8])
+	var flier := Catalog.device(&"antenna_kite")
+	world.content.add_child(flier)
+	flier.global_position = world.player.global_position + Vector3.UP
+	world.player.hands.hold(flier)
+	return [shortwave, reel, stake, flier]
+
+
 ## The radio of "radio" on the weather station, beside its charged shield,
 ## switched off.
 static func weather_station(world: World) -> Array[Node3D]:
@@ -1127,23 +1149,23 @@ static func walker_camp(world: World) -> Array[Node3D]:
 
 ## The radio of "radio" switched on and tuned to the music, the relay's
 ## carrier, beside its charged shield, switched off.
-## A flare in your hands, and the drone forced over you in SURVEYOR_LEAD
+## A flare in your hands, and the deliveryship forced over you in DELIVERYSHIP_LEAD
 ## s: light it as it comes over and its cannon fires. Returns the flare.
-static func surveyor_pass(world: World) -> Array[Node3D]:
+static func deliveryship_pass(world: World) -> Array[Node3D]:
 	var player := world.player
 	var flare := Catalog.part(&"flare")
 	world.content.add_child(flare)
 	flare.global_position = player.global_position + Vector3.UP
 	player.hands.hold(flare)
-	surveyor_over(world, SURVEYOR_LEAD)
+	deliveryship_over(world, DELIVERYSHIP_LEAD)
 	return [flare]
 
 
-## The drone's low pass forced: its orbit turned to bring it straight over
+## The deliveryship's low pass forced: its orbit turned to bring it straight over
 ## you `lead` s from now (Satellite.pass_over).
-static func surveyor_over(world: World, lead: float) -> void:
+static func deliveryship_over(world: World, lead: float) -> void:
 	var moon := world.moon
-	var orbit: Satellite = Radio.constellation_of(world).orbits[Airdrop.SURVEYOR]
+	var orbit: Satellite = Radio.constellation_of(world).orbits[Airdrop.DELIVERYSHIP]
 	orbit.pass_over(Sphere.point(moon.latitude, moon.longitude), world.time + lead)
 
 

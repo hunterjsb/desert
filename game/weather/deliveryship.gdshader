@@ -5,7 +5,7 @@
 //     bright sky at its sides, from its own paint (the kit's vertex colour);
 //   - the air between it and you, as a veil in the sky's own colour behind
 //     it. The scene's fog is for looking across the ground; looking up you
-//     cross far less dust, so crop_survey.gd draws the craft inside the
+//     cross far less dust, so deliveryship.gd draws the craft inside the
 //     fog's start and works its veil out along the real line of sight.
 // Premultiplied: what's under it keeps (1 - veil), plus this.
 shader_type spatial;

@@ -15,7 +15,7 @@ func run() -> void:
 	await physics_frames(30)
 	radio.freeze = true
 	while radio.channel != Radio.MUSIC:
-		radio.interact(world.player)
+		radio.sweep()
 	await physics_frames(5)
 	look(eye(), radio.global_position)
 	await physics_frames(2)

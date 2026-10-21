@@ -70,7 +70,7 @@ func run() -> void:
 		radio.tune(1)
 		went.append(radio.frequency - from)
 	print("spun fast, notch by notch: %s kHz" % [went])
-	check(went[0] == notch and went[1] == notch * 2.0 and went[6] == notch * tuning.dial_spin_most,
+	check(went[0] == notch and went[1] == notch * (1.0 + tuning.dial_spin_grow) and went[6] == notch * minf(1.0 + 6.0 * tuning.dial_spin_grow, tuning.dial_spin_most),
 		"spun fast, each notch goes farther, up to dial_spin_most")
 	await get_tree().create_timer(tuning.dial_spin_seconds * 2.0).timeout
 	var rest := radio.frequency

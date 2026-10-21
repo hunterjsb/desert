@@ -6,7 +6,8 @@ extends RefCounted
 ## Metres; a set's face is +Z, up +Y. Each builder returns one merged mesh,
 ## its moving parts (needle, knobs) cast in where they'd stand, for looking.
 ## Moved into the game from look/radio_kit (2026-10-21): the crystal set,
-## the field radio's makers' looks and the survey set are catalog devices.
+## the field radio's makers' looks, its bay cartridges, the antenna kite and the
+## earth stake are catalog devices and parts.
 ##
 ## The tiers:
 ##   - crystal_set: no power, no slots, weak AM only; scrap and spare parts,
@@ -14,7 +15,6 @@ extends RefCounted
 ##   - field_radio: the set the game has, with its sockets made real: a
 ##     converter bay on its right cheek (FM or shortwave), a battery at its
 ##     back, a hook boss on top, a miscellaneous bay on its left cheek.
-##   - survey_set: a colonial three-band receiver, FM built in, two bays.
 ## Its band window glows the band it's scrubbing (bands.gd).
 
 const BANDS := preload("res://game/look/radio_band_looks.gd")
@@ -464,6 +464,23 @@ static func module(b: Paint.Pieces, id: StringName, at: Transform3D, burnt := fa
 			pass
 
 
+## The catalog's bay cartridges, by the module each is (MODULES).
+const BAY_MODULES := {&"headset": &"headset", &"valve_preamp": &"preamp", &"static_choke": &"choke",
+	&"direction_loop": &"loop", &"wire_logger": &"logger", &"frequency_counter": &"counter",
+	&"solar_lid": &"solar", &"bleed_resistor": &"bleed"}
+## A cartridge as it stands off a set's bay, this share of the lab's size.
+const CART_SCALE := 0.55
+
+
+## A module cartridge as a part, its face out along +Z from the bay it's in
+## (Catalog.MODULE), smaller than the lab drew it so it clears the set's port.
+static func cartridge(id: StringName) -> ArrayMesh:
+	var b := Paint.Pieces.new()
+	var out := Basis(Vector3.UP, -PI / 2.0).scaled(Vector3.ONE * CART_SCALE)
+	module(b, id, Transform3D(out, Vector3(0.0, 0.0, CART.x * 0.5 * CART_SCALE)))
+	return b.commit()
+
+
 ## The kite's hook, on its insulator: a stack of ceramic discs (so the
 ## aerial's charge can't jump to the case) and a steel eye with a snap gate.
 static func hook(b: Paint.Pieces, at: Transform3D) -> void:
@@ -555,76 +572,6 @@ static func crystal_set(style := &"scrap") -> ArrayMesh:
 	return b.commit()
 
 
-# --- The survey set --------------------------------------------------------
-
-## The colonial three-band receiver: FM built in, a wide slide-rule dial
-## with a scale for each band, the one it's on lit; a band selector, a
-## signal meter, a bay each side.
-static func survey_set(band := &"sw", fit := {}) -> ArrayMesh:
-	var b := Paint.Pieces.new()
-	var size := Vector3(0.42, 0.25, 0.2)
-	var h := size * 0.5
-	var body := coat(OFF_WHITE, 0.5)
-	var grey := coat(GREY, 0.45, 0.3)
-	var orange := coat(ORANGE, 0.5)
-	var dark := coat(Paint.BLACK, 0.7)
-	b.box(size - Vector3(0.02, 0.0, 0.0), Vector3.ZERO, body, 0.03)
-	for x in [-1, 1]:
-		b.box(Vector3(0.024, size.y + 0.012, size.z + 0.012), Vector3(x * (h.x - 0.012), 0.0, 0.0), grey, 0.012)
-		# Bumper corners, impact black.
-		for y in [-1, 1]:
-			for z in [-1, 1]:
-				b.box(Vector3(0.034, 0.034, 0.034), Vector3(x * (h.x - 0.012), y * (h.y - 0.006), z * (h.z - 0.006)), dark, 0.008)
-	b.box(Vector3(size.x - 0.06, 0.014, 0.004), Vector3(0.0, -h.y + 0.02, h.z + 0.001), orange, 0.001)
-	# Its dial: three scales stacked in one window, the one it's on lit.
-	var face_at := Vector3(-0.03, 0.045, h.z)
-	b.box(Vector3(0.3, 0.12, 0.012), face_at + Vector3(0.0, 0.0, -0.004), coat(Color(0.1, 0.1, 0.1), 0.4), 0.004)
-	for i in 3:
-		var band_d: Dictionary = BANDS.ALL[i]
-		var lit: bool = band_d.id == band
-		band_face(b, face_at + Vector3(0.0, 0.038 - i * 0.036, 0.004), 0.27, 0.03, band_d, lit, grey,
-			0.37 if lit else 0.37)
-	# The band selector: a pointer knob with a detent in each band's colour.
-	var sel := Vector3(0.155, 0.065, h.z)
-	b.drum(0.032, 0.012, sel + Vector3(0.0, 0.0, 0.002), grey, Basis(Vector3.RIGHT, PI / 2.0), 16)
-	for i in 3:
-		var a := -0.8 + i * 0.8
-		var tell: Color = BANDS.ALL[i].tell
-		b.box(Vector3(0.008, 0.008, 0.003), sel + Vector3(sin(a), cos(a), 0.0) * 0.04 + Vector3(0.0, 0.0, 0.002),
-			glow(BANDS.ALL[i].glow, 1.4) if BANDS.ALL[i].id == band else coat(tell, 0.4), 0.0)
-	var turn := -0.8 + [&"am", &"fm", &"sw"].find(band) * 0.8
-	_knob(b, sel + Vector3(0.0, 0.0, 0.008), 0.9, -turn, &"colonial")
-	# Its meter: cream, a red needle.
-	var meter := Vector3(0.155, -0.035, h.z)
-	b.box(Vector3(0.07, 0.05, 0.01), meter + Vector3(0.0, 0.0, -0.002), grey, 0.004)
-	b.box(Vector3(0.058, 0.038, 0.004), meter + Vector3(0.0, 0.0, 0.003), glow(Color(0.95, 0.9, 0.75), 0.6), 0.001)
-	b.box(Vector3(0.0018, 0.032, 0.002), meter + Vector3(0.006, -0.002, 0.006), coat(RED_NEEDLE, 0.4), 0.0, Basis(Vector3.BACK, -0.45))
-	# Tuning and volume, a grille.
-	_knob(b, Vector3(-0.1, -0.07, h.z + 0.008), 1.2, 0.4, &"colonial")
-	_knob(b, Vector3(0.02, -0.075, h.z + 0.008), 0.7, -0.9, &"colonial")
-	for i in 5:
-		b.box(Vector3(0.06, 0.006, 0.006), Vector3(0.09 - 0.07, -0.05 - i * 0.012, h.z), dark, 0.001)
-	# The top: a carry handle, the hook boss, a stub whip.
-	for x in [-1, 1]:
-		b.box(Vector3(0.024, 0.05, 0.03), Vector3(x * 0.15, h.y + 0.025, 0.0), grey, 0.006)
-	b.box(Vector3(0.33, 0.024, 0.034), Vector3(0.0, h.y + 0.052, 0.0), dark, 0.008)
-	if fit.get("hook", false):
-		hook(b, Transform3D(Basis.IDENTITY, Vector3(0.08, h.y, -0.06)))
-	b.drum(0.007, 0.22, Vector3(-h.x + 0.05, h.y + 0.11, -h.z + 0.035), coat(Paint.STEEL, 0.3, 0.6), Basis.IDENTITY, 8)
-	var right := Transform3D(Basis.IDENTITY, Vector3(h.x + CART.x * 0.5, 0.0, 0.0))
-	var left := Transform3D(Basis(Vector3.UP, PI), Vector3(-h.x - CART.x * 0.5, 0.0, 0.0))
-	var s: Dictionary = STYLES[&"colonial"]
-	if fit.has("bay"):
-		module(b, fit.bay, right)
-	else:
-		_bay_plate(b, right, s)
-	if fit.has("misc"):
-		module(b, fit.misc, left)
-	else:
-		_bay_plate(b, left, s)
-	return b.commit()
-
-
 # --- The shortwave aerial's gear ------------------------------------------
 
 ## The antenna kite: a delta, its sail shortwave violet with survey-orange
@@ -632,7 +579,7 @@ static func survey_set(band := &"sw", fit := {}) -> ArrayMesh:
 ## carbon spine, leading edges and spreader; a keel to tow it by, a ring at
 ## the keel's tip for the line; two tails. 1.4 m across. Its sail takes
 ## `torn`, `age` and `charge` on its instance (kite.gdshader).
-const KITE_SHADER := preload("res://look/radio_kit/kite.gdshader")
+const KITE_SHADER := preload("res://game/look/kite.gdshader")
 const KITE_SPAN := 1.4
 const KITE_TALL := 0.95
 ## Where the field radio's hook eye and shortwave port stand, for leads.
@@ -706,6 +653,18 @@ static func kite(tails := 1.0) -> ArrayMesh:
 	cloth.shader = KITE_SHADER
 	mesh.surface_set_material(mesh.get_surface_count() - 1, cloth)
 	return mesh
+
+
+## The antenna kite folded for carrying: its sail rolled round its spine, a
+## band of orange at each end and its line's ring at the keel.
+static func kite_folded() -> ArrayMesh:
+	var b := Paint.Pieces.new()
+	b.drum(0.035, KITE_TALL - 0.06, Vector3.ZERO, coat(BANDS.SW.tell, 0.8), Basis(Vector3.RIGHT, PI / 2.0), 10)
+	b.drum(0.007, KITE_TALL, Vector3.ZERO, coat(Color(0.1, 0.1, 0.1), 0.3, 0.3), Basis(Vector3.RIGHT, PI / 2.0), 6)
+	for z in [-0.3, 0.0, 0.3]:
+		b.drum(0.038, 0.03, Vector3(0.0, 0.0, z), coat(ORANGE, 0.8), Basis(Vector3.RIGHT, PI / 2.0), 10)
+	b.ring(0.012, 0.017, Vector3(0.0, 0.045, 0.1), coat(Paint.STEEL, 0.3, 0.7), Basis(Vector3.BACK, PI / 2.0), 8)
+	return b.commit()
 
 
 static func _rod(b: Paint.Pieces, a: Vector3, c: Vector3, r: float, look: Paint.Coat) -> void:

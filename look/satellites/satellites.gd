@@ -82,29 +82,29 @@ func _capture(out_dir: String) -> void:
 		_look(_dir(sky, id).rotated(Vector3.UP, deg_to_rad(OFF)))
 		await _ticks(3)
 		await _shoot(out_dir, String(id), String(id), _dir(sky, id))
-	# The crop survey skimming low, its shadow: high overhead, then low down.
+	# The deliveryship skimming low, its shadow: high overhead, then low down.
 	for each: Array in [["survey_overhead", 40.0, 90.0], ["survey_low", 8.0, 16.0]]:
 		var from := world.time
-		while day.is_day(world.time, world.moon.longitude) or not _between(sky, &"thermal", each[1], each[2]):
+		while day.is_day(world.time, world.moon.longitude) or not _between(sky, &"deliveryship", each[1], each[2]):
 			world.time += 2.0
 			if world.time > from + 60.0 * Tuning.current().day_minutes * 60.0:
 				print("satellites: no %s within sixty days" % each[0])
 				break
 		await _ticks(3)
-		_look(_dir(sky, &"thermal").rotated(Vector3.UP, deg_to_rad(OFF)))
+		_look(_dir(sky, &"deliveryship").rotated(Vector3.UP, deg_to_rad(OFF)))
 		await _ticks(3)
-		await _shoot(out_dir, each[0], "thermal", _dir(sky, &"thermal"), 200)
+		await _shoot(out_dir, each[0], "deliveryship", _dir(sky, &"deliveryship"), 200)
 	# By day: the hull, a dark shape against the bright sky.
 	var from := world.time
-	while not day.is_day(world.time, world.moon.longitude) or not _between(sky, &"thermal", 30.0, 90.0):
+	while not day.is_day(world.time, world.moon.longitude) or not _between(sky, &"deliveryship", 30.0, 90.0):
 		world.time += 2.0
 		if world.time > from + 60.0 * Tuning.current().day_minutes * 60.0:
 			print("satellites: no survey_day within sixty days")
 			break
 	await _ticks(3)
-	_look(_dir(sky, &"thermal").rotated(Vector3.UP, deg_to_rad(OFF)))
+	_look(_dir(sky, &"deliveryship").rotated(Vector3.UP, deg_to_rad(OFF)))
 	await _ticks(3)
-	await _shoot(out_dir, "survey_day", "thermal", _dir(sky, &"thermal"), 200)
+	await _shoot(out_dir, "survey_day", "deliveryship", _dir(sky, &"deliveryship"), 200)
 	get_tree().quit()
 
 

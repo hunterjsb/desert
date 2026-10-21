@@ -1,8 +1,8 @@
 extends WeatherProbe
-## Radio probe 47: the Surveyor's schedule. Frontier Ag's crop survey
+## Radio probe 47: the deliveryship's schedule. Frontier Ag's deliveryship
 ## passes over Port Morgan every lap, its route swinging round the port lap
 ## by lap. Port Morgan Control Tower, on FM beside the port, reads the
-## Surveyor's speed, altitude and how long until it's over Port Morgan, and
+## deliveryship's speed, altitude and how long until it's over Port Morgan, and
 ## that's when it is; it reads again only once survey_report_every has gone
 ## by. Hearing it is Flight Plan.
 
@@ -15,7 +15,7 @@ func run() -> void:
 	world.counts_deeds = true
 	world.player.set_physics_process(false)
 	var sky := Radio.constellation_of(world)
-	var orbit: Satellite = sky.orbits[Airdrop.SURVEYOR]
+	var orbit: Satellite = sky.orbits[Airdrop.DELIVERYSHIP]
 	var history := world.shape.history
 	var port: Vector3 = history.landmark(&"port_morgan").p
 

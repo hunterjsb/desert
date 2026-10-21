@@ -1,24 +1,24 @@
-class_name CropSurvey
+class_name Deliveryship
 extends Node3D
-## Frontier Ag's crop survey (Constellation &"thermal") in the sky, modelled
-## (CropSurveyLooks) and lit by the scene's own sun, where the sky shader
+## Frontier Ag's deliveryship (Constellation &"deliveryship") in the sky, modelled
+## (DeliveryshipLooks) and lit by the scene's own sun, where the sky shader
 ## drew a flat H (gonkhub, 2026-10-20: "ship appearance still too flat.
 ## Needs to be modeled out fully this low to the ground"). SkyView places it
 ## each frame from its orbit. It's drawn inside the camera's reach at the
 ## same angular size, belly to the moon's centre, nose along its track; its
-## overlay (crop_survey.gdshader) adds the sand's light thrown up at its
+## overlay (deliveryship.gdshader) adds the sand's light thrown up at its
 ## belly and the air between it and you along the real line of sight, since
 ## the scene's fog is for looking across the ground. Its cannon's muzzle
 ## flashes as the constellation fires it.
 
-const BOUNCE := preload("res://game/weather/crop_survey.gdshader")
+const BOUNCE := preload("res://game/weather/deliveryship.gdshader")
 ## The sand's albedo, linear, for the light it throws back up at the belly.
 const SAND := Color(0.46, 0.31, 0.16)
 ## It's drawn this near at most, at the same angular size: inside the
 ## scene's fog, so the overlay can veil it as the air really would.
 const PROXY := 380.0
 ## Below this many pixels across it draws its far mesh; above this, its near
-## one (CropSurveyLooks). Apart, so it doesn't flicker between them.
+## one (DeliveryshipLooks). Apart, so it doesn't flicker between them.
 const FAR_BELOW := 260.0
 const NEAR_ABOVE := 320.0
 ## How worn its paint is: kept up, it's still flying.
@@ -38,13 +38,13 @@ func _init(tuning: Tuning) -> void:
 
 
 func _ready() -> void:
-	_view.mesh = CropSurveyLooks.craft(_far)
+	_view.mesh = DeliveryshipLooks.craft(_far)
 	_view.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_view)
 	_view.set_instance_shader_parameter(&"age", AGE)
 	_overlay.shader = BOUNCE
 	_view.material_overlay = _overlay
-	_muzzle.mesh = CropSurveyLooks.flash()
+	_muzzle.mesh = DeliveryshipLooks.flash()
 	_muzzle.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_muzzle.visible = false
 	add_child(_muzzle)
@@ -65,7 +65,7 @@ func place(eye: Vector3, toward: Vector3, slant: float, along: Vector3, up: Vect
 	var y := up.normalized()
 	var z := -(along - y * along.dot(y)).normalized()
 	var x := y.cross(z)
-	var size := near / slant * _tuning.crop_survey_scale
+	var size := near / slant * _tuning.deliveryship_scale
 	global_transform = Transform3D(Basis(x, y, z).scaled_local(Vector3.ONE * size), eye + toward * near)
 	_pick_detail(slant)
 	_veil(env, toward, slant)
@@ -95,20 +95,20 @@ func _pick_detail(slant: float) -> void:
 	var camera := get_viewport().get_camera_3d()
 	if camera == null:
 		return
-	var across := CropSurveyLooks.SPAN * _tuning.crop_survey_scale / slant
+	var across := DeliveryshipLooks.SPAN * _tuning.deliveryship_scale / slant
 	var pixels := across * get_viewport().get_visible_rect().size.y * 0.5 / tan(deg_to_rad(camera.fov) * 0.5)
 	var far := pixels < (NEAR_ABOVE if _far else FAR_BELOW)
 	if hold != "":
 		far = hold == "far"
 	if far != _far:
 		_far = far
-		_view.mesh = CropSurveyLooks.craft(_far)
+		_view.mesh = DeliveryshipLooks.craft(_far)
 
 
 ## The air between: the dust thins with height, so the veil comes from the
 ## dust along the line of sight, matched at the ground to the scene's own
-## haze (its fog reaching its density by its end). Overhead at 6 km that's
-## about a fifth; low over the horizon, about half. In a storm, all of it.
+## haze (its fog reaching its density by its end). Overhead that's
+## a little; low over the horizon, about half. In a storm, all of it.
 func _veil(env: Environment, toward: Vector3, slant: float) -> void:
 	if env == null or not env.fog_enabled:
 		_overlay.set_shader_parameter(&"veil", 0.0)

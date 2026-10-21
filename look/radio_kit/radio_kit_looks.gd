@@ -607,7 +607,7 @@ static func survey_set(band := &"sw", fit := {}) -> ArrayMesh:
 ## carbon spine, leading edges and spreader; a keel to tow it by, a ring at
 ## the keel's tip for the line; two tails. 1.4 m across. Its sail takes
 ## `torn`, `age` and `charge` on its instance (kite.gdshader).
-const KITE_SHADER := preload("res://look/radio_kit/kite.gdshader")
+const KITE_SHADER := preload("res://game/look/kite.gdshader")
 const KITE_SPAN := 1.4
 const KITE_TALL := 0.95
 ## Where the field radio's hook eye and shortwave port stand, for leads.

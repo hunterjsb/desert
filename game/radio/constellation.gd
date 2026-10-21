@@ -19,7 +19,7 @@ extends RefCounted
 ## Tracks are placeholders, sounds the game already has, until gonkhub's own:
 ## the cinder's and the metronome's are in.
 
-## How each shows, as the sky draws it (HULK, the crop survey, is modelled: CropSurvey).
+## How each shows, as the sky draws it (HULK, the deliveryship, is modelled: Deliveryship).
 enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 
 ## Each satellite: id; era; band kHz (its carrier a fresh place inside it each
@@ -59,21 +59,21 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 const ROSTER := [
 	# Hung at L1, beside Tu in the near side's sky, looping slowly round it: it sends the
 	# port's music down on the FM band, not this dial (Fm), and glints as it turns.
-	# (Eleven in all: this, the Pendulum at L2, the five at 29 MHz, the crop survey flying
+	# (Eleven in all: this, the Pendulum at L2, the five at 29 MHz, the deliveryship flying
 	# low, the ghost, the cinder and the lantern round Tu. The sounder, the lullaby and the
 	# tollgate were scrapped, gonkhub 2026-10-21.)
 	{"id": &"relay", "era": "colonial", "band": Vector2(1020.0, 1020.0),
 		"orbit": {"lagrange": 1},
 		"look": {"color": Color(1.0, 0.97, 0.9), "size": 1.0, "shape": Shape.POINT, "light": 0.35},
 		"sound": {}, "lfo": [], "duty": [], "behave": {"tumble": [0.05, 0.3]}},
-	# Frontier Ag's crop survey, flying low to read the ground's heat: 6 km up, a great
-	# hull modelled and lit (CropSurvey), crawling up from the horizon and sweeping
-	# overhead (gonkhub, 2026-10-19; "6km is better", 2026-10-20). A run begins with it
-	# passing over.
-	{"id": &"thermal", "era": "Frontier Ag", "band": Vector2(14200.0, 14300.0),
+	# Frontier Ag's deliveryship, reading the ground's heat: 30 km up, a great hull
+	# modelled and lit (Deliveryship), crawling up from the horizon and sweeping overhead
+	# (gonkhub, 2026-10-19; 6 km, 2026-10-20; "much much higher", 2026-10-21). A run
+	# begins with it passing over.
+	{"id": &"deliveryship", "era": "Frontier Ag", "band": Vector2(14200.0, 14300.0),
 		# Over Port Morgan every lap (gonkhub, 2026-10-21), its route swinging 37° a lap
 		# round the port, so the rest of its track sweeps over every place in time.
-		"orbit": {"altitude": 0.2513, "minutes": 7.95, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
+		"orbit": {"altitude": 1.2566, "minutes": 7.95, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
 			"precess": 37.0, "through_port": true},
 		"look": {"color": Color(1.0, 0.55, 0.15), "size": 16.0, "shape": Shape.HULK, "light": 0.6, "low": true},
 		"sound": {"track": Sounds.RADIO_EYE_TUNNEL, "db": -2.0, "pulse": 0.0},
@@ -182,7 +182,7 @@ var _drift: float
 var _fired := {}
 
 
-## `port`: Port Morgan's place on the sphere, which the crop survey's route
+## `port`: Port Morgan's place on the sphere, which the deliveryship's route
 ## holds to; zero, its route is an orbit among the stars like the rest.
 func _init(seed_value: int, tuning: Tuning, start: Vector3, port := Vector3.ZERO) -> void:
 	run_seed = seed_value

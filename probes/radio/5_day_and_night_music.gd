@@ -20,7 +20,7 @@ func run() -> void:
 	await load_storm(1.0)
 	_radio = Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	while _radio.channel != Radio.MUSIC:
-		_radio.interact(world.player)
+		_radio.sweep()
 	shield_at(_radio.global_position + Vector3(1.0, 0.0, 0.0))
 	await physics_frames(2)
 	var start := world.time

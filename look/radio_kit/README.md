@@ -187,7 +187,7 @@ minutes, plus a little from winds past 14 m/s).
 ## The Surveyor's schedule on shortwave
 
 (gonkhub, 2026-10-21: "the surveyor flyer's shortwave broadcast needs to
-inform the player of when its flyover will occur.") Frontier Ag's crop survey
+inform the player of when its flyover will occur.") Frontier Ag's deliveryship
 announces its next pass over where you are, in the bundled voice
 (`RadioSpeech`, whose word bank already has *surveyor, due, in, minutes,
 bearing, elevation, degrees, signal flare*). For example: "Surveyor. Due in

@@ -20,7 +20,7 @@ func run() -> void:
 	hands.hold(radio)
 	await simulate(0.5)
 	while radio.channel != Radio.WEATHER:
-		radio.interact(world.player)
+		radio.sweep()
 	check(suit.put_in(), "a radio on the weather goes in")
 	for id: StringName in [&"compass", &"canister", &"canister"]:
 		var thing := Catalog.part(id)

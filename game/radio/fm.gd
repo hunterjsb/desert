@@ -11,7 +11,7 @@ extends RefCounted
 ## Two on one frequency don't mix: the stronger takes it (the capture effect).
 ## Pure in the world's shape and the seed.
 
-## Port Morgan Control Tower's station: the Surveyor's schedule (Radio), and
+## Port Morgan Control Tower's station: the deliveryship's schedule (Radio), and
 ## later the port's other worldbuilding broadcasts.
 const TOWER := &"tower"
 const LOWEST := 87.5

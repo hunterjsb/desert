@@ -527,8 +527,10 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			return RadioKitLooks.field_radio(Catalog.DEVICES[id].style, {}, &"am", false, true)
 		&"crystal_set":
 			return RadioKitLooks.crystal_set()
-		&"survey_set":
-			return RadioKitLooks.survey_set(&"am")
+		&"antenna_kite":
+			return RadioKitLooks.kite_folded()
+		&"earth_stake":
+			return RadioKitLooks.earth_stake()
 		&"chassis":
 			# A flatbed's section: rails round a ribbed plate, sticky top and
 			# bottom, caps at the corners where it meets the next, and hazard
@@ -856,6 +858,8 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			for i in 3:
 				b.drum(0.008, 0.006, Vector3(-0.04 + i * 0.04, -0.02, size.z + 0.002),
 					Paint.coat(Paint.TEAL, 0.0, 0.0, 0.4, 0.3, 1.5), along, 8)
+		&"headset", &"valve_preamp", &"static_choke", &"direction_loop", &"wire_logger", &"frequency_counter", &"solar_lid", &"bleed_resistor":
+			return RadioKitLooks.cartridge(RadioKitLooks.BAY_MODULES[id])
 		&"fm_converter":
 			# Its whip up from the top's outer back corner on a chromed swivel,
 			# leaning out from the set, drawn out in three lengths to a ball tip.

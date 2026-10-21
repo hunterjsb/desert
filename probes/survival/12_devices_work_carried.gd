@@ -1,8 +1,8 @@
 extends HandsProbe
 ## Survival probe 12: a device works carried. A radio playing in your hands
 ## goes in with what you carry, whole, and plays on from you on its own
-## battery. With the inventory open, use on it sweeps its dial on to the
-## next carrier, and its line of words shows, by frequency alone; use on your canister drinks from it
+## battery. With the inventory open, use on it switches it off, and again on,
+## its dial where it stood and its line of words showing, by frequency alone; use on your canister drinks from it
 ## where it is, and switches nothing you look at in the world, while use off
 ## the things you carry switches the shield you look at as ever. Clicked, the
 ## radio comes back to your hands, still on.
@@ -27,7 +27,7 @@ func run() -> void:
 	hands.hold(radio)
 	await physics_frames(30)
 	while radio.channel != Radio.MUSIC:
-		radio.interact(player)
+		radio.sweep()
 	await physics_frames(10)
 	check(radio.playing() and radio.music.playing, "tuned to music in your hands, it plays")
 
@@ -43,14 +43,19 @@ func run() -> void:
 		and radio.global_position.distance_to(player.global_position) < 1.5,
 		"and plays on from you, on its own battery")
 
+	var khz := radio.frequency
 	point_at(suit.tile_rect(stack_of(radio)).get_center())
 	press(&"interact")
 	await simulate(1.0)
+	check(not radio.on, "use on it switches it off")
+	press(&"interact")
+	await simulate(1.0)
 	var swept := radio.channel
-	print("used where it is: %s at %d kHz; it would say \"%s\"" % [Radio.CHANNELS[swept], roundi(radio.frequency),
+	print("used where it is again: %s at %d kHz; it would say \"%s\"" % [Radio.CHANNELS[swept], roundi(radio.frequency),
 		broadcast.said])
-	check(radio.frequency > Dial.MUSIC_KHZ and swept != Radio.OFF and broadcast.said.begins_with("%d kHz · " % roundi(radio.frequency)),
-		"use on it turns its dial, and its words show")
+	check(radio.on and radio.frequency == khz and swept != Radio.OFF
+		and broadcast.said.begins_with("%d kHz · " % roundi(radio.frequency)),
+		"and on again, its dial where it stood, and its words show")
 	var canister := suit.supply(&"water")
 	var water := canister.amount
 	player.vitals.thirst = 50.0

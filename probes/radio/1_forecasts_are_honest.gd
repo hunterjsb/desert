@@ -32,7 +32,7 @@ func run() -> void:
 	radio.freeze = true
 	radio.global_position = Vector3(world.engine_x(x), world.height_at(x, z) + 0.2, world.engine_z(z))
 	while radio.channel != Radio.WEATHER:
-		radio.interact(world.player)
+		radio.sweep()
 	await physics_frames(2)
 	var said := radio.reading.duplicate()
 	check(not said.is_empty() and not said.stormy and said.change < INF and said.back < INF,

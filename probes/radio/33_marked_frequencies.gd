@@ -1,11 +1,9 @@
 extends HandsProbe
-## Radio probe 33: marked frequencies. With no marks, use on a radio in your
-## hands sweeps to the next carrier as ever. With a radio in your hands,
+## Radio probe 33: marked frequencies. Use on a radio in your hands switches
+## it off and on, marks or none, its dial where it stood. With a radio in your hands,
 ## mark_frequency marks where its dial stands, in a bright colour picked at
 ## random, kept in the profile and shown as a tick on the band in that colour;
-## pressed again there, it takes the mark off. No menu, nothing to type. With
-## marks, use on a radio in your hands goes to the next mark above, and round
-## to the lowest past the highest.
+## pressed again there, it takes the mark off. No menu, nothing to type.
 
 
 func run() -> void:
@@ -22,8 +20,10 @@ func run() -> void:
 	radio.on = true
 	radio.frequency = 300.0
 	hands.interact()
-	print("no marks, use: %d kHz" % roundi(radio.frequency))
-	check(radio.frequency > 300.0, "with none, use sweeps to the next carrier")
+	print("no marks, use: %s at %d kHz" % ["on" if radio.on else "off", roundi(radio.frequency)])
+	check(not radio.on and radio.frequency == 300.0, "use switches it off, its dial where it stood")
+	hands.interact()
+	check(radio.on and radio.frequency == 300.0, "and on again")
 
 	radio.frequency = 650.0
 	press(&"mark_frequency")
@@ -48,13 +48,11 @@ func run() -> void:
 	check(colours.size() == 4, "each its own colour, picked at random")
 
 	radio.frequency = 700.0
-	var went: Array[float] = []
-	for k in 5:
+	var states: Array[bool] = []
+	for k in 2:
 		hands.interact()
-		went.append(radio.frequency)
-	print("use with marks, from 700 kHz: %s" % [went])
-	var expected: Array[float] = [1200.0, 1500.0, 1800.0, 650.0, 1200.0]
-	check(went == expected, "use goes to the next mark, round to the lowest")
+		states.append(radio.on)
+	check(states == [false, true] and radio.frequency == 700.0, "with marks too, use only switches it off and on")
 
 	radio.frequency = 1502.0
 	press(&"mark_frequency")

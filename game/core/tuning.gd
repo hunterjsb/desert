@@ -1073,10 +1073,10 @@ static var _current: Tuning
 @export var relay_fm_db: float = 55.0
 @export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
-## Frontier Ag's crop survey (CropSurvey) is drawn this many times the size
-## CropSurveyLooks builds it: 2.3 makes it about 940 m tip to tip, about 9
+## Frontier Ag's deliveryship (Deliveryship) is drawn this many times the size
+## DeliveryshipLooks builds it: 2.3 makes it about 940 m tip to tip, about 9
 ## degrees across straight overhead.
-@export var crop_survey_scale: float = 2.3
+@export var deliveryship_scale: float = 2.3
 ## The Eye's drone comes now and then out of silences of between these many
 ## minutes, its first one included.
 @export var eye_quiet_minutes: Vector2 = Vector2(2.0, 8.0)
@@ -1089,7 +1089,7 @@ static var _current: Tuning
 ## real life min)"; world time runs at real time); heard this far, m.
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
-## Frontier Ag's crop survey reads its flight plan this often, s of world
+## Frontier Ag's deliveryship reads its flight plan this often, s of world
 ## time, and at once as you tune in (gonkhub, 2026-10-21: "announce its
 ## update every 5 min").
 @export var survey_report_every: float = 300.0
@@ -1117,11 +1117,13 @@ static var _current: Tuning
 @export var dial_notch_khz: float = 10.0
 @export var dial_fine_khz: float = 1.0
 ## Spun fast, the wheel goes farther a notch (gonkhub, 2026-10-19: "speed up
-## frequency scrubbing with scrollwheel"): a notch within this long of the
-## last, s, the same way, goes a notch farther than that one did, up to this
-## many notches at once. Fine steps never speed up.
-@export var dial_spin_seconds: float = 0.15
-@export var dial_spin_most: float = 5.0
+## frequency scrubbing with scrollwheel"; faster again, 2026-10-21): a notch
+## within this long of the last, s, the same way, goes this many notches
+## farther than that one did, up to this many notches at once. Fine steps
+## never speed up.
+@export var dial_spin_seconds: float = 0.2
+@export var dial_spin_grow: float = 2.0
+@export var dial_spin_most: float = 16.0
 ## Every broadcast is picked up near its home frequency too, at a share of its
 ## strength: a skirt this wide either side, kHz (its fall to a sixtieth of that
 ## share), so broadcasts near each other overlap and you tune in on the one
@@ -1154,9 +1156,58 @@ static var _current: Tuning
 ## tuning moves it this far, kHz; a fine step is the AM dial's.
 @export var sw_notch_khz: float = 25.0
 ## A crystal set hears at this share of a field radio's strength, with no
-## power to lift it, and plays this many dB quieter, into its earpiece.
+## power to lift it, and plays this many dB quieter, into its earpiece, its
+## knob gone; what it hears comes through no cleaner than this, of full dirt
+## (Garble). A headset jacked into it, carried or in your hands, brings it
+## nearer: quieter only this much, this clean (gonkhub, 2026-10-21: "much
+## quieter ... hardly audible and highly distorted" without one).
 @export var crystal_gain: float = 0.35
-@export var crystal_quiet_db: float = 12.0
+@export var crystal_quiet_db: float = 30.0
+@export var crystal_dirt: float = 0.85
+@export var crystal_headset_quiet_db: float = 12.0
+@export var crystal_headset_dirt: float = 0.45
+## A radio's misc-bay modules (Catalog: radio_bay). A valve preamp lifts what
+## it hears this many times; a static choke cuts a storm's static to this
+## share and the signal to this; a direction loop deepens and narrows the
+## rod's null to these shares of rod_null and rod_width; a headset on a set
+## you carry or hold plays it this much louder, into your ears alone.
+@export var preamp_gain: float = 2.0
+@export var choke_static: float = 0.5
+@export var choke_gain: float = 0.8
+@export var loop_null: float = 0.2
+@export var loop_width: float = 0.5
+@export var headset_db: float = 4.0
+## The antenna kite (AntennaKite; numbers from the lab's charge_model.gd): its
+## line, m; the least wind it flies in and the winds it flies best in, m/s;
+## what it adds to a shortwave wire at most, dB; how long it lasts flown, s,
+## and, past kite_harm_wind m/s, how many s per m/s past, and in a full
+## sandstorm, s.
+@export var kite_line_m: float = 120.0
+@export var kite_lift: float = 3.0
+@export var kite_best_wind: Vector2 = Vector2(6.0, 12.0)
+@export var kite_most_db: float = 16.0
+@export var kite_life_s: float = 21600.0
+@export var kite_harm_wind: float = 14.0
+@export var kite_wind_s: float = 900.0
+@export var kite_storm_s: float = 75.0
+## Its charge, 0 to 1 of what arcs for certain: gathered a second at 100 m up
+## in clear air and in full outflow; leaking to the air over this long, s,
+## and through a bleed resistor over this long, s. Past kite_arc_from an arc
+## comes, a second at full charge this likely, the chance rising as the
+## square of how far past; it spends this share of the charge and burns a
+## piece out this often. An earth stake within kite_earth_m, m, of the reel
+## or the set dumps what's past kite_gap_at this fast, /s.
+@export var kite_fair_rate: float = 0.002
+@export var kite_dust_rate: float = 0.06
+@export var kite_air_s: float = 240.0
+@export var kite_bleed_s: float = 20.0
+@export var kite_arc_from: float = 0.25
+@export var kite_arc_most: float = 0.5
+@export var kite_arc_spends: float = 0.7
+@export var kite_burns: float = 0.6
+@export var kite_earth_m: float = 4.0
+@export var kite_gap_at: float = 0.2
+@export var kite_gap_rate: float = 0.5
 ## An antenna reel holds this much wire, m: walked farther from its radio, its
 ## clip pops off the set.
 @export var antenna_reel_m: float = 30.0
@@ -1191,14 +1242,14 @@ static var _current: Tuning
 ## The AM dial plays sound up to this, Hz: AM's narrow audio, and the FM
 ## converter's too, since it plays through the AM set.
 @export var am_audio_hz: float = 5000.0
-## A signal flare burns this long, s (Flare). The Surveyor fires its
+## A signal flare burns this long, s (Flare). The deliveryship fires its
 ## care-package cannon at a lit one it passes this high over, degrees, and the
 ## container takes this long to come down, s, landing this near the flare, m,
-## the least and most (Airdrop). From 6 km up, 50 degrees is under 8 km off,
-## and its boom (about 22 s coming) is heard before the container lands.
+## the least and most (Airdrop). From 30 km up, 50 degrees is under 40 km off,
+## so its boom (about two minutes coming) follows the container down.
 @export var flare_burn_seconds: float = 60.0
 @export var airdrop_elevation_degrees: float = 50.0
-@export var airdrop_fall_seconds: float = 30.0
+@export var airdrop_fall_seconds: float = 75.0
 @export var airdrop_land_m: Vector2 = Vector2(12.0, 35.0)
 ## A home frequency wanders inside its band, no farther than this, kHz, from
 ## one moon day (or one hop) to the next (gonkhub, 2026-10-20).

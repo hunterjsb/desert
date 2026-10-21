@@ -18,7 +18,7 @@ func run() -> void:
 	hands.hold(radio)
 	await physics_frames(30)
 	while radio.channel != Radio.MUSIC:
-		radio.interact(player)
+		radio.sweep()
 	hands.scroll(100)
 	await physics_frames(60)
 	var nearest := hands.nearest_hold_of(radio)

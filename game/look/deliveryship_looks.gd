@@ -1,7 +1,7 @@
-class_name CropSurveyLooks
+class_name DeliveryshipLooks
 extends RefCounted
-## Frontier Ag's crop survey (Constellation &"thermal"), the drone that fires
-## the care packages, modelled: drawn in the sky by CropSurvey. The colonial
+## Frontier Ag's deliveryship (Constellation &"deliveryship"), the deliveryship that fires
+## the care packages, modelled: drawn in the sky by Deliveryship. The colonial
 ## survey style (art direction, shape by era: rounded, chamfered, modular;
 ## off-white, grey and safety orange) in the game's own kit, so it wears the
 ## worn shader like every device. Seen from the ground it's an H: two long

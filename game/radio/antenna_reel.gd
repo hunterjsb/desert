@@ -73,10 +73,22 @@ func clip(to: Radio) -> void:
 	Sounds.play_at(self, Sounds.TIE)
 
 
-## Its wire wound back in, off the set.
+## Its wire wound back in, off the set, and any kite flying from it down.
 func reel_in() -> void:
 	radio = null
+	var flying := kite()
+	if flying != null:
+		flying.land()
 	Sounds.play_at(self, Sounds.REEL)
+
+
+## The antenna kite flying from its wire, or null.
+func kite() -> AntennaKite:
+	for node in get_tree().get_nodes_in_group(AntennaKite.GROUP):
+		var each := node as AntennaKite
+		if each != null and each.reel == self:
+			return each
+	return null
 
 
 ## Where its wire ends: at the reel, or on you while it's carried.
@@ -107,7 +119,7 @@ func _physics_process(delta: float) -> void:
 	super(delta)
 	if radio == null:
 		return
-	if not is_instance_valid(radio) or not radio.is_inside_tree() or radio.wrecked():
+	if not is_instance_valid(radio) or not radio.is_inside_tree() or radio.wrecked() or wrecked():
 		radio = null
 	elif strung() > Tuning.current().antenna_reel_m:
 		# Past the end of its wire: the clip pops off the set.

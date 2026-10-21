@@ -53,10 +53,10 @@ func run() -> void:
 
 	radio.on = false
 	var swept: Array[float] = []
-	radio.interact(world.player)
+	radio.sweep()
 	while radio.on and swept.size() <= carriers.size() + Constellation.ROSTER.size():
 		swept.append(radio.frequency)
-		radio.interact(world.player)
+		radio.sweep()
 	var all: Array[float] = []
 	for each in carriers:
 		all.append(each[0])

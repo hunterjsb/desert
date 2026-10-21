@@ -17,7 +17,7 @@ func run() -> void:
 		world.time += 30.0
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	while radio.channel != Radio.MUSIC:
-		radio.interact(world.player)
+		radio.sweep()
 	var hiss := PackedFloat32Array()
 	var dirt := PackedFloat32Array()
 	var playing := []
