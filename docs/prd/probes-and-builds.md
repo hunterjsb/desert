@@ -33,8 +33,9 @@ on the world walk, 601 + 339 s on warnings, and 301 + 243 s on salvage retention
   for 1370 s of its summed probe time. Its fallback must still include new folders.
 - Balance the existing four native groups after measuring the landed pass. In
   run 39640555594, saves/kits/sail/power/farming/survival took 2101 s while the
-  other Windows groups took 972–1022 s. Move power/farming beside physical gear
-  checks, and survival beside arrival/camp/movement; keep saves/kits/sail together.
+  other Windows groups took 972–1022 s. Move survival beside arrival/camp/movement. Retain power/farming beside
+  saves/kits/sail: moving both beside physical gear made the slowest Windows
+  step worse (2271 s versus 2149 s on the same runtime baseline).
   Kits 3 hit its 400 s limit in the pool then passed alone in 196 s, so mark it
   exclusive on noisy runners. No additional jobs or timeout increases.
 - Measure packaging compression before changing it; preserve archive contents,
@@ -49,7 +50,7 @@ No timeout increases, shorter walks or removed assertions are part of this pass.
 The ruin-opening traversal uses `set_rate(60, 6)`: all tours and per-tick
 assertions remain, while the focused local run fell from 345 s to 88 s (74% less).
 World 3 and salvage 7 run exclusively everywhere; movement 5 does so on native
-runners. Radio 39 retains the shared integration's five-FPS reproduction and observes
+runners, as does kits 3. Radio 39 retains the shared integration's five-FPS reproduction and observes
 two process-frame signals so the speech diagnostic consumer has completed its
 callback. Both god words and the actual beacon bearing remain checked. The runner
 still retries failures and records the retry duration. Scheduling checks exercise
@@ -60,4 +61,18 @@ level 1 instead of the default level 6. Archive contents, CRCs, file sizes and
 Unix attributes (including executable bits and macOS symlinks) match exactly;
 archive integrity checks pass. Downloads grow 4.6% on Linux, 5.9% on Windows and
 6.3% on macOS. The real-engine runner selftest, scheduling checks, shell syntax,
-ShellCheck warnings and actionlint pass. Full combined CI verification pending.
+ShellCheck warnings and actionlint pass. The first landed pass passed all 21 Linux, Windows, macOS and exported-build
+checks in [run 39640555594](https://github.com/hunterjsb/desert/actions/runs/39640555594).
+Its final Linux verification's slowest job fell from 1046 s to 736 s (30% less)
+against the pre-pass baseline; hosted timing varies. CI export/ZIP time fell
+from 52 s to 41 s (21% less).
+
+The native regrouping also passed all 21 checks in
+[run 39648194997](https://github.com/hunterjsb/desert/actions/runs/39648194997),
+but moved the bottleneck rather than improving the critical path. Its Windows
+saves/kits/sail step fell to 1435 s while the enlarged equipment group took
+2271 s. Power/farming are therefore restored to the saves group; survival stays
+with movement. Kits 3 passed first attempt in 199 s with exclusive scheduling,
+avoiding its previous 400 s timeout plus 196 s retry. Final distribution checks
+are pending. These scheduling changes retain nine Linux and four groups per
+native OS, every probe, and existing timeout limits.
