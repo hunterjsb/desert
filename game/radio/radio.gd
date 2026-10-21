@@ -136,6 +136,11 @@ const LAMP_GAP := 0.0115
 const LAMP_LOW := Color(0.35, 1.0, 0.45)
 const LAMP_HIGH := Color(1.0, 0.75, 0.2)
 const LAMP_FOLLOW := 10.0
+## Its band lamp, in the same strip right of them: a seat by each band's
+## name (BANDS), from this point across, this far apart, m; the lamp stands
+## in the seat of the band it's on.
+const BAND_LAMP_FROM := Vector3(0.03, LAMP_FROM.y, 0.0)
+const BAND_LAMP_GAP := 0.034
 ## Close up, the view looks at this point on its face.
 const FACE := Vector3(0.0, 0.01, 0.08)
 
@@ -205,6 +210,7 @@ var hiss: AudioStreamPlayer3D
 var needle: MeshInstance3D
 var knob: MeshInstance3D
 var volume_knob: MeshInstance3D
+var band_lamp: MeshInstance3D
 var shown_khz := 0.0
 var shown_volume := 1.0
 var crackle: AudioStreamPlayer3D
@@ -273,6 +279,8 @@ func _init() -> void:
 	needle = _on_face(Dress.dial_needle())
 	knob = _on_face(Dress.knob())
 	volume_knob = _on_face(Dress.knob())
+	band_lamp = _on_face(null)
+	_show_band()
 	_show_dial()
 
 
@@ -476,6 +484,7 @@ func _set_band(to: StringName) -> void:
 		am_khz = frequency
 		frequency = sw_khz
 	band = to
+	_show_band()
 	_show_marks()
 
 
@@ -679,7 +688,7 @@ func _recompute() -> void:
 ## Its needle and knobs wear its paint too.
 func painted() -> Array[MeshInstance3D]:
 	var out := super()
-	out.append_array([needle, knob, volume_knob])
+	out.append_array([needle, knob, volume_knob, band_lamp])
 	return out
 
 
@@ -716,6 +725,12 @@ func _show_dial() -> void:
 	knob.transform = Transform3D(Basis(Vector3.BACK, -knob_turn(shown_khz)), KNOB_AT)
 	volume_knob.transform = Transform3D(Basis(Vector3.BACK, VOLUME_SWEEP * (0.5 - shown_volume))
 		.scaled(Vector3.ONE * VOLUME_KNOB), VOLUME_AT)
+
+
+## Its band lamp in the seat by the name of the band it's on, in its colour.
+func _show_band() -> void:
+	band_lamp.mesh = Dress.band_lamp(band)
+	band_lamp.position = BAND_LAMP_FROM + Vector3(BANDS.find(band) * BAND_LAMP_GAP, 0.0, FACE.z)
 
 
 ## Your marks on its band: a short tick in each one's colour along the top of

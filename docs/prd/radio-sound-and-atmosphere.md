@@ -630,8 +630,24 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
   own sound, and the gap a real FM set will open.
 - **The deed** Line of Sight: hear an FM station come through quiet.
 - **Probes:** radio 42 (the converter reaches FM and its loss takes it away) and 43 (height is range).
-- **Not yet:** a second FM station for the capture effect to be heard; an FM set that plays it wide;
-  FM's own scale painted on the face.
+- **Not yet:** a second FM station for the capture effect to be heard; an FM set that plays it wide.
+- **The look (2026-10-21):** the converters are a different maker's add-ons, after 1960s car-radio FM
+  converters (`Dress._converter`): a black enamel box on a flange bolted to the set's side at four chrome
+  bolts, a chrome-rimmed bone face (outward) with its own small dial and red needle, a black tuning knob
+  with a chrome cap toward the set's front, a chrome AM/band throw, and the band's colour and name along
+  the face's foot and on the box's front end: teal "FM", amber "SW". Each box is 1 cm shorter than its
+  socket, so the two stacked leave a 19 mm gap. The FM converter's whip rises 23 cm from its top's outer
+  back corner on a chrome swivel, in three drawn-out lengths to a ball tip, leaning out from the set; the
+  shortwave converter has two brass binding posts on its top, aerial on red and ground on black, 9 mm
+  tall, clearing the box above by 1 cm. The radio's band window is ruled in three rows, each spread the way
+  the needle spreads its band: FM 88–108 MHz (numbered every 4) at the top, shortwave 2–30 MHz (every 4)
+  in the middle, the AM dial 0–20 (every 5) at the foot. Its signal lamps now sit in a black strip, which
+  continues with AM, FM and SW in bone letters lit faintly with the set, each beside a dark glass seat.
+  The band lamp (`Dress.band_lamp`, placed by `Radio._show_band`) stands in the seat of the band the dial
+  is on, lit with the set in that band's colour: warm for AM, teal for FM, amber for SW. Seen in captures
+  at the close-up's distance and lens in a storm's dusk light: all three rows' numbers, the band names and
+  the lamp read, and both converters' faces, throws and band names read from the side. Radio probes 21,
+  36, 42 and 44 pass.
 
 **The relay at L1 and the Pendulum at L2, as built (2026-10-20, slice C):**
 - **The Lagrange points** (`Satellite._at_lagrange`): 8 moon radii from Zan's middle toward Tu (L1) and

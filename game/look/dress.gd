@@ -461,6 +461,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for i in 4:
 				b.box(Vector3(0.14, 0.01, 0.01), Vector3(-0.055, -0.075 + i * 0.02, h.z - 0.004), black, 0.002)
 			_band(b, Vector3(0.0, Radio.BAND_Y, h.z))
+			_lamp_strip(b, h.z)
 			for knob: Vector3 in [Radio.KNOB_AT, Radio.VOLUME_AT]:
 				var r := 0.034 if knob == Radio.KNOB_AT else 0.019
 				b.drum(r, 0.016, knob + Vector3(0.0, 0.0, -0.008), gun, Basis(Vector3.RIGHT, PI / 2.0), 16)
@@ -762,30 +763,28 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				b.drum(0.008, 0.006, Vector3(-0.04 + i * 0.04, -0.02, size.z + 0.002),
 					Paint.coat(Paint.TEAL, 0.0, 0.0, 0.4, 0.3, 1.5), along, 8)
 		&"fm_converter":
-			# A gunmetal box off the set's side: a bone face with its own small
-			# dial and an AM/FM throw, and a short whip for the band it hears.
-			b.box(Vector3(size.x, size.y, size.z - 0.01), Vector3(0.0, 0.0, (size.z - 0.01) * 0.5), gun, 0.008)
-			b.box(Vector3(size.x - 0.016, size.y - 0.03, 0.006), Vector3(0.0, -0.006, size.z - 0.006),
-				Paint.coat(Paint.BONE, 0.5, 0.1, 0.6), 0.002)
-			b.drum(0.014, 0.012, Vector3(0.026, -0.008, size.z + 0.004), black, along, 12)
-			b.box(Vector3(0.012, 0.022, 0.008), Vector3(-0.03, -0.008, size.z + 0.002), steel, 0.002)
-			b.box(Vector3(size.x - 0.03, 0.008, 0.004), Vector3(0.0, h.y - 0.01, size.z - 0.004),
-				Paint.coat(Paint.TEAL, 0.6), 0.001)
-			b.drum(0.006, 0.02, Vector3(-h.x + 0.016, h.y + 0.01, size.z * 0.5), steel, Basis.IDENTITY, 8)
-			b.drum(0.0025, 0.22, Vector3(-h.x + 0.016, h.y + 0.13, size.z * 0.5), steel, Basis.IDENTITY, 6)
+			# Its whip up from the top's outer back corner on a chromed swivel,
+			# leaning out from the set, drawn out in three lengths to a ball tip.
+			var chrome := _converter(b, size, FM_TEAL, "FM")
+			var lean := Basis(Vector3.RIGHT, 0.14)
+			var foot := Vector3(-h.x + 0.024, h.y - 0.005, size.z - 0.018)
+			b.drum(0.0065, 0.005, foot + Vector3(0.0, 0.0025, 0.0), chrome, Basis.IDENTITY, 10)
+			b.ball(0.0045, foot + Vector3(0.0, 0.007, 0.0), chrome)
+			var up := 0.009
+			for each: Vector2 in [Vector2(0.0028, 0.08), Vector2(0.0021, 0.075), Vector2(0.0015, 0.07)]:
+				b.drum(each.x, each.y, foot + lean * Vector3(0.0, up + each.y * 0.5, 0.0), chrome, lean, 6)
+				up += each.y - 0.004
+			b.ball(0.003, foot + lean * Vector3(0.0, up + 0.002, 0.0), chrome)
 		&"sw_converter":
-			# The FM converter's sibling: the same box with an amber band, its
-			# own small dial, and two brass terminals on its top for a wire.
-			b.box(Vector3(size.x, size.y, size.z - 0.01), Vector3(0.0, 0.0, (size.z - 0.01) * 0.5), gun, 0.008)
-			b.box(Vector3(size.x - 0.016, size.y - 0.03, 0.006), Vector3(0.0, -0.006, size.z - 0.006),
-				Paint.coat(Paint.BONE, 0.5, 0.1, 0.6), 0.002)
-			b.drum(0.014, 0.012, Vector3(0.026, -0.008, size.z + 0.004), black, along, 12)
-			b.box(Vector3(0.012, 0.022, 0.008), Vector3(-0.03, -0.008, size.z + 0.002), steel, 0.002)
-			b.box(Vector3(size.x - 0.03, 0.008, 0.004), Vector3(0.0, h.y - 0.01, size.z - 0.004),
-				Paint.coat(Paint.YELLOW, 0.6), 0.001)
-			for x in [-0.025, 0.025]:
-				b.drum(0.006, 0.014, Vector3(x, h.y + 0.007, size.z * 0.5), Paint.coat(Paint.BRASS, 0.8, 0.7, 0.4),
-					Basis.IDENTITY, 8)
+			# Two binding posts on its top for a long wire, short enough to clear
+			# the converter over it: the aerial's on red, the ground's on black.
+			_converter(b, size, SW_AMBER, "SW")
+			var brass := Paint.coat(Paint.BRASS, 0.6, 0.8, 0.35)
+			for post: Array in [[-0.014, Color(0.55, 0.1, 0.07)], [0.014, Paint.BLACK]]:
+				var at := Vector3(post[0], h.y - 0.005, size.z * 0.55)
+				b.drum(0.0055, 0.003, at + Vector3(0.0, 0.0015, 0.0), Paint.coat(post[1], 0.3, 0.0, 0.35), Basis.IDENTITY, 10)
+				b.drum(0.0022, 0.006, at + Vector3(0.0, 0.005, 0.0), brass, Basis.IDENTITY, 8)
+				b.drum(0.0042, 0.0028, at + Vector3(0.0, 0.0068, 0.0), brass, Basis.IDENTITY, 8)
 		&"radar":
 			# A dish on a post, up from the Console's top.
 			b.drum(0.07, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 16)
@@ -916,8 +915,10 @@ static func _cells(b: Paint.Pieces, area: Vector2, cols: int, rows: int, turn: B
 
 ## Black and yellow: the bands a safety officer would sign off.
 ## A radio's band scale, its middle at `at` on the face: a lit window in a
-## gunmetal bezel, a tick every 100 kHz and a long one every 500, numbered in
-## hundreds as old sets were.
+## gunmetal bezel ruled in three rows, one a band, each spread across the
+## window as the needle spreads it: FM over the top in MHz, shortwave under
+## it in MHz, and the AM dial at the foot numbered in hundreds of kHz as old
+## sets were. A tick at each step, a long one at each number.
 static func _band(b: Paint.Pieces, at: Vector3) -> void:
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var ink := Paint.coat(Color(0.12, 0.09, 0.07), 0.0, 0.0, 0.7, 0.0)
@@ -929,40 +930,145 @@ static func _band(b: Paint.Pieces, at: Vector3) -> void:
 		b.box(Vector3(wide + 0.016, 0.008, 0.018), at + Vector3(0.0, s * (high * 0.5 + 0.004), -0.003), gun, 0.002)
 		b.box(Vector3(0.008, high, 0.018), at + Vector3(s * (wide * 0.5 + 0.004), 0.0, -0.003), gun, 0.002)
 	var face := at.z + 0.0025
-	var foot := -0.016
-	b.box(Vector3(Radio.BAND.y - Radio.BAND.x + 0.0014, 0.001, 0.001), at + Vector3(0.0, foot, face - at.z), ink, 0.0)
-	for i in 21:
-		var x := lerpf(Radio.BAND.x, Radio.BAND.y, i / 20.0)
+	# Each row: its foot above the window's middle, m; the band's ends and its
+	# first and last steps in the units it's numbered in; a number every so
+	# many steps from the first.
+	for row: Array in [
+			[0.0025, Fm.LOWEST, Fm.HIGHEST, 88, 108, 4],
+			[-0.011, Shortwave.LOWEST / 1000.0, Shortwave.HIGHEST / 1000.0, 2, 30, 4],
+			[-0.0245, Dial.LOWEST / 100.0, Dial.HIGHEST / 100.0, 0, 20, 5]]:
+		var foot: float = at.y + row[0]
+		b.box(Vector3(Radio.BAND.y - Radio.BAND.x + 0.0014, 0.0008, 0.001), Vector3(at.x, foot, face), ink, 0.0)
+		for step in range(row[3], row[4] + 1):
+			var x := lerpf(Radio.BAND.x, Radio.BAND.y, inverse_lerp(row[1], row[2], step))
+			var long: bool = (step - row[3]) % row[5] == 0
+			var tall := 0.0038 if long else 0.0022
+			b.box(Vector3(0.0012 if long else 0.0008, tall, 0.001), Vector3(x, foot + tall * 0.5, face), ink, 0.0)
+			if long:
+				_numeral(b, str(step), Vector3(x, foot + 0.0079, face), 0.0062, ink)
+
+
+## The strip under the band window that its lamps sit in: the signal lamps,
+## then a dark glass seat for the band lamp by each band's name, faintly
+## lit with the set so the names read in the dark.
+static func _lamp_strip(b: Paint.Pieces, face: float) -> void:
+	var y := Radio.LAMP_FROM.y
+	b.box(Vector3(0.232, 0.012, 0.01), Vector3(0.004, y, face - 0.005), Paint.coat(Paint.BLACK, 0.4, 0.3, 0.5), 0.002)
+	var bone := Paint.coat(Paint.BONE, 0.0, 0.0, 0.6, 0.0, 0.6)
+	var glass := Paint.coat(Color(0.05, 0.05, 0.05), 0.0, 0.0, 0.15, 0.0)
+	for i in Radio.BANDS.size():
+		var at := Radio.BAND_LAMP_FROM + Vector3(i * Radio.BAND_LAMP_GAP, 0.0, face)
+		b.drum(0.0034, 0.0012, at + Vector3(0.0, 0.0, 0.0006), glass, Basis(Vector3.RIGHT, PI / 2.0), 10)
+		_numeral(b, String(Radio.BANDS[i]).to_upper(), at + Vector3(0.0115, 0.0, 0.0006), 0.0055, bone)
+
+
+## A radio's band lamp, set in the strip by the band it's on and lit in its
+## colour: the AM dial's own warm light, the FM converter's teal, the
+## shortwave converter's amber.
+static func band_lamp(band: StringName) -> ArrayMesh:
+	return _cached(&"band_lamp", band, func() -> ArrayMesh:
+		var colour: Color = {Radio.AM_BAND: Color(1.0, 0.82, 0.55), Radio.FM_BAND: FM_TEAL.lightened(0.35),
+			Radio.SW_BAND: SW_AMBER}[band]
+		var b := Paint.Pieces.new()
+		b.drum(0.0032, 0.0016, Vector3(0.0, 0.0, 0.0008), Paint.coat(colour, 0.0, 0.0, 0.3, 0.0, 1.4),
+			Basis(Vector3.RIGHT, PI / 2.0), 10)
+		return b.commit())
+
+
+## The converters' bands: what tells one from the other on a set's side.
+const FM_TEAL := Color(0.25, 0.62, 0.62)
+const SW_AMBER := Color(0.95, 0.55, 0.12)
+
+
+## A colonial converter for a set's side, as 1960s car radios took them, a
+## different maker's than the set: a black enamel box on a flange bolted to
+## the side, a chromed bone face with its own small dial, a tuning knob and a
+## throw between AM and its band, the band's colour and name along the face's
+## foot and on its front end. Kept shorter than its socket so the converter
+## over or under it clears what stands on its top. Returns its chrome.
+static func _converter(b: Paint.Pieces, size: Vector3, band: Color, name: String) -> Paint.Coat:
+	var h := size * 0.5
+	var along := Basis(Vector3.RIGHT, PI / 2.0)
+	var enamel := Paint.coat(Color(0.07, 0.07, 0.075), 0.7, 0.2, 0.35)
+	var chrome := Paint.coat(Color(0.78, 0.78, 0.76), 0.3, 0.95, 0.18)
+	var ink := Paint.coat(Color(0.12, 0.09, 0.07), 0.0, 0.0, 0.7, 0.0)
+	var colour := Paint.coat(band, 0.5, 0.0, 0.5)
+	var tall := size.y - 0.01
+	b.box(Vector3(size.x - 0.002, tall, 0.004), Vector3(0.0, 0.0, 0.002), enamel, 0.001)
+	for x in [-1, 1]:
+		for y in [-1, 1]:
+			b.drum(0.0035, 0.003, Vector3(x * (h.x - 0.0065), y * (tall * 0.5 - 0.007), 0.0055), chrome, along, 6)
+	var body := Vector3(size.x - 0.024, tall, size.z - 0.012)
+	b.box(body, Vector3(0.0, 0.0, 0.004 + body.z * 0.5), enamel, 0.006)
+	var front := 0.004 + body.z
+	# Its band on the front end, toward the set's face, where you see it.
+	b.box(Vector3(0.002, tall - 0.024, body.z - 0.014), Vector3(body.x * 0.5 + 0.0005, 0.0, 0.004 + body.z * 0.5), colour, 0.0005)
+	# The face: a chrome rim round bone.
+	b.box(Vector3(body.x - 0.006, tall - 0.014, 0.003), Vector3(0.0, 0.0, front + 0.0005), chrome, 0.001)
+	b.box(Vector3(body.x - 0.012, tall - 0.02, 0.002), Vector3(0.0, 0.0, front + 0.002), Paint.coat(Paint.BONE, 0.4, 0.0, 0.5), 0.0005)
+	var on := front + 0.0035
+	# Its own small dial: a pale window ruled across, a red needle.
+	var window := Vector3(-0.011, 0.016, on)
+	b.box(Vector3(0.05, 0.013, 0.001), window, Paint.coat(Color(0.93, 0.84, 0.62), 0.0, 0.0, 0.25, 0.0), 0.0)
+	for i in 11:
 		var long := i % 5 == 0
-		var tall := 0.011 if long else 0.006
-		b.box(Vector3(0.0014 if long else 0.001, tall, 0.001), Vector3(x, at.y + foot + tall * 0.5, face), ink, 0.0)
-		if long:
-			_numeral(b, str(i), Vector3(x, at.y + 0.008, face), 0.011, ink)
+		var tick := 0.006 if long else 0.0035
+		b.box(Vector3(0.0007, tick, 0.001), window + Vector3(-0.022 + i * 0.0044, -0.0065 + tick * 0.5, 0.0005), ink, 0.0)
+	b.box(Vector3(0.0012, 0.012, 0.001), window + Vector3(0.004, 0.0, 0.001), Paint.coat(Color(0.8, 0.12, 0.06), 0.0, 0.0, 0.4), 0.0)
+	# Its tuning knob toward the set's face, black, a chrome cap.
+	var knob := Vector3(0.029, 0.01, on)
+	b.drum(0.0105, 0.007, knob + Vector3(0.0, 0.0, 0.0035), Paint.coat(Paint.BLACK, 0.3, 0.3, 0.5), along, 14)
+	b.drum(0.0075, 0.0015, knob + Vector3(0.0, 0.0, 0.0075), chrome, along, 14)
+	# The throw, between AM and its band, thrown to the band.
+	var throw := Vector3(-0.021, -0.006, on)
+	b.box(Vector3(0.007, 0.011, 0.0015), throw + Vector3(0.0, 0.0, 0.00075), chrome, 0.0005)
+	var thrown := Basis(Vector3.UP, 0.45) * along
+	b.drum(0.0016, 0.009, throw + thrown * Vector3(0.0, 0.0045, 0.0) + Vector3(0.0, 0.0, 0.0015), chrome, thrown, 6)
+	_numeral(b, "AM", throw + Vector3(-0.011, 0.0, 0.0005), 0.004, ink)
+	_numeral(b, name, throw + Vector3(0.011, 0.0, 0.0005), 0.004, ink)
+	# Its band and name along the face's foot.
+	var foot := Vector3(0.0, -tall * 0.5 + 0.0165, on)
+	b.box(Vector3(body.x - 0.012, 0.009, 0.001), foot, colour, 0.0)
+	_numeral(b, name, foot + Vector3(0.0, 0.0, 0.0006), 0.0058, Paint.coat(Paint.BLACK, 0.0, 0.0, 0.6, 0.0))
+	return chrome
 
 
-## A number in block strokes, `tall` m high, its middle at `at`, facing +Z.
+## A number or a name in block strokes, `tall` m high, its middle at `at`,
+## facing +Z.
 static func _numeral(b: Paint.Pieces, text: String, at: Vector3, tall: float, look: Paint.Coat) -> void:
-	# Strokes a to g: top, top right, bottom right, bottom, bottom left, top left, middle.
-	const STROKES := {"0": "abcdef", "1": "bc", "2": "abged", "5": "afgcd"}
+	# Strokes a to g: top, top right, bottom right, bottom, bottom left, top
+	# left, middle; and h to k, from the corners top left, top right, bottom
+	# left and bottom right in to the middle, for an M and a W.
+	const STROKES := {"0": "abcdef", "1": "bc", "2": "abged", "3": "abgcd", "4": "fgbc", "5": "afgcd",
+		"6": "afgedc", "7": "abc", "8": "abcdefg", "9": "abcdfg", "A": "abcefg", "F": "aefg", "S": "afgcd",
+		"M": "bcefhi", "W": "bcefjk"}
 	const PLACES := {"a": Vector2(0.0, 0.5), "g": Vector2.ZERO, "d": Vector2(0.0, -0.5), "b": Vector2(0.5, 0.25),
 		"c": Vector2(0.5, -0.25), "e": Vector2(-0.5, -0.25), "f": Vector2(-0.5, 0.25)}
+	const CORNERS := {"h": Vector2(-0.5, 0.5), "i": Vector2(0.5, 0.5), "j": Vector2(-0.5, -0.5), "k": Vector2(0.5, -0.5)}
 	var wide := tall * 0.55
 	var line := tall * 0.13
 	var gap := wide * 0.5
-	# A 1 is one stroke, as narrow as it.
+	# A 1 is one stroke, as narrow as it; an M and a W want more room.
 	var widths: Array[float] = []
 	var span := -gap
 	for digit in text:
-		widths.append(line if digit == "1" else wide)
+		widths.append(line if digit == "1" else (wide * 1.35 if digit in "MW" else wide))
 		span += widths[-1] + gap
 	var x := at.x - span * 0.5
 	for i in text.length():
+		var w := widths[i] if text[i] in "MW" else wide
+		var middle := Vector3(x + widths[i] * 0.5, at.y, at.z)
 		for stroke in STROKES[text[i]]:
+			if CORNERS.has(stroke):
+				var from: Vector2 = CORNERS[stroke] * Vector2(w, tall)
+				b.box(Vector3(line, from.length(), 0.001), middle + Vector3(from.x, from.y, 0.0) * 0.5, look, 0.0,
+					Basis(Vector3.BACK, atan2(from.x, -from.y)))
+				continue
 			var where: Vector2 = PLACES[stroke]
 			if text[i] == "1":
 				where.x = 0.0
-			var size := Vector3(wide + line, line, 0.001) if stroke in "adg" else Vector3(line, tall * 0.5 + line, 0.001)
-			b.box(size, Vector3(x + widths[i] * 0.5 + where.x * wide, at.y + where.y * tall, at.z), look, 0.0)
+			var size := Vector3(w + line, line, 0.001) if stroke in "adg" else Vector3(line, tall * 0.5 + line, 0.001)
+			b.box(size, middle + Vector3(where.x * w, where.y * tall, 0.0), look, 0.0)
 		x += widths[i] + gap
 
 
