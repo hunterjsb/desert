@@ -737,3 +737,19 @@ After restricting assistance, whole-stake pickup and a 40 m camp tow pass
 (67 s). Hook-end detachment and floor-end recovery still pass (9 s). The
 corrected tow fixture passes its original steering, opposed-load injury and
 selected-line reeling thresholds with all three real ropes intact (28 s).
+
+### Coils remain usable outside their original find (2026-10-20)
+
+Ordinary pickup must turn any loose rope coil into a usable line, including a
+coil no longer registered as a find and an older authored coil without rolled
+metadata. Preserve a stored rope length and reuse an existing Line when present.
+Claiming loot and opening a coil are separate operations: a previously claimed
+coil must not depend on claiming the original site again.
+
+As built: pickup opens the coil independently of site claiming, and legacy
+bare coils acquire the normal rolled-coil conversion. Existing Lines are reused.
+Both previously owned rolled coils and authored bare coils failed the same hand
+end check before the fix; both pass afterward (6 s), including stored length.
+Carried-coil save/restore (13 s), board-end recovery (7 s), and all 35 salvage
+part pickups (40 s) also pass. The held-end motion report is investigated
+separately; these results do not establish its cause.

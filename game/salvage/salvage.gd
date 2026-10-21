@@ -447,6 +447,8 @@ func _discovered(body: Node) -> void:
 ## device stands upright on the sand, a part rests on it.
 func unbury(body: RigidBody3D) -> void:
 	claim(body)
+	# Opening a coil does not depend on its original site still owning it.
+	Finds.unroll(_world, body)
 	if body.has_meta(&"drift"):
 		body.remove_meta(&"drift")
 		_discovered(body)

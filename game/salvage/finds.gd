@@ -407,6 +407,12 @@ static func _part(id: StringName, charge: float, layer: StringName, sealed := fa
 ## rest of it behind. Then a coil becomes a line to lay, as long as the one
 ## stowed, and an end pulls the rest up out of the sand.
 static func unroll(world: World, body: Node) -> void:
+	if body is Part and (body as Part).kind == &"coil":
+		if body.has_meta(&"line"):
+			return
+		# Older authored coils still contain rope, without find bookkeeping.
+		if not body.has_meta(&"rolled"):
+			body.set_meta(&"rolled", &"coil")
 	if not body.has_meta(&"rolled"):
 		return
 	var id: StringName = body.get_meta(&"rolled")
