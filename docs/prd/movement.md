@@ -1482,6 +1482,22 @@ visible path/clearance, not final craft art or a human judgment of movement feel
 
 ### Large mixed-deck baseline (measured 2026-10-20)
 
+#### Authored placement in loaded boarding checks (selected 2026-10-21)
+
+Use `World.teleport` when a boarding fixture places an already active player at
+its next approach. Directly assigning that CharacterBody's position creates a
+native kinematic impulse before the test's input begins. An external 27-piece
+uneven-craft case initially misidentified that setup impulse as powered-off
+boarding instability: the first no-input tick already spun the deck at 9.287
+rad/s. Keeping the original input cadence and 0.9 s / 0.08 m acceptance while
+using the existing teleport API removes the kick. No Player/vault force law,
+collision policy or acceptance threshold needs changing for this observation.
+
+Keep a focused real-input regression covering the loaded, offset mixed craft,
+ordinary battery exhaustion while aboard and powered-off reboarding. Retain
+live native support and the actual hinged mast, routed sheet and mooring lines;
+the fixture's setup teleport must not become a gameplay force workaround.
+
 A focused Godot 4.7.2/Jolt audit compared 4-piece and 27-piece decks and a 108-piece
 notched deck, alternating skates and trays, hover off/on and yaw 0/45 degrees.
 The 108-piece craft weighed 1,584 kg, with 54 skates, 54 trays and 18 batteries.
