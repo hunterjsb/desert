@@ -487,3 +487,14 @@ loaded chunks and 25 collision chunks. These are one clear-day, still-air,
 two-piece stationary camp measurements. The scripted scout relocation and camera
 helper do not establish hoverboard travel, human comprehension, storms, moving
 rigs or the maximum camp budget. No remote simulation code change was needed.
+
+**Medium-camp acceptance (2026-10-21; selected, pending):** Exercise a nine-piece
+joined deck with mixed hover/skate mounts, powered shield and beacon, solar,
+battery dock, condenser and radio, plus a separate tethered planter with stored
+produce and a loose claimed supply. Keep ordinary body physics and support
+contacts active through a 2.1 km departure and return. Compare the same near camp
+unmarked and marked before measuring the retained distant camp; an unmarked
+distant camp would be deleted and is not an equivalent baseline. Record engine
+main-thread/physics frame times and active-body counts without imposing a new
+machine-dependent threshold. Inspect a real unseen return capture. This is a
+medium assembly check, not acceptance of the maximum admission count or span.
