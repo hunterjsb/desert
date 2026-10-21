@@ -823,3 +823,9 @@ show all those states without a mesh swap. The visual-only sweep suspends rope
 solving after the real handoff checks because a synthetic zero physical length
 otherwise drops the held end and switches the display to an older waist line.
 No rope force, paid length, attachment, control or save behavior changed.
+
+The tube's end disks use outward clockwise winding; the focused cap probe
+checks both complete disks and their outward orientation (3 s). A tangent-matched
+lead avoids folding the first winding back on itself. Muted three-lobe fibre
+relief and normal twist retain nominal gauge. Actual front, back and oblique
+held captures show closed ends; the continuity probe still passes (8 s).

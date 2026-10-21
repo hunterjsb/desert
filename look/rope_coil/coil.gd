@@ -32,6 +32,16 @@ func run() -> void:
 		check(hands.held == line.ends[1 - line._first], "controlled fill keeps the same held endpoint")
 		print("capture %s: fill %.4f, held endpoint unchanged" % [stage[0], hands.reel._coil_amount])
 		get_viewport().get_texture().get_image().save_png(output.path_join(stage[0] + ".png"))
+	for view in [["front", Vector3(0.0, 0.12, 0.75)], ["back", Vector3(0.0, 0.12, -0.75)],
+			["oblique", Vector3(0.45, 0.2, 0.58)]]:
+		camera.global_position = center + coil.global_basis * (view[1] as Vector3)
+		camera.look_at(center)
+		for i in 12:
+			await get_tree().process_frame
+		await RenderingServer.frame_post_draw
+		get_viewport().get_texture().get_image().save_png(output.path_join(view[0] + ".png"))
+	camera.global_position = center + coil.global_basis.z * 0.75 + Vector3.UP * 0.12
+	camera.look_at(center)
 	# Change fill continuously in both directions; save actual consecutive GPU frames.
 	for frame in 121:
 		var fill := absf(float(frame) / 60.0 - 1.0)

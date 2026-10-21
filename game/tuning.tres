@@ -146,6 +146,8 @@ rope_coil_visual = {
 "response_seconds": 0.06,
 "fibre_turns": 6.0,
 "fibre_contrast": 0.08,
+"fibre_relief": 0.02,
+"fibre_normal": 0.15,
 "dust_amount": 0.12,
 "roughness": 0.95,
 "whipping": Vector2(0.1, 0.3)
