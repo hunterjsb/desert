@@ -964,3 +964,20 @@ the Guide. Dev probe 1 still expected only water, a ration and a bedroll, althou
 the run contained all four intended objects. Extend that existing exact gear list
 for the Guide; preserve its health, hunger, thirst, sealed-water and condenser checks.
 This changes the fixture only, with no scenario or supply behavior change.
+
+## Ground rest (selected 2026-10-20; in progress)
+
+The player can sit or lie on supported ground without furniture. Sitting is
+stationary rest; lying permits slow crawling. Lying does not automatically
+advance time. With empty hands and no more specific use interaction, use while
+lying offers the existing sleep choices, even without a bedroll. This supersedes
+the earlier bedroll requirement for sleeping on bare ground; bedrolls and ruin
+beds retain their direct use interactions. Existing movement, sail, rope,
+harm and camp-stability sleep checks still apply. Posture changes do not grant
+health, supplies or protection. Restore the saved posture without awarding a
+deed again; old saves default to standing.
+
+The first successful voluntary ground sit or lie records A Moment's Rest in
+the camp family. Merely loading a posture, being thrown or sitting at a helm
+does not count. Low movement uses physical collision and checks standing
+clearance, with smooth camera transitions rather than a camera-only crawl.

@@ -775,3 +775,12 @@ in eleven families. It is recorded where a worked hand winch winds an actual
 halyard to the configured raised fraction; setting cloth height or loading a
 save alone does not award it. Mast hoist/legacy state joins ordinary rig state;
 the existing line/end/guide references preserve its physical halyard route.
+
+### Ground rest (selected 2026-10-20; in progress)
+
+A Moment's Rest (`ground_rest`, camp family, bedroll icon) records the first
+successful voluntary ground sit or lie. It brings this release branch's roster
+to 56 deeds in eleven families; the separate Home/arrival additions must be
+reconciled when integrated. Loading a save must not record it again. Posture
+persists independently of the transient camera transition, with standing as
+the default for saves written before this feature.
