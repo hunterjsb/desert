@@ -14,7 +14,8 @@ static func boxes() -> Array:
 		[Vector3(6.4, 0.4, 0.18), Vector3(0, 2.8, -5.11), Basis.IDENTITY],
 		[Vector3(0.9, 1.8, 0.18), Vector3(-2.75, 1.7, -5.11), Basis.IDENTITY],
 		[Vector3(0.9, 1.8, 0.18), Vector3(2.75, 1.7, -5.11), Basis.IDENTITY],
-		[Vector3(1.05, 0.06, 0.86), Vector3(1.4, 0.12, 1.2), Basis(Vector3.RIGHT, atan(0.24 / 0.86))],
+		[Vector3(1.05, 0.06, 0.949), Vector3(1.4, 0.12, 1.8), Basis(Vector3.RIGHT, atan(0.30 / 0.9))],
+		[Vector3(1.05, 0.06, 0.8), Vector3(1.4, 0.27, 0.95), Basis.IDENTITY],
 		[Vector3(0.9, 0.7, 0.65), Vector3(-1.8, 0.35, -3.65), Basis.IDENTITY],
 		[Vector3(0.95, 0.12, 0.7), Vector3(-1.8, 0.76, -3.65), Basis.IDENTITY],
 	]
@@ -46,6 +47,25 @@ static func mesh() -> ArrayMesh:
 		for x in [-2.0, 0.0, 2.0]:
 			b.box(Vector3(1.85, 0.025, 1.85), Vector3(x, 0.016, z), black, 0.018)
 			b.box(Vector3(1.84, 0.025, 1.84), Vector3(x, 2.987, z), bone, 0.025)
+	# Outside, the same pressure compartment has inset service plates and corner guards.
+	for z in [-4.0, -2.0, 0.0, 2.0]:
+		for side in [-1.0, 1.0]:
+			b.box(Vector3(0.045, 2.58, 1.7), Vector3(side * 3.22, 1.5, z), bone, 0.05)
+			b.box(Vector3(0.06, 0.24, 1.62), Vector3(side * 3.25, 0.64, z), teal, 0.015)
+			for y in [0.36, 2.62]:
+				b.box(Vector3(0.075, 0.1, 0.1), Vector3(side * 3.27, y, z - 0.68), gun, 0.012)
+		for x in [-2.0, 0.0, 2.0]:
+			b.box(Vector3(1.83, 0.045, 1.83), Vector3(x, 3.18, z), bone, 0.045)
+	for side in [-1.0, 1.0]:
+		b.box(Vector3(0.18, 0.18, 8.3), Vector3(side * 2.85, 3.27, -1), gun, 0.035)
+		for z in [-5.05, 3.05]:
+			b.box(Vector3(0.22, 2.95, 0.22), Vector3(side * 3.12, 1.5, z), gun, 0.045)
+			b.box(Vector3(0.23, 0.28, 0.23), Vector3(side * 3.12, 0.3, z), yellow, 0.03)
+	for x in [-1.9, 1.9]:
+		b.box(Vector3(1.9, 2.6, 0.035), Vector3(x, 1.5, 3.22), bone, 0.06)
+		b.box(Vector3(1.8, 2.6, 0.025), Vector3(x, 1.5, 3.005), bone, 0.04)
+	b.box(Vector3(1.25, 2.25, 0.045), Vector3(0, 1.2, 3.23), teal, 0.08)
+	b.box(Vector3(0.12, 0.38, 0.09), Vector3(0.38, 1.1, 3.29), gun, 0.018)
 	for x in [-0.4, 2.2]:
 		b.box(Vector3(0.05, 0.008, 3.6), Vector3(x, 0.035, 0.3), yellow, 0.002)
 	# Window jambs and a broad sill: the renderer fills only the real aperture.

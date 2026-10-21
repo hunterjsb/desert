@@ -1,0 +1,4 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://look/ship_preflight/ship_preflight.gd" id="1"]
+[node name="ShipPreflight" type="Node"]
+script = ExtResource("1")
