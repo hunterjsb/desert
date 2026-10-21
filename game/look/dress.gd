@@ -25,10 +25,9 @@ static func part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	return _cached(&"part", key, func() -> ArrayMesh: return _part(id, size, count))
 
 
-## A flat coil's axis is +Z, with its back at zero; gathered rope adds windings.
-static func coil(level: int = 2) -> ArrayMesh:
-	var amount := clampi(level, 0, 2)
-	return _cached(&"coil", StringName(str(amount)), func() -> ArrayMesh: return CoilLooks.make(amount))
+## One shared winding mesh; each gathered display selects continuous poses.
+static func coil() -> ArrayMesh:
+	return _cached(&"coil", &"winding", func() -> ArrayMesh: return CoilLooks.make())
 
 
 static func halyard_block() -> ArrayMesh:

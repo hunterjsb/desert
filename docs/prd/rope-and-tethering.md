@@ -792,3 +792,34 @@ actual unseen handoff/routing fixture passes and its capture shows the layered
 coil aligned with its held endpoint (0.135 m hanging offset), with unchanged
 1.953 m endpoint travel and successful hook routing. Native mesh bounds centre
 each fill variant; their fibre diameter stays fixed.
+
+
+## Continuous gathered coil (Hunter, 2026-10-20; agreed, in progress)
+
+Paying out and gathering must change the bundle continuously, including the old
+one-third and two-thirds boundaries. Read the actual remaining rope, including
+line paid through a sail block; never change rope physics, ownership or selection.
+Keep fibre gauge constant and the leading end fixed to the live hand/waist end,
+without recentering against changing bounds. A loose stowed coil remains full.
+
+Use one shared cached indexed tube mesh with a coil-only fibre shader. Deform
+its fixed topology continuously along the winding path using an instance amount;
+create no mesh or material resources while reeling. Keep the existing sun-worn
+brown fibre and muted teal whipping. Smooth only presentation
+amount/orientation, never delay the physical attachment point. Geometry and
+response values live in `rope_coil_visual` tuning. Check small changes across the
+former thresholds, near empty/full and while the paying hand moves; inspect real
+unseen GPU captures before acceptance.
+
+**As built and checked.** The cached indexed mesh has 1,631 vertices and 3,258
+triangles; its raw position/normal/UV/index arrays total 91,288 bytes before GPU
+packing. Each display changes one instance amount and its anchored transform;
+there is no pose bank or per-frame mesh/material creation. A short response
+filter smooths physics-step amount and heading while the leading end follows
+the actual endpoint immediately. Existing moving-hand and hand-reeling probes
+pass (9 s and 30 s); the focused continuity probe passes (9 s), including both
+former thresholds and near-empty/full amounts. Real Forward+ captures at 720p
+show all those states without a mesh swap. The visual-only sweep suspends rope
+solving after the real handoff checks because a synthetic zero physical length
+otherwise drops the held end and switches the display to an older waist line.
+No rope force, paid length, attachment, control or save behavior changed.

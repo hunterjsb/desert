@@ -1,85 +1,91 @@
 class_name CoilLooks
 extends RefCounted
-## Round windings keep their gauge as a gathered bundle gains rope.
+## One winding path with a fixed leading end and shared shader-deformed tube.
 
-static func make(level: int) -> ArrayMesh:
-	var b := Paint.Pieces.new()
-	var rope := Paint.coat(Paint.ROPE.lightened(0.14), 0.0, 0.0, 0.95, 0.35)
-	var shadow := Paint.coat(Paint.ROPE.lightened(0.06), 0.0, 0.0, 1.0, 0.35)
-	var binding := Paint.coat(Paint.TEAL.darkened(0.24), 0.0, 0.0, 0.95, 0.25)
-	var turns := 1.25 if level == 0 else 2.25
-	var outer := 0.112 if level == 0 else 0.145
-	var layers := 2 if level == 2 else 1
-	for layer in layers:
-		var path := PackedVector3Array()
-		var count := ceili(turns * 40.0)
-		for i in count + 1:
-			var t := float(i) / count
-			var a := t * turns * TAU + layer * 0.2
-			var r := lerpf(0.055, outer, t)
-			# Slightly irregular winding gives each course its own edge of light.
-			r += sin(a * 3.0 + layer) * 0.0015
-			path.append(Vector3(cos(a) * r, sin(a) * r * 0.98, 0.021 + layer * 0.025 + sin(a * 2.0) * 0.001))
-		_tube(b, path, 0.02, rope if layer == layers - 1 else shadow)
-	var top := 0.021 + (layers - 1) * 0.025
-	# A small binding crosses one side, leaving the central hole open.
-	_tube(b, PackedVector3Array([
-		Vector3(0.095, -0.028, 0.006), Vector3(outer + 0.006, -0.028, 0.006),
-		Vector3(outer + 0.008, -0.028, top + 0.0195), Vector3(0.095, -0.028, top + 0.0195),
-		Vector3(0.095, -0.028, 0.006)]), 0.0035, binding)
-	var tail := PackedVector3Array([
-		Vector3(0.055, 0.0, top), Vector3(0.046, 0.025, top),
-		Vector3(0.055, 0.065, top + 0.002), Vector3(0.09, 0.085, top)])
-	_tube(b, tail, 0.02, rope)
-	for i in 4:
-		var a := Vector3(0.077 + i * 0.003, 0.078 + i * 0.0017, top)
-		var turn := Basis(Vector3.UP, (tail[-1] - tail[-2]).normalized(), Vector3.UP.cross((tail[-1] - tail[-2]).normalized())).orthonormalized()
-		b.ring(0.019, 0.021, a, binding, turn, 6)
-	return b.commit()
+static func make() -> ArrayMesh:
+	var rules := Tuning.current().rope_coil_visual
+	var rings: int = rules.rings
+	var sides: int = rules.sides
+	var mesh := ArrayMesh.new()
+	var arrays := _pose(1.0, rules)
+	var indices := PackedInt32Array()
+	for i in rings:
+		for j in sides:
+			var a := i * sides + j
+			var b := (i + 1) * sides + j
+			var c := (i + 1) * sides + (j + 1) % sides
+			var d := i * sides + (j + 1) % sides
+			indices.append_array(PackedInt32Array([a, b, c, a, c, d]))
+	var caps := (rings + 1) * sides
+	for j in sides:
+		indices.append_array(PackedInt32Array([caps, (j + 1) % sides, j,
+			caps + 1, rings * sides + j, rings * sides + (j + 1) % sides]))
+	arrays[Mesh.ARRAY_INDEX] = indices
+	var uv := PackedVector2Array()
+	for i in rings + 1:
+		for j in sides:
+			uv.append(Vector2(float(i) / rings, float(j) * TAU / sides))
+	uv.append(Vector2(0.0, -1.0))
+	uv.append(Vector2(1.0, -1.0))
+	arrays[Mesh.ARRAY_TEX_UV] = uv
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	var finish := ShaderMaterial.new()
+	finish.shader = preload("res://game/look/coil.gdshader")
+	for key in [&"turns", &"inner_radius", &"outer_radius", &"gauge", &"layer_height", &"lead_fraction", &"anchor", &"fibre_turns", &"fibre_contrast", &"dust_amount", &"roughness", &"whipping"]:
+		finish.set_shader_parameter(key, rules[key])
+	finish.set_shader_parameter(&"rope_color", Paint.ROPE.lightened(0.14))
+	finish.set_shader_parameter(&"whipping_color", Paint.TEAL.darkened(0.24))
+	finish.set_shader_parameter(&"dust_color", Paint.BONE)
+	mesh.surface_set_material(0, finish)
+	mesh.custom_aabb = mesh.get_aabb().grow(float(rules.gauge))
+	return mesh
 
 
-static func _tube(b: Paint.Pieces, path: PackedVector3Array, radius: float, coat: Paint.Coat) -> void:
+static func anchor() -> Vector3:
+	return Tuning.current().rope_coil_visual.anchor
+
+
+## Only the instance parameter changes; topology and material remain shared.
+static func show_amount(instance: MeshInstance3D, amount: float) -> void:
+	instance.set_instance_shader_parameter(&"coil_amount", clampf(amount, 0.0, 1.0))
+
+
+static func _pose(amount: float, rules: Dictionary) -> Array:
+	var rings: int = rules.rings
+	var sides: int = rules.sides
 	var vertices := PackedVector3Array()
 	var normals := PackedVector3Array()
-	var sides := 9
-	var rings: Array[PackedVector3Array] = []
-	var shades: Array[PackedVector3Array] = []
-	for i in path.size():
-		var tangent := (path[mini(i + 1, path.size() - 1)] - path[maxi(i - 1, 0)]).normalized()
+	for i in rings + 1:
+		var t := float(i) / rings * amount
+		var center := _point(t, rules)
+		var tangent := (_point(t + 0.0001, rules) - _point(t - 0.0001, rules)).normalized()
 		var across := tangent.cross(Vector3.BACK).normalized()
 		if across.length_squared() < 0.1:
 			across = tangent.cross(Vector3.UP).normalized()
 		var up := tangent.cross(across).normalized()
-		var ring := PackedVector3Array()
-		var shade := PackedVector3Array()
 		for j in sides:
-			var section := j * TAU / sides
-			var angle := section + i * 0.65
-			var radial := across * cos(angle) + up * sin(angle)
-			var around := -across * sin(angle) + up * cos(angle)
-			# Three soft lobes twist together instead of reading as a rubber hose.
-			var gauge := 0.98 + 0.02 * cos(section * 3.0)
-			ring.append(radial * gauge)
-			shade.append((radial * gauge + around * 0.18 * sin(section * 3.0)).normalized())
-		rings.append(ring)
-		shades.append(shade)
-	for i in path.size() - 1:
-		for j in sides:
-			var k := (j + 1) % sides
-			for corner in [[i, j], [i + 1, j], [i + 1, k], [i, j], [i + 1, k], [i, k]]:
-				vertices.append(path[corner[0]] + rings[corner[0]][corner[1]] * radius)
-				normals.append(shades[corner[0]][corner[1]])
-	for end in [0, path.size() - 1]:
-		var normal := (path[end] - path[1 if end == 0 else end - 1]).normalized()
-		for j in sides:
-			var k := (j + 1) % sides
-			var a := path[end] + rings[end][j] * radius
-			var c := path[end] + rings[end][k] * radius
-			for vertex in [path[end], a, c] if end == 0 else [path[end], c, a]:
-				vertices.append(vertex)
-				normals.append(normal)
+			var angle := float(j) * TAU / sides
+			var normal := across * cos(angle) + up * sin(angle)
+			vertices.append(center + normal * float(rules.gauge))
+			normals.append(normal)
+	vertices.append(_point(0.0, rules))
+	vertices.append(_point(amount, rules))
+	normals.append(Vector3.UP)
+	normals.append((_point(amount + 0.0001, rules) - _point(amount - 0.0001, rules)).normalized())
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = vertices
 	arrays[Mesh.ARRAY_NORMAL] = normals
-	b._add(arrays, Transform3D.IDENTITY, coat, Vector3.ONE, 1.0)
+	return arrays
+
+
+static func _point(t: float, rules: Dictionary) -> Vector3:
+	var lead: float = rules.lead_fraction
+	var first := Vector3(float(rules.inner_radius), 0.0, float(rules.gauge))
+	if t < lead:
+		return (rules.anchor as Vector3).lerp(first, t / lead)
+	var u := (t - lead) / (1.0 - lead)
+	var angle := u * float(rules.turns) * TAU
+	var radius := lerpf(float(rules.inner_radius), float(rules.outer_radius), sin(u * PI))
+	var height := float(rules.gauge) + float(rules.layer_height) * smoothstep(0.4, 0.6, u)
+	return Vector3(cos(angle) * radius, sin(angle) * radius * 0.98, height)

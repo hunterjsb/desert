@@ -1112,23 +1112,23 @@ both wheels remain distinct against the worn chassis. This is a rendered model
 readability check; the staged light does not establish unlit night legibility.
 
 
-## Rope coils (2026-10-20; agreed, in progress)
+## Rope coils (2026-10-20; built)
 
-Replace the heavy ring and metal block with a compact, hand-wound rope bundle:
-individual round windings, a shallow second layer, a quiet cord binding and a short
-whipped free end. Keep the existing 0.34 × 0.34 × 0.07 m part envelope and practical
-sun-worn brown fibre, with a muted teal binding. The gathered rope uses the same
-look, with three cached winding amounts; more rope adds loops and bundle thickness
-without making the rope itself thicker. Merge each variant into one surface using
-the existing worn material. Inspect ground and held views on the actual renderer
-at 720p before acceptance.
+A compact hand-wound bundle of round, sun-worn brown fibre replaces the old metal
+block. The gathered display and loose full coil share one winding mesh, with a
+muted teal whipped leading end and a shallow second layer. Keep the existing
+0.34 × 0.34 × 0.07 m part envelope. More rope adds windings, never thicker fibre.
 
-**As built and inspected.** `Dress.coil(level)` caches three single-surface native
-meshes, with 1,848 / 2,568 / 4,206 triangles. The rope gauge stays at a nominal
-0.02 m radius beside the world strand's 0.024 m radius; small twisting fibre
-lobes catch the light, with a muted cord binding round the outer courses and a
-whipped free end. The fullest mesh stays inside the existing part envelope.
-Actual Forward+ 1280 × 720 captures show the bundle close on sand beside a real
-strand, from eye height, and carried face-on and tilted. These are rendered
-readability and geometry checks, not a measured GPU frame-time claim. The
-gathered-coil behavior and fill selection live in Reel, using this shared mesh.
+`Dress.coil()` caches one indexed single-surface mesh: 1,631 vertices and 3,258
+triangles. A coil-only rough fibre shader deforms the tube continuously along its
+winding path from an instance amount. The nominal 0.02 m fibre radius remains
+beside the world strand's 0.024 m radius. The leading end stays fixed to the live
+rope endpoint; changing fill does not recenter the bundle or swap its mesh.
+
+Actual Forward+ 1280 × 720 held-end captures cover near-empty, both sides of the
+former one-third/two-thirds boundaries and full fill, followed by consecutive
+payout/gather frames. The real pickup, first tie and moving-hand check runs before
+the visual sweep; only the synthetic zero-length sweep suspends rope solving so
+it does not drop the held endpoint. These establish rendered continuity and
+readability, not a measured GPU frame-time budget. Geometry and visual response
+live in `rope_coil_visual` tuning.
