@@ -808,6 +808,13 @@ persists independently of the transient camera transition, with standing as
 the default for saves written before this feature.
 
 
+### Flight Plan (2026-10-21; implemented development)
+
+Flight Plan (`flight_plan`, signals family, radio icon) records the first time
+you hear the Surveyor read out when it's next over you (Radio probe 47),
+bringing the integrated development roster to 59 deeds in eleven families.
+
+
 **Combined development resume check (2026-10-20).** The preparatory Sanddune
 candidate combines Home, Surveyor opening, ground posture and continuous coils.
 Actual Main flight/recovery resume passes (9 s), other-origin/developer-scenario

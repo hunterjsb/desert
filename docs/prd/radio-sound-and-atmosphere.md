@@ -427,6 +427,16 @@ they swap to their next saved frequency."*
       built in 10 ms, adding 6,450 primitives (0.7%) and 2 draws. Near: 13,304 triangles, 4.7 MB, 56 ms,
       26,600 primitives (2.9%). It casts no shadow; a shadowed light of its own was tried and dropped, since
       from below it showed nothing and cost a shadow pass. It's above the horizon within about 17 km of its track.
+    - **Its schedule** (gonkhub, 2026-10-21: "the surveyor flyer's shortwave broadcast needs to inform the
+      player of when its flyover will occur"). Tuned to its carrier while it's up, the dial reads a channel
+      of its own (`Radio.SURVEY`) and it reads out, in the bundled voice between its drones, when it's next
+      high enough over you to fire at a flare (`airdrop_elevation_degrees`), where to look and how high it
+      comes: "Surveyor · Due in 12 minutes · Bearing south-east · Elevation 56 degrees"; while it's up there,
+      "Surveyor · Here now · Light signal flare". `Airdrop.next_pass` looks four hours ahead, stepping as far
+      as its height can't reach the cannon's sooner (it never climbs faster than 6°/s), and the radio works it
+      out again every 30 s. It's on the survey's own AM carrier until there's shortwave
+      ([radio equipment proposal](../../look/radio_kit/README.md)), where it would move. Hearing it is
+      Flight Plan. Radio probe 47.
   - **The lantern** (gonkhub, 2026-10-19: "a satellite orbiting Tu, its broadcast accessible when it is on the
     side of the planet facing Zan. Not visible though"): StarCom's Tu survey probe, circling Tu 60 moon radii
     off, 1.8 of Tu's radii out, a lap in 11 minutes, its plane holding the line to Zan, so it swings round in

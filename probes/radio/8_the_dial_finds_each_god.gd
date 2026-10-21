@@ -1,9 +1,9 @@
 extends WeatherProbe
 ## Radio probe 8: the dial finds each god. Each god's carrier lies inside its
 ## own band and wanders each day, never more than carrier_drift_khz from the
-## day before. Tuned to it, the dial is on
-## that god; tuned halfway to the next carrier, it hears only static, and the
-## line says nothing but the frequency and static. Use sweeps up through every
+## day before. Tuned to it, the dial is on that god; tuned halfway to the
+## next carrier (off a satellite's), it hears only static, and the line says
+## nothing but the frequency and static. Use sweeps up through every
 ## carrier on the dial, the gods, the music, the beacon and the satellites on
 ## the air overhead, and then off.
 
@@ -42,8 +42,14 @@ func run() -> void:
 			"tuned to %d kHz, the dial is on %s" % [roundi(khz), Gods.title(id)])
 
 	var carriers := Dial.carriers(gods, t)
+	# A satellite overhead has its own carrier; the crop survey reads its schedule on it.
+	var x := world.world_x(radio.global_position.x)
+	var z := world.world_z(radio.global_position.z)
+	var overhead := Radio.constellation_of(world).carriers(radio.point_at(x, z), t)
 	for i in carriers.size() - 1:
 		var between: float = (carriers[i][0] + carriers[i + 1][0]) * 0.5
+		if overhead.any(func(each: Array) -> bool: return absf(each[0] - between) <= Dial.reach(world.tuning)):
+			continue
 		radio.frequency = between
 		check(radio.channel == Radio.STATIC, "between carriers, at %d kHz, only static" % roundi(between))
 	radio.frequency = (carriers[2][0] + carriers[3][0]) * 0.5
@@ -60,8 +66,6 @@ func run() -> void:
 	var all: Array[float] = []
 	for each in carriers:
 		all.append(each[0])
-	var x := world.world_x(radio.global_position.x)
-	var z := world.world_z(radio.global_position.z)
 	for each in Radio.constellation_of(world).carriers(radio.point_at(x, z), t):
 		all.append(each[0])
 	all.sort()
