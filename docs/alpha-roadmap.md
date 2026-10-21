@@ -111,17 +111,21 @@ rigging; preserve the player's control and the working physical constraints.
 
 | Next-pass work | Current status and acceptance |
 | --- | --- |
-| Manual sail hoist | Implemented; focused checks pass, integration CI pending: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. Starter/scenario and kept Nomad rigs include usable hardware; old saves retain their controls until converted. Unclaimed Nomad rig lines unload with their find and become ordinary saved lines when claimed. |
-| Sail removal, board-line detachment and ground-rope recovery | Implemented; focused checks pass, integration CI pending. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
+| Manual sail hoist | Implemented; all nine Linux groups passed in the isolated playtest candidate, landing and native checks pending: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. Starter/scenario and kept Nomad rigs include usable hardware; old saves retain their controls until converted. Unclaimed Nomad rig lines unload with their find and become ordinary saved lines when claimed. |
+| Sail removal, board-line detachment and ground-rope recovery | Implemented; all nine Linux groups passed in the isolated candidate, landing and native checks pending. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
 | Clear scenarios and craft naming | Landed; native checks pending. One clear-weather/radio/flare/drone setup, old names as aliases. Delivery craft is “the drone”; Surveyor origin and Guide retain their names. |
 | Vault feel | Landed after all nine Linux verification groups passed; native checks and human acceptance pending. Focused checks and the GPU fixture pass. Climb the measured ledge height with continuous travel through rounded corners, retaining obstruction and moving-deck checks. |
-| Radio controls and voices | Implemented; focused checks and 720p captures pass, integration CI pending: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
-| Halloran stock and cache | Implemented; physical pickup, save and migration checks pass, integration CI pending: ordinary pickup for visible coalcane; the completed burn unlocks physically preplaced rewards. Check individual claims, locked access, legacy saves and no duplication after return/reload. |
-| Halloran models and pipeline | Implemented; actual GPU captures inspected, integration CI pending: homes with constructed openings/repairs and a connected, supported pipeline with physical terminals. |
+| Radio controls and voices | Landed after all nine Linux groups passed; native acceptance pending. Focused checks and 720p captures pass: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
+| Halloran stock and cache | Landed after all nine Linux groups passed; native acceptance pending. Physical pickup, save and migration checks pass: ordinary pickup for visible coalcane; the completed burn unlocks physically preplaced rewards. Check individual claims, locked access, legacy saves and no duplication after return/reload. |
+| Halloran models and pipeline | Landed after all nine Linux groups passed; native acceptance pending. Actual GPU captures inspected: homes with constructed openings/repairs and a connected, supported pipeline with physical terminals. |
 
-These changes are separate from the 0.2.3 patch cutoff under verification. The
-0.2.2 tag remains unpublished after a failed release gate. Remaining next-pass
-implementation and checks must land before this table can describe them as built.
+The 0.2.2 and 0.2.3 tags remain unpublished. Although the bounded 0.2.3
+source eventually passed all platform checks, publication was withheld after a
+repeated-report interference bug was reproduced. The isolated 0.2.4 playtest
+candidate passed all nine Linux groups; its latest playtest exposed coil pickup
+and held-rope presentation follow-ups. These corrections require a fresh combined
+verification. Distant mountains and post-storm exposure changes are being verified
+separately. None of this marks camp retention, kites or pod starts as built.
 
 ## Consolidated feature register
 
