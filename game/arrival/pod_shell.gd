@@ -62,6 +62,7 @@ static func restore_skin(body: Chassis, kind: StringName = &"") -> void:
 	for child in deck.get_children():
 		if child is MeshInstance3D and child.get_meta(&"pod_skin", &"") == kind \
 			and child.get_meta(&"piece", deck) == body:
+			child.set_instance_shader_parameter(&"age", Paint.age_for(body, deck.durability))
 			return
 	var view := MeshInstance3D.new()
 	view.mesh = _armor_mesh() if kind == &"armor" else _heatshield_mesh()
@@ -70,7 +71,7 @@ static func restore_skin(body: Chassis, kind: StringName = &"") -> void:
 		view.set_meta(&"piece", body)
 	deck.add_child(view)
 	view.transform = body.pose()
-	view.set_instance_shader_parameter(&"age", Paint.age_for(body, body.durability))
+	view.set_instance_shader_parameter(&"age", Paint.age_for(body, deck.durability))
 
 
 static func _armor_mesh() -> ArrayMesh:
