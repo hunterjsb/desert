@@ -144,7 +144,7 @@ func steady_eye() -> Vector3:
 
 
 func _eye_drop() -> float:
-	return _tuning.crouch_drop * _player.low + _tuning.haul_sink * _player.sink
+	return maxf(_tuning.crouch_drop * _player.low + _tuning.haul_sink * _player.sink, _player.posture.eye_drop())
 
 
 func _process(delta: float) -> void:
@@ -195,7 +195,7 @@ func _process(delta: float) -> void:
 	_lean = _lean.lerp(upwind * t.wind_lean * strength, 1.0 - exp(-delta / LEAN_SECONDS))
 	_roll = _ease(_roll, -deg_to_rad(t.wind_lean_degrees) * upwind.x * strength, LEAN_SECONDS, delta)
 
-	_drop = _ease(_drop, _eye_drop(), EYE_SECONDS, delta)
+	_drop = _ease(_drop, _eye_drop(), _tuning.posture_camera_seconds if _player.ground_pose != &"stand" or _drop > _tuning.crouch_drop else EYE_SECONDS, delta)
 	var widen := 0.0
 	var fast := t.board_top_speed if ride != null else FAST
 	if speed > t.walk_speed:

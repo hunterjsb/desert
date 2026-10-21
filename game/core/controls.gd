@@ -8,7 +8,8 @@ extends Node
 const HELP := [
 	["MOVING", [["{move_forward}{move_left}{move_back}{move_right}", "move"], ["{sprint}", "sprint / vault"],
 		["{auto_walk}", "auto-walk"], ["{jump}", "jump"], ["{crouch}", "crouch, slide"],
-		["{ride}", "board on or off, up from the helm"]]],
+		["{ride}", "board on or off, up from the helm"], ["{sit}", "sit / stand"],
+		["{lie_down}", "lie down / stand; move to crawl"]]],
 	["HANDS", [["{hands_grab}", "take, put down"], ["{interact}", "use"], ["{hands_throw}", "throw"],
 		["{hands_rotate}", "turn what you hold"], ["{bring_near} / {push_out}", "nearer, further"],
 		["{reel_in} / {pay_out}", "reel in, pay out; tune a radio"],
@@ -58,6 +59,8 @@ const KEYS := {
 	"fly_down": KEY_C,
 	"jump": KEY_SPACE,
 	"crouch": KEY_C,
+	"sit": KEY_X,
+	"lie_down": KEY_Z,
 	"hands_grab": KEY_E,
 	"interact": KEY_F,
 	"inventory": KEY_TAB,

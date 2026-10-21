@@ -1793,3 +1793,20 @@ passes all original wind-deed goals and holds exactly full height on every
 one of 3,000 sampled ticks (21 s). The paired-keel yacht check passes (31 s),
 partial-height save/resume passes (11 s), and normal wheel winding, untouched
 sheet, brake and disconnect-lowering pass (13 s). Deed thresholds are unchanged.
+
+## Ground rest and crawling (2026-10-20)
+
+Sit and lie down toggle on supported ground. Directional movement rises from
+sitting; lying down instead permits a slow crawl. Jump first restores standing
+clearance. A blocked rise keeps the low posture and does not jump through the
+ceiling. Boarding or taking a helm also requires room to stand. Airborne,
+flying, riding, tumbling and seated helm states cannot enter ground rest.
+
+The collision capsule keeps its existing width and feet position, shortening
+to the seated or prone clearance; this is a movement proxy, not an authored
+player body. The camera eases to the corresponding eye height. Wind, slope,
+rope forces and moving supports continue through ordinary character movement:
+resting never anchors the player. Bare-ground sleep is offered from prone by
+ordinary use only after more specific interactions, with all existing sleep
+safety checks. Lying down alone never starts sleep. Saves retain the posture
+without earning the ground-rest deed on restore.

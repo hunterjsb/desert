@@ -1304,3 +1304,14 @@ static func current() -> Tuning:
 @export var horizon_drop_m := 8.0
 @export var mountain_rock := Color(0.38, 0.34, 0.30)
 @export var mountain_rock_height := Vector2(60.0, 180.0)
+
+
+@export_group("Ground posture")
+@export var posture_sit_height: float = 1.15
+@export var posture_prone_height: float = 0.7
+@export var posture_sit_eye: float = 1.0
+@export var posture_prone_eye: float = 0.5
+@export var posture_crawl_speed: float = 0.55
+@export var posture_camera_seconds: float = 0.22
+@export var posture_sit_catch: float = 0.6
+@export var posture_prone_catch: float = 0.25
