@@ -5,8 +5,7 @@ extends Node
 var arrival: SurveyorArrival
 var world: World
 var ship: SurveyorShip
-var computer: Control
-var _modal: CanvasLayer
+var computer: PhysicalLaunchStation
 var _cargo: Script
 var _disposed := false
 var _warp := 1.0
@@ -58,6 +57,10 @@ func setup(controller: SurveyorArrival) -> void:
 			Sphere.point(world.moon.latitude, world.moon.longitude), -world.moon.north().z, world.moon.radius)
 		state.landing_plan = LandingPlan.build(world.shape, anchor)
 	_view_plan()
+	computer = PhysicalLaunchStation.new()
+	ship.add_child(computer)
+	computer.setup(world, ship, state.landing_plan, _plan_changed)
+	computer.closed.connect(close_computer)
 	if fresh:
 		world.teleport(world.player, ship.spawn_at.global_transform)
 		world.player.velocity = Vector3.ZERO
@@ -83,7 +86,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func interact() -> bool:
-	if is_instance_valid(computer) or world.player.hands.held != null:
+	if computer_open() or world.player.hands.held != null:
 		return false
 	if world.arrival_state.preflight.seated:
 		launch()
@@ -99,7 +102,7 @@ func interact() -> bool:
 
 
 func take() -> bool:
-	if not world.arrival_state.preflight.seated or is_instance_valid(computer):
+	if not world.arrival_state.preflight.seated or computer_open():
 		return false
 	world.arrival_state.preflight.seated = false
 	_walk()
@@ -111,7 +114,7 @@ func take() -> bool:
 
 
 func hint() -> String:
-	if not is_instance_valid(ship) or is_instance_valid(computer) or world.player.hands.held != null:
+	if not is_instance_valid(ship) or computer_open() or world.player.hands.held != null:
 		return ""
 	if world.arrival_state.preflight.seated:
 		return "%s · launch pod   %s · leave seat" % [Controls.key_for(&"interact"), Controls.key_for(&"hands_grab")]
@@ -136,30 +139,25 @@ func _pod_aim() -> bool:
 	return toward.length() < float(_rules().interact_m) and -camera.global_basis.z.dot(toward.normalized()) > 0.65
 
 
+func computer_open() -> bool:
+	return is_instance_valid(computer) and computer.focused
+
+
 func open_computer() -> void:
-	if is_instance_valid(computer):
+	if computer_open() or not is_instance_valid(computer):
 		return
 	world.player.set_physics_process(false)
 	world.player.set_process_unhandled_input(false)
 	world.player.hands.set_process_unhandled_input(false)
 	world.player.suit.set_process_unhandled_input(false)
-	_modal = CanvasLayer.new()
-	_modal.layer = 105
-	add_child(_modal)
-	computer = LaunchComputer.new()
-	_modal.add_child(computer)
-	computer.setup(world, world.arrival_state.landing_plan, _plan_changed)
-	computer.closed.connect(close_computer)
+	computer.enter()
 
 
 func close_computer() -> void:
-	if is_instance_valid(computer):
-		computer.dispose()
-	computer = null
-	if is_instance_valid(_modal):
-		_modal.queue_free()
-	_modal = null
-	if is_instance_valid(world):
+	if computer_open():
+		computer.leave()
+		return
+	if is_instance_valid(world) and not _disposed:
 		_walk()
 
 
@@ -273,7 +271,9 @@ func dispose() -> void:
 	if _disposed:
 		return
 	_disposed = true
-	close_computer()
+	if is_instance_valid(computer):
+		computer.dispose()
+	computer = null
 	if is_instance_valid(ship):
 		ship.queue_free()
 	ship = null
