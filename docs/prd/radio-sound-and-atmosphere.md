@@ -1668,3 +1668,23 @@ Radio 38 and 47 pass alongside it in 7 and 8 seconds. Production radio code,
 glitch randomness, dropout lengths and the audibility threshold are unchanged.
 The prior CI failure reported the correct Eye stream at exactly -65 dB,
 consistent with its +15 dB base gain during an intentional -80 dB dropout.
+
+### Finite drone depth under the shared moon model (selected 2026-10-21)
+
+The earlier all-background proxy fix prevents the hull from painting over a
+foreground ridge. That conservative shortcut assumes the observer is below the
+drone: from above, it incorrectly puts the drone behind ground that is farther
+away. Replace it with actual finite depth along the proxy's unchanged camera ray.
+Scale camera-space vertices by slant/proxy_distance before projection and clamp
+only geometry beyond the far clip plane. Hull, atmospheric overlay and muzzle
+share this mapping; ordinary worn materials retain their compiled native path.
+
+The finite target may be below the observer and still above the ground. Determine
+planet occlusion from the segment's minimum altitude against SurfaceProjection,
+not the infinite sky horizon mask. Include observer altitude in the drone sight
+vector, preserving its ephemeris, angular art scale and every other orbital route.
+The signed dust column must agree when the same vertical path is reversed.
+
+Acceptance retains the foreground-ridge test and adds an above-drone observer
+with ground behind it, alongside ordinary shadow/material isolation. This is a
+presentation correction, not a general orbital physics simulation.
