@@ -89,3 +89,28 @@ ship controller appears. Its subsequent partially recovered resume still keeps
 the actual food in hand with no duplicate inventory grant. This establishes
 legacy compatibility under the new default; it does not replace interactive
 ship/cargo/launch or modal pause/save acceptance.
+
+## Physical launch station revision (selected 2026-10-21; implementation pending)
+
+The modal site grid and numeric heading controls failed the ordinary playtest:
+selected defaults looked ready without being confirmed, the map was ambiguous,
+and the player could not launch. Replace this interaction with an always-visible
+physical screen on the cabin computer, using the established Console display
+pattern and theme. Using it smoothly focuses the existing camera on that same
+screen and enables mouse interaction; leaving returns to the previous viewpoint.
+Do not open a separate planning window or require degree entry/readouts.
+
+Show Zan as a rotating globe with the ship, a single ejection impulse, its
+predicted descent path and landing footprint. Drag the impulse handle to explore
+approach and impact; communicate the result spatially and with brief plain words.
+Planet motion, orbital window and forecast must share one saved clock and frame;
+launch timing must affect the forecast consistently. Maintain the distinction
+between compressed navigation and lore/presentation scale, and between coarse
+orbital survey and actual validated terrain. Never claim illustrative albedo is
+precise terrain data, silently snap to unknown coordinates or bypass readiness.
+
+The station visibly reports course and cargo readiness; the pod approach also
+shows actionable launch blockers before entering. A default shown as ready must
+be genuinely committed. Loading, launching and save restoration must remain real
+ordinary interactions. This revision supersedes the numeric/modal UI above;
+prior measured results describe the previous implementation, not acceptance here.
