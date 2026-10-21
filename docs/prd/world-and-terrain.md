@@ -921,3 +921,20 @@ expanding the budget or hanging restore. Its unsupported outlier resumes at the
 actual saved pose using ordinary missing-ground safety; supported camps continue
 normal physics. Camp 5 also compares equal 10 s near/far power intervals. Existing
 origin-shift and unmarked camp warning/deletion checks pass (12 s and 129 s).
+
+### Orbital Surveyor arrival visual direction (2026-10-20; proposed implementation)
+
+The requested orbital opening needs a renderable spherical representation of Zan;
+current TerrainShape/FarRing are local flat ground. History/Sphere already supply
+seeded geography and landmark points, Geology supplies major scars/vents and
+DayCycle supplies sun/Tu directions. A bounded first implementation can render an
+orbital proxy sphere and actual pod, resolve a seeded landing point, preload its
+normal terrain patch and transition through entry dust to that local tangent
+scene. Preserve geographic heading and time; do not imply that a general seamless
+planet renderer or orbital physics simulator already exists. The orbital material
+and arrival controller are not built. The generated mockup is an art target only.
+
+Render Zan as a large desert moon with thin dusty air. The 150 km gameplay lap is
+compressed distance, not a claim that the lore body is a tiny asteroid. Follow
+the moon document for the larger physical scale, and preserve Tu's established
+apparent size and illumination rather than enlarging it just for spectacle.

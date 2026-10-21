@@ -964,3 +964,27 @@ the Guide. Dev probe 1 still expected only water, a ration and a bedroll, althou
 the run contained all four intended objects. Extend that existing exact gear list
 for the Guide; preserve its health, hunger, thirst, sealed-water and condenser checks.
 This changes the fixture only, with no scenario or supply behavior change.
+
+## Surveyor orbital arrival and surviving equipment (selected 2026-10-20; not built)
+
+Hunter selected the pod as the Surveyor's eventual replacement for an abstract
+starter kit: begin above Zan, be ejected toward the surface, land/crash in a pod
+made from real chassis pieces, and recover the equipment that survived. Resolved
+survivors form a seeded starting loadout; they are physical mounted/stowed objects
+and recoverable structure, not an extra inventory grant after the landing. Other
+origins keep their own starts. Preserve a viable survival opening, meaningful
+tradeoffs and player agency while varying damage and usable gear. Exact survival
+guarantees and damage distributions need balance before replacing the current kit.
+
+Resolve the opening once from the run seed and persist arrival phase, landing
+location, survivors, damage and teardown state. Resume must not reroll or duplicate
+equipment. Use the existing hands, chassis joining/mounting and salvage actions.
+The first camp comes from dismantling or adapting the landed pod. The guide gives
+the arrival purpose and a small first survey. Deed-unlocked origin variants remain
+a later extension; descent decision menus remain on the back burner.
+
+An orbital visual mockup is requested before implementation. A real orbital scene
+and ejection are the preferred presentation direction; a general orbital flight
+simulator or freely traversable spherical world is not required by this request.
+Keep today's Surveyor start available until the replacement's landing, recovery,
+survival and save/restore work together. Release placement remains undecided.
