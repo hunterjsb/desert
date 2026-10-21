@@ -5,6 +5,12 @@ game yet. The models use the game's own kit (`Paint.Pieces` and the worn
 shader). If they're agreed, they move into `game/look/dress.gd` and the
 catalog more or less as they are. Sheets are in `out/`.*
 
+*Since moved into the game (2026-10-21; the as-built account is in
+`docs/prd/radio-sound-and-atmosphere.md`): the crystal set, the makers' looks
+and band windows, the misc bay's modules, the antenna kite and the earth
+stake. The survey set was scrapped, and the antenna reel stands in for the
+lead and the kite hook.*
+
 What was asked for (gonkhub): three tiers of radio and several visual styles,
 upgrades, and exterior gear. Each band (AM, FM, shortwave) gets its own
 colour so you can see which one you're scrubbing. Specifically:
@@ -30,11 +36,11 @@ fitted. A converter's tell stripe is its band's colour too.
 |---|---|---|---|---|
 | **AM** | Amber (today's window) | 0–2000 kHz | 0 5 10 15 20 (×100 kHz) | Everything the game has now: the gods, music, beacon, satellites |
 | **FM** | Sea green | 88–108 MHz | 88 … 108 | Short reach, line of sight, no sky wave, but clean: storm static barely touches it (it's frequency, not amplitude). Camp-to-camp, the city's scouts close in, a beacon you're nearly on |
-| **SW** | Violet | 2–26 MHz | 2 … 26 | Bounces off the sky: far, faint, fading voices. Only really heard from a kite flown high. The Surveyor's schedule, distant stations, Varran "above the storms" |
+| **SW** | Violet | 2–26 MHz | 2 … 26 | Bounces off the sky: far, faint, fading voices. Only really heard from a kite flown high. The deliveryship's schedule, distant stations, Varran "above the storms" |
 
 **Shortwave reach** (gonkhub, 2026-10-21, revised the same day): satellites
 are heard only while they're up, faint and chewed up low over the horizon,
-gone below it. The Surveyor's schedule is read instead by Port Morgan
+gone below it. The deliveryship's schedule is read instead by Port Morgan
 Control Tower, an FM station on the port's mast, every 5 minutes. (Built on
 master with the radio progression; the tower is the home for the port's other
 worldbuilding broadcasts.)
@@ -49,7 +55,7 @@ worldbuilding broadcasts.)
 |---|---|---|---|---|
 | 0 | **Crystal set**: a coil wound on a food can with a slider down it to tune; a crystal in a cup touched by a cat's whisker; an earpiece on a cord; brass posts for an aerial and an earth. Held in one hand. Scrap (tin tray, can, bell wire) or second-age (saltwood board, ceramic former, cord) | None | None | Weak AM only: strong near carriers (the beacon, a god close by), nothing far. Its band strip is a scrap of amber paint on the tray |
 | 1 | **Field radio**: the one the game carries, its sockets made real | Battery or pool, 2 W | Converter bay (right cheek), battery (back), hook boss (top), misc bay (left cheek) | AM; FM or SW by converter |
-| 2 | **Survey set**: a colonial three-band receiver. A wide slide-rule dial with a scale per band (the one it's on lit), a band selector with a detent in each band's colour, a signal meter, bumper corners | Battery or pool, 3 W | Two bays, hook boss | AM and FM built in; SW by converter |
+| 2 | **Survey set** (scrapped by gonkhub, 2026-10-21): a colonial three-band receiver. A wide slide-rule dial with a scale per band (the one it's on lit), a band selector with a detent in each band's colour, a signal meter, bumper corners | Battery or pool, 3 W | Two bays, hook boss | AM and FM built in; SW by converter |
 
 **Makers' looks for the field radio** (`STYLES`), following the
 art direction's shape by era:
@@ -74,7 +80,9 @@ The field radio's sockets (gonkhub, 2026-10-21: "a slot for both"):
 
 - **Converter bay** (right cheek): a slot for each converter, FM and SW, so
   one set can hear all three bands.
-- **Misc bay** (left cheek): any one other module.
+- **Misc bay** (left cheek): any one other module. (In the game the
+  converters sit on the left cheek and the misc bay on the right, over the
+  power port; the crystal set has a bay on its tray.)
 - **Battery** (back): the game's battery, as now.
 - **Hook boss** (top): the kite's hook.
 
@@ -184,16 +192,17 @@ minutes, plus a little from winds past 14 m/s).
 
 ![static](out/static.png)
 
-## The Surveyor's schedule on shortwave
+## The deliveryship's schedule on shortwave
 
 (gonkhub, 2026-10-21: "the surveyor flyer's shortwave broadcast needs to
-inform the player of when its flyover will occur.") Frontier Ag's deliveryship
-announces its next pass over where you are, in the bundled voice
-(`RadioSpeech`, whose word bank already has *surveyor, due, in, minutes,
-bearing, elevation, degrees, signal flare*). For example: "Surveyor. Due in
+inform the player of when its flyover will occur"; the flyer is the
+deliveryship.) Frontier Ag's deliveryship announces its next pass over where
+you are, in the bundled voice (`RadioSpeech`, whose word bank has *due, in,
+minutes, bearing, elevation, degrees, signal flare*, but not yet
+*deliveryship*, which it spells). For example: "Deliveryship. Due in
 twelve minutes, from the north east, elevation seventy degrees." Once it's
-high enough to fire: "Surveyor overhead. Signal flare." Until the SW band
-exists, it's read on the survey's own AM carrier (320–350 kHz). Once SW
+high enough to fire: "Deliveryship overhead. Signal flare." Until the SW band
+exists, it's read on the deliveryship's own AM carrier (320–350 kHz). Once SW
 exists, the carrier moves there, so a kite rig is how you hear the schedule
 from afar. That's a reason to fly one.
 
@@ -206,11 +215,11 @@ from afar. That's a reason to fly one.
    yet"). Should a scorched (not burnt) piece just lose some soundness?
 4. **The crystal set's earpiece:** heard only by you, at hand. Should it
    still play into the world quietly?
-5. **Survey set:** a find (colonial deep layer), or kit for some origin?
+5. *(Settled 2026-10-21: the survey set is scrapped.)*
 
 ## Into the game
 
-1. Catalog: `crystal_set` and `survey_set` as devices (the radio flag; a
+1. Catalog: `crystal_set` (and `survey_set`, since scrapped) as devices (the radio flag; a
    `bands` stat). Modules as parts of a new socket kind `&"radio_bay"`,
    whose stats say what they add. `kite_hook` as a `&"radio_top"` part.
    `antenna_kite` as a device on a `Line`. `earth_stake` as a Stake with a
@@ -227,7 +236,7 @@ from afar. That's a reason to fly one.
    - an unearthed kite burns something in a breeze;
    - the stake keeps it safe;
    - a sandstorm ruins the kite;
-   - the Surveyor reads its schedule.
+   - the deliveryship reads its schedule.
 6. Deeds where it happens, for example "Grounded" (a first arc taken by the
    stake) and "Sky Wave" (a first shortwave voice heard).
 

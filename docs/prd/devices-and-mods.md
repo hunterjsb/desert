@@ -484,7 +484,7 @@ device already stays a body of its own on the host's power pool.
     draws hangs off it below, each device with what it draws now, a dark one marked,
     and their total. Under each device that can be worked is a row of switches, the one lit saying
     how it stands, and use on one works the device through its own use: a shield off, on or smart;
-    a radio's own controls, off or on, a sweep to the next carrier as its use does, and its
+    a radio's own controls, off or on, a sweep to the next carrier (its use did the same until 2026-10-21; use now only switches it on or off), and its
     volume down or up (the dial in [Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built));
     the deck's trays floating or resting; and a device's lamps
     on or off. Each switch logs what it did ("SHIELD SMART", "RADIO 262 KHZ", "DECK REST"). A device's lamps are switched only from here.

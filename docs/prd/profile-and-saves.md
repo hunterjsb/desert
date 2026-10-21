@@ -271,8 +271,11 @@ the frame is a part stuck on the deck.
 | Signals | **Line of Sight** | Hear an FM station come through quiet | First Light | `Radio`'s tick on the FM band: a station over its threshold enough to be quiet, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Whistler** | Hear a whistler on an antenna reel's wire, away from your camp's hum | First Light | `Radio`'s tick at the AM dial's bottom: a whistler falling while natural radio comes through whole on a long wire, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Foxhole Radio** | Hear a god inside its window on a crystal set | First Light | `Radio`'s tick on a god with a crystal set: its words useful, coming through and not cut, you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Close Listening** | Hear a god inside its window on a crystal set, through a headset | Foxhole Radio | the same tick as Foxhole Radio, with a headset in the set's bay and the set carried or in your hands (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Null** | Turn a radio until a god you hear falls silent | First Light | `Radio`'s tick on a god: one that would come through whole broadside to the set's ferrite rod, silent end-on to it, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Long Wire** | Hear a satellite clear on an antenna reel's wire strung from the radio | First Light | `Radio`'s tick on shortwave: an antenna reel's wire strung `sw_wire_m` or more from it and a satellite coming through whole, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Sky Wave** | Hear a satellite clear on an antenna kite flown from a reel | Long Wire | the same tick as Long Wire, with an antenna kite flying from the reel and adding gain (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Grounded** | Have an earth stake take a kite's charge to ground | Long Wire | `AntennaKite`'s tick: an earth stake set down by its reel or set dumping charge past its spark gap (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Storm on Tu** | Hear Tu roar on shortwave | First Light | `Radio`'s tick on the shortwave band: Tu's roar coming in as loud as an anomaly's crackle is a tell, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
 | Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
@@ -301,7 +304,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 65 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire, Null and Whistler since 2026-10-20; Flight Plan 2026-10-21), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 68 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire, Null and Whistler since 2026-10-20; Flight Plan, Foxhole Radio, Close Listening, Sky Wave and Grounded 2026-10-21), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -768,9 +771,10 @@ in9s with no assertion changes; other origin resources and the unlock are unchan
 
 **Up and Over (2026-10-20):** complete a swept on-foot vault onto a real walkable ledge. Recorded by LedgeVault only after the player establishes floor contact; a blocked or interrupted attempt does not count.
 
-### Surveyor delivery (2026-10-20)
+### Deliveryship delivery (2026-10-20)
 
-The first burning flare to call a real Surveyor delivery records `care_package`
+The first burning flare to call a real delivery from the deliveryship (the flying craft, called the Surveyor
+and then the drone until 2026-10-21) records `care_package`
 (**Care Package**, Signals, flare icon). The flare records it at the successful
 call, alongside its persistent one-call flag. Developer scenarios/commands do
 not award it, following the existing deed contract.
@@ -817,9 +821,17 @@ the default for saves written before this feature.
 ### Flight Plan (2026-10-21; implemented development)
 
 Flight Plan (`flight_plan`, signals family, radio icon) records the first time
-you hear Port Morgan Control Tower read the Surveyor's schedule on FM (Radio
+you hear Port Morgan Control Tower read the deliveryship's schedule on FM (Radio
 probe 47). With the radio progression's five, the roster is 64 deeds in eleven
 families.
+
+### Radio upgrades' deeds (2026-10-21; implemented development)
+
+Close Listening (`close_listening`, after Foxhole Radio), Sky Wave and Grounded
+(`sky_wave`, `grounded`, both after Long Wire), signals family, radio icon, bring
+the roster to 68 deeds in eleven families (`Deeds.TABLE`; 16 of them signals).
+Close Listening and Sky Wave are recorded by `Radio`'s tick, Grounded by the
+antenna kite's as an earth stake takes its charge (Radio probe 56).
 
 
 **Combined development resume check (2026-10-20).** The preparatory Sanddune

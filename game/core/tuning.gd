@@ -1074,8 +1074,8 @@ static var _current: Tuning
 @export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
 ## Frontier Ag's deliveryship (Deliveryship) is drawn this many times the size
-## DeliveryshipLooks builds it: 2.3 makes it about 940 m tip to tip, about 9
-## degrees across straight overhead.
+## DeliveryshipLooks builds it: 2.3 makes it about 940 m tip to tip, under 2
+## degrees across straight overhead from 30 km up.
 @export var deliveryship_scale: float = 2.3
 ## The Eye's drone comes now and then out of silences of between these many
 ## minutes, its first one included.
