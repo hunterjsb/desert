@@ -1179,7 +1179,7 @@ physical roles and idempotent appearance helpers. Flight, recovery and skin
 restoration have focused checks; combined CI and unassisted play acceptance
 remain pending.
 
-## The Surveyor's suit (2026-10-21; on review, `codex/player-body`)
+## The Surveyor's suit (2026-10-21; integration candidate)
 
 gonkhub, 2026-10-21: "start work on polishing, upgrading and implementing the
 player model you previously made. Need to see it in first person POV." The

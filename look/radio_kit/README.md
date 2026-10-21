@@ -16,6 +16,18 @@ colour so you can see which one you're scrubbing. Specifically:
 - a kite that wears like the sails and is ruined fast in a sandstorm;
 - several modular upgrades.
 
+## Integration status (2026-10-21)
+
+This folder preserves the modelling proposal and its experiments. Current runtime
+behavior is documented in [Radio, sound and atmosphere](../../docs/prd/radio-sound-and-atmosphere.md).
+The field radio already has functional FM and shortwave converters, band switching,
+ferrite-rod direction finding, natural radio and an antenna reel. Port Morgan Control
+Tower reads the crop survey's schedule on FM; satellites remain limited by their
+horizon. Crystal/survey receiver tiers, antenna kites, electrostatic burnouts and
+earth-stake protection below are proposals, not completed gameplay. The kite remains
+a Spaceport candidate. Older band/content tables below describe this lab's initial
+proposal and do not override the runtime PRD.
+
 The design follows below.
 
 ## Bands and their colours
@@ -184,7 +196,7 @@ minutes, plus a little from winds past 14 m/s).
 
 ![static](out/static.png)
 
-## The Surveyor's schedule on shortwave
+## The Surveyor's schedule on shortwave (historical proposal)
 
 (gonkhub, 2026-10-21: "the surveyor flyer's shortwave broadcast needs to
 inform the player of when its flyover will occur.") Frontier Ag's crop survey

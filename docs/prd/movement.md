@@ -885,7 +885,7 @@ carving out from camp fired it again, chime and all, and the line dropped and ca
 back; past the edge it said "lost in 0 s" until streaming let the camp's chunk go,
 seconds later on a busy machine.
 
-## Your body (2026-10-21; on review, `codex/player-body`)
+## Your body (2026-10-21; integration candidate)
 
 You have a body: the Surveyor's suit (`SurveyorLooks`, art direction), posed
 each frame by `Body` from how you move, with no shapes of its own.
@@ -906,8 +906,14 @@ each frame by `Body` from how you move, with no shapes of its own.
   middle, so looking down you see your boots and not the inside of your
   chest.
 
-Movement probe 39. Open: bring held things nearer, about 0.6 m, so your
-hands close on them?
+Body probe 39 passes on current master plus this candidate (9 s), alongside
+existing ground-rest/crawl and headroom probes 36/37 (6 s each). Actual unseen
+1280×720 captures cover standing, walking, held radio, crouching, sitting and
+prone, through the player's eyes and from outside. Looking down shows the boots;
+helmet/collar do not obscure the first-person view. Held-radio hands still stop
+short of the item at the existing hold distance. Combined CI and human acceptance
+remain pending. Open: bring held things nearer, about 0.6 m, so your hands close
+on them?
 
 ## Rules
 
