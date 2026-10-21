@@ -854,6 +854,8 @@ Releasing Use, opening a menu or aiming at device/ground work cancels the next
 transfer, leaving ends already gathered in hand. No dedicated action, instant
 waist-wide transfer, line fusion or automatic simultaneous reeling. A fresh
 Use with the held knot retains the ordinary waist/guide/device interaction.
+An already formed knot tied at the waist is one physical tie: returning it
+uses the existing one-second untie, like a stake carrying several lines.
 
 The first actual RopeTip remains the carried body. Each further original end
 is fitted into a real marked child Socket using the existing nested-part
