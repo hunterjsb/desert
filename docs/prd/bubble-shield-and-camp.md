@@ -472,3 +472,18 @@ Existing focused history checks remain the duplicate-sheet acceptance; this
 check adds the live-resource and membership combination rather than a second
 remote catch-up simulation. It does not establish the maximum camp budget or
 boarding/hoverboard travel acceptance.
+
+**Measured result:** Camp 9 passes in 24 s. It marks through the ordinary hands
+use path, keeps the unfrozen chassis and loose supply while 2.1 km away, samples
+Home's own geography/day/temperature, and runs ordinary automatic power ticks.
+The remote camp cell gains charge; total stored energy matches generation minus
+demand and spill. Shield shutdown, far save/restore and return preserve exactly
+one loose supply and one shield, with no ground rescues before or after restore.
+
+The matching Forward+ 1280×720 return capture passes and was inspected. Its 10 s
+remote interval generated 0.139396 Wh, consumed 0.008333 Wh and added 0.131063 Wh
+to the actual camp cell. After returning it reports four physical members, 289
+loaded chunks and 25 collision chunks. These are one clear-day, still-air,
+two-piece stationary camp measurements. The scripted scout relocation and camera
+helper do not establish hoverboard travel, human comprehension, storms, moving
+rigs or the maximum camp budget. No remote simulation code change was needed.
