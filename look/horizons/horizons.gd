@@ -12,16 +12,30 @@ func _ready() -> void:
 	Dev.hide_overlays()
 	Tuning.current().run_seed = 1234
 	Tuning.current().eye_adapts = false
-	Tuning.current().storm_threshold = -2.0 if OS.get_cmdline_user_args().has("--storm") else 2.0
+	var surveyor := OS.get_cmdline_user_args().has("--surveyor")
+	if not surveyor:
+		Tuning.current().storm_threshold = -2.0 if OS.get_cmdline_user_args().has("--storm") else 2.0
 	world = WORLD.instantiate()
+	if surveyor:
+		world.kit = Kit.standard()
 	add_child(world)
 	world.time_warp = 0
 	world.player.set_physics_process(false)
 	world.player.set_process_unhandled_input(false)
+	if surveyor:
+		var runs := Runs.new()
+		runs._begin(world)
+		runs.free()
 	await ground()
+	if surveyor:
+		world.set_meta(&"kit", Runs.kit(world))
+		await ground()
 	for layer: CanvasLayer in world.find_children("*", "CanvasLayer", true, false):
 		layer.visible = false
 	await shoot("spawn")
+	if surveyor:
+		get_tree().quit()
+		return
 	for shot in [[&"starcom", 15000.0], [&"starcom", 150.0], [&"observatory", 15000.0], [&"observatory", 4000.0], [&"observatory", 800.0], [&"observatory", 150.0]]:
 		var mark := world.shape.history.landmark(shot[0])
 		var p := Sphere.toward(mark.p, mark.bearing + 0.5, shot[1] / world.shape.history.radius)

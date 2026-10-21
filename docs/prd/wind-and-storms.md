@@ -1132,10 +1132,10 @@ in the living docs, so this PRD follows it as direction and says so on each line
 
 ## Storm wakes and expedition horizons (2026-10-20)
 
-The first-hour audit explains an easy-to-miss payoff: with the previous five-minute refill,
-none of sixteen natural dune ruins within 1 km of seed 1234's Surveyor start showed during
-that hour. Seeds 7 (fallback start) and 42 did expose some, but all three samples had zero
-visible ruin-minutes in clear air. A passing storm was often hiding its own reward.
+The first-hour audit starts each Surveyor run at the clear morning selected by `Runs`,
+not world time zero. With the previous five-minute refill, seeds 1234, 1 and 42 exposed
+3/16, 5/9 and 9/21 natural dune ruins within 1 km, but their clear-air opportunities
+totalled only 0, 1 and 3 ruin-minutes. A passing storm was often hiding its own reward.
 
 The storm still moves and refills sand quickly while its heart is present. In calmer air,
 refill now relaxes over eighteen minutes; history covers ninety minutes so that tail does
@@ -1151,9 +1151,13 @@ Existing geological plumes keep their sources, timing, sound and renderer. The f
 flank now reads the volcano's real elevation and pinned projection. Mountains enter the GPU
 wind-map height function too, so sand transport and lee rendering agree with their CPU ground.
 
-**Measured first hour with the wake:** on actual Surveyor starts for seeds 1234, 1 and 42,
-respectively 6/16, 2/9 and 2/21 natural dune ruins within 1 km showed at some point; 3, 2
-and 2 were newly revealed. Across those sites the clear-air opportunity totalled 10, 11
-and 7 ruin-minutes. This is an opportunity to notice and investigate, not a guaranteed
-find next to every camp. A controlled fifteen-minute stripping storm leaves a 6 m-deep
-site partly visible ten calm minutes later and buried again after ninety minutes.
+**Measured first hour with the wake:** using those same new-run mornings, 4/16, 7/9
+and 13/21 natural dune ruins showed at some point, all newly revealed. Their clear-air
+opportunities totalled 4, 8 and 16 ruin-minutes. These count visible sites per minute,
+not guaranteed visibility from the player's camp or one continuous viewing window.
+The earlier controlled audit at world time zero used the right starting ground but
+not the player's starting weather; it is superseded by this comparison. Reproduce
+with `look/exposure/first_hour.tscn`, adding `--baseline` for the old refill. This is an
+opportunity to notice and investigate, not a guaranteed find next to every camp. A
+controlled fifteen-minute stripping storm leaves a 6 m-deep site partly visible ten
+calm minutes later and buried again after ninety minutes.

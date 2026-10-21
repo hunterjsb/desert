@@ -51,7 +51,8 @@ at 15 km and 150 m, and the volcano at 4 km and 800 m. On this approach the broa
 volcanic shoulder hides the observatory from the foot; the rails emerge during the climb,
 visible at 800 m before the near mesh takes over. GPU wind-map heights agree with the CPU within
 7 mm in those captures. Mountain surfaces suppress the shading of dunes buried beneath them.
-The look harness is `look/horizons/horizons.tscn`; `--storm` exercises obscured views.
+The look harness is `look/horizons/horizons.tscn`; `--storm` exercises obscured views,
+and `--surveyor` captures the real new-run location, morning, facing and starting kit.
 
 ## Halloran's first playable ground (built, 2026-10-20)
 
