@@ -22,7 +22,8 @@ func run() -> void:
 	check(_lines()[1].route(hook.guide).is_empty(), "one original line passes through a real hook")
 	hands.reel.choose(_lines()[2].ends[1])
 	check(saves.save(world) and await resume(), "empty hands and selected waist end resume")
-	check(hands.held == null and hands.reel.chosen_body() == _lines()[2].ends[1],
+	check(hands.held == null and hands.reel.chosen_body() == _lines()[2].ends[1]
+		and hands.reel.line() == _lines()[2].rope,
 		"empty hands retain the chosen individual waist line")
 	var old: Dictionary = SaveFile.read(saves.path(), saves.KIND, saves.VERSION).data
 	old.hands.erase("chosen")
@@ -63,7 +64,8 @@ func run() -> void:
 	_check_group("held")
 	lines = _lines()
 	primary = lines[0].ends[1]
-	check(hands.held == primary and hands.reel.chosen_body() == lines[2].ends[1],
+	check(hands.held == primary and hands.reel.chosen_body() == lines[2].ends[1]
+		and hands.reel.in_hand() == lines[2].rope,
 		"the held primary and selected individual member return")
 	check(is_equal_approx(primary.mass, 3.0 * RopeBundle.own_mass(primary)), "loose primary carries all three end masses")
 
