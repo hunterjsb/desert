@@ -2002,6 +2002,11 @@ velocities; caching the full physics snapshot changes sequential contact respons
 
 ### Cache the chassis's ordered frame geometry (2026-10-21; selected experiment)
 
+A preceding scoped last-chunk/sample-array experiment preserved the printed
+physics outcomes but offered no measured benefit: mean falling CPU rose from
+13.427 to 13.667 ms/tick and settled CPU from 12.208 to 12.479 ms/tick in its
+four-run comparison. That sampler was rejected and is not part of this change.
+
 For the tipped chassis's own frame only, retain the ordered collision-shape
 references and each shape's eight local AABB endpoints. Keep every contact and
 its original order. Read current enable/socket flags, shape identity, local and
@@ -2017,3 +2022,34 @@ shape, changing its pose or shifting the origin cannot reuse stale world points.
 Measure the same 108-piece capsized fixture in candidate/baseline/baseline/
 candidate order and preserve its exact printed contact/motion outputs. Integrate
 only if the bounded measurement demonstrates a benefit.
+
+The 108-piece, 1,772 kg fixture compared verified source `59db765c` with the
+geometry-cache candidate, both with identical contact/model counters. In the
+four-run candidate/baseline/baseline/candidate order:
+
+| Whole-process CPU per physics tick | Baseline runs | Cached-geometry runs |
+| --- | ---: | ---: |
+| Falling | 13.708 / 14.000 ms | 13.521 / 13.854 ms |
+| Settled | 12.542 / 13.417 ms | 12.292 / 12.438 ms |
+
+The two-run falling medians are 13.854 → 13.688 ms (1.2% lower); settled medians
+are 12.979 → 12.365 ms (4.7% lower). Both paired comparisons improve, but the
+second baseline is noisier. This is a small bounded CPU benefit on a shared
+host, not recovery of the entire earlier correctness cost or a general frame
+budget. Cold-cache rebuilding, frequent geometry edits and other craft shapes
+have not been separately timed.
+
+Every printed non-timing field matches exactly across all four runs, including
+1,017 candidate corners per tick, 12.477 falling / 8 settled near contacts,
+2.223 / 3 impulses and the full final heel/speed/spin values. The native solver,
+terrain queries, transforms and ordered impulses are unchanged. Upright decks
+never enter this added frame-contact path; mounted-device frame traversal stays
+uncached.
+
+Focused Sail 4/24, World 4 and Devices 19/23 pass unchanged. World 13 compares
+the cached ordered geometry with the actual native-shape debug bounds after
+joins, legal reroot/detach, resource edits/replacement, pose/enable/order changes,
+mounting/removal and an origin shift; it passes in 5 s. This guard holds its
+fixture above sand to inspect geometry without applying impulses; the live
+108-piece A/B supplies the physical contact/motion evidence. Combined CI and
+native-platform acceptance remain the integration gate.
