@@ -1592,7 +1592,7 @@ meltdown clears any pending interference stutter. A fragment of the previous pla
 must not seek the new song back to an old position. Continuous reception keeps its
 existing glitches. The spoken-report probe exercises a restart during a stutter.
 
-### Radio acceptance observes complete frames and a clear carrier (2026-10-21)
+### Radio acceptance observes complete frames and steady gain (2026-10-21)
 
 Combined master acceptance exposed two fixture assumptions. With rendering capped
 at five frames per second, radio 39 reproduces both speech assertions failing:
