@@ -448,3 +448,8 @@ references are connected. A 2.1 km round trip/restore and remote battery draw pa
 The beacon model is one cached surface (1,164 triangles), inspected in real GPU
 captures. These checks cover a small camp; combined CI, larger camp budgets and
 unassisted expedition play remain acceptance gates.
+
+The Surveyor guide's scouting page now teaches taking out and mounting the packed
+beacon, marking with free hands, waiting for ready support and opening Home for
+return navigation. Compass, landmarks, mooring and weather preparation remain
+relevant; a saved fix does not provide shield power or protection.
