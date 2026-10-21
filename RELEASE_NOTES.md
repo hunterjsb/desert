@@ -7,6 +7,7 @@ Includes the sailing, traversal and exploration baseline described below.
   Starter and found rigs supply the hardware; fully hauled sails retain wind-deed progress.
 - Remove fitted sails and board rope ends, and recover loose ropes without losing anchors.
   Previously owned and older loose coils open into usable rope when picked up.
+  Remaining coils follow the active paying end and use layered rope windings.
   The authored yacht uses visible ballast, four hover trays and two centreline keels.
 - Show tuning controls in the radio close view and give stations distinct machine voices.
   New reports discard interference fragments left over from the previous playback.
