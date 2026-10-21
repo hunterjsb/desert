@@ -1098,3 +1098,15 @@ The three-seed check walks to actual survivors, fits a recovered cell and shield
 onto a real recovered panel through ordinary actions, and saves/resumes the camp.
 This establishes a bounded powered shelter; sustained solar balance and unassisted
 first-run comprehension remain separate acceptance work.
+
+**Measured acceptance.** The rebound-headlamp check passes through actual New
+Game → Surveyor (8 s). Real Forward+ walks on seeds 1234, 42 and 9876 recover
+the resolved cell and shield with bound take/place actions, mount both on a
+recovered panel, switch on its 2 W shelter and save/resume that powered assembly
+with player collision active. The eclipse runs use the ordinary headlamp action;
+inspected lamp captures make the opened shell, nearby supplies and new camp
+readable. Seed 1234 required walking around an occluding pod frame before taking
+the cell. This is physical line-of-sight behavior, not an inaccessible survivor.
+An initial angled solar-placement attempt overlapped other mounted equipment;
+solar assembly and sustained energy balance are outside this two-part shelter
+check. No generation, lighting, exposure, collision or attachment limit changed.
