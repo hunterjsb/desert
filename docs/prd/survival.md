@@ -967,6 +967,11 @@ This changes the fixture only, with no scenario or supply behavior change.
 
 ## Surveyor orbital arrival and surviving equipment (selected 2026-10-20; development implementation below)
 
+The [interactive ship preparation extension](surveyor-preflight.md), selected
+2026-10-21, adds a walkable interior, limited scouting/site selection and physical
+pod loading. It is in progress; the automatic arrival below remains the built
+baseline and the legacy-save path.
+
 Hunter selected the pod as the Surveyor's eventual replacement for an abstract
 starter kit: begin above Zan, be ejected toward the surface, land/crash in a pod
 made from real chassis pieces, and recover the equipment that survived. Resolved
