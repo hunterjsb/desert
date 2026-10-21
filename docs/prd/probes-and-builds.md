@@ -209,3 +209,19 @@ changes retaining game checks, moving game files into dashboard paths retaining
 game checks, failure blocking, both fallback dispatches, and docs-only skipping.
 Shell syntax, ShellCheck and both affected workflow lints pass. The routing change
 itself changes shared CI infrastructure and therefore takes the game-check path.
+
+
+### Run scatter plot (agreed 2026-10-21)
+
+Replace the history bars with a scatter chart before the selected-run tables.
+Horizontal position is the run's start date/time; vertical position is elapsed
+minutes, including waits and reruns. Plot the selected workflow's retained runs,
+so releases and probes are not mixed. Clicking a dot selects its run and refreshes
+the report. Dots expose date, duration, result and commit, support keyboard selection,
+and distinguish the selected run without relying on color alone. Keep date and
+minute axes visible; missing elapsed time is not plotted as zero.
+
+
+The SVG chart uses actual timestamps and elapsed minutes with labeled axes and no
+charting dependency. Desktop and 390 px browser checks passed for click and keyboard
+selection, the selected-dot ring, report updates and placement before the tables.
