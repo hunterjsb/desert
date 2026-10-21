@@ -52,9 +52,10 @@ func listen(delta: float, x: float, z: float, t: float) -> float:
 		var level := 0.0
 		var heard := {}
 		# Only one on the air, near enough the dial to hear and over the horizon
-		# is worth the storm on its way: most of them aren't, most of the time.
+		# (or anywhere, on shortwave, off the sky) is worth the storm on its way:
+		# most of them aren't, most of the time.
 		if sky.on_air(id, t) and absf(radio.frequency - khz) < far \
-				and sky.orbits[id].seen_from(p, t).elevation > 0.0:
+				and (radio.band == Radio.SW_BAND or sky.orbits[id].seen_from(p, t).elevation > 0.0):
 			heard = radio.receive_from(sky.orbits[id], khz, id, x, z, t)
 			level = Radio.audible(heard)
 		levels[id] = level
@@ -77,7 +78,7 @@ func listen(delta: float, x: float, z: float, t: float) -> float:
 		voice.bus = bus_for(id)
 		_shape_bus(id, shape)
 		# Chewed up as dirty as it comes through, and glitching.
-		Garble.shape(AudioServer.get_bus_index(bus_for(id)), GARBLE_FROM, heard.dirt, t, hash(id))
+		Garble.shape(AudioServer.get_bus_index(bus_for(id)), GARBLE_FROM, heard.dirt, t, hash(id), tuning.am_audio_hz)
 		var broke: Vector2 = _glitches[id].tick(delta, heard.dirt)
 		voice.volume_db += linear_to_db(maxf(broke.x, 0.0001))
 		voice.pitch_scale = maxf(0.05, voice.pitch_scale * broke.y)

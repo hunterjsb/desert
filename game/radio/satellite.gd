@@ -103,6 +103,9 @@ func _init(run_seed: int, tuning: Tuning, start: Vector3, orbit := {}) -> void:
 	if orbit.get("through", Vector3.ZERO) != Vector3.ZERO:
 		_through(run_seed, start, orbit)
 		return
+	if orbit.has("lagrange"):
+		_at_lagrange(run_seed, tuning, orbit)
+		return
 	var relay: bool = orbit.get("id", &"relay") == &"relay"
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([run_seed, "relay"]) if relay else hash([run_seed, "satellite", orbit.id])
@@ -189,10 +192,32 @@ func _round_tu(run_seed: int, tuning: Tuning, orbit: Dictionary) -> void:
 	altitude = far - 1.0
 
 
+## Hung at one of Zan and Tu's Lagrange points, since a moon that keeps one face
+## to its planet has no stationary orbit: one would need a lap as long as Zan's
+## round Tu, out past where Zan's pull holds anything against Tu's. L1 lies
+## between Zan and Tu, so from the near side it hangs beside Tu, never setting;
+## L2 behind Zan, over the anti-Tu point. Real relays loop round such a point on
+## a halo, as Queqiao loops past the Moon's far side to see both its lander and
+## Earth, and so does this: a slow ring across the line to Tu, wide enough to
+## see round the moon. Tu stands still in the moon's frame, so the point does too.
+func _at_lagrange(run_seed: int, tuning: Tuning, orbit: Dictionary) -> void:
+	var toward := Sphere.point(0.0, deg_to_rad(tuning.tu_longitude_degrees))
+	_around = toward * tuning.lagrange_radii * (1.0 if orbit.lagrange == 1 else -1.0)
+	_ring_r = tuning.halo_radii
+	_ring_u = Vector3(0.0, 0.0, 1.0).cross(toward).normalized()
+	_ring_v = Vector3(0.0, 0.0, 1.0)
+	period = tuning.halo_minutes * 60.0
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([run_seed, "satellite", orbit.id])
+	_phase = rng.randf() * TAU
+	altitude = tuning.lagrange_radii - 1.0
+
+
 ## How far round to Zan's side of Tu it is at world time t, 0 at Tu's limb
-## or behind it, 1 straight between Tu and Zan; 0 for an orbit of Zan.
+## or behind it, 1 straight between Tu and Zan; 0 for an orbit of Zan, or one
+## hung at a Lagrange point.
 func facing(t: float) -> float:
-	if _ring_r <= 0.0:
+	if _ring_r <= 0.0 or _around.length() < 30.0:
 		return 0.0
 	return maxf(0.0, (at(t) - _around).normalized().dot(-_around.normalized()))
 

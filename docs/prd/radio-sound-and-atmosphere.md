@@ -178,6 +178,8 @@ terminals" by Hunter's call. The squatting oracles above are now the gods.
   its pitch sliding with the storm's warp, and as loud at its peaks as Clear Skies (Hunter: "stoker track
   too quiet"). Both come through like any signal: down by the root of how clean it is,
   silent while it's cut, and never started over by a dropout.
+  *Superseded 2026-10-20: the relay now hangs at L1 beside Tu and sends the music on the FM band, and the
+  1020 kHz music comes from Port Morgan's own mast (Bands, below). The passes described here are gone.*
   **The relay** (Hunter, 2026-10-18: "Tie the existing music channel to an orbiting satellite, loosely
   simulate this satellite's position in orbit and give it interference just like the other freqs based on
   it's simulated position," and "Make the satellite visible in the night sky if it's overhead"): the
@@ -356,7 +358,8 @@ they swap to their next saved frequency."*
   skirt: `dial_skirt_share` (0.35) over `dial_skirt_khz` (20) either side (`Dial.heard`). So 10 kHz off a
   carrier you hear about a fifth of it, at 50 kHz nothing. The dial counts the nearest god, music or beacon
   within 30 kHz (`Dial.reach`) as the one it hears, so tuning toward one brings it in faint, then whole.
-- **The constellation** (`game/radio/constellation.gd`). Thirteen satellites, the relay among them, each from an
+- **The constellation** (`game/radio/constellation.gd`). Thirteen satellites, the relay among them (fourteen since
+  2026-10-20, with the sextant), each from an
   era, in a band of its own (its carrier a fresh place inside it each moon day), on a route of its own,
   and each its own in the night sky by colour, shape (a point, a cross, a bar, a ring, a pair or a
   diamond) and size; one blinks. A radio hears each while it's over the horizon
@@ -477,13 +480,16 @@ they swap to their next saved frequency."*
   (radio probe 28), never fewer than two: two 20.5% of the time, three 42.5%, four 33.8%, five or six 3%.
   Storms can still cut them, as they do any signal. Use's sweep stops on the satellites overhead too.
 
+  *The bands below were on the AM dial; since 2026-10-20 every satellite is on shortwave (Bands, below).*
+
   | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
   |---|---|---|---|---|---|---|
-  | The relay | colonial | 1020 | white point, glinting | an ellipse (0.3) about 3 radii, 6.5 min, swinging round | the music, as before | a slow tumble: swells and fades every 20 s |
-  | Thermal | Frontier Ag | 320–350 | a great dark hull against its own amber running lights | 6 km up, 7.95 min, over Port Morgan every lap, swinging 37° a lap round it; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
+  | The relay | colonial | the FM band (since 2026-10-20) | white point, glinting | hung at L1 beside Tu, on a halo 0.9 radii across, 10 min (since 2026-10-20) | the music | a slow tumble: its glint |
+  | Thermal | Frontier Ag | 320–350 | the modelled craft | 6 km up, 7.95 min, over Port Morgan every lap, swinging 37° a lap round it; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
   | Sounder | StarCom | 560–590 | lime diamond | formation, plane 1 | the storm's roar | pitch wandering; brighter by day |
   | Lantern | StarCom | 1590–1620 | never seen | round Tu, 60 radii off, 11 min; heard only on Zan's side of Tu | the day song, slowed | faint; clearest straight between Tu and Zan |
-  | Pendulum | StarCom | 700–730 | cyan cross | formation, plane 2 | a ping, pulsed | its tick quickening toward the eclipse |
+  | Pendulum | StarCom | 700–730 | cyan cross | hung at L2 over the far side's middle, on a halo (since 2026-10-20) | a ping, pulsed | its tick quickening toward the eclipse |
+  | Sextant | StarCom | 975–1000 | pale blue point | formation, plane 2 (since 2026-10-20, in the Pendulum's place) | a quick double ping (placeholder) | pitch by its height |
   | Windsock | StarCom | 1032–1060 | green ring | formation, plane 3 | the wind | loudness and tone by the wind; grit by a storm |
   | Choir | colonial | 430–470 | lavender pair | formation, plane 4 | the Eye's drone | pitch sinking with the sun; tone drifting |
   | Babel | the war | 1290–1340 | red diamond, blinking | formation, plane 5 | tones, chirped | pulse and pitch wandering; grit by an anomaly |
@@ -567,6 +573,223 @@ they swap to their next saved frequency."*
   dunes, and shoots each in the middle of the frame with a crop round it blown up four times, printing how
   high each is, how far from Tu and how bright it shows; `look/dial` marks three frequencies in a profile of
   its own, so their ticks and the lamps show.
+
+### Bands: the ceiling, the sets and who's on the air (agreed, 2026-10-20; partly built)
+
+*From a research session with gonkhub, 2026-10-20: "distinguish between frequency ranges and radio technology as a
+progression lever ... add more sonic areas to unlock and explore," and "I want this to feel grounded in actual
+tech." The pitch was approved whole: "all your suggestions look good."*
+
+Two rules from real radio carry this. **The band decides how far a signal goes; the modulation decides what it takes
+to hear it and how it sounds.** And **the air has a ceiling:** the charged layer high in Zan's air (its ionosphere,
+fed by Tu's belts) that bounces the dial's night sky wave back down also turns back anything under a few MHz sent
+from above. So nothing in orbit can be heard on the 0–2000 kHz dial, and the constellation goes up through the
+ceiling to bands of its own, each needing a part to hear. What's under the ceiling is the ground's: the gods,
+beacons, the nomads' relics, the living city.
+
+**The band map.**
+
+| Band | Gets there | Hearing it | Draw | Who's on it |
+|---|---|---|---|---|
+| Natural radio, 0–30 kHz | moon-wide | a long wire and an amplifier | ~0 | the clicks of charged-dust storms' discharges before the storm shows, whistlers, chorus near the poles; your own base's hum masks it |
+| LW/MW, 30–2000 kHz (the dial as built) | ground wave, and at night past the skip | crystal set, then the transistor set | 0, then 2 W | the gods; beacons sending their names in Morse; distress beacons on 500 kHz in wrecks; the nomads' ghost relay; the living city's homing carrier (only something kilometres across can send low frequencies well); the port's music, thin |
+| Shortwave, 2–30 MHz | skip, with a dead zone between | a wire dipole on ropes or a kite | ~1 W | Tu's roar on a timetable; weather maps by fax; wartime numbers and the jammer; the formation, low in the band's top |
+| VHF/UHF, 30 MHz–1 GHz | line of sight: height is range | the FM converter, then an FM set; a whip; a handheld beam | 0.5–2 W | Port Morgan's FM station; the living city's scouts; ruin intercoms; the skimmer field's navigation beacon; the relay at L1 |
+| L/S, 1–4 GHz | space | dish, LNB and decoder | 5–10 W | a digital bundle; the crop survey's downlink |
+| X, 8 GHz and up | deep space | a big dish and a cooled amplifier | high | Varran, and the far end of the lane, from the far side's quiet |
+
+**Three sounds, one a technology.** AM hisses and crackles in a storm, whooshes as it fades at night, whistles where
+two carriers beat, and is thin (about 5 kHz of audio). FM is near silent and full range; where two share a frequency
+the stronger takes it whole (the capture effect) and the weaker is gone, not mixed; at its fringe hiss breaks in
+all at once and it flutters as you walk between dunes. Digital is perfect or nothing: a short blockage rides on its
+buffer, a long one mutes, and between the two it warbles and stutters (the glitch chain as built is digital's).
+
+**The set is a chain of parts:** antenna, front end (a converter or an LNB), set, decoder, and a speaker or a
+printer. Each is a find or a build that plugs in; a band switch on the set's face lights only the bands its parts
+reach. Receiving is cheap, as in real radio, so upgrades are **gain** (antenna size and aim), **quiet** (amplifiers;
+cold nights really are quieter), **knowing** (time, place and an orbit's elements to aim a tracking dish: the Eye
+and the Pendulum become prerequisites) and **talking back**, where the real power goes.
+
+**Stationary points.** A tidally locked moon has no stationary orbit: one would need a lap as long as Zan's orbit of
+Tu, about 49,000 km out at the leaning size, past the 30,000 km where Zan's pull holds anything against Tu's. The
+real answer is the Lagrange points' halo orbits: **L1**, between Zan and Tu, hangs near Tu in the near side's sky,
+looping slowly round its point (half a day a loop); **L2**, behind Zan, hangs straight over the anti-Tu point, the
+observatory, as Queqiao hangs past the Moon's far side for Chang'e 4. A halo is wide enough that each sees the
+other round the moon, so the port's signal can go Port Morgan → L1 → L2 → the far side. The Rim sees both, low on
+opposite horizons. The music's relay goes to L1, and the Pendulum to L2.
+
+**Decided with it:**
+- The port also sends the music on 1020 kHz from the ground, thin, carrying as AM does by day and far at night;
+  the relay at L1 sends it full, on the FM band.
+- The FM converter is the first step, as the 1960s converters for AM car radios were: it takes FM, turns it to a
+  carrier the set already tunes, and plays as thin as the set does. A real FM set is the second.
+- "Always two overhead" (radio probe 34) moves with the formation to the shortwave band's top, where a wire hears
+  it (real satellites have sent at 29 MHz); a satellite leaving the formation is replaced in its plane.
+- Talking back is allowed with machines only (no NPCs): commanding the Surveyor's cannon, a satellite's stored
+  dump. It's also how Daventry could hear you.
+
+**Slices, each landing on its own:** this map (docs); the band switch, the FM band, the converter and Port Morgan's
+FM by line of sight; the relay at L1 and the Pendulum at L2; the constellation to shortwave and Tu's roar; then the
+crystal set and kite, the loop's direction finding, natural radio, the dish, and the uplink.
+
+**The FM band, as built (2026-10-20, slice B):**
+- **The FM converter** (`fm_converter`), a radio mod: a gunmetal box with its own small dial, an AM/FM throw
+  and a short whip, 0.6 kg, drawing 0.5 W from the radio's battery or pool. It fits a new socket on the
+  radio's left side (kind `radio_mod`). Found on colonial and First Kingdom shelves and in a relay mast's
+  cabinet; the creative menu has it beside the radio.
+- **The band switch** is a new action on the radio the tuning actions work (the one you look at, on a
+  Console you look at, or in your hands): from the AM dial to the FM band and back, with a burst of
+  static, only with a converter fitted. Each band keeps its own place. Take the converter off and the
+  radio is back on the AM dial where it was.
+- **The FM dial** runs 87.5 to 108 MHz, a notch 0.1 MHz and a fine step 0.02 (`fm_notch_mhz`,
+  `fm_fine_mhz`), spun fast as the AM dial is; a station comes in 0.08 MHz either side and has no skirt
+  (`fm_width_mhz`). The needle spreads the band over the same window. The look-at line reads
+  "Radio · 96.7 MHz". Use sweeps to the next station, and off past the last. Marks work on either
+  band and show on the band they're on.
+- **Port Morgan's station**, on its 60 m mast in the port (`fm_mast_m`), on an odd tenth of a MHz the
+  seed picks, locked there as real stations are. It plays the port's music, the songs the relay carries.
+- **Line of sight** (`Fm.margin`): a station clears the noise by 30 dB a kilometre off with nothing in
+  the way (`fm_margin_db`), less 6 dB each time the distance doubles past that, less the worst edge between:
+  the ground read at 24 points on the way, raised by the moon's curve as radio sees it (4/3 of the
+  true radius, `fm_bend`), each against the line between the antennas, scored by knife-edge
+  diffraction (ITU-R P.526's approximation), so a station fades in as you crest a rise. Seed 1234,
+  radio probe 48: 800 m from the port at 1.5 m up, 29.5 dB; 9 km off on the ground, -16 dB; 9 km off,
+  2.5 km up, 10.9 dB. On the ground Port Morgan's station is a local one.
+- **Its sound.** Over the threshold (0 dB, `fm_threshold_db`) it quiets over 14 dB (`fm_quiet_db`);
+  under it, hiss takes it. No storm static and no anomaly crackle: the limiter clips both. A station's
+  bounce off the ground fades it as the radio moves, a dip every half wavelength or so, some deep
+  (`Fm.fade_db`): strong, it rides over them; near the threshold walking it flutters, and a step out of
+  a dip brings it back. Of two on one frequency the stronger takes it whole, and within 2 dB of each other
+  they fight (`fm_capture_db`); with one station that's waiting for a second. Through the converter it
+  plays as narrow as the AM set does.
+- **AM is narrow now:** everything on the AM dial, the satellites too, plays up to 5 kHz at its
+  cleanest (`am_audio_hz`, through `Garble.shape`'s new `top`), where it went up to 16 kHz. AM's
+  own sound, and the gap a real FM set will open.
+- **The deed** Line of Sight: hear an FM station come through quiet.
+- **Probes:** radio 42 (the converter reaches FM and its loss takes it away) and 43 (height is range).
+- **Not yet:** a second FM station for the capture effect to be heard; an FM set that plays it wide;
+  FM's own scale painted on the face.
+
+**The relay at L1 and the Pendulum at L2, as built (2026-10-20, slice C):**
+- **The Lagrange points** (`Satellite._at_lagrange`): 8 moon radii from Zan's middle toward Tu (L1) and
+  away (L2) (`lagrange_radii`), each satellite looping round its point on a halo 0.9 radii across the line
+  to Tu, once in 10 minutes (`halo_radii`, `halo_minutes`), its place on the halo the seed's. Tu stands
+  still in the moon's frame, so the points do too.
+- **The relay hangs beside Tu.** From where a run begins it stands a few degrees off Tu all day and never
+  sets, looping slowly (radio probe 13); it holds its place while the stars turn past (probe 17). It's
+  drawn as before, a glinting point while sunlit. It's never up on the far side.
+- **The relay sends the music on the FM band**, on its own odd tenth of a MHz at least 1 MHz off the
+  port's (`Fm.stations`). A dish aimed at Zan gives it 55 dB over the port's station (`relay_fm_db`), less
+  its spreading over the distance; the ground near you toward it is read out to 3 km
+  (`fm_sky_reach_m`), the curve falling away, a knife edge for the worst (`Fm.sky_margin`), so low on the
+  horizon, toward the Rim, a dune can hide it. A storm doesn't touch it. With a converter, the music is
+  clean anywhere on the near side Tu shows, every hour, as thin as the AM set plays.
+- **The AM music comes from the port's own mast** on 1020 kHz (`Radio.receive_music`), as strongly as the
+  Ledger sends, carried as AM is: a short ground wave by day at that frequency, round the moon past the
+  skip at night, through the storm between as a god's is. At the start, 44 km off, it's faint and chewed
+  up by day and clean at night; on the far side it comes only at night (probe 19, the **"far_storm"**
+  scenario now at night). The relay's Doppler slide on it is gone.
+- **The Pendulum hangs at L2**, over the anti-Tu point where the observatory stands: heard only from the
+  far side and the Rim. It stays on its 700–730 kHz band until the constellation goes up through the
+  ceiling (the next slice).
+- **The Sextant** takes the Pendulum's plane in the formation, so "always two overhead" still holds
+  (probe 34): StarCom's navigation beacon, a pale blue point, a quick double ping whose pitch climbs as it
+  does, on 975–1000 kHz.
+- **The "night" scenario** faces the relay beside Tu, 10–50° up; "relay_up" is gone with the passes.
+- **Probes:** 13 rewritten (the relay hangs beside Tu), and 17, 19, 31, 32, 35, 36 and 38 follow the
+  relay's move: no passes, no ellipse, the music at night where they needed it clean.
+- **Not yet:** a link from L1 to L2 carrying the music to the far side; Tu's shadow on the relay in the
+  eclipse.
+
+**The constellation through the ceiling, and Tu's roar, as built (2026-10-20, slice D):**
+- **The shortwave converter** (`sw_converter`), the FM converter's sibling: the same gunmetal box with an
+  amber band and two brass wire terminals on its top in place of a whip, 0.6 kg, 0.5 W. The radio's left
+  side now takes two radio mods one over the other, so both converters fit. Found on skimmer-era shelves and
+  in a relay mast's cabinet; in the creative menu beside the FM converter.
+- **The band switch goes round** AM, FM and shortwave, skipping a band without its converter.
+- **The shortwave band** runs 2 to 30 MHz, the dial going on in kHz past the AM dial's top (`Shortwave`),
+  a notch 25 kHz (`sw_notch_khz`) and a fine step 1 kHz; the look-at line reads "Radio · 29.07 MHz". The AM
+  dial and shortwave share one `frequency`, each band's place kept while the other's in use (`am_khz`,
+  `sw_khz`), so the AM dial's listening, skirts and jammer work on shortwave unchanged. Nothing on the
+  ground sends there; use sweeps the satellites overhead.
+- **The satellites are on shortwave and nowhere else**, above the ceiling (radio probe 49: with satellites
+  overhead, nothing along the whole AM dial; on shortwave, tuned to one, it's there). The formation's eight
+  pack side by side at 29 MHz, 30 kHz apart, so their skirts overlap and the jammer buries its neighbours:
+  the sounder 29.00–29.02 MHz, the sextant 29.03–29.05, the windsock 29.06–29.08, the choir 29.09–29.11,
+  babel 29.12–29.15, the lullaby 29.16–29.18, the tollgate 29.19–29.21, the metronome 29.22–29.24. The rest
+  lower down: the ghost 3.2–3.5, the cinder 7.10–7.175, the Pendulum on 10 MHz exactly (a time signal, as
+  WWV's is, fixed), the crop survey 14.2–14.3, the lantern 21.5–21.6. Their sound, LFOs and looks are
+  unchanged; "always two overhead" now needs a shortwave converter to hear.
+- **Tu's roar** (`Shortwave.roar`): on shortwave from 15 MHz, full from 21 (`tu_roar_khz`), wherever Tu is
+  up, the stronger the higher, never on the far side. Tu storms only while Zan is within half of 0.12 of a
+  day of 0.25 or 0.67 round its orbit (`tu_roar_phases`, `tu_roar_window`), as Io gates Jupiter's loudest
+  storms, and while Tu's turn has its source within 1.2 rad of facing Zan (`tu_roar_turn`): a timetable to
+  learn. In a storm it comes in slow swells, a long burst every second or two, the static pitched down on
+  a voice of its own (placeholder), under what else plays. Seed 1234 at the start, 22 MHz: 13 dB in a
+  storm, silent out of one (probe 50). The deed **Storm on Tu**: hear it.
+- **Probes:** 44 (the ceiling) and 45 (Tu roars on a timetable); 8's sweep no longer meets satellites on
+  the AM dial, and 31's overlap is two of the formation's side by side on shortwave.
+- **Not yet:** a kite to lift the wire; skip and dead zones for ground stations on shortwave; the satellites that belong higher still (VHF, the
+  dish's bands); Tu's short bursts, its "popcorn"; gonkhub's own sound for the roar.
+
+**A long wire, as built (2026-10-20, slice E; reworked 2026-10-21 as the antenna reel):**
+- *First built as a rope line hooked to a ring on the radio's top and strung to a stake. gonkhub, playtesting,
+  2026-10-21: "using a rope for a line to the stake doesn't make much sense, and using a stake in this way is
+  not intuitive at all." Chosen instead: a reel now, a kite later to lift it.*
+- **The antenna reel** (`antenna_reel`, `AntennaReel`), after the reel of aerial wire in the WWII survival
+  radios' kit: a drum of copper wire between gunmetal cheeks, 0.8 kg, carried or stuck anywhere. Use it on a
+  radio, in your hands or looked at, and its wire clips to the set's aerial terminal; carry it off and the
+  wire pays out with you, drawn from the set to the reel; set it down or stick it on anything and it stays
+  strung. Use it again and it reels in. Past its 30 m of wire (`antenna_reel_m`) the clip pops off the set.
+  The look-at line gives how far it's strung. In the creative menu beside the converters; found on
+  skimmer-era shelves. The radio's ring is gone.
+- **On shortwave, the wire is gain** (`Radio.antenna_gain`, `Radio.wire`: the longest wire strung from a reel
+  clipped to it, and the higher of that wire's ends over the ground): on a converter's terminals alone the
+  set hears a quarter of what's sent from above the ceiling (`sw_bare`), so a satellite comes through chewed
+  up and Tu's roar is faint; strung out 10 m (`sw_wire_m`) it hears all of it, three quarters with both ends
+  low on the sand (`sw_wire_low`) and fully once an end is 3 m up (`sw_wire_high_m`), the reel stuck on a mast
+  or a deck. On the AM dial a wire adds nothing: the world's own noise is the floor there, as in real radio
+  below a few MHz. Seed 1234: the crop survey overhead, dirt 0.65 on the terminals, 0.03 on 10.4 m of wire
+  (radio probe 51). Probe 54: the reel clips, pays out, reels in and pops off past its end.
+- **The deed** Long Wire: hear a satellite clear on an antenna reel's wire.
+- **Not yet:** the kite, after the Gibson Girl's box kite, to lift the reel's end on the wind; a save keeps
+  the reel and the radio but not the clip between them.
+
+**The ferrite rod's null, as built (2026-10-20, slice F):**
+- **The radio is its own direction finder** (`Radio.rod`): its ferrite rod lies along the set's width, as a
+  real AM set's does, or across your view while you carry it. On the AM dial a god, the port's music and the
+  living city's chatter come in whole broadside to it, and its gain control holds them there as it turns,
+  until within about 15° of end-on (`rod_width`, the sine of the angle off its axis) they fall into its null,
+  down to 3% of their strength (`rod_null`). So turning the set, or yourself with it, finds a station's line
+  by its silence: facing a station while carrying the set, it's at its loudest; a quarter turn and it's gone.
+  The line runs both ways, so a null alone leaves which way open.
+- **The night effect** (`Dial.by_sky`): a station heard by night's sky wave, past the skip, comes down from
+  above and wanders, so its null is only so deep (`rod_night_null`, 45%): night bearings can't be trusted, as
+  real direction finders found. Seed 1234 at the start: the Quartermaster by day, whole broadside, silent
+  end-on; the Almanac by night 58 km off, 0.33 clean end-on (radio probe 52).
+- **The deed** Null: turn a radio until a god you hear falls silent.
+- **Probes:** 47 (the rod's null); 7, 11 and 14 stand their radio broadside to the god they hear
+  (`WorldProbe.broadside`), since a set at any angle might have its god in the null.
+- **Not yet:** a sense antenna to tell which way along the line, and a loop to take the rod's place for
+  sharper bearings; the shortwave and FM bands have no rod.
+
+**Natural radio, as built (2026-10-20, slice G):**
+- **The bottom of the AM dial**, under 20 kHz and fading out by 30 (`Natural`): nothing is sent there; a long
+  wire hears the moon's own. The ferrite rod hears none of it, as a real one doesn't: only an antenna reel's
+  wire does, all of it strung 10 m (`sw_wire_m`).
+- **Sferics:** each discharge of the sand charging up in a storm is a click (the receiver's tick, pitched
+  each time, placeholder), heard far off: the storm field read along eight ways out to 30 km
+  (`vlf_reach_m`), each storm counting less the farther it is, and the clicks quickening from 0.4 a second
+  with nothing about to 30 with a storm on you (`vlf_rate`). So you hear a storm coming long before it
+  shows. Seed 1234: 3.7 a second with a storm 20 km off, 28 at 2 km (radio probe 53).
+- **Whistlers:** once in each 40 s (`vlf_whistler_every`) one may come, the likelier the more storm about and
+  likelier by night, falling over 2.2 s (the shield's hum swept down, placeholder): a discharge's crackle
+  caught in the field lines of Tu's magnetosphere and drawn out.
+- **Your camp hums over it:** gear drawing power in the radio's pool, 10 W of it (`vlf_hum_w`), masks
+  natural radio under a hum (the tug's hum, placeholder), so you walk out away from your gear to listen, as
+  real VLF listeners do. A Console drawing 4 W: 0.65 of it through (probe 53).
+- **The deed** Whistler: hear one on an antenna reel's wire, away from your camp's hum.
+- **Not yet:** the dawn chorus near the poles; gonkhub's own sounds for sferics and whistlers.
 
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
@@ -1023,7 +1246,9 @@ plumes are [Wind & storms](wind-and-storms.md#plumes)'):
   *The skeleton sounds a station's tones and puts one line of words low in the view, as
   a stand-in.*
 - **Exactly how far does a radio reach,** and how much does an antenna add? *First
-  number: a beacon is heard from 3 km.*
+  number: a beacon is heard from 3 km.* Partly answered by the bands (above, 2026-10-20): under
+  the ceiling a bigger antenna adds little, since the world's own noise sets the floor; above it
+  an antenna is gain, and the price of gain is aim.
 
 The Console and sleep sessions (2026-10-17) add three. Each is quoted on both sides and left
 standing.

@@ -1319,7 +1319,7 @@ func _work_dial(radio: Radio, to: StringName, called: String, _text: String) -> 
 		radio.interact(null)
 	elif not radio.turn_volume(1 if to == &"louder" else -1):
 		return
-	_say("%s %s" % [called, ("%d KHZ" % roundi(radio.frequency) if radio.on else "OFF") if to == &"sweep"
+	_say("%s %s" % [called, (radio.dial_reading().to_upper() if radio.on else "OFF") if to == &"sweep"
 		else "VOL %d%%" % roundi(radio.volume * 100.0)])
 
 

@@ -509,6 +509,18 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				b.drum(0.055, 0.016, Vector3(0.0, -h.y + 0.004, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 1.6), Basis.IDENTITY, 14)
 		&"survey_receiver":
 			return SurveyReceiverLooks.frame()
+		&"antenna_reel":
+			# A drum of copper aerial wire between two gunmetal cheeks, a crank on
+			# one, and the wire's clip on its lead.
+			var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
+			var copper := Paint.coat(Color(0.55, 0.36, 0.2), 0.8, 0.6, 0.4)
+			var turned := Basis(Vector3.FORWARD, PI / 2.0)
+			b.drum(0.035, size.x - 0.03, Vector3.ZERO, copper, turned, 14)
+			for x in [-h.x + 0.008, h.x - 0.008]:
+				b.drum(h.y, 0.012, Vector3(x, 0.0, 0.0), gun, turned, 18)
+			b.box(Vector3(0.01, 0.05, 0.01), Vector3(h.x + 0.008, -0.02, 0.0), steel, 0.002)
+			b.drum(0.008, 0.03, Vector3(h.x + 0.02, -0.045, 0.0), black, turned, 8)
+			b.box(Vector3(0.02, 0.012, 0.03), Vector3(0.0, h.y - 0.004, h.z - 0.004), Paint.coat(Paint.BRASS, 0.8, 0.7, 0.4), 0.002)
 		&"radio":
 			# A set made to carry: across the top of its face a band scale that
 			# lights while it plays, under it a speaker's slats and the bosses
@@ -853,6 +865,31 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			for i in 3:
 				b.drum(0.008, 0.006, Vector3(-0.04 + i * 0.04, -0.02, size.z + 0.002),
 					Paint.coat(Paint.TEAL, 0.0, 0.0, 0.4, 0.3, 1.5), along, 8)
+		&"fm_converter":
+			# A gunmetal box off the set's side: a bone face with its own small
+			# dial and an AM/FM throw, and a short whip for the band it hears.
+			b.box(Vector3(size.x, size.y, size.z - 0.01), Vector3(0.0, 0.0, (size.z - 0.01) * 0.5), gun, 0.008)
+			b.box(Vector3(size.x - 0.016, size.y - 0.03, 0.006), Vector3(0.0, -0.006, size.z - 0.006),
+				Paint.coat(Paint.BONE, 0.5, 0.1, 0.6), 0.002)
+			b.drum(0.014, 0.012, Vector3(0.026, -0.008, size.z + 0.004), black, along, 12)
+			b.box(Vector3(0.012, 0.022, 0.008), Vector3(-0.03, -0.008, size.z + 0.002), steel, 0.002)
+			b.box(Vector3(size.x - 0.03, 0.008, 0.004), Vector3(0.0, h.y - 0.01, size.z - 0.004),
+				Paint.coat(Paint.TEAL, 0.6), 0.001)
+			b.drum(0.006, 0.02, Vector3(-h.x + 0.016, h.y + 0.01, size.z * 0.5), steel, Basis.IDENTITY, 8)
+			b.drum(0.0025, 0.22, Vector3(-h.x + 0.016, h.y + 0.13, size.z * 0.5), steel, Basis.IDENTITY, 6)
+		&"sw_converter":
+			# The FM converter's sibling: the same box with an amber band, its
+			# own small dial, and two brass terminals on its top for a wire.
+			b.box(Vector3(size.x, size.y, size.z - 0.01), Vector3(0.0, 0.0, (size.z - 0.01) * 0.5), gun, 0.008)
+			b.box(Vector3(size.x - 0.016, size.y - 0.03, 0.006), Vector3(0.0, -0.006, size.z - 0.006),
+				Paint.coat(Paint.BONE, 0.5, 0.1, 0.6), 0.002)
+			b.drum(0.014, 0.012, Vector3(0.026, -0.008, size.z + 0.004), black, along, 12)
+			b.box(Vector3(0.012, 0.022, 0.008), Vector3(-0.03, -0.008, size.z + 0.002), steel, 0.002)
+			b.box(Vector3(size.x - 0.03, 0.008, 0.004), Vector3(0.0, h.y - 0.01, size.z - 0.004),
+				Paint.coat(Paint.YELLOW, 0.6), 0.001)
+			for x in [-0.025, 0.025]:
+				b.drum(0.006, 0.014, Vector3(x, h.y + 0.007, size.z * 0.5), Paint.coat(Paint.BRASS, 0.8, 0.7, 0.4),
+					Basis.IDENTITY, 8)
 		&"radar":
 			# A dish on a post, up from the Console's top.
 			b.drum(0.07, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 16)

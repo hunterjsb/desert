@@ -1,6 +1,7 @@
 extends ShieldProbe
 ## Radio probe 4: the storm gets into the music. A radio playing music under
-## a storm over it: in clear skies it plays clean, with no static; as the
+## a storm over it, at night when the port's comes in clean from afar: in
+## clear skies it plays clean, with no static; as the
 ## storm thickens the music comes through dirtier and dirtier, chewed up by
 ## its interference chain, still with no static under it while it plays;
 ## once the storm takes it altogether, static is all there is, louder the
@@ -12,6 +13,8 @@ const STEPS := [0.0, 0.1, 0.2, 0.3, 0.6, 0.8, 1.0]
 
 func run() -> void:
 	await load_storm(0.0)
+	while world.weather.day.is_day(world.time, world.moon.longitude):
+		world.time += 30.0
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	while radio.channel != Radio.MUSIC:
 		radio.interact(world.player)

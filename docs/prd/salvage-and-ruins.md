@@ -722,7 +722,7 @@ flying 6 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`)
   0.3 kg. Use lights it, held or set down: it burns at its tip for 60 s (`flare_burn_seconds`) with a
   flickering red light reaching 16 m, sparks and a red smoke, and a fizz, then it's spent and won't light
   again (use refuses). How long it has burnt is in its stats, so a spent one stays spent through a save.
-  Every kit carries two, and they're surface finds (3 in the weights, beside the lamp's 2).
+  They're surface finds (3 in the weights, beside the lamp's 2); the kits don't carry them.
 - **The cannon** (`game/salvage/airdrop.gd`). While a flare burns, the Surveyor passing 50° or more over
   it (`airdrop_elevation_degrees`; 35° when it flew 1.9 km up) fires once at it. **Seen:** its muzzle flashes in the sky at the craft,
   twelve times as bright fading over half a second, by day as well as night, a white burst at the hull's
