@@ -797,3 +797,12 @@ and reconnects roles through actual object references, including held objects an
 fitted cells. Shell roles and skins follow their physical panel when a chassis
 reroots. Focused checks cover mid-flight resume, dismantled/held recovery and
 rerooted panel saves; combined CI and playtest acceptance remain pending.
+
+### Ground rest (selected 2026-10-20; implemented development)
+
+A Moment's Rest (`ground_rest`, camp family, bedroll icon) records the first
+successful voluntary ground sit or lie. Together with Home Again and Making
+Landfall, it brings the integrated development roster to 58 deeds in eleven families (55 released baseline plus
+three additions). Loading a save must not record it again. Posture
+persists independently of the transient camera transition, with standing as
+the default for saves written before this feature.

@@ -1,16 +1,24 @@
-## 0.3.0-alpha “Sanddune” — unreleased development
+## 0.3.0-alpha “Sanddune” — development, unreleased
 
-Surveyor orbital arrival is being integrated: ejection, descent, a recoverable
-chassis pod and seeded surviving physical equipment. It is not yet a published release.
+This preparatory candidate combines Home, Surveyor arrival and ground rest.
+It has not been published; combined CI and playtest acceptance remain pending.
 
+- Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
+  collect seeded surviving physical equipment. Other origins, developer scenarios
+  and legacy saves retain their existing starts.
 - Mark one chassis as Home with a physical beacon. Its claimed camp retains bounded
   terrain, collision and history while you scout; ordinary power and weather keep running.
 - Open Home from the carry view for distance, bearing and live or last-known reception.
-  Surveyor kits carry a beacon, surface salvage can supply one, and returning records Home Again.
+  The Surveyor opening supplies a beacon; surface salvage can supply one too.
+  Returning from a scouting trip records Home Again.
 - Save and resume distant camps without discarding their excavation or exceeding
   the support budget. Overstretched camps keep their objects and report unsupported ground.
+- Sit on supported ground or lie down and crawl with physical low clearance.
+  Getting up checks headroom; wind, ropes, slopes and moving decks still move you.
+- Offer the existing safe sleep choices while lying still with empty hands.
+  Posture survives saves, and the first ground rest earns A Moment's Rest.
 
-## 0.2.4-alpha “Sailboat”
+## 0.2.4-alpha “Creaky Sailboat”
 
 A manual sail hoist, physical salvage rewards and clearer radio handling.
 Includes the sailing, traversal and exploration baseline described below.

@@ -66,6 +66,9 @@ const TABLE := {
 	&"first_recovery": {"name": "Making Landfall", "asks": "recover equipment from your Surveyor pod", "family": &"camp", "after": [], "icon": &"chassis"},
 	&"home_again": {"name": "Home Again", "asks": "Return to a marked home after scouting beyond its ordinary surroundings",
 		"family": &"camp", "icon": &"home_beacon"},
+
+	&"ground_rest": {"name": "A Moment's Rest", "asks": "Sit or lie down on the ground", "family": &"camp",
+		"icon": &"bedroll"},
 	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a battery on one deck", "family": &"camp",
 		"icon": &"console", "goal": "home", "unit": "on one deck", "step": 1.0},
 	&"deck_pieces": {"name": "Six Pack", "asks": "Join %s chassis pieces into one deck", "family": &"camp",

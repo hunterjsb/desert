@@ -170,6 +170,7 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	player.velocity = you.v
 	for key: String in you.state:
 		player.set(key, you.state[key])
+	player.restore_ground_pose(StringName(you.get("ground_pose", &"stand")))
 	player.set_meta(&"rope_drag", you.drag)
 	for key: String in you.vitals:
 		player.vitals.set(key, _copy(you.vitals[key]))
@@ -368,6 +369,7 @@ func _take() -> Dictionary:
 	# A sickness from a wreck runs on through a save; a stun is over by then.
 	you.wounds = {"sick": player.vitals.wounds.sick, "shocks": player.vitals.wounds.shocks,
 		"sicknesses": player.vitals.wounds.sicknesses}
+	you.ground_pose = player.ground_pose
 	data.player = you
 	var test_wind := world.weather.field.wind_state()
 	if not test_wind.is_empty():

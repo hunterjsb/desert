@@ -1793,3 +1793,37 @@ passes all original wind-deed goals and holds exactly full height on every
 one of 3,000 sampled ticks (21 s). The paired-keel yacht check passes (31 s),
 partial-height save/resume passes (11 s), and normal wheel winding, untouched
 sheet, brake and disconnect-lowering pass (13 s). Deed thresholds are unchanged.
+
+## Ground rest and crawling (2026-10-20)
+
+Sit and lie down toggle on supported ground. Directional movement rises from
+sitting; lying down instead permits a slow crawl. Jump first restores standing
+clearance. A blocked rise keeps the low posture and does not jump through the
+ceiling. Boarding or taking a helm also requires room to stand. Airborne,
+flying, riding, tumbling and seated helm states cannot enter ground rest.
+
+The collision capsule keeps its existing width and feet position, shortening
+to the seated or prone clearance; this is a movement proxy, not an authored
+player body. The camera eases to the corresponding eye height. Wind, slope,
+rope forces and moving supports continue through ordinary character movement:
+resting never anchors the player. Bare-ground sleep is offered from prone by
+ordinary use only after more specific interactions, with all existing sleep
+safety checks. Lying down alone never starts sleep. Saves retain the posture
+without earning the ground-rest deed on restore.
+
+As built, the seated capsule is 1.15 m tall with 1.0 m eyes; prone is the
+standing capsule's 0.7 m minimum diameter with 0.5 m eyes and 0.55 m/s crawl.
+Voluntary eye movement eases over 0.22 s; a physical ceiling clips its path
+before the eye can cross it. Restored eyes fit immediately without replaying
+the transition or claiming the deed. One first-time prone hint teaches crawl,
+rising and the ordinary sleep interaction; no permanent posture panel is added.
+
+Focused movement checks 36–38 pass (7/6/11 s): directional rise, sprint-limited
+crawl, unsupported entry refusal, low-roof stand/jump/boarding refusal,
+immediate restored eye fit, camera transition containment, a moving rigid
+support, wind, rope-solver motion input and passive slipping on a real dune.
+The rope check exercises the solver's existing player-motion input, rather
+than constructing a second rope solver. The real-GPU ground-rest view compares
+standing, sitting and prone at the same camp and was inspected at all three
+heights. These checks establish collision and movement behavior; there is no
+new visible player body or posture animation.

@@ -431,6 +431,9 @@ func interact() -> bool:
 			return true
 		if not reel.connected_ropes().is_empty() and reel.chosen_body() == null:
 			return refuse(Reel.CHOOSE_LINE)
+		if grasp.body == null and look_device == null and look_part == null \
+				and _player.ground_pose == &"prone" and _player.is_on_floor():
+			return _player.world.sleep.offer(_player)
 		return refuse("wrecked" if look_device.wrecked() else "nothing to use") if look_device != null else false
 	if phase != Phase.HELD:
 		return false

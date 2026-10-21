@@ -1316,5 +1316,16 @@ static func current() -> Tuning:
 @export var home_return_m: float = 30.0
 
 @export_group("Surveyor arrival")
-## Provisional recovery rules for the isolated pod manifest, not a replacement kit yet.
+## Provisional recovery rules for the integrated development opening.
 @export var surveyor_arrival: Dictionary = {}
+
+
+@export_group("Ground posture")
+@export var posture_sit_height: float = 1.15
+@export var posture_prone_height: float = 0.7
+@export var posture_sit_eye: float = 1.0
+@export var posture_prone_eye: float = 0.5
+@export var posture_crawl_speed: float = 0.55
+@export var posture_camera_seconds: float = 0.22
+@export var posture_sit_catch: float = 0.6
+@export var posture_prone_catch: float = 0.25

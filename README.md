@@ -43,7 +43,7 @@ Fix releases increment the patch version (for example `0.2.1-alpha`). Alpha
 sub-releases increment the minor version, reset the patch to zero, and always
 have a name. The current 0.2 line is **“Sailboat”**; the next minor release is
 **0.3 “Sanddune”**. Patch releases keep
-their minor release's identity. Versions change per release, not per commit.
+their minor release's identity; 0.2.4 is **“Creaky Sailboat”**. Versions change per release, not per commit.
 The [1.0 Alpha roadmap](docs/alpha-roadmap.md) tracks the proposed completion gate.
 
 The version lives in one place, `application/config/version` in `project.godot`, and

@@ -290,3 +290,12 @@ surveyor_arrival = {
 "entry_db": -18.0,
 "landing_db": -10.0
 }
+
+posture_sit_height = 1.15
+posture_prone_height = 0.7
+posture_sit_eye = 1.0
+posture_prone_eye = 0.5
+posture_crawl_speed = 0.55
+posture_camera_seconds = 0.22
+posture_sit_catch = 0.6
+posture_prone_catch = 0.25

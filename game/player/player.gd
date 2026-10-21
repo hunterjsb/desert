@@ -55,6 +55,8 @@ var flying := false
 ## crouched walk is still a walk; `crouched` says you're low.
 var mode := "stand"
 var crouched := false
+var ground_pose: StringName = &"stand"
+var posture: GroundPosture
 ## Your own way over the ground, m/s along engine x and z: what your legs, a
 ## slide or a leap carry, without the wind's shove or a line's drag.
 var own := Vector2.ZERO
@@ -116,6 +118,7 @@ var _touching := Vector2i.ONE
 
 func _ready() -> void:
 	vault = LedgeVault.new(self)
+	posture = GroundPosture.new(self)
 	stamina = _tuning.stamina_max
 	feel = Feel.new()
 	add_child(feel)
@@ -132,6 +135,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		Controls.free_mouse(true)
 	elif tumble != null:
 		return
+	elif event.is_action_pressed("sit"):
+		posture.toggle(&"sit")
+	elif event.is_action_pressed("lie_down"):
+		posture.toggle(&"prone")
 	elif event.is_action_pressed("ride"):
 		if toggle_board():
 			get_viewport().set_input_as_handled()
@@ -198,6 +205,9 @@ func _physics_process(delta: float) -> void:
 		own = Vector2(velocity.x, velocity.z)
 		_sliding = false
 
+	if ground_pose == &"sit" and (input != Vector2.ZERO or walker.heading != Vector2.ZERO):
+		if not posture.change(&"stand"):
+			input = Vector2.ZERO
 	var wish := global_basis * Vector3(input.x, 0.0, input.y)
 	var dir := Vector2(wish.x, wish.z).normalized()
 	if dir == Vector2.ZERO:
@@ -211,7 +221,7 @@ func _physics_process(delta: float) -> void:
 	if on_floor:
 		vault.grounded()
 		_jumped = false
-	var crouch := Controls.held("crouch")
+	var crouch := Controls.held("crouch") and ground_pose == &"stand"
 	var pressed := crouch and not _crouch_was
 	_crouch_was = crouch
 	var jump := Controls.held("jump")
@@ -219,6 +229,8 @@ func _physics_process(delta: float) -> void:
 		_jump_buffer = _tuning.jump_buffer_seconds
 	_jump_queued = false
 	_jump_was = jump
+	if _jump_buffer > 0.0 and ground_pose != &"stand" and not posture.change(&"stand"):
+		_jump_buffer = 0.0
 	slope = _slope_here()
 	var vy := velocity.y
 	var sprinting := false
@@ -246,8 +258,12 @@ func _physics_process(delta: float) -> void:
 			step = _slide(delta, dir, crouch)
 			sink = _ease(sink, 0.0, _tuning.haul_seconds, delta)
 		else:
-			sprinting = dir != Vector2.ZERO and Controls.held("sprint") and stamina > 0.0 and not crouch
+			sprinting = dir != Vector2.ZERO and Controls.held("sprint") and stamina > 0.0 and not crouch and ground_pose == &"stand"
 			var pace := _tuning.crouch_speed if crouch else (_tuning.sprint_speed if sprinting else _tuning.walk_speed)
+			if ground_pose == &"prone":
+				pace = _tuning.posture_crawl_speed
+			elif ground_pose == &"sit":
+				pace = 0.0
 			if hauling != Vector2.ZERO:
 				pace = minf(pace, hauling.length())
 			if dir != Vector2.ZERO:
@@ -270,14 +286,14 @@ func _physics_process(delta: float) -> void:
 	velocity.z = step.y
 	wind = world.weather.felt_wind(global_position)
 	# Force goes with the area the wind catches, so a smaller catch feels a slower wind.
-	var beyond := wind.length() * sqrt(lerpf(1.0, _tuning.crouch_catch, low)) - _tuning.wind_resist_speed
+	var beyond := wind.length() * sqrt(lerpf(1.0, _tuning.crouch_catch, low) * posture.catch_share()) - _tuning.wind_resist_speed
 	if beyond > 0.0:
 		var shove := wind.normalized() * beyond * _tuning.wind_push
 		velocity.x += shove.x
 		velocity.z += shove.z
 	velocity += get_meta(&"rope_drag", Vector3.ZERO)
 	velocity.y = lift
-	if not crouch and not _sliding and dir != Vector2.ZERO \
+	if ground_pose == &"stand" and not crouch and not _sliding and dir != Vector2.ZERO \
 			and (sprinting or _jumped) and vault.begin(dir):
 		_jumped = true
 		_jump_buffer = 0.0
@@ -293,6 +309,8 @@ func _physics_process(delta: float) -> void:
 
 	mode = "slide" if _sliding else ("air" if not is_on_floor() and (_jumped or _since_ground > _tuning.coyote_seconds)
 		else ("sprint" if sprinting else ("walk" if dir != Vector2.ZERO else "stand")))
+	if ground_pose != &"stand" and is_on_floor() and not _sliding:
+		mode = "crawl" if ground_pose == &"prone" and dir != Vector2.ZERO else String(ground_pose)
 	if sprinting:
 		stamina -= _tuning.stamina_sprint_drain * delta
 	if climb > 0.0:
@@ -342,6 +360,8 @@ func get_on(on: Hoverboard) -> bool:
 		_get_up()
 	if world.salvage.lying(on):
 		world.salvage.unbury(on)
+	if not posture.change(&"stand"):
+		return false
 	if not on.can_run():
 		return false
 	walker.stop()
@@ -532,6 +552,8 @@ func _holding_back() -> Array[RigidBody3D]:
 ## hold of, and you ride the camp aboard it, touching nothing, low in the seat.
 func sit(at: Helm) -> bool:
 	if helm != null or flying or at.rider != null:
+		return false
+	if not posture.change(&"stand"):
 		return false
 	if board != null:
 		step_off()
@@ -903,3 +925,10 @@ func _slope_at(at: Vector3) -> Vector2:
 ## Exactly over the tick, so easing comes out the same at any tick rate.
 static func _ease(from: float, to: float, seconds: float, delta: float) -> float:
 	return to + (from - to) * exp(-delta / seconds)
+
+
+## Save restoration applies clearance without claiming a voluntary rest deed.
+func restore_ground_pose(value: StringName) -> void:
+	if posture != null:
+		posture.restore(value)
+		feel.restore_posture()

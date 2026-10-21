@@ -144,7 +144,7 @@ func steady_eye() -> Vector3:
 
 
 func _eye_drop() -> float:
-	return _tuning.crouch_drop * _player.low + _tuning.haul_sink * _player.sink
+	return maxf(_tuning.crouch_drop * _player.low + _tuning.haul_sink * _player.sink, _player.posture.eye_drop())
 
 
 func _process(delta: float) -> void:
@@ -195,7 +195,7 @@ func _process(delta: float) -> void:
 	_lean = _lean.lerp(upwind * t.wind_lean * strength, 1.0 - exp(-delta / LEAN_SECONDS))
 	_roll = _ease(_roll, -deg_to_rad(t.wind_lean_degrees) * upwind.x * strength, LEAN_SECONDS, delta)
 
-	_drop = _ease(_drop, _eye_drop(), EYE_SECONDS, delta)
+	_drop = _ease(_drop, _eye_drop(), _tuning.posture_camera_seconds if _player.ground_pose != &"stand" or _drop > _tuning.crouch_drop else EYE_SECONDS, delta)
 	var widen := 0.0
 	var fast := t.board_top_speed if ride != null else FAST
 	if speed > t.walk_speed:
@@ -224,6 +224,7 @@ func _process(delta: float) -> void:
 		_shake = maxf(_shake, BITE_SHAKE * clampf(ropes.wrench_n / t.fulcrum_n - 1.0, 0.2, 1.0))
 	var shake := Vector3(sin(_clock * 67.0), sin(_clock * 79.0 + 0.7), 0.0) * SHAKE_REACH * _shake
 	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * maxf(_drop, tumbled.x) + between
+	_clear_posture_eye(camera)
 	camera.rotation.z = roll + _roll + _bank + tumbled.y + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
 	var tip := _tremble(camera)
 	var looked := camera.rotation.x - (_pitched if is_equal_approx(camera.rotation.x, _pitch_left) else 0.0)
@@ -527,3 +528,21 @@ func _sand(amount: int, lifetime: float, burst: bool) -> CPUParticles3D:
 
 static func _ease(from: float, to: float, seconds: float, delta: float) -> float:
 	return to + (from - to) * exp(-delta / seconds)
+
+
+## Saved low clearance must have low eyes before its first rendered frame.
+func restore_posture() -> void:
+	_drop = _eye_drop()
+	_player.camera.position.y = _rest.y - _drop
+
+
+## The eyes ease down, but cannot remain on the far side of a low ceiling.
+func _clear_posture_eye(camera: Camera3D) -> void:
+	if _player.ground_pose == &"stand":
+		return
+	var low_eye := _rest - Vector3.UP * _eye_drop()
+	var query := PhysicsRayQueryParameters3D.create(_player.to_global(low_eye), camera.global_position,
+		_player.collision_mask, [_player.get_rid()])
+	var hit := _player.get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty():
+		camera.global_position = hit.position + hit.normal * _player.safe_margin * 2.0
