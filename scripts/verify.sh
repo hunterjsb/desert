@@ -18,13 +18,21 @@ if [[ -z $(git diff --name-only origin/master "$sha" -- . ':!docs' ':!*.md') ]];
 	fi
 	exit 0
 fi
+# Only dashboard-owned paths may bypass game checks. Renames out of game paths
+# must still count as game changes; git diff's path filtering retains deletions.
+workflow=probes.yml
+if git diff --quiet origin/master "$sha" -- . ':!docs' ':!*.md' \
+	':!site' ':!scripts/ci_dashboard' ':!.github/workflows/performance-pages.yml'; then
+	workflow=performance-pages.yml
+fi
+echo "verifying ${sha:0:7} with $workflow"
 # Quiet: GitHub's remote lines offer a pull request for every new branch.
 git push -q -f origin "HEAD:refs/heads/verify-$name" 2> >(grep -v '^remote:' >&2)
 branch="verify-$name"
 # Workflow, branch and commit all matter: a release or another branch may
 # have a successful run of this same commit without verifying this push.
 find_run() {
-	gh run list -w probes.yml -b "$branch" -c "$sha" --limit 20 \
+	gh run list -w "$workflow" -b "$branch" -c "$sha" --limit 20 \
 		--json databaseId,event \
 		-q 'map(select(.event == "push" or .event == "workflow_dispatch")) | .[0].databaseId'
 }
@@ -38,15 +46,19 @@ if [[ -z $id ]]; then
 	# Dispatch resolves a branch now, so refuse if another verifier moved it.
 	remote_sha=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
 	[[ $remote_sha == "$sha" ]] || { echo "$branch moved: verify again" >&2; exit 1; }
-	echo "no push run after 30s: dispatching Linux verification for $branch at ${sha:0:7}"
-	gh workflow run probes.yml --ref "$branch" -f full_platforms=false
+	echo "no push run after 30s: dispatching $workflow for $branch at ${sha:0:7}"
+	if [[ $workflow == probes.yml ]]; then
+		gh workflow run "$workflow" --ref "$branch" -f full_platforms=false
+	else
+		gh workflow run "$workflow" --ref "$branch"
+	fi
 	for attempt in $(seq 6); do
 		id=$(find_run)
 		[[ -n $id ]] && break
 		[[ $attempt == 6 ]] || sleep 60
 	done
 fi
-[[ -n $id ]] || { echo "no Probes run for $branch at ${sha:0:7}" >&2; exit 1; }
+[[ -n $id ]] || { echo "no $workflow run for $branch at ${sha:0:7}" >&2; exit 1; }
 while :; do
 	status=$(gh run view "$id" --json status -q .status)
 	[[ $status == completed ]] && break

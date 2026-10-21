@@ -41,7 +41,8 @@ The Pages observatory uses `scripts/ci_dashboard/collect.py`, `site/`, and
 
 Probe hosts and system helpers live in `probes/lib/`. Use the nearest existing helper and a
 targeted probe for the failure being fixed. `scripts/probe.sh` imports assets before running;
-`scripts/verify.sh` handles whole-suite CI and landing. `AGENTS.md` describes the shared worktree,
+`scripts/verify.sh` selects game or dashboard CI and handles landing;
+`python3 scripts/test_verify.py` checks routing and failure blocking against a local remote. `AGENTS.md` describes the shared worktree,
 locking and capture rules.
 
 ## Reachable mountain horizons
