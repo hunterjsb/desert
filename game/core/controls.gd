@@ -22,10 +22,11 @@ const HELP := [
 ]
 ## The developer's keys, listed apart under their own heading.
 const DEV_HELP := [["{console}", "console"], ["{creative}", "creative"], ["{toggle_dev_overlay}", "numbers"]]
-## Riding takes more than its key says, so it's taught the first time you ride.
+## The first lie-down teaches crawling and the sleep interaction.
 const REST_HOW_TO := "ground_rest"
 const REST_HOW_TO_SAYS := "Move to crawl. Empty hands and a clear view: {interact} offers sleep." \
 	+ "\n{lie_down} or {jump} rises when there is room."
+## Riding takes more than its key says, so it's taught the first time you ride.
 const RIDE_HOW_TO := "ride"
 const RIDE_HOW_TO_SAYS := "The move keys push and carve where they point; {move_back} digs an edge in, to bite into a carve" \
 	+ " or, alone, to stop.\n" \

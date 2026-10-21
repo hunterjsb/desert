@@ -759,6 +759,26 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				Paint.coat(Paint.HOSE, 0.3, 0.0, 0.85), along, 10)
 			b.drum(0.016, 0.03, Vector3(0.0, h.y, 0.075), steel, Basis.IDENTITY, 10)
 			b.drum(0.02, 0.008, Vector3(0.0, h.y + 0.011, 0.075), Paint.coat(Catalog.KINDS[&"water"], 0.3), Basis.IDENTITY, 10)
+		&"rope_end":
+			# Three laid cords and a small whipping explain the end without a metal block.
+			var rules := Tuning.current().rope_coil_visual
+			var fibre := Paint.coat(Paint.ROPE.lightened(0.14), 0.0, 0.0, 0.95, 0.35)
+			var binding := Paint.coat(Paint.TEAL.darkened(0.24), 0.0, 0.0, 0.95, 0.25)
+			var radius: float = rules.end_strand_radius
+			for strand in int(rules.end_strands):
+				var phase := float(strand) * TAU / float(rules.end_strands)
+				for i in int(rules.end_sections):
+					var points: Array[Vector3] = []
+					for t in [float(i) / float(rules.end_sections), float(i + 1) / float(rules.end_sections)]:
+						var angle: float = phase + t * float(rules.end_twists) * TAU
+						points.append(Vector3(cos(angle) * float(rules.end_strand_orbit), sin(angle) * float(rules.end_strand_orbit),
+							lerpf(radius, size.z - radius, t)))
+					var span := points[1] - points[0]
+					b.drum(radius, span.length(), (points[0] + points[1]) * 0.5, fibre,
+						Basis(Quaternion(Vector3.UP, span.normalized())), int(rules.sides))
+			for i in int(rules.end_wraps):
+				b.drum(float(rules.end_wrap_radius), float(rules.end_wrap_width),
+					Vector3(0.0, 0.0, float(rules.end_wrap_start) + i * float(rules.end_wrap_spacing)), binding, along, int(rules.sides))
 		&"coil":
 			return coil()
 		&"canister":

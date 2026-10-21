@@ -18,8 +18,8 @@ static func make() -> ArrayMesh:
 			indices.append_array(PackedInt32Array([a, b, c, a, c, d]))
 	var caps := (rings + 1) * sides
 	for j in sides:
-		indices.append_array(PackedInt32Array([caps, (j + 1) % sides, j,
-			caps + 1, rings * sides + j, rings * sides + (j + 1) % sides]))
+		indices.append_array(PackedInt32Array([caps, j, (j + 1) % sides,
+			caps + 1, rings * sides + (j + 1) % sides, rings * sides + j]))
 	arrays[Mesh.ARRAY_INDEX] = indices
 	var uv := PackedVector2Array()
 	for i in rings + 1:
@@ -31,7 +31,7 @@ static func make() -> ArrayMesh:
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	var finish := ShaderMaterial.new()
 	finish.shader = preload("res://game/look/coil.gdshader")
-	for key in [&"turns", &"inner_radius", &"outer_radius", &"gauge", &"layer_height", &"lead_fraction", &"anchor", &"fibre_turns", &"fibre_contrast", &"dust_amount", &"roughness", &"whipping"]:
+	for key in [&"turns", &"inner_radius", &"outer_radius", &"gauge", &"layer_height", &"lead_fraction", &"anchor", &"fibre_turns", &"fibre_contrast", &"dust_amount", &"roughness", &"whipping", &"fibre_relief", &"fibre_normal"]:
 		finish.set_shader_parameter(key, rules[key])
 	finish.set_shader_parameter(&"rope_color", Paint.ROPE.lightened(0.14))
 	finish.set_shader_parameter(&"whipping_color", Paint.TEAL.darkened(0.24))
@@ -70,7 +70,7 @@ static func _pose(amount: float, rules: Dictionary) -> Array:
 			normals.append(normal)
 	vertices.append(_point(0.0, rules))
 	vertices.append(_point(amount, rules))
-	normals.append(Vector3.UP)
+	normals.append(-(_point(0.0001, rules) - _point(-0.0001, rules)).normalized())
 	normals.append((_point(amount + 0.0001, rules) - _point(amount - 0.0001, rules)).normalized())
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
@@ -83,9 +83,17 @@ static func _point(t: float, rules: Dictionary) -> Vector3:
 	var lead: float = rules.lead_fraction
 	var first := Vector3(float(rules.inner_radius), 0.0, float(rules.gauge))
 	if t < lead:
-		return (rules.anchor as Vector3).lerp(first, t / lead)
+		# Meet the first winding along its tangent, without a folded tube at the lead.
+		var start: Vector3 = rules.anchor
+		var initial := Vector3((float(rules.outer_radius) - float(rules.inner_radius)) * PI,
+			-float(rules.inner_radius) * float(rules.turns) * TAU, 0.0) / (1.0 - lead)
+		var a := start.lerp(first, 1.0 / 3.0)
+		var b := first - initial * lead / 3.0
+		var v := t / lead
+		return start * pow(1.0 - v, 3.0) + a * 3.0 * v * pow(1.0 - v, 2.0) \
+			+ b * 3.0 * v * v * (1.0 - v) + first * v * v * v
 	var u := (t - lead) / (1.0 - lead)
-	var angle := u * float(rules.turns) * TAU
+	var angle := -u * float(rules.turns) * TAU
 	var radius := lerpf(float(rules.inner_radius), float(rules.outer_radius), sin(u * PI))
 	var height := float(rules.gauge) + float(rules.layer_height) * smoothstep(0.4, 0.6, u)
 	return Vector3(cos(angle) * radius, sin(angle) * radius * 0.98, height)

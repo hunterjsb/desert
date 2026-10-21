@@ -823,3 +823,17 @@ show all those states without a mesh swap. The visual-only sweep suspends rope
 solving after the real handoff checks because a synthetic zero physical length
 otherwise drops the held end and switches the display to an older waist line.
 No rope force, paid length, attachment, control or save behavior changed.
+
+The tube's end disks use outward clockwise winding; the focused cap probe
+checks both complete disks and their outward orientation (3 s). A tangent-matched
+lead avoids folding the first winding back on itself. Muted three-lobe fibre
+relief and normal twist retain nominal gauge. Actual front, back and oblique
+held captures show closed ends; the continuity probe still passes (8 s).
+
+The existing `rope_end` part now shows three laid fibre cords with compact teal
+whipping instead of its brown placeholder box. Catalog identity, collider,
+attachment tip and controls remain unchanged. The native mesh uses the existing
+worn material and fits the original 0.05 × 0.05 × 0.08 m envelope. The paying-hand
+check passes again (7 s). Isolated end and front/back/oblique coil captures were
+inspected; the synthetic fill sweep hides stale world strands while rope solving
+is suspended, so those strands cannot obscure the coil's cap geometry.

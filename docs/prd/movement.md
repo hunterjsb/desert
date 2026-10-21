@@ -1827,3 +1827,11 @@ than constructing a second rope solver. The real-GPU ground-rest view compares
 standing, sitting and prone at the same camp and was inspected at all three
 heights. These checks establish collision and movement behavior; there is no
 new visible player body or posture animation.
+
+Ground-rest ties follow the shortened body: the belt attachment lowers in
+proportion to supported body height, while standing retains its existing
+attachment. Resting must not leave waist lines floating above the low body.
+
+The combined rest/coil branch passes the actual low-belt attachment check
+(8 s), retaining the standing attachment on rising. Its seven combined
+posture, save, ground-sleep and continuous-coil checks pass (4–13 s each).

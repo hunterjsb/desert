@@ -1133,6 +1133,10 @@ it does not drop the held endpoint. These establish rendered continuity and
 readability, not a measured GPU frame-time budget. Geometry and visual response
 live in `rope_coil_visual` tuning.
 
+The line's existing loose end also has a native fibre model: three laid cords
+with teal whipping, inside its unchanged small part envelope. No new coupling or
+metal fitting is implied. Ground/held geometry keeps the old attachment point.
+
 ## Home beacon (2026-10-20; selected)
 
 A compact field transponder bolts upright to an ordinary chassis: a low gunmetal
