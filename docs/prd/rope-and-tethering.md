@@ -908,3 +908,21 @@ riding and ground rest. Cache meshes; update only transforms/visibility during
 ordinary rendering. New meshes have no colliders. Inspect actual held/waist and
 external belt captures, and test that tying/returning a real end changes only the
 appropriate visual state without changing its rope or body state.
+
+As built: each actual waist holder gets one shared plaited belt mesh, short
+lead and muted teal whipping. The lead ends exactly at the existing rendered
+rope endpoint. RopeTip meshes use shared render copies only while tied at the
+waist so their original physics-root pose cannot reintroduce riding jitter;
+returning an end restores its original meshes. Direct player-waist endpoints
+are also supported. No physical node, collider, mass, length, selection or
+attachment changes during rendering. Held payout uses the original coil mesh
+and its continuous amount shader.
+
+Focused rope 31 passes in 8 s, including actual untie/return, cached geometry,
+unchanged physics state, exact drawn endpoint, render-copy ownership and original
+mesh visibility restoration. Existing paying-coil 25 and continuous-coil 26 pass
+in 9 s each. Actual unseen 1280×720 captures inspect the belt close-up, whole
+suited player, own-camera waist and returned held coil. A first GPU inspection
+caught world-axis scaling of the lead; local longitudinal scaling now passes
+the exact endpoint check and the corrected capture is inspected. Combined CI
+and ordinary-player acceptance remain pending.

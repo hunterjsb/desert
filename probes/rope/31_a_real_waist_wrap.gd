@@ -16,6 +16,12 @@ func run() -> void:
 	var wrap := player.body.get_node(^"WaistWrap") as WaistWrap
 	check(wrap._views.size() == 1 and not hands.reel._coil.visible,
 		"a real waist tie has a belt wrap instead of a floating item coil")
+	var tips: Array = wrap._tips[end.get_instance_id()]
+	check(not tips.is_empty(), "the real tip has a render copy at the waist")
+	for pair: Array in tips:
+		check(not (pair[0] as MeshInstance3D).visible
+			and (pair[1] as MeshInstance3D).mesh == (pair[0] as MeshInstance3D).mesh,
+			"the waist tip reuses its original mesh without drawing the physics pose twice")
 	var pose := end.global_transform
 	var velocity := end.linear_velocity
 	var length := line.rope.length
@@ -41,6 +47,9 @@ func run() -> void:
 	await get_tree().process_frame
 	check(hands.held == end and wrap._views.is_empty() and hands.reel._coil.visible,
 		"returning that end removes the wrap and restores the existing held coil")
+	for pair: Array in tips:
+		check(is_instance_valid(pair[0]) and (pair[0] as MeshInstance3D).visible,
+			"returning the held end restores its original visible mesh")
 	check(world.ropes.ropes.has(line.rope) and line.ends[1] == end and line.rope.length == length
 		and line.rope.full == full and hands.reel._coil.mesh == Dress.coil(),
 		"the original line and current item coil remain intact")

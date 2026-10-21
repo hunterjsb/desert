@@ -1224,3 +1224,13 @@ the standard radio and battery carry poses remain a documented limitation in
 Movement. Neither the physics object nor the shoulders move to disguise it.
 The cutter's low rear grip can sit partly below the first-person viewport;
 external views show that actual grasp. This does not add finger articulation.
+
+### Cord on the suit (2026-10-21; visual correction)
+
+A waist tie now reads as two plaited turns around gonkhub's existing belt,
+with a small crossing, muted teal whipping and a lead to the real attachment.
+Use the current rope-end fibre gauge and colour. Cached tip render copies share
+the existing mesh while at the waist; the original loose/held tip and current
+continuous item coil return unchanged when untied. No invented belt hardware,
+new force attachment or extra physical rope constraint is introduced. Actual
+unseen belt-close, whole-player, own-waist and held-coil views were inspected.
