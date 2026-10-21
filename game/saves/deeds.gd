@@ -63,6 +63,8 @@ const TABLE := {
 		"after": [&"anomaly_eye"], "icon": &"compass", "goal": "tells", "parts": true, "unit": "tells", "hidden": true},
 	&"taught": {"name": "Taught", "asks": "Teach the Walker the anomaly", "family": &"weather", "after": [&"tells"],
 		"icon": &"walker", "hidden": true},
+	&"ground_rest": {"name": "A Moment's Rest", "asks": "Sit or lie down on the ground", "family": &"camp",
+		"icon": &"bedroll"},
 	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a battery on one deck", "family": &"camp",
 		"icon": &"console", "goal": "home", "unit": "on one deck", "step": 1.0},
 	&"deck_pieces": {"name": "Six Pack", "asks": "Join %s chassis pieces into one deck", "family": &"camp",
