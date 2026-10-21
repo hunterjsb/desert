@@ -73,6 +73,8 @@ var taught := false
 @onready var farm: Farm = $Farm
 @onready var sleep: Sleep = $Sleep
 
+var home: CampHome
+
 var _last_x: float
 var _last_z: float
 ## The chunk the sheet last followed you to, and the moon's jumps then; none
@@ -95,6 +97,9 @@ func _ready() -> void:
 	process_physics_priority = 200
 	if run_seed == 0:
 		run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
+	home = CampHome.new()
+	home.world = self
+	add_child(home)
 	shape = TerrainShape.new(run_seed, tuning)
 	Paint.face_wind(WeatherField.mean_heading(run_seed))
 	start = Starts.find(shape, kit.start if kit != null else &"", tuning)
