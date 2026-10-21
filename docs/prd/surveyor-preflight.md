@@ -257,3 +257,20 @@ and an empty suit inventory; omitted rack equipment is not granted. Actual shell
 and supplies remain readable through the current atmosphere. No shader, script or
 resource errors were emitted. Landing/native verification and ordinary player
 acceptance remain pending; this does not declare a release or migrate old saves.
+
+### Recoverable viewing panel (selected geometry, 2026-10-21)
+
+The existing tail chassis becomes a sealed double-glazed viewing panel. Its
+opaque mesh has a genuine 0.68 m wide by 0.56 m high opening; glazing spans that
+opening on both original mounting faces. The ordinary closed native chassis
+collision envelope, mass, sockets and twelve named roles remain unchanged.
+The clear panes occupy the same external envelope: this is a sealed window,
+not a player passage or a new survival/pressure system. `pod_skin = viewport`
+persists through ordinary Snapshot reconstruction and chassis rerooting.
+
+`PodShell.ensure_aperture(parts)` upgrades the actual retained tail idempotently,
+including older armor metadata. `seat_pose()` gives pod-local feet and facing;
+the controller owns eye height. `flight_interior(parts)` makes only meshes at
+the real parts' pod-local poses, excluding cargo. A mesh-only authored fallback
+serves legacy flight without spawning bodies or supplies. The orbital controller
+owns placement and camera continuity; the geometry helper never moves equipment.

@@ -44,7 +44,7 @@ static func build(parent: Node, pose: Transform3D, survives: Dictionary = {}) ->
 		for panel in deck.joined:
 			if panel.joined_at == seat:
 				rig.named[role] = panel
-				restore_skin(panel, &"armor")
+				restore_skin(panel, &"viewport" if role == &"tail" else &"armor")
 	for role in [&"floor_a", &"floor_b"]:
 		restore_skin(rig.named[role], &"heatshield")
 	deck.global_transform = pose
@@ -55,6 +55,13 @@ static func build(parent: Node, pose: Transform3D, survives: Dictionary = {}) ->
 static func restore_skin(body: Chassis, kind: StringName = &"") -> void:
 	if kind == &"":
 		kind = body.get_meta(&"pod_skin", &"")
+	# Old materializers explicitly request armor; the same tail keeps its window.
+	if kind == &"armor" and (body.get_meta(&"arrival_uid", &"") == &"tail"
+		or body.get_meta(&"pod_skin", &"") == &"viewport"):
+		kind = &"viewport"
+	if kind == &"viewport":
+		_restore_aperture(body)
+		return
 	if not kind in [&"armor", &"heatshield"]:
 		return
 	body.set_meta(&"pod_skin", kind)
@@ -124,3 +131,56 @@ static func reseal(rig: Rig) -> void:
 			var face := Rig.face_of(rig.deck, PANELS[role][0], PANELS[role][1])
 			if face != null and face.is_open():
 				rig.deck.join(panel, face)
+
+
+## Upgrade the actual retained panel, never replace its body or attachment.
+static func ensure_aperture(parts: Dictionary) -> void:
+	var tail := parts.get(&"tail") as Chassis
+	if is_instance_valid(tail):
+		restore_skin(tail, &"viewport")
+
+
+static func seat_pose() -> Transform3D:
+	return Transform3D(Basis.looking_at(Vector3.RIGHT, Vector3.UP), Vector3(0.5, 0.07, 0))
+
+
+static func view_aperture_pose() -> Transform3D:
+	return Transform3D(Basis.looking_at(Vector3.RIGHT, Vector3.UP), Vector3(1.56, 0.56, 0))
+
+
+static func view_aperture_size() -> Vector2:
+	return Vector2(PodApertureLooks.OPENING.y, PodApertureLooks.OPENING.x)
+
+
+static func flight_interior(parts: Dictionary = {}) -> PodInterior:
+	return PodInterior.build(parts)
+
+
+static func _restore_aperture(body: Chassis) -> void:
+	body.set_meta(&"pod_skin", &"viewport")
+	body.frame_view.mesh = PodApertureLooks.frame()
+	var deck := body.deck if body.deck != null else body
+	# The old opaque liner must go too, including skins restored before joining.
+	for child in deck.get_children():
+		if child is MeshInstance3D and child.get_meta(&"piece", deck) == body \
+			and child.has_meta(&"pod_skin") and child.get_meta(&"pod_skin") != &"viewport":
+			body._own.erase(child)
+			deck.remove_child(child)
+			child.free()
+	for face in [-1.0, 1.0]:
+		var found := false
+		for child in deck.get_children():
+			if child is MeshInstance3D and child.get_meta(&"piece", deck) == body \
+				and child.get_meta(&"pod_pane", 0.0) == face:
+				found = true
+		if found:
+			continue
+		var pane := MeshInstance3D.new()
+		pane.mesh = PodApertureLooks.glass()
+		pane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		pane.set_meta(&"pod_skin", &"viewport")
+		pane.set_meta(&"pod_pane", face)
+		if body != deck:
+			pane.set_meta(&"piece", body)
+		deck.add_child(pane)
+		pane.transform = body.pose() * Transform3D(Basis.IDENTITY, Vector3(0, face * 0.05, 0))
