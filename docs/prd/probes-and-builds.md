@@ -43,9 +43,9 @@ No timeout increases, shorter walks or removed assertions are part of this pass.
 The ruin-opening traversal uses `set_rate(60, 6)`: all tours and per-tick
 assertions remain, while the focused local run fell from 345 s to 88 s (74% less).
 World 3 and salvage 7 run exclusively everywhere; movement 5 does so on native
-runners. Radio 39 waits up to two real seconds for its speech diagnostic consumer
-to observe the expected transmission, instead of assuming the first process-frame signal
-already includes the consumer's update. Both god words and the actual beacon bearing remain checked. The runner
+runners. Radio 39 retains the shared integration's five-FPS reproduction and observes
+two process-frame signals so the speech diagnostic consumer has completed its
+callback. Both god words and the actual beacon bearing remain checked. The runner
 still retries failures and records the retry duration. Scheduling checks exercise
 exclusivity, retained native coverage, real-frame exclusion and failure propagation.
 
