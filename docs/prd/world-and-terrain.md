@@ -156,12 +156,12 @@ topography later.
 ### A moon, not a plane
 
 The desert is a moon, and the coordinates behave like it. The ground near you is flat
-(we don't render the curve), but your position is tracked as **latitude and longitude**,
+(the local physics uses a tangent approximation), but your position is tracked as **latitude and longitude**,
 updated from how you move. Everything a sphere does follows from that. Walk far enough
 east and you come back to where you started. Circling the moon is shorter near the
 poles. Walk over a pole and you come down the other side, with north becoming south.
 
-**The moon is about 150 km round** (a radius of about 24 km). That's around 30 hours
+**The compressed travel map is about 150 km round** (a navigation radius of about 24 km). That's around 30 hours
 on foot, and about 37 km from the equator to a pole. Circling it is an epic a long run
 can achieve. A real sphere this small would put the horizon about 300 m away. We render
 the ground flat precisely so the big views stay possible.
