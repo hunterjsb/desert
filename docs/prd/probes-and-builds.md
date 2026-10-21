@@ -225,3 +225,13 @@ minute axes visible; missing elapsed time is not plotted as zero.
 The SVG chart uses actual timestamps and elapsed minutes with labeled axes and no
 charting dependency. Desktop and 390 px browser checks passed for click and keyboard
 selection, the selected-dot ring, report updates and placement before the tables.
+
+
+The shared routing change passed all nine game-verification groups in
+[39684096966](https://github.com/hunterjsb/desert/actions/runs/39684096966).
+The subsequent dashboard-only scatter commit selected Performance pages:
+[verification](https://github.com/hunterjsb/desert/actions/runs/39685928864)
+passed with a six-second check job, excluding hosted-runner queue time, and
+[master deployment](https://github.com/hunterjsb/desert/actions/runs/39686561034)
+passed. Neither push started Probes. Public desktop and narrow-layout checks
+confirmed dot selection, keyboard selection, the selected ring and report updates.
