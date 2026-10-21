@@ -335,3 +335,26 @@ and permits ordinary same-part separation/return of the ration. Existing
 Arrival16/20/26 remain green5/6/7s. A copied ordinary-player save restores with
 the same rear-roof/hatch join and all four original stores counted; only the
 actionable rear-roof repair remains. The player's save is never rewritten.
+The orbital window must use the model's saved regional departure clock/frame,
+so one short departure impulse reaches the real landing corridor without a
+position jump. Tu appears only if that actual viewpoint sees it; visibility is
+not guaranteed by moving the ship to a different hemisphere. No Tu texture is
+pasted onto glass or moved in the sky. The cabin pass leaves that frame API to
+the shared trajectory integration.
+
+The pod's inner thermal liner also receives an explicit0.02 dust coefficient.
+Its local underside previously sat in the outdoor shader's foot-deposit band,
+turning a black protected liner sandy brown. Exterior armor/vents and ordinary
+recovered kit keep their original materials; no shared shader was altered.
+
+Cabin geometry15 and recoverable aperture29 pass (14/8 s), preserving normal
+walking/crawling. The cabin check also raycasts from the focused eye to the actual
+console collider and confirms more than0.6 m clearance. Actual1280×720 GPU cabin,
+window, pod bay and station captures were inspected: deck ribs and clear paint
+replace sand deposits, with the same real kit geometry. The live screen is owned
+by the controller integration; this capture intentionally shows its empty recess.
+A corrected real-player-camera seated capture shows Zan through both actual
+apertures. The berth remains at its original pose. Current old orbital framing
+is a placeholder pending the saved regional departure model, and does not claim
+Tu visibility. Root's integrated display capture caught a2 mm recess overlap;
+the screen pose is now0.089 m outward, beyond its0.086 m opaque backing face.

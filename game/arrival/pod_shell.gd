@@ -88,6 +88,7 @@ static func _armor_mesh() -> ArrayMesh:
 	var bone := Paint.coat(Paint.BONE, 0.05, 0.75)
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var black := Paint.coat(Paint.BLACK)
+	var liner := Paint.coat(Paint.BLACK, 1.0, 0.0, 0.85, 0.02)
 	var yellow := Paint.coat(Paint.YELLOW)
 	var teal := Paint.coat(Paint.TEAL)
 	# Thin skins leave the real chassis perimeter, hooks and mounting faces readable.
@@ -101,7 +102,7 @@ static func _armor_mesh() -> ArrayMesh:
 			b.box(Vector3(0.075, 0.022, 0.09), Vector3(x, 0.082, z), gun, 0.008)
 			b.box(Vector3(0.030, 0.009, 0.054), Vector3(x, 0.098, z), yellow, 0.004)
 	# The inner face stays dark, with a visible thermal liner rather than another outer skin.
-	b.box(Vector3(0.77, 0.010, 0.77), Vector3(0, -0.067, 0), black, 0.010)
+	b.box(Vector3(0.77, 0.010, 0.77), Vector3(0, -0.067, 0), liner, 0.010)
 	for x in [-0.26, 0.0, 0.26]:
 		b.box(Vector3(0.012, 0.008, 0.66), Vector3(x, -0.076, 0), gun, 0.002)
 	_armor = b.commit()

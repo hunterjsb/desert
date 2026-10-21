@@ -8,6 +8,12 @@ func run() -> void:
 	var ship := SurveyorShip.new()
 	world.add_child(ship)
 	ship.setup(world, Transform3D(Basis.IDENTITY, player.global_position + Vector3.UP * 60.0))
+	var focus := ship.global_transform * ship.computer_focus_pose()
+	var screen := ship.global_transform * ship.computer_screen_pose()
+	var hit := world.get_world_3d().direct_space_state.intersect_ray(
+		PhysicsRayQueryParameters3D.create(focus.origin, screen.origin - screen.basis.z * 0.05, 1))
+	check(hit.get("collider") == ship.computer_body and focus.origin.distance_to(hit.get("position", focus.origin)) > 0.6,
+		"the focused eye stays outside the real console and looks directly at its display")
 	player.global_position = ship.spawn_at.global_position
 	player.velocity = Vector3.ZERO
 	face(Vector2(0, -1))

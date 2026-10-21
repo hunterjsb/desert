@@ -1304,3 +1304,13 @@ poses; the fallback authors the same shell directly without creating equipment.
 The cramped dark thermal liner and visible frame rails establish a capsule,
 while Zan remains visible through its window rather than painted onto a wall.
 The existing artwork's materials and ordinary detachable panel identity remain.
+
+### Sheltered departure cabin (2026-10-21)
+
+The ship uses the same worn paint shader with little deposited dust on protected
+panels. Neutral task lights preserve bone, teal and gunmetal; recessed black deck
+plates carry fine metal traction ribs. A bounded yellow bay outline, entry
+chevrons and a physical POD BAY sign explain the capsule berth. The launch screen
+is a large dark recess for the controller's live display, not painted UI.
+The capsule's black thermal liner has little deposited sand; exterior armor and
+ordinary recovered equipment retain their weathered materials.

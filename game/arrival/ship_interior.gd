@@ -169,8 +169,8 @@ func _bay_sign() -> void:
 	label.font = ThemeDB.fallback_font
 	label.font_size = 48
 	label.pixel_size = 0.0018
-	label.position = Vector3(1.4, 2.55, 2.99)
-	label.rotation.y = PI
+	label.position = Vector3(2.985, 2.1, 0.15)
+	label.rotation.y = -PI * 0.5
 	label.modulate = Paint.BONE
 	label.outline_size = 0
 	label.no_depth_test = false
