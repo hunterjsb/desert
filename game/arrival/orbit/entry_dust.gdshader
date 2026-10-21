@@ -1,6 +1,7 @@
 shader_type canvas_item;
 uniform float strength = 0.0;
 uniform float passage = 0.0;
+uniform float veil = 1.0;
 uint hash_cell(ivec2 cell) {
 	uvec2 p = uvec2(cell);
 	uint h = p.x * 1597334677u ^ p.y * 3812015801u;
@@ -19,5 +20,5 @@ void fragment() {
 	float cloud = dust(flow) * 0.7 + dust(flow * 2.1 + vec2(9.0, 5.0)) * 0.3;
 	vec3 color = mix(vec3(0.22, 0.11, 0.045), vec3(0.68, 0.43, 0.20), cloud);
 	float alpha = clamp(strength * (0.7 + cloud * 0.4) + smoothstep(0.75, 1.0, strength) * 0.4, 0.0, 1.0);
-	COLOR = vec4(color, alpha);
+	COLOR = vec4(color, alpha * veil);
 }

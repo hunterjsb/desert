@@ -31,6 +31,7 @@ func setup(world: World) -> void:
 	_viewport.add_child(_orbit)
 	_orbit.setup(world.shape.history, world.weather.day)
 	_pod.mesh = _proxy_mesh()
+	_pod.set_instance_shader_parameter(&"age", 0.26)
 	_orbit.camera.add_child(_pod)
 	_dust.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_dust_material.shader = preload("res://game/arrival/orbit/entry_dust.gdshader")
@@ -39,7 +40,7 @@ func setup(world: World) -> void:
 	_dust.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 func present(state: Dictionary) -> void:
-	if _world == null:
+	if not is_instance_valid(_world):
 		return
 	var phase: StringName = state.get("phase", &"orbit")
 	var seconds := float(state.get("elapsed", 0.0))
@@ -65,13 +66,13 @@ func present(state: Dictionary) -> void:
 	_orbit.camera.position = direction * ArrivalOrbit.RADIUS * (1.0 + altitude)
 	_orbit.camera.look_at(point * ArrivalOrbit.RADIUS, Sphere.north(direction))
 	# The exterior view follows the opaque real shell, without a fictional cockpit window.
-	_pod.position = Vector3(0.75, -0.25, lerpf(-3.8, -5.5, smoothstep(0.0, 1.0, progress)) if phase == &"ejection" else -5.5)
+	_pod.position = Vector3(0.75, -0.25, lerpf(-3.8, -5.5, smoothstep(0.0, 1.0, progress)) if phase == &"ejection" else -3.8 if phase == &"orbit" else -5.5)
 	_pod.rotation = Vector3(0.12, -0.42, -0.14 + sin(descent * PI) * 0.06)
 	_pod.visible = phase in [&"orbit", &"ejection", &"descent", &"entry"]
 	var entry := smoothstep(0.1, 0.85, progress) if phase == &"entry" else 1.0 if phase == &"landing" else 0.0
 	_dust_material.set_shader_parameter(&"strength", entry)
-	_dust_material.set_shader_parameter(&"passage", seconds)
-	_dust.modulate.a = 1.0 - smoothstep(0.0, 0.85, progress) if phase == &"landing" else 1.0
+	_dust_material.set_shader_parameter(&"passage", _world.time)
+	_dust_material.set_shader_parameter(&"veil", 1.0 - smoothstep(0.0, 0.85, progress) if phase == &"landing" else 1.0)
 
 func dispose() -> void:
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
@@ -90,18 +91,26 @@ static func _proxy_mesh() -> ArrayMesh:
 	var yellow := Paint.coat(Paint.YELLOW)
 	for x in [-0.5, 0.5]:
 		b.box(Vector3(0.95, 0.10, 0.95), Vector3(x, -0.5, 0), black, 0.025)
-		b.box(Vector3(0.95, 0.10, 0.95), Vector3(x, 0.5, 0), bone, 0.025)
-		b.box(Vector3(0.18, 0.015, 0.78), Vector3(x + 0.22, 0.557, 0), teal, 0.006)
+		b.box(Vector3(0.95, 0.10, 0.95), Vector3(x, 0.5, 0), gun, 0.025)
+		b.box(Vector3(0.85, 0.015, 0.85), Vector3(x, 0.555, 0), teal, 0.012)
+		b.box(Vector3(0.74, 0.012, 0.74), Vector3(x, 0.568, 0), bone, 0.012)
+		b.box(Vector3(0.18, 0.015, 0.78), Vector3(x + 0.22, 0.580, 0), teal, 0.006)
 		for z in [-0.5, 0.5]:
-			b.box(Vector3(0.95, 0.95, 0.10), Vector3(x, 0, z), bone, 0.025)
-			b.box(Vector3(0.18, 0.72, 0.015), Vector3(x + 0.22, 0, z * 1.115), teal, 0.006)
+			b.box(Vector3(0.95, 0.95, 0.10), Vector3(x, 0, z), gun, 0.025)
+			b.box(Vector3(0.85, 0.85, 0.015), Vector3(x, 0, z * 1.115), teal, 0.012)
+			b.box(Vector3(0.74, 0.74, 0.012), Vector3(x, 0, z * 1.140), bone, 0.012)
+			for vent in [-0.18, -0.11, -0.04, 0.03]:
+				b.box(Vector3(0.20, 0.018, 0.008), Vector3(x - 0.14, vent, z * 1.160), black, 0.002)
+			b.box(Vector3(0.18, 0.72, 0.015), Vector3(x + 0.22, 0, z * 1.170), teal, 0.006)
 	for x in [-1.0, 0.0, 1.0]:
 		for z in [-0.54, 0.54]:
 			b.box(Vector3(0.055, 1.09, 0.055), Vector3(x, 0, z), gun, 0.009)
 			for y in [-0.42, 0.42]:
 				b.box(Vector3(0.08, 0.10, 0.025), Vector3(x, y, z * 1.04), yellow, 0.006)
 	for x in [-1.0, 1.0]:
-		b.box(Vector3(0.10, 0.95, 0.95), Vector3(x, 0, 0), bone, 0.025)
-		b.box(Vector3(0.015, 0.68, 0.20), Vector3(x * 1.057, 0, 0.22), teal, 0.006)
+		b.box(Vector3(0.10, 0.95, 0.95), Vector3(x, 0, 0), gun, 0.025)
+		b.box(Vector3(0.015, 0.85, 0.85), Vector3(x * 1.057, 0, 0), teal, 0.012)
+		b.box(Vector3(0.012, 0.74, 0.74), Vector3(x * 1.070, 0, 0), bone, 0.012)
+		b.box(Vector3(0.015, 0.68, 0.20), Vector3(x * 1.082, 0, 0.22), teal, 0.006)
 	_pod_mesh = b.commit()
 	return _pod_mesh
