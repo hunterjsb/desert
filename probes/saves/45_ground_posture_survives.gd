@@ -15,6 +15,8 @@ func run() -> void:
 		check(world.player.ground_pose == pose, "the saved posture remains usable after loading")
 		var body := world.player.get_node(^"Body") as CollisionShape3D
 		check((body.shape as CapsuleShape3D).height < 1.8, "loading immediately restores the physical low body")
+		check(world.player.camera.position.y <= (body.shape as CapsuleShape3D).height,
+			"the restored view already fits inside the saved low clearance")
 	var old := Snapshot.take(world)
 	old.player.erase("ground_pose")
 	check(SaveFile.write(saves.path(), saves.KIND, saves.VERSION, old), "wrote a save from before ground posture")
