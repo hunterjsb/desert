@@ -167,3 +167,17 @@ second inventory item, replacement line or synthetic identity. The same check
 now passes (6 s): the side-mounted board keeps its original cell after its carrier
 is lost, both actual rope ends and their original line remain, and only the two
 protected real floors stay joined when all outer panels/frames are lost.
+
+Arrival25 passes (7 s) through actual bound Take input in real Main: pick the
+original Guide from its rack, obtain the existing fitting preview on a real pod
+side face, attach that same item, then take it back. Loaded selection follows
+those actual physical changes and never counts the held item. The fixture uses
+standing waypoints within the cabin; it does not claim unscripted walking or
+ordinary-player discovery acceptance.
+
+A real GPU cargo fixture has been inspected at rack, external-board loaded,
+sealed and landed views. Shelf gear is physically supported; the original board
+and cell clear the actual shell before and after closure/landing. Opened real
+roof/hatch and recovered supplies remain visible beside the surface pod. This
+is a fitting/continuity fixture, not a player-input recording or body-grip polish
+claim. Arrival21/22/23 also pass again after the carrier-loss correction (7/14/11 s).
