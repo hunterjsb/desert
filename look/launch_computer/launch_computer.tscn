@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://look/launch_computer/launch_computer.gd" id="1"]
+
+[node name="LaunchComputerLook" type="Node"]
+script = ExtResource("1")
