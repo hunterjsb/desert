@@ -357,7 +357,12 @@ surveyor_arrival = {
 "exit_offset_m": 3.2,
 "ejection_db": -8.0,
 "entry_db": -18.0,
-"landing_db": -10.0
+"landing_db": -10.0,
+"impact_jolt_s": 0.42,
+"impact_offset_m": 0.035,
+"impact_tilt_deg": 1.3,
+"impact_dust_s": 1.15,
+"entry_heat": 0.65
 }
 
 posture_sit_height = 1.15
