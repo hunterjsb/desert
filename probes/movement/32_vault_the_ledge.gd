@@ -58,7 +58,7 @@ func run() -> void:
 
 	_ledge.queue_free()
 	await get_tree().physics_frame
-	_ledge = _box(Vector3(4.0, 1.6, 4.0), _base + Vector3(2.0, 0.8, 0.0))
+	_ledge = _box(Vector3(4.0, 2.2, 4.0), _base + Vector3(2.0, 1.1, 0.0))
 	await _start()
 	hold(["move_forward", "sprint", "jump"])
 	await simulate(1.5)
@@ -75,7 +75,7 @@ func run() -> void:
 	roof.queue_free()
 	_ledge.queue_free()
 	await get_tree().physics_frame
-	_ledge = _box(Vector3(4.0, 0.95, 4.0), _base + Vector3(2.0, 0.475, 0.0))
+	_ledge = _box(Vector3(4.0, 1.4, 4.0), _base + Vector3(2.0, 0.7, 0.0))
 	await _start()
 	hold(["move_forward", "sprint"])
 	await simulate(0.9)
@@ -86,7 +86,7 @@ func run() -> void:
 	hold(["move_forward", "jump"])
 	await simulate(1.2)
 	print("jump landing ", player.global_position - _base)
-	check(player.global_position.x > _base.x + 0.3 and player.global_position.y > _base.y + 0.9,
+	check(player.global_position.x > _base.x + 0.3 and player.global_position.y > _base.y + 1.35,
 		"actual jump rise extends the same vault reach")
 
 	_ledge.queue_free()
@@ -129,7 +129,7 @@ func run() -> void:
 func _start() -> void:
 	hold([])
 	player.vault.cancel()
-	player.global_position = _base + Vector3(-1.2, 0.03, 0.0)
+	world.teleport(player, Transform3D(player.global_basis, _base + Vector3(-1.2, 0.03, 0.0)))
 	player.velocity = Vector3.ZERO
 	player.own = Vector2.ZERO
 	player.stamina = world.tuning.stamina_max
