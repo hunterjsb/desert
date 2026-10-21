@@ -842,5 +842,5 @@ untie timing is transient; taking a snapshot does not mutate a live interaction.
 placement finishes securing a gathered group with at least two distinct live
 lines to one anchor. Gathering, dropping, failed placement and restore do not
 record it. Its card uses the existing stake image. This adds one candidate deed,
-bringing the development roster from 59 to 60 in the same eleven families;
+bringing the development roster from 64 to 65 in the same eleven families;
 integration and the real placement/save checks remain pending.
