@@ -1,8 +1,10 @@
 # Release numbering and milestones
 
-**Proposal for review, 2026-10-21.** This clarifies Desert's existing milestone
-convention. It does not change a version, publish a release, or declare an
-Alpha/Beta gate accepted. Current release steps remain in [README](../README.md#releasing).
+**Adopted 2026-10-21.** This is the canonical policy for Desert's game versions,
+release names and maturity stages. Release steps remain in
+[README](../README.md#releasing); milestone scope and acceptance live in the
+[Alpha roadmap](alpha-roadmap.md). Adopting this policy does not itself change
+a version, publish a release, or declare a maturity gate complete.
 
 ## What the version means
 
@@ -11,7 +13,7 @@ sequence of releases; they do not claim semantic versioning of a public API or
 encode save compatibility. Development stage, release name and compatibility
 information each have their own purpose.
 
-| Part | Proposed meaning | Example |
+| Part | Meaning | Example |
 | --- | --- | --- |
 | Milestone | Advance the middle number for a new named, coherent playable outcome; reset the patch. Agree its scope and acceptance checks before release. | `0.3.0-alpha` Sanddune, then `0.4.0-alpha` Spaceport |
 | Patch | Advance the final number for fixes, tuning, polish and bounded improvements within that milestone. A new defining gameplay outcome belongs in another milestone. | `0.3.1-alpha` follows Sanddune |
@@ -22,7 +24,7 @@ The middle number is an ordinal, not a fraction of completion. `0.3` does not
 mean 30% finished; `0.10` is valid, and reaching `0.9` is not a prerequisite for
 the Alpha gate. Do not renumber published releases to make the sequence look tidy.
 
-## Proposed maturity gates
+## Maturity gates
 
 - **Current development Alpha:** systems and content are still being built and
   revised; each named milestone nevertheless needs its own playable acceptance.
@@ -65,5 +67,5 @@ become supported. Do not infer their compatibility from the game's milestone nam
 - Update the roadmap with built, in-progress and planned status. Selecting a
   release name does not approve every feature proposed for it.
 
-If this proposal is adopted, reconcile the short summaries in README and the
-roadmap with one canonical policy rather than maintaining three separate rules.
+README and the roadmap summarize this policy and link here. Update this source
+when an agreed policy changes, then reconcile those summaries.

@@ -7,10 +7,16 @@ game loop with progression and conclusions; final art and final balance can foll
 
 ## Version policy
 
-- Fix releases increment the patch: **0.2.1-alpha “Sailboat”** is published.
-- Named alpha sub-releases increment the minor and reset the patch. Reserve
-  **0.3 “Sanddune”** for the next such release, followed by **0.4 “Spaceport”**.
-- **1.0.0-alpha** marks the full Alpha gate below. It is still a pre-release.
+The canonical [version policy](version-policy.md) uses milestone numbering:
+
+- A new named playable milestone increments the middle number and resets the
+  patch. Current development targets **0.3 “Sanddune”**, then **0.4 “Spaceport”**.
+- Fixes, tuning, polish and bounded improvements within a milestone increment
+  the patch. Patches retain the base name; an adjective is optional.
+- Alpha, Beta and full release describe earned maturity gates. **1.0.0-alpha**
+  marks the full playable Alpha gate below; it is not the public full release.
+- Numbers describe release sequence and scope, not percentage complete or save
+  compatibility. State run/profile compatibility and migrations in release notes.
 - Each release needs accurate notes and Linux, Windows and macOS builds from the
   same verified commit. A version change alone does not publish a release.
 
