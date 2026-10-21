@@ -157,7 +157,11 @@ static func _stow(world: World, body: RigidBody3D, facing: Basis, deck: Chassis,
 		for z in [-0.22, 0.22, 0.0]:
 			var at := deck.global_transform * Vector3(x, 0, z)
 			at.y = deck.global_position.y + Chassis.THICK * 0.5 - local.position.y + clearance
-			if _put(world, body, Transform3D(facing, at), reserved, gap):
+			var pose := Transform3D(facing, at)
+			var inside := AABB(Vector3(-0.45, Chassis.THICK * 0.5, -0.45), Vector3(1.9, Frame.TALL - Chassis.THICK, 0.9))
+			if not inside.encloses((deck.global_transform.affine_inverse() * pose) * _box(body)):
+				continue
+			if _put(world, body, pose, reserved, gap):
 				return true
 	return false
 

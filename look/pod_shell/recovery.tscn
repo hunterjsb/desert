@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/pod_shell/recovery.gd" id="1_recovery"]
+
+[node name="PhysicalPodRecoveryCapture" type="Node"]
+script = ExtResource("1_recovery")
