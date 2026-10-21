@@ -1008,3 +1008,26 @@ coarse ground is presentation only, with the same distant fade as the hills.
 Local interactive objects stay in the tangent approximation documented above.
 This slice does not claim that ordinary distant camp props or weather-volume
 sampling have been projected; those remain integration review work.
+
+As built: World 14 passes (5 s): actual terrain/horizon/summit/skyline/glint
+materials share the main camera frame, including after origin rebasing; the
+projection/inverse and normal agree, physical height is unchanged, the apron
+overlaps the ordinary far ring and reaches beyond the 2 m observer horizon.
+Its 2,688 vertices stay inside the existing 42 km distant budget. Existing
+function/collision, origin-shift and shade-seam checks pass (6/11/3 s).
+
+The actual GPU low and 350 m observer views of Starcom at 15 km were inspected,
+along with the same high view after rebasing. Ground continues into haze and
+the mountain stays grounded; undeformed GPU/CPU ground sampling differs by at
+most 0.00073 m in all three. The current low skyline coverage is incidental to
+that seeded view; this is not an acceptance claim for every distant camp prop.
+
+Paired RTX 3070 measurements at 1920×1080 use the existing sandlight harness,
+nine alternating rounds of 60 measured frames each: exact prior sand shader
+and no apron versus the new shader plus apron. Noon averages 5.319/5.501 ms
+(median paired delta +0.142 ms); a near view filled by sand averages
+4.813/4.910 ms (median +0.092 ms). Individual paired deltas range from
+−0.396 to +1.022 ms and −0.630 to +1.336 ms respectively on the shared desktop.
+These small median costs are below the run's variability, not a precise isolated
+shader microbenchmark; distant hill/skyline shaders remain the new versions in
+both near-view arms. The cheap apron adds no collision or resident sites.
