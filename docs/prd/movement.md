@@ -1888,7 +1888,7 @@ freely hinged to a physical boom; treating that hull as isolated understates
 the mass meeting the sand and allows the uncollided upper mast to pass through
 it before the spar lands. Keep the existing contact separation, penetration
 recovery and Coulomb friction law, and apply the impulse only to the real hull
-at the mast attachment point. Native hinge reactions remain Jolt's work. No
+at the contact's world point. Native hinge reactions remain Jolt's work. No
 velocity clamps, changed acceptance bounds or contact-reporting settings.
 
 An isolated macOS clearance comparison reproduces the landed tipping regression:
@@ -1897,5 +1897,15 @@ clearance fails at 1.09 m/s. Linux reproduces the latter exactly. Clearance
 changes the tipping contact sequence; reverting it would restore the separate
 long-sailing hull-contact failure. The masthead approximation currently assigns
 about 1.43 kg effective contact mass to the 87.3 kg hull and its hinged boom,
-and the uncollided masthead subsequently sinks over a metre. Assembly contact
-verification is pending.
+and the uncollided masthead subsequently sinks over a metre.
+
+With the assembly response, unchanged Sail 4 passes both Linux (16 s) and native
+macOS: maximum tick change 0.69 m/s, spin 3.53 rad/s, speed 4.43 m/s; maximum
+collision-shape penetration 0.014/0.012 m and final heel about 101 degrees.
+Contact reporting remains disabled. The unchanged four-minute Sail 7 passes
+in 97 s: 0.124 m/s maximum tick change, 4.11 m/s speed, 0.73 rad/s spin,
+15.5 degrees heel, 0.012 m penetration, eleven seams and three origin shifts.
+The 30/60/120 Hz comparisons retain 2.907/2.908/2.908 m/s. The contact model
+is constructed only after a contact point enters its existing ground reach;
+upright large-deck runner support is unchanged. This does not measure the
+cost of many simultaneous contacts on a large capsized craft.
