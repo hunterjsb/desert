@@ -313,6 +313,7 @@ func finish(data: Dictionary) -> void:
 		hands._carry = data.hands.carry
 		hands.phase = Hands.Phase.HELD
 		hands._ticked = body.global_transform
+	hands.reel.choose(_made.get(data.hands.get("chosen")))
 	var grasped: Variant = data.grasp.get("body")
 	if grasped != null and _made.has(grasped):
 		hands.grasp.recall(_made[grasped], data.grasp)
@@ -460,6 +461,9 @@ func _take() -> Dictionary:
 				# Where the tick has it, not where this frame drew it.
 				rec.at = _transform_out(hands._ticked if hands.phase == Hands.Phase.HELD else hands.held.global_transform)
 	var grasp := hands.grasp
+	var chosen := hands.reel.chosen_body()
+	if _known(chosen):
+		data.hands.chosen = _ref(chosen)
 	data.grasp = {}
 	if is_instance_valid(grasp.body) and _known(grasp.body):
 		data.grasp = grasp.memory()
@@ -537,6 +541,8 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.lineage = body.get_meta(&"lineage")
 	# Found or stowed, it unrolls into a line or a cable once taken out, a
 	# stowed line as long as it was.
+	if body is RopeTip and not RopeBundle.slots(body).is_empty():
+		out.bundle_slots = RopeBundle.slots(body).size()
 	if body.has_meta(&"rolled"):
 		out.rolled = body.get_meta(&"rolled")
 	if body.has_meta(&"rolled_m"):
@@ -702,6 +708,8 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		var id := Catalog.current(rec.id)
 		body = Catalog.stake() if id == &"stake" else (Catalog.part(id) if Catalog.PARTS.has(id) else Catalog.device(id))
 		_made[rec.ref] = body
+	if body is RopeTip:
+		RopeBundle.prepare(body, rec.get("bundle_slots", 0))
 	_states.append([body, rec])
 	for key: StringName in [&"arrival_uid", &"pod_skin"]:
 		if rec.has(key):
@@ -741,6 +749,8 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		var added := _added(part)
 		for entry: Array in rec.get("added", []):
 			Device.seat_part(_make(entry[1]) as Part, added[entry[0]])
+		if part is RopeTip:
+			RopeBundle.refresh_mass(part)
 	return body
 
 
