@@ -42,5 +42,6 @@ func run() -> void:
 	press(&"ui_cancel")
 	await get_tree().create_timer(0.6).timeout
 	check(not prep.computer_open() and world.player.is_physics_processing(), "leaving focus restores movement")
+	print("FOCUS_RETURN before=", before.origin, " after=", world.player.camera.global_position, " player=", world.player.global_position)
 	check(world.player.camera.global_position.distance_to(before.origin) < 0.01, "the camera returns to the same viewpoint")
 	check(is_instance_valid(station) and station.ui.visible, "the station stays visible after stepping back")

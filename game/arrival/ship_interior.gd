@@ -98,7 +98,7 @@ func set_view(point: Vector3, heading := 0.0) -> void:
 
 ## The station and window use one saved departure, expressed in the moon's frame.
 func set_departure_sample(sample: Dictionary, clock: float) -> void:
-	if sample.is_empty():
+	if not sample.has("body_basis") or not sample.has("ship_position"):
 		return
 	var body: Basis = sample.body_basis
 	var position: Vector3 = body.inverse() * sample.ship_position

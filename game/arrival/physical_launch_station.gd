@@ -13,6 +13,7 @@ var _start_pose := Transform3D.IDENTITY
 var _target_pose := Transform3D.IDENTITY
 var _transition := 1.0
 var _leaving := false
+var _modal_suspended := false
 var _previous_mouse := Input.MOUSE_MODE_CAPTURED
 var _saved_fov := 75.0
 var _body_was_visible := true
@@ -69,8 +70,18 @@ func leave() -> void:
 	Input.mouse_mode = _previous_mouse
 
 func _process(delta: float) -> void:
-	if not is_instance_valid(_world) or not focused:
+	if not is_instance_valid(_world) or not is_instance_valid(_world.player) or not focused:
 		return
+	if not Controls.playing():
+		if not _modal_suspended:
+			_modal_suspended = true
+			ui.set_focused(false)
+			viewport.gui_release_focus()
+		return
+	if _modal_suspended:
+		_modal_suspended = false
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if not _leaving else _previous_mouse
+		ui.set_focused(not _leaving)
 	var seconds := float(_world.tuning.surveyor_preflight.get("computer_focus_s", 0.45))
 	_transition = minf(_transition + delta / maxf(seconds, 0.001), 1.0)
 	_world.player.camera.global_transform = _start_pose.interpolate_with(_target_pose, smoothstep(0.0, 1.0, _transition))
@@ -82,7 +93,7 @@ func _process(delta: float) -> void:
 		closed.emit()
 
 func _input(event: InputEvent) -> void:
-	if not focused or _leaving:
+	if not focused or _leaving or not Controls.playing():
 		return
 	if event.is_action_pressed(&"ui_cancel") or event.is_action_pressed(&"interact"):
 		leave()
@@ -111,7 +122,7 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 func dispose() -> void:
-	if focused and is_instance_valid(_world):
+	if focused and is_instance_valid(_world) and is_instance_valid(_world.player):
 		_world.player.camera.global_transform = _return_pose
 		Input.mouse_mode = _previous_mouse
 		_world.player.hands.display_focused = false
@@ -121,7 +132,7 @@ func dispose() -> void:
 	queue_free()
 
 func _exit_tree() -> void:
-	if focused and is_instance_valid(_world):
+	if focused and is_instance_valid(_world) and is_instance_valid(_world.player):
 		_world.player.hands.display_focused = false
 		_world.player.body.visible = _body_was_visible
 		Input.mouse_mode = _previous_mouse

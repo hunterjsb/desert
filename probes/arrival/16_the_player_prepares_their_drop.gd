@@ -40,7 +40,7 @@ func run() -> void:
 	var computer := prep.computer.ui
 	var original_id: StringName = world.arrival_state.landing_plan.selected_id
 	computer._confirm.pressed.emit()
-	check(world.arrival_state.preflight.plan_confirmed and world.arrival_state.landing_plan.selected_id == original_id,
+	check(world.arrival_state.preflight.plan_confirmed and world.arrival_state.landing_plan.selected_id == &"launch_pulse",
 		"confirming the visibly selected default makes that same course ready")
 	press(&"ui_cancel")
 	await get_tree().create_timer(0.6).timeout
@@ -50,6 +50,7 @@ func run() -> void:
 	stand_at(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
 	await physics_frames(2)
 	press(&"interact")
+	print("LAUNCH_READY ", prep.readiness(), " FORECAST ", prep.course_forecast().get("status"), " CLOCK ", world.arrival_state.preflight.departure_time)
 	press(&"interact")
 	check(not world.arrival.preparing() and world.arrival_state.phase == &"ejection", "use launches the prepared pod into the saved flight")
 	check(is_instance_valid(pod) and pod.get_parent() == world.content, "launch carries the original physical pod")

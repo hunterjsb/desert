@@ -15,6 +15,7 @@ var _suit_input := true
 var _vitals := true
 var _body_visible := true
 var _body_processing := true
+var _hands_focused := false
 
 func start() -> void:
 	if not world.arrival_state.is_empty():
@@ -116,6 +117,9 @@ func _physics_process(delta: float) -> void:
 	var state := world.arrival_state
 	if state.get("phase") == &"landing" and _first_person():
 		_ground_seat()
+	if _first_person() and state.get("preflight", {}).has("flight_sample"):
+		state.flight_elapsed = minf(float(state.get("flight_elapsed", 0.0)) + delta, float(state.preflight.flight_s))
+		world.time = float(state.preflight.departure_time) + float(state.flight_elapsed)
 	state.elapsed = float(state.get("elapsed", 0.0)) + delta
 	var phase: StringName = state.phase
 	var duration := _seconds(phase)
@@ -206,7 +210,9 @@ func _hold() -> void:
 	_vitals = player.vitals.is_physics_processing()
 	_body_visible = player.body.visible
 	_body_processing = player.body.is_processing()
+	_hands_focused = player.hands.display_focused
 	if _first_person():
+		player.hands.display_focused = true
 		player.body.hide()
 		player.body.set_process(false)
 	world.time_warp = 0.0
@@ -230,6 +236,7 @@ func _release() -> void:
 	world.player.hands.set_process_unhandled_input(_hands_input)
 	world.player.suit.set_process_unhandled_input(_suit_input)
 	world.player.vitals.set_physics_process(_vitals)
+	world.player.hands.display_focused = _hands_focused
 	world.player.body.visible = _body_visible
 	world.player.body.set_process(_body_processing)
 	_held = false

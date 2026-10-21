@@ -73,6 +73,29 @@ func present(state: Dictionary) -> void:
 	var direction := Sphere.toward(point, -heading + PI, angular_offset)
 	_orbit.camera.position = direction * ArrivalOrbit.RADIUS * (1.0 + altitude)
 	_orbit.camera.look_at(point * ArrivalOrbit.RADIUS, Sphere.north(direction))
+	var flight: Dictionary = state.get("preflight", {}).get("flight_sample", {})
+	if flight.has("path") and flight.path.size() > 1:
+		var path: PackedVector3Array = flight.path
+		var elapsed := float(state.get("flight_elapsed", 0.0))
+		var t := clampf(elapsed / maxf(float(flight.flight_s), 0.001), 0.0, 1.0)
+		var index := t * (path.size() - 1)
+		var i := mini(floori(index), path.size() - 2)
+		var position := path[i].lerp(path[i + 1], index - i)
+		var clock := float(state.preflight.departure_time) + elapsed
+		var turn := Basis(Vector3(0, 0, 1), TAU * elapsed / (_world.tuning.day_minutes * 60.0))
+		var body: Basis = turn * (flight.body_basis as Basis)
+		var local := body.inverse() * position
+		_orbit.camera.position = local * ArrivalOrbit.RADIUS
+		var north := Sphere.north(local.normalized())
+		var forward := Sphere.north(point) * cos(heading) + Sphere.east(point) * sin(heading)
+		var approaching := (point * ArrivalOrbit.RADIUS - _orbit.camera.position).normalized()
+		var level := smoothstep(0.4, 1.0, progress) if phase == &"entry" else 0.0
+		var radial := local.normalized()
+		var level_aim := forward * cos(0.1) + radial * sin(0.1)
+		var aim := approaching.slerp(level_aim, level).normalized()
+		var up := north.slerp(radial, level).normalized()
+		_orbit.camera.look_at(_orbit.camera.position + aim, up if absf(aim.dot(up)) < 0.99 else Sphere.east(local.normalized()))
+		_orbit.update_light(clock)
 	# Effects are pure saved-time samples; computing the window twice triggers no events.
 	_effects.present(state, Rect2())
 	var recoil := Transform3D(Basis.from_euler(_effects.camera_rotation), _effects.camera_offset)

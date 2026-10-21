@@ -148,7 +148,8 @@ func _update_orbit() -> void:
 	if not _plan.has("departure_trajectory"):
 		return
 	_sample = DepartureTrajectory.sample(_plan.departure_trajectory, _departure_time(), _world.tuning)
-	if _sample.is_empty():
+	if not _sample.has("camera_transform"):
+		_sample = {}
 		return
 	var inverse: Basis = (_sample.body_basis as Basis).inverse()
 	var pose: Transform3D = _sample.camera_transform
@@ -170,7 +171,7 @@ func _exposed(point: Vector3) -> bool:
 	return (eye + ray * along).length() >= 0.997
 
 func _draw_overlay(canvas: Control) -> void:
-	if _sample.is_empty():
+	if not _sample.has("landing_point"):
 		return
 	var amber := Color(0.95, 0.73, 0.36)
 	var teal := Color(0.55, 0.85, 0.82)

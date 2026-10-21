@@ -251,6 +251,8 @@ func launch() -> bool:
 	if not forecast.is_empty():
 		sealed.preflight.flight_sample = forecast.sample
 		sealed.preflight.flight_s = forecast.sample.flight_s
+		sealed.preflight.profile.descent_s = maxf(float(forecast.sample.flight_s) - float(world.tuning.surveyor_arrival.ejection_s) - float(sealed.preflight.profile.entry_s), 0.1)
+		world.time = float(sealed.preflight.departure_time)
 	sealed.flight_elapsed = 0.0
 	_move_transport(selected.landing_world)
 	Deeds.done(world, &"pod_launch")
