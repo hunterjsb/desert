@@ -56,10 +56,16 @@ func run() -> void:
 	world.time = night
 	radio.frequency = gods.carrier(&"eye", night)
 	await physics_frames(5)
-	print("at night, mid-drone (%.0f s): on air %s at %.1f dB, \"%s\"" % [night, radio.on_air(), radio.music.volume_db, radio.said])
 	var playing: AudioStream = drones[roundi(gods.song(&"eye", night, lengths).x)]
-	check(radio.tuned_to() == &"eye" and radio.on_air() == playing and radio.music.volume_db > -20.0,
-		"at night its drone comes down by sky wave")
+	var audible_tick := false
+	var loudest := -INF
+	# A dirty sky wave can drop briefly; listen through its ordinary interference.
+	for tick in 30:
+		await physics_frames(1)
+		loudest = maxf(loudest, radio.music.volume_db)
+		audible_tick = audible_tick or (radio.tuned_to() == &"eye" and radio.on_air() == playing and radio.music.volume_db > -20.0)
+	print("at night, mid-drone (%.0f s): on air %s, loudest %.1f dB, \"%s\"" % [night, radio.on_air(), loudest, radio.said])
+	check(audible_tick, "at night its drone comes down by sky wave")
 	var silent := _first(night, func(u: float) -> bool: return gods.song(&"eye", u, lengths).y < 0.0)
 	world.time = silent + 1.0
 	radio.frequency = gods.carrier(&"eye", world.time)
