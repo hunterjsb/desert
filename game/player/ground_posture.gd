@@ -6,10 +6,12 @@ var player: Player
 var shape: CollisionShape3D
 var standing: CapsuleShape3D
 var tuning := Tuning.current()
+var standing_eye: float
 
 
 func _init(by: Player) -> void:
 	player = by
+	standing_eye = player.camera.position.y
 	shape = player.get_node("Body")
 	standing = shape.shape.duplicate()
 	shape.shape = standing.duplicate()
@@ -49,11 +51,14 @@ func change(pose: StringName) -> bool:
 	player.walker.stop()
 	if pose != &"stand" and player.world != null:
 		Deeds.done(player.world, &"ground_rest")
+	if pose == &"prone" and Controls.ui != null:
+		Controls.ui.teach(Controls.REST_HOW_TO, Controls.REST_HOW_TO_SAYS)
 	return true
 
 
 func toggle(pose: StringName) -> bool:
-	if player.flying or player.ride != null or player.helm != null or player.tumble != null \
+	if not Controls.playing() or player.vitals.dead or player.vitals.wounds.stunned() \
+			or player.flying or player.ride != null or player.helm != null or player.tumble != null \
 			or player.vault.active or not player.is_on_floor():
 		return false
 	return change(&"stand" if player.ground_pose == pose else pose)
@@ -61,8 +66,8 @@ func toggle(pose: StringName) -> bool:
 
 func eye_drop() -> float:
 	match player.ground_pose:
-		&"sit": return standing.height - 0.15 - tuning.posture_sit_eye
-		&"prone": return standing.height - 0.15 - tuning.posture_prone_eye
+		&"sit": return standing_eye - tuning.posture_sit_eye
+		&"prone": return standing_eye - tuning.posture_prone_eye
 	return 0.0
 
 

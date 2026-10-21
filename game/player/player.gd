@@ -137,9 +137,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	elif event.is_action_pressed("sit"):
 		posture.toggle(&"sit")
-	if event.is_action_pressed("lie_down"):
+	elif event.is_action_pressed("lie_down"):
 		posture.toggle(&"prone")
-	if event.is_action_pressed("ride"):
+	elif event.is_action_pressed("ride"):
 		if toggle_board():
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("jump"):
@@ -249,7 +249,7 @@ func _physics_process(delta: float) -> void:
 	var lift := 0.0
 	if on_floor:
 		vy = 0.0
-		_sliding = ground_pose == &"stand" and _keeps_sliding(dir, crouch, pressed)
+		_sliding = _keeps_sliding(dir, crouch, pressed)
 		# A face too steep to stand on, rising your way, is one auto-walk can't climb.
 		if _sliding and slope.dot(walker.heading) > 0.0 \
 				and slope.length() > tan(deg_to_rad(_tuning.slip_angle - SLIP_HOLD)):
@@ -309,7 +309,7 @@ func _physics_process(delta: float) -> void:
 
 	mode = "slide" if _sliding else ("air" if not is_on_floor() and (_jumped or _since_ground > _tuning.coyote_seconds)
 		else ("sprint" if sprinting else ("walk" if dir != Vector2.ZERO else "stand")))
-	if ground_pose != &"stand" and is_on_floor():
+	if ground_pose != &"stand" and is_on_floor() and not _sliding:
 		mode = "crawl" if ground_pose == &"prone" and dir != Vector2.ZERO else String(ground_pose)
 	if sprinting:
 		stamina -= _tuning.stamina_sprint_drain * delta
