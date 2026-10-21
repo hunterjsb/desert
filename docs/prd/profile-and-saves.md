@@ -822,3 +822,19 @@ and legacy-start compatibility passes (24 s), and posture/legacy/initial-eye
 restoration passes (13 s). Arrival restore guards, resolved survivor references
 and ground-pose restoration coexist in Snapshot. This is focused development
 evidence; combined CI and ordinary-player acceptance remain pending.
+
+## Gathered lines and Make Fast (selected 2026-10-21; implementation)
+
+Gathering keeps every original Line and end. The primary end carries the others
+through ordinary nested fittings; the run records enough ordered member sockets
+to rebuild that physical group before reconnecting rope endpoints and routes.
+Restore a carried member selection only after hands and waist are restored. A
+missing group/selection field means the legacy single-end behavior. Continued
+untie timing is transient; taking a snapshot does not mutate a live interaction.
+
+**Make Fast** belongs to Wind after Set Sail. Record it when an ordinary player
+placement finishes securing a gathered group with at least two distinct live
+lines to one anchor. Gathering, dropping, failed placement and restore do not
+record it. Its card uses the existing stake image. This adds one candidate deed,
+bringing the development roster from 59 to 60 in the same eleven families;
+integration and the real placement/save checks remain pending.
