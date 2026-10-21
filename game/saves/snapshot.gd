@@ -181,6 +181,8 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# Sand dug off sites by hand stays off; a dune's ruin built comes back.
 	world.shape.sites.recall_dug(data.get("dug", []), data.get("dunes", []))
 	world.farm.feral.recall(data.get("feral", []), world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
+	world.terrain.reset_home()
+	world.home.prepare_restore(data.get("home", {}))
 	var places: Array[Vector2] = [Vector2(world.player_world_x(), world.player_world_z())]
 	for rec: Dictionary in data.things:
 		places.append(Vector2(rec.at[1], rec.at[3]))
@@ -304,6 +306,7 @@ func finish(data: Dictionary) -> void:
 		var cargo := _made.get(drop.cargo) as Part
 		if is_instance_valid(cargo):
 			Airdrop.recall(world, cargo, _transform_in(drop.at), drop.state)
+	world.home.finish_restore(data.get("home", {}), func(ref: int) -> Node: return _made.get(ref))
 	world.shape.sites.resumed()
 
 
@@ -386,6 +389,7 @@ func _take() -> Dictionary:
 	# At the helm, you sit there again on resume.
 	if player.helm != null and _refs.has(player.helm):
 		data.helm = _refs[player.helm]
+	data.home = world.home.snapshot(_ref)
 	data.things = things
 	data.airdrops = drops
 	data.order = order

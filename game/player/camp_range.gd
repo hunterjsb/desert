@@ -1,6 +1,6 @@
 class_name CampRange
 extends Node
-## Never silently lose the camp. Only the ground near you exists, and a device
+## Warn before losing unmarked belongings. A device
 ## whose ground is forgotten is forgotten with it: the terrain lets a chunk go
 ## once yours is more than view_radius + 1 chunks from it. So each of your
 ## devices left lying has an edge, a square of chunks round its own, and
@@ -85,7 +85,8 @@ func camp() -> Array[Device]:
 		# One the world has let go of is gone now, not at the frame's end.
 		if device != null and not device.is_queued_for_deletion() and device != _player.board \
 				and device != _player.hands.held \
-				and not _player.waist.holds(device):
+				and not _player.waist.holds(device) \
+				and not (world.home.supported and world.home.contains(device)):
 			mine.append(device)
 	return mine
 

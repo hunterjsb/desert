@@ -92,6 +92,11 @@ var _pressed := {}
 var _far_turn := 0
 var _occupants := PackedVector2Array()
 var _occupants_frame := -1
+var _policy: TerrainResidency.Policy
+var _home_requested := false
+var _home_kept := Rect2i()
+var _home_next := Rect2i()
+var _home_blocked := false
 
 
 func setup(world: World) -> void:
@@ -131,8 +136,13 @@ func _process(_delta: float) -> void:
 	var started := Time.get_ticks_usec()
 	_deadline = started + int(_tuning.stream_budget_ms * 1000.0)
 	var here := chunk_at(_world.player_world_x(), _world.player_world_z())
-	if here != _center or not _planned:
+	var camp := _world.home.bounds if _world.home.has_home() else Rect2()
+	var policy := TerrainResidency.plan(here, _tuning, camp)
+	_stage_home(policy)
+	_update_home(policy)
+	if not policy.same_as(_policy) or not _planned:
 		_center = here
+		_policy = policy
 		_planned = true
 		_plan()
 	_ground()
@@ -313,22 +323,90 @@ func _plan() -> void:
 	_to_retire = _chunks.keys()
 	_wanted.clear()
 	var r := _tuning.view_radius
-	# Ring by ring outward, so the nearest ground is built first; bucketed, not
-	# sorted, because this runs on the main thread at every chunk crossed.
+	# Keep the existing player rings; camp collision goes before distant decoration.
 	var rings: Array[Array] = []
+	var camp: Array[Vector3i] = []
+	var seen := {}
 	for d in r + 1:
 		rings.append([])
 	for dz in range(-r, r + 1):
 		for dx in range(-r, r + 1):
 			var coord := _center + Vector2i(dx, dz)
+			seen[coord] = true
 			var d := maxi(absi(dx), absi(dz))
-			var step := NEAR_STEP if TerrainResidency.needs_collision(coord, _center, _tuning) else _tuning.mid_step
+			var step := NEAR_STEP if _policy.needs_collision(coord) else _tuning.mid_step
 			var chunk: TerrainChunk = _chunks.get(coord)
 			if chunk and chunk.step != 0 and chunk.step <= step:
 				continue
-			rings[d].append(Vector3i(coord.x, coord.y, step))
-	for ring in rings:
-		_wanted.append_array(ring)
+			var key := Vector3i(coord.x, coord.y, step)
+			if d > _tuning.near_radius and _policy.camp_collision.has_point(coord):
+				camp.append(key)
+			else:
+				rings[d].append(key)
+	for z in range(_policy.camp_collision.position.y, _policy.camp_collision.end.y):
+		for x in range(_policy.camp_collision.position.x, _policy.camp_collision.end.x):
+			var coord := Vector2i(x, z)
+			if seen.has(coord):
+				continue
+			var chunk: TerrainChunk = _chunks.get(coord)
+			if chunk and chunk.step == NEAR_STEP:
+				continue
+			camp.append(Vector3i(x, z, NEAR_STEP))
+	for d in rings.size():
+		_wanted.append_array(rings[d])
+		if d == mini(_tuning.near_radius, r):
+			_wanted.append_array(camp)
+
+
+## Keep the old collision until a moving camp's replacement ground is ready.
+func reset_home() -> void:
+	_world.shape.sites.release(&"home")
+	_home_requested = false
+	_home_kept = Rect2i()
+	_home_next = Rect2i()
+	_planned = false
+
+
+func _stage_home(policy: TerrainResidency.Policy) -> void:
+	_home_next = policy.camp_keep
+	_home_blocked = false
+	if not policy.camp_keep.has_area() or not _home_kept.has_area():
+		return
+	var together := policy.camp_keep.merge(_home_kept)
+	if together.get_area() <= _tuning.home_support_chunks:
+		policy.camp_keep = together
+		policy.camp_collision = policy.camp_collision.merge(_home_kept.grow(-1))
+	else:
+		policy.camp_keep = _home_kept
+		policy.camp_collision = _home_kept.grow(-1)
+		_home_blocked = true
+		_world.home.attention = "home moved beyond its supported ground"
+
+
+func _update_home(policy: TerrainResidency.Policy) -> void:
+	var home := _world.home
+	if home.has_home() and home.anchor != null and policy.camp_keep.has_area():
+		_world.shape.sites.retain(&"home", policy.history_rect(_size), home.anchor)
+		_home_requested = true
+		home.supported = not _home_blocked and _home_ready(policy)
+		if home.supported:
+			_home_kept = _home_next
+	elif _home_requested:
+		_world.shape.sites.release(&"home")
+		_home_requested = false
+		_home_kept = Rect2i()
+		home.supported = false
+
+
+func _home_ready(policy: TerrainResidency.Policy) -> bool:
+	if not _world.shape.sites.ready(policy.history_rect(_size)):
+		return false
+	for z in range(policy.camp_collision.position.y, policy.camp_collision.end.y):
+		for x in range(policy.camp_collision.position.x, policy.camp_collision.end.x):
+			var chunk: TerrainChunk = _chunks.get(Vector2i(x, z))
+			if chunk == null or not chunk.has_collision():
+				return false
+	return true
 
 
 ## Checked before each piece of main-thread work, so a frame overruns its
@@ -338,12 +416,14 @@ func _out_of_time() -> bool:
 
 
 func _launch() -> void:
-	while _tasks.size() < _tuning.builds_in_flight and not _wanted.is_empty():
-		var key: Vector3i = _wanted[0]
-		# Ground is built only once the history that could touch it is laid.
+	var waiting := _wanted.size()
+	while _tasks.size() < _tuning.builds_in_flight and not _wanted.is_empty() and waiting > 0 and not _out_of_time():
+		var key: Vector3i = _wanted.pop_front()
+		waiting -= 1
+		# Surveying one area cannot stall ready work in the other.
 		if not _world.shape.sites.ready(Rect2(Vector2(key.x, key.y) * _size, Vector2.ONE * _size)):
-			return
-		_wanted.pop_front()
+			_wanted.append(key)
+			continue
 		if _tasks.has(key):
 			continue
 		var held := _world.shape.sites.hold(Vector2i(key.x, key.y))
@@ -381,7 +461,7 @@ func _collect() -> void:
 
 func _upload(build: ChunkBuild) -> void:
 	var chunk: TerrainChunk = _chunks.get(build.coord)
-	if not TerrainResidency.keeps_ground(build.coord, _center, _tuning) or (chunk and chunk.step != 0 and chunk.step <= build.step):
+	if not _policy.keeps_ground(build.coord) or (chunk and chunk.step != 0 and chunk.step <= build.step):
 		RenderingServer.free_rid(build.mesh)
 		if chunk == null:
 			_world.shape.sites.release(build.coord)
@@ -400,7 +480,7 @@ func _upload(build: ChunkBuild) -> void:
 	if not chunk.carved.is_empty():
 		# A storm may have moved what stands in it while it was built.
 		_behind[chunk.coord] = true
-	if build.step == NEAR_STEP and TerrainResidency.needs_collision(build.coord, _center, _tuning) and not chunk.has_collision() \
+	if build.step == NEAR_STEP and _policy.needs_collision(build.coord) and not chunk.has_collision() \
 			and not _to_ground.has(chunk):
 		_to_ground.append(chunk)
 
@@ -411,7 +491,7 @@ func _upload(build: ChunkBuild) -> void:
 func _ground() -> void:
 	while not _to_ground.is_empty() and not _out_of_time():
 		var chunk: TerrainChunk = _to_ground[0]
-		if chunk.step != NEAR_STEP or chunk.has_collision() or not TerrainResidency.needs_collision(chunk.coord, _center, _tuning):
+		if chunk.step != NEAR_STEP or chunk.has_collision() or not _policy.needs_collision(chunk.coord):
 			_to_ground.pop_front()
 		elif chunk.add_collision_piece(_size, _sand):
 			_to_ground.pop_front()
@@ -424,7 +504,7 @@ func _retire() -> void:
 		var chunk: TerrainChunk = _chunks.get(coord)
 		if chunk == null:
 			continue
-		if not TerrainResidency.keeps_ground(coord, _center, _tuning):
+		if not _policy.keeps_ground(coord):
 			unloaded.emit(coord)
 			_to_ground.erase(chunk)
 			# Freed now, not queued, so the cost lands inside the budget.
@@ -432,12 +512,12 @@ func _retire() -> void:
 			_chunks.erase(coord)
 			_standing.erase(coord)
 			_joined.erase(coord)
-		elif not TerrainResidency.keeps_collision(coord, _center, _tuning):
+		elif not _policy.keeps_collision(coord):
 			if chunk.has_collision():
 				ungrounded.emit(chunk)
 			_to_ground.erase(chunk)
 			chunk.remove_collision()
-		elif TerrainResidency.needs_collision(coord, _center, _tuning) and chunk.step == NEAR_STEP and not chunk.has_collision() \
+		elif _policy.needs_collision(coord) and chunk.step == NEAR_STEP and not chunk.has_collision() \
 				and not _to_ground.has(chunk):
 			# Back in range after leaving it: the same samples, so the same ground.
 			_to_ground.append(chunk)

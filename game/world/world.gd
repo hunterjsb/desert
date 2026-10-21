@@ -99,6 +99,8 @@ func _ready() -> void:
 		run_seed = tuning.run_seed if tuning.run_seed != 0 else randi()
 	home = CampHome.new()
 	home.world = self
+	home.admit = _admit_home
+	home.release_check = _release_home_check
 	add_child(home)
 	shape = TerrainShape.new(run_seed, tuning)
 	Paint.face_wind(WeatherField.mean_heading(run_seed))
@@ -365,6 +367,7 @@ func _physics_process(delta: float) -> void:
 	if absi(stray.x) >= tuning.origin_shift_chunks or absi(stray.y) >= tuning.origin_shift_chunks:
 		shift_origin(stray)
 
+	home.refresh()
 	_keep_bodies_on_ground()
 	time += delta * time_warp
 	played += delta
@@ -416,10 +419,24 @@ func _live_days() -> void:
 		Deeds.measure(self, &"ten_days", lived)
 
 
-## Nothing physical is ever outside collision: a body whose ground is gone is
-## frozen until it returns, and forgotten once its chunk is. That's as soon as
-## you're too far for its chunk to be kept, not whenever streaming gets round
-## to letting it go, so the camp is lost exactly where it's said to be.
+## Marked belongings keep their own ground; ordinary loose finds follow the player.
+func _admit_home(rect: Rect2) -> String:
+	var policy := TerrainResidency.plan(terrain.chunk_at(player_world_x(), player_world_z()), tuning, rect)
+	return "home needs too much ground support" if policy.camp_keep.get_area() > tuning.home_support_chunks else ""
+
+
+func _release_home_check() -> String:
+	var here := terrain.chunk_at(player_world_x(), player_world_z())
+	for body in home.members:
+		if not is_instance_valid(body) or body.is_queued_for_deletion():
+			continue
+		var x := world_x(body.global_position.x)
+		var z := world_z(body.global_position.z)
+		if not TerrainResidency.needs_collision(terrain.chunk_at(x, z), here, tuning) or not terrain.has_collision_at(x, z):
+			return "return to home before unmarking it"
+	return ""
+
+
 func _keep_bodies_on_ground() -> void:
 	var here := terrain.chunk_at(player_world_x(), player_world_z())
 	for child in content.get_children():
@@ -429,7 +446,7 @@ func _keep_bodies_on_ground() -> void:
 			continue
 		var x := world_x(body.global_position.x)
 		var z := world_z(body.global_position.z)
-		if not terrain.is_loaded_at(x, z) or not TerrainResidency.keeps_ground(terrain.chunk_at(x, z), here, tuning):
+		if not home.contains(body) and (not terrain.is_loaded_at(x, z) or not TerrainResidency.keeps_ground(terrain.chunk_at(x, z), here, tuning)):
 			body.queue_free()
 		elif not terrain.has_collision_at(x, z):
 			if not body.freeze:
