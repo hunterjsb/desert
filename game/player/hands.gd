@@ -420,7 +420,9 @@ func interact() -> bool:
 	if look_device != null and _player.world.salvage.held_fast(look_device) != "":
 		return refuse(_player.world.salvage.held_fast(look_device))
 	if look_device != null and look_device.interact(_player):
-		_player.world.salvage.claim(look_device)
+		# Marking Home requires ownership; a refusal must not claim its host.
+		if not look_device is HomeBeacon:
+			_player.world.salvage.claim(look_device)
 		if look_device is Radio:
 			_player.close_up.tuned(look_device)
 		return true

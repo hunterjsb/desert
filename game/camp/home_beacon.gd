@@ -30,4 +30,5 @@ func _physics_process(delta: float) -> void:
 	super(delta)
 	if frame_view != null:
 		frame_view.set_instance_shader_parameter(&"lit", 1.0 if world != null and world.home != null \
-			and world.home.beacon == self and powered and not wrecked() else 0.0)
+			and world.home.beacon == self and world.home._deck(self) == world.home.root \
+			and is_instance_valid(world.home.root) and powered and not wrecked() else 0.0)

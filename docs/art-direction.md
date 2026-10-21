@@ -1143,3 +1143,12 @@ identifies the marked transmitter; it makes no shield or navigation projection.
 Keep the complete model inside the existing catalog box, merged into one shared
 worn-material mesh. Read its assembly in actual close, carried and mounted GPU
 views before acceptance.
+
+**As built and inspected.** The beacon is one cached worn-material surface with
+1,164 triangles. Its visual AABB is 0.27 × 0.359 × 0.22 m, inside the catalog
+0.28 × 0.36 × 0.24 m box. Actual Forward+ 1280 × 720 captures show the enamel
+enclosure, ribbed antenna and mounting feet close up, on a powered chassis and
+in hand. The amber lens lights only for the marked powered transmitter mounted
+on its Home chassis; removing it leaves the saved Home identity and last fix.
+This is a readability/assembly check, not a GPU timing measurement or proof of
+remote camp support.

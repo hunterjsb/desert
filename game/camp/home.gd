@@ -37,7 +37,7 @@ func mark(marker: HomeBeacon) -> String:
 	var deck := _deck(marker)
 	if deck == null:
 		return "mount the beacon on a chassis first"
-	if not _owned(deck):
+	if not _owned(deck) or not _owned(marker):
 		return "claim this chassis first"
 	if _marked and (marker != beacon or deck != root):
 		var unsafe := _release_reason()
@@ -282,9 +282,9 @@ func nav() -> Dictionary:
 		and Sphere.angle(here, home) * world.shape.history.radius <= world.tuning.home_signal_m
 	var status := "Receiving" if live else "Last known fix"
 	if attention != "":
-		status = attention
+		status += " · " + attention
 	elif not supported:
-		status = "Preparing home support"
+		status += " · preparing home support"
 	return {"marked": true, "supported": supported, "live": live, "metres": Sphere.angle(here, _fix) * world.shape.history.radius if _has_fix else NAN,
 		"bearing": fposmod(Sphere.bearing(here, _fix), TAU) if _has_fix else NAN, "status": status}
 
