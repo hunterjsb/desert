@@ -25,6 +25,28 @@ roots, nested fittings and stable arrival identities so Snapshot preserves them.
 Restoring the room must not duplicate pod or rack gear. Scene moves use the safe
 native teleport path. All equipment and structure retain their actual identity.
 
+## First-person flight and impact (agreed; next pass, 2026-10-21)
+
+Keep the seated first-person viewpoint from launch through atmospheric entry and
+impact. Replace exterior pod shots with a readable capsule interior and a real
+sealed viewing aperture, consistent before and after flight. Zan approaches through
+that aperture; entry heats its edges and builds wind and hull noise. Orbital and
+surface renderers may change under entry dust, but the seat, perspective and
+interior must remain continuous. No cut to a standing player outside the pod.
+
+Impact should feel violent through a brief bounded jolt, sound, dust and nearby
+panel debris, without persistent camera jitter. Surviving actual gear stays
+clustered around the landing site and keeps its existing saved identity, charge,
+contents and deterministic survival. Dust clears onto the real surface and
+recoverable shell. Resume does not replay impacts or duplicate debris or cargo.
+This is presentation over the selected approach, not full orbital rigid-body
+simulation. Existing legacy arrival saves retain compatibility.
+
+Acceptance requires actual unseen captures through launch, entry, impact and
+recovery, focused phase/save continuity checks, and the normal combined CI gate.
+These changes are planned here; the preceding interactive-preflight baseline is
+already on master and still uses the exterior flight presentation.
+
 ## Limited scouting and trajectory
 
 Initially survey a bounded drop corridor around the starting region. Several
