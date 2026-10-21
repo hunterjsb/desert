@@ -11,6 +11,8 @@ static func stage(world: World, ship: SurveyorShip, state: Dictionary) -> Dictio
 	var preflight: Dictionary = state.get("preflight", {})
 	if preflight.get("staged", false):
 		return named
+	var counting := world.counts_deeds
+	world.counts_deeds = false
 	for role: StringName in ship.pod_parts:
 		var body: Node = ship.pod_parts[role]
 		body.set_meta(&"arrival_uid", role)
@@ -65,10 +67,12 @@ static func stage(world: World, ship: SurveyorShip, state: Dictionary) -> Dictio
 	var rack_boxes: Array[AABB] = []
 	for body in cargo:
 		if not _rack(world, ship, body, rack_boxes):
+			world.counts_deeds = counting
 			return {}
 	preflight.staged = true
 	state.preflight = preflight
 	world.arrival_nodes = named
+	world.counts_deeds = counting
 	return named
 
 
@@ -80,7 +84,7 @@ static func loaded(world: World, ship: SurveyorShip) -> Array[StringName]:
 	for spec: Array in SurveyorManifest.EQUIPMENT:
 		var uid: StringName = spec[0]
 		var body := named.get(uid) as RigidBody3D
-		if not is_instance_valid(body) or _carried(world, body):
+		if not is_instance_valid(body) or _carried(world, body) or not _whole_line(world, ship, body):
 			continue
 		var box := bounds_in(body, ship.global_transform)
 		if box.get_volume() > 0.0 and not seat.intersects(box) and (ship.cargo_bounds.grow(GEOMETRY_EPS).encloses(box) or _external(world, ship, body, box)):
@@ -134,7 +138,10 @@ static func seal(world: World, ship: SurveyorShip, state: Dictionary, profile: D
 	preflight.profile = profile.duplicate(true)
 	preflight.launched = true
 	# The exact retained panels close through ordinary real chassis joins.
+	var counting := world.counts_deeds
+	world.counts_deeds = false
 	PodShell.reseal(ship.pod)
+	world.counts_deeds = counting
 	for uid: StringName in named:
 		var body: RigidBody3D = named[uid]
 		if body is Chassis and body.deck != null:
@@ -154,10 +161,39 @@ static func land(world: World, state: Dictionary) -> Dictionary:
 	return SurveyorRecovery.land_preflight(world, state)
 
 
+static func _whole_line(world: World, ship: SurveyorShip, body: RigidBody3D) -> bool:
+	if not body.has_meta(&"line"):
+		return true
+	var line := body.get_meta(&"line") as Line
+	if not is_instance_valid(line) or line.state == Line.State.COILED:
+		return true
+	if line.state != Line.State.LAID:
+		return false
+	for end in line.ends:
+		if _carried(world, end) or end.socket == null or not _pod_attachment(ship, end):
+			return false
+	if is_instance_valid(line.rope.through) and not _pod_attachment(ship, line.rope.through.holder):
+		return false
+	return true
+
+
+static func _pod_attachment(ship: SurveyorShip, body: Node) -> bool:
+	var on := body
+	while on != null:
+		for spec: Array in SurveyorManifest.STRUCTURE:
+			if ship.pod_parts.get(spec[0]) == on:
+				return true
+		if on is Part and on.socket != null:
+			on = on.socket.get_parent()
+		else:
+			on = on.host() if on is Device else null
+	return false
+
+
 static func _external(world: World, ship: SurveyorShip, body: RigidBody3D, box: AABB) -> bool:
 	var on: Node = body.socket.get_parent() if body is Part and body.socket != null else body.get_parent()
 	while on != null:
-		if ship.pod_parts.values().has(on):
+		if _pod_attachment(ship, on):
 			var rules: Variant = world.tuning.get("surveyor_preflight")
 			if not rules is Dictionary:
 				return false

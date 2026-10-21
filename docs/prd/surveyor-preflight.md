@@ -126,3 +126,32 @@ This fresh-flow result does not certify restored cargo: real disk preparation,
 seated, flight and post-impact saves remain under focused acceptance, including
 lost-frame ownership cleanup and extended-rope identity. Combined CI, native
 builds and ordinary-player acceptance are still pending.
+#### Actual cargo and disk acceptance follow-up
+
+Arrival21 passes (6 s) with a board mounted to a real pod side panel and its
+original fitted cell: actual selected body identities survive landing; partial
+water/charge remain unchanged, omitted rack equipment stays aboard and repeated
+landing does not duplicate bodies. The mounted board/cell reaches 0.82 m from
+the pod centreline, so its external envelope is corrected to 0.83 m including
+the existing 0.01 m spacing. All real shell bodies use native custom COM before
+first teardown, including pieces that had never entered the tree themselves.
+
+Arrival22 passes (13 s) through actual Main disk saves in preparation with a
+partly used store held, seated, immediately after launch, in resumed flight and
+after landing. The immediate-flight save first reproduced omitted rack gear
+being saved before deferred deletion; removing those actual roots before queueing
+free fixes it. A second actual failure exposed restored joined-floor ownership
+indices still listing a removed frame's nodes: prune only nodes no longer in the
+actual deck after unseating the lost frame, before freeing that frame. No Snapshot
+filter or assertion was suppressed.
+
+Arrival23 passes (9 s) for ordinary coil→original end→coil identity transfer and
+a fully attached original line with a real fairlead. Loaded recognition rejects
+a line still leading to the hand/waist or another ship object. A line whose ends
+and guide are on the actual pod keeps its original ends, full/paid lengths and
+route through physical landing and disk restore. No new rope item or input is
+introduced. System staging and automatic hatch resealing suppress assembly deeds;
+actual launch/recovery actions retain their own deed recording.
+
+Optional carrier-loss cases and ordinary first-person packing/collision captures
+remain pending; these focused checks are not full milestone acceptance.

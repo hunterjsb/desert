@@ -33,6 +33,9 @@ func run() -> void:
 	var where := water.global_transform
 	world.teleport(water, ship.spawn_at.global_transform)
 	check(not PreflightCargo.readiness(world, ship).is_empty(), "removing a required physical store blocks launch")
+	world.teleport(water, ship.global_transform * Transform3D(Basis.IDENTITY,
+		Vector3(ship.cargo_bounds.end.x - 0.02, ship.cargo_bounds.position.y + 0.06, ship.cargo_bounds.position.z + 0.1)))
+	check(not PreflightCargo.loaded(world, ship).has(&"water"), "an origin inside the pod cannot hide a partly protruding body")
 	world.teleport(water, where)
 	var cell := nodes[&"camp_cell"] as Battery
 	var charge := cell.charge_wh

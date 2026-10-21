@@ -106,6 +106,7 @@ func stowable() -> bool:
 ## Rolled back up to carry: the line goes, and a coil off the tree stands
 ## for it, as a found one does, keeping its length to lay again.
 func roll() -> Part:
+	var arrival_uid := _arrival_uid()
 	_world.ropes.untie(rope)
 	rope = null
 	for end in ends:
@@ -117,6 +118,8 @@ func roll() -> Part:
 	var rolled := Catalog.part(&"coil")
 	rolled.set_meta(&"rolled", &"coil")
 	rolled.set_meta(&"rolled_m", full)
+	if arrival_uid != &"":
+		rolled.set_meta(&"arrival_uid", arrival_uid)
 	return rolled
 
 
@@ -183,9 +186,14 @@ func _physics_process(delta: float) -> void:
 func _uncoil() -> void:
 	var hands := _world.player.hands
 	var at := coil.global_transform
+	var arrival_uid := _arrival_uid()
 	hands.stow()
 	ends = [_end(at), _end(at.translated(Vector3.UP * 0.05))]
 	_first = 0
+	if arrival_uid != &"":
+		ends[0].set_meta(&"arrival_uid", arrival_uid)
+	if coil.has_meta(&"arrival_uid"):
+		coil.remove_meta(&"arrival_uid")
 	coil.queue_free()
 	coil = null
 	_world.player.waist.tie(ends[1])
@@ -241,15 +249,20 @@ func route(guide: RopeEnd) -> String:
 ## Dropped before its first end was on anything: the coil goes down whole,
 ## where that end went, moving as it was.
 func _roll_up(went: Part) -> void:
+	var arrival_uid := _arrival_uid()
 	var at := went.global_transform
 	var moving := went.linear_velocity
 	_world.ropes.untie(rope)
 	rope = null
 	for end in ends:
 		_world.player.waist.untie(end)
+		if end.has_meta(&"arrival_uid"):
+			end.remove_meta(&"arrival_uid")
 		end.queue_free()
 	ends.clear()
 	_coil_up()
+	if arrival_uid != &"":
+		coil.set_meta(&"arrival_uid", arrival_uid)
 	var ground := _world.height_under(at.origin)
 	coil.global_transform = Transform3D(Basis(Vector3.UP, at.basis.get_euler().y) * Basis(Vector3.RIGHT, -PI / 2.0),
 		Vector3(at.origin.x, maxf(at.origin.y, ground + 0.05), at.origin.z))
@@ -370,3 +383,13 @@ func _lost() -> void:
 				_world.player.waist.untie(holder)
 			end.remove_meta(&"line")
 	queue_free()
+
+
+## Arrival tracks the same material while its ordinary coil/end representation changes.
+func _arrival_uid() -> StringName:
+	if is_instance_valid(coil) and coil.has_meta(&"arrival_uid"):
+		return coil.get_meta(&"arrival_uid")
+	for end in ends:
+		if is_instance_valid(end) and end.has_meta(&"arrival_uid"):
+			return end.get_meta(&"arrival_uid")
+	return &""

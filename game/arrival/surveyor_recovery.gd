@@ -311,6 +311,11 @@ static func _unseat(body: RigidBody3D) -> void:
 		var host := socket.get_parent() as Device
 		if host != null:
 			host.take(socket)
+			if host is Chassis:
+				# Restored joined pieces also index their fitted frame's faces. Once
+				# unseated those nodes belong to the removed part, before it is freed.
+				for piece in host.joined:
+					piece._own = piece._own.filter(func(node: Node3D) -> bool: return is_instance_valid(node) and node.get_parent() == host)
 	elif body is Device and body.host() != null:
 		var host: Device = body.host()
 		host.dismount(host.seat_of(body))
