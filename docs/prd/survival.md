@@ -981,3 +981,11 @@ The first successful voluntary ground sit or lie records A Moment's Rest in
 the camp family. Merely loading a posture, being thrown or sitting at a helm
 does not count. Low movement uses physical collision and checks standing
 clearance, with smooth camera transitions rather than a camera-only crawl.
+
+Ground-rest development checks: the actual use path opens sleep choices while
+prone and supported, and refuses to offer them while falling (5 s). Offering
+choices does not itself pass a night. Saved sit/prone and legacy standing
+restoration pass (11 s); the added first-frame camera-clearance assertion fails
+before the restore-eye fix and passes after it. Theme and deed ordering pass
+(6 s and 4 s). These checks do not establish ordinary-player comfort or full
+combined verification.
