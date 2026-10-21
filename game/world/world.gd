@@ -255,6 +255,17 @@ func world_z(engine_z: float) -> float:
 	return origin_chunk.y * tuning.chunk_size + engine_z
 
 
+## Retained ground keeps its own map when the traveller's history sheet moves.
+func geographic_at(at: Vector3) -> Vector3:
+	var x := world_x(at.x)
+	var z := world_z(at.z)
+	if home != null and home.has_home() and home.anchor != null and home.bounds.has_point(Vector2(x, z)):
+		return home.anchor.point_at(x, z)
+	var local := Sites.Anchor.new(player_world_x(), player_world_z(),
+		Sphere.point(moon.latitude, moon.longitude), -moon.north().z, moon.radius)
+	return local.point_at(x, z)
+
+
 func engine_x(x: float) -> float:
 	return x - origin_chunk.x * tuning.chunk_size
 
