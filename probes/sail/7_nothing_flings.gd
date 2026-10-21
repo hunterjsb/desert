@@ -21,14 +21,22 @@ func run() -> void:
 	driving_sheet = true
 	# Lambdas copy what they're given: what they change lives in here.
 	var seen := {"fastest": 0.0, "jolt": 0.0, "spin": 0.0, "leaned": 0.0, "seams": 0, "shifts": 0, "sunk": -INF,
-		"was": deck.linear_velocity, "numbers": true,
+		"was": deck.linear_velocity, "numbers": true, "jolt_state": {},
 		"chunk": world.terrain.chunk_at(world.world_x(deck.global_position.x), world.world_z(deck.global_position.z))}
 	world.origin_shifted.connect(func(_by: Vector2i) -> void: seen.shifts += 1)
 	var watch := func() -> void:
 		var v := deck.linear_velocity
 		seen.numbers = seen.numbers and is_finite(v.length()) and is_finite(deck.global_position.length())
 		seen.fastest = maxf(seen.fastest, v.length())
-		seen.jolt = maxf(seen.jolt, (v - seen.was).length())
+		var jolt: float = (v - seen.was).length()
+		if jolt > seen.jolt:
+			seen.jolt = jolt
+			seen.jolt_state = {"time": world.time,
+				"world_position": Vector3(world.world_x(deck.global_position.x), deck.global_position.y, world.world_z(deck.global_position.z)),
+				"before": seen.was, "after": v, "frozen": deck.freeze,
+				"world_froze": deck.get_meta(&"frozen_by_world", false),
+				"collision": world.terrain.has_collision_at(world.world_x(deck.global_position.x), world.world_z(deck.global_position.z)),
+				"physics_frame": Engine.get_physics_frames(), "render_frame": Engine.get_process_frames()}
 		seen.was = v
 		seen.spin = maxf(seen.spin, deck.angular_velocity.length())
 		seen.leaned = maxf(seen.leaned, roll())
@@ -62,6 +70,7 @@ func run() -> void:
 			world.shift_origin(Vector2i(1 if leg == 0 else -1, 0))
 	print("4 min gusting: at most %.2f m/s, the most a tick changed it %.3f m/s, spin at most %.2f rad/s, leaning at most %.1f°, in the sand at most %.3f m, %d seams, %d shifts" % [
 		seen.fastest, seen.jolt, seen.spin, seen.leaned, seen.sunk, seen.seams, seen.shifts])
+	print("largest jolt: ", seen.jolt_state)
 	print("after easing: %d corners, %.3f° roll, %.1f N support" % [deck.glider.touching, roll(), deck.glider.pressed_n])
 	print("a tick costs the runners %.0f µs and the sail %.0f µs" % [deck.glider.cost_us, mast.cost_us])
 	check(seen.numbers, "every number stays a number")
