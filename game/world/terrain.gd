@@ -225,9 +225,11 @@ func chunk_at(world_x: float, world_z: float) -> Vector2i:
 
 
 func keeps_ground_at(x: float, z: float) -> bool:
-	if _policy != null:
-		return _policy.keeps_ground(chunk_at(x, z))
-	return TerrainResidency.keeps_ground(chunk_at(x, z), chunk_at(_world.player_world_x(), _world.player_world_z()), _tuning)
+	var coord := chunk_at(x, z)
+	# Body loss and its warning share this physics tick's player position.
+	var here := chunk_at(_world.player_world_x(), _world.player_world_z())
+	return TerrainResidency.keeps_ground(coord, here, _tuning) \
+		or (_policy != null and _policy.camp_keep.has_point(coord))
 
 
 func has_collision_at(world_x: float, world_z: float) -> bool:
