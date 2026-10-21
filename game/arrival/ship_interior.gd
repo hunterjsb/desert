@@ -53,7 +53,7 @@ func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
 		Transform3D(Basis(Vector3.RIGHT, -0.25), Vector3(-1.8, 1.03, -3.73)))
 	pod_entry_at = _marker("PodEntry", Vector3(1.4, 0.02, 1.7))
 	pod_seat_at = _marker("PodSeat", Vector3(1.4, 0.25, -0.2))
-	cargo_bounds = pod_pose * AABB(Vector3(-0.4, 0.07, -0.4), Vector3(1.8, 0.85, 0.8))
+	cargo_bounds = pod_pose * AABB(Vector3(-0.4, Chassis.THICK * 0.5, -0.4), Vector3(1.8, 0.92 - Chassis.THICK * 0.5, 0.8))
 	for y in [0.24, 1.11]:
 		for z in [-0.05, 0.6, 1.25]:
 			var slot := _marker("RackSlot%d" % rack_slots.size(), Vector3(-2.45, y, z))

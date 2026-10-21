@@ -114,3 +114,13 @@ static func _heatshield_mesh() -> ArrayMesh:
 	b.box(Vector3(0.85, 0.008, 0.04), Vector3(0, -0.103, 0.27), scar, 0.002)
 	_heatshield = b.commit()
 	return _heatshield
+
+
+## Close the actual retained panels; no replacement chassis is constructed.
+static func reseal(rig: Rig) -> void:
+	for role: StringName in PANELS:
+		var panel := rig.named.get(role) as Chassis
+		if is_instance_valid(panel) and panel.deck == null and panel != rig.deck:
+			var face := Rig.face_of(rig.deck, PANELS[role][0], PANELS[role][1])
+			if face != null and face.is_open():
+				rig.deck.join(panel, face)

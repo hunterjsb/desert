@@ -203,3 +203,114 @@ static func _abort(world: World, before: Dictionary) -> Dictionary:
 			world.content.remove_child(child)
 			child.free()
 	return {}
+
+
+## A preflight landing moves the surviving saved bodies, never grants replacement gear.
+static func land_preflight(world: World, state: Dictionary) -> Dictionary:
+	var objects := named(world)
+	if state.get("materialized", false):
+		return objects
+	if not state.get("preflight", {}).get("launched", false) or not state.has("landing_world"):
+		return {}
+	var at: Vector2 = state.landing_world
+	if not world.terrain.has_collision_at(at.x, at.y):
+		return {}
+	for entry: Dictionary in state.structure + state.equipment:
+		if entry.survives and not is_instance_valid(objects.get(StringName(entry.uid))):
+			return {}
+	var survived := {}
+	for entry: Dictionary in state.structure + state.equipment:
+		survived[StringName(entry.uid)] = entry.survives
+	# Detach survivors before removing a parent lost in impact.
+	for entry: Dictionary in state.equipment:
+		var body := objects.get(StringName(entry.uid)) as RigidBody3D
+		if entry.survives and is_instance_valid(body):
+			var parent_uid := PreflightCargo._parent_uid(body)
+			if parent_uid != &"" and not survived.get(parent_uid, false):
+				_unseat(body)
+	var floor := objects[&"floor_a"] as Chassis
+	var deck := floor.deck if floor.deck != null else floor
+	# The opened roof and hatch are the same real panels, also if a frame is lost.
+	for role: StringName in PodShell.PANELS:
+		var panel := objects.get(role) as Chassis
+		if is_instance_valid(panel) and panel.deck != null:
+			panel.deck.detach(panel)
+	for entry: Dictionary in state.structure + state.equipment:
+		var uid := StringName(entry.uid)
+		var body := objects.get(uid) as RigidBody3D
+		if not entry.survives:
+			if is_instance_valid(body):
+				_unseat(body)
+				if body.get_parent() != null:
+					body.get_parent().remove_child(body)
+				body.queue_free()
+			objects.erase(uid)
+		elif is_instance_valid(body):
+			_apply(body, entry.get("state", {}))
+	var facing := Basis(Vector3.UP, float(state.get("heading", 0.0)))
+	var origin := Vector3(world.engine_x(at.x), 0, world.engine_z(at.y))
+	var height := -INF
+	for x in [-0.65, 1.65]:
+		for z in [-0.8, 0.8]:
+			height = maxf(height, world.height_under(origin + facing * Vector3(x, 0, z)))
+	var rules := world.tuning.surveyor_arrival
+	origin.y = height + Chassis.THICK * 0.5 + float(rules.get("landing_clearance_m", 0.04))
+	var pose := Transform3D(facing, origin)
+	world.teleport(deck, pose * floor.pose().affine_inverse())
+	deck.freeze = false
+	deck.linear_velocity = Vector3.ZERO
+	deck.angular_velocity = Vector3.ZERO
+	# Keep surviving enclosure panels joined, except the actual exit roof and hatch.
+	for role: StringName in PodShell.PANELS:
+		if role in [&"roof_a", &"hatch"] or not objects.has(role):
+			continue
+		var panel := objects[role] as Chassis
+		var frame := Rig.face_of(deck, PodShell.PANELS[role][0], PodShell.PANELS[role][1])
+		if frame != null:
+			deck.join(panel, frame)
+	var gap := float(rules.get("spill_gap_m", 0.18))
+	var clearance := float(rules.get("landing_clearance_m", 0.04))
+	var reserved: Array[AABB] = []
+	var exit_world: Vector2 = state.get("exit_world", at + Vector2(-3.2, 0).rotated(-float(state.get("heading", 0.0))))
+	var exit_at := Vector3(world.engine_x(exit_world.x), world.height_at(exit_world.x, exit_world.y), world.engine_z(exit_world.y))
+	reserved.append((Transform3D(Basis.IDENTITY, exit_at) * Hands._shapes_box(world.player.get_children())).grow(gap))
+	for shape in deck.get_children():
+		if shape is CollisionShape3D and shape.shape != null:
+			reserved.append(shape.global_transform * Catalog.bounds(shape.shape))
+	var placements := {}
+	var poses: Dictionary = state.preflight.get("cargo_poses", {})
+	for entry: Dictionary in state.structure + state.equipment:
+		var uid := StringName(entry.uid)
+		if not objects.has(uid):
+			continue
+		var body := objects[uid] as RigidBody3D
+		if body is Chassis and (body == deck or body.deck != null) or body is Part and body.socket != null or body is Device and body.host() != null:
+			placements[uid] = &"fitted"
+			continue
+		var desired: Transform3D = pose * poses.get(uid, Transform3D.IDENTITY)
+		var inside := false
+		if state.preflight.loaded_uids.has(uid):
+			inside = _put(world, body, desired, reserved, gap)
+		if not inside and not _spill(world, body, facing, origin, reserved, gap, clearance, rules):
+			return {}
+		body.freeze = false
+		body.linear_velocity = Vector3.ZERO
+		body.angular_velocity = Vector3.ZERO
+		placements[uid] = &"pod" if inside else &"spill"
+	for panel in deck.pieces():
+		PodShell.restore_skin(panel)
+	state.placements = placements
+	state.materialized = true
+	world.arrival_nodes = objects
+	return objects
+
+
+static func _unseat(body: RigidBody3D) -> void:
+	if body is Part and body.socket != null:
+		var socket: Socket = body.socket
+		var host := socket.get_parent() as Device
+		if host != null:
+			host.take(socket)
+	elif body is Device and body.host() != null:
+		var host: Device = body.host()
+		host.dismount(host.seat_of(body))

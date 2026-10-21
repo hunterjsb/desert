@@ -79,3 +79,31 @@ never reconstruction.
 - Real disk saves across phases, no reroll/duplication, legacy compatibility.
 - Focused checks, inspected unseen first-person captures, combined CI and native
   builds, followed by ordinary-player acceptance. As-built results remain pending.
+
+### Physical cargo helper slice (2026-10-21; private development)
+
+PreflightCargo stages the sixteen existing equipment roles once as actual catalog
+bodies. Four emergency stores are preloaded: water, food, a light shield mounted
+on the pod floor and a compatible battery stuck to that same real chassis pool.
+The light shield has no battery socket; none is invented. The board's own cell
+uses its actual battery socket. Other gear is placed on the physical rack shelves.
+
+Loaded recognition uses complete collision bounds, excludes the actual prone
+seat capsule and held/grasped/waist/suit objects, and accepts bounded optional
+external fittings on the actual pod. Required stores must remain inside. The
+cargo volume begins at the actual chassis floor top (THICK/2, 0.06 m), preserving
+its previous 0.92 m top. A 0.00001 m enclosure tolerance covers transform rounding
+only; it is not usable extra capacity. Parts are centered by actual bounds rather
+than assuming their attachment origin is their geometric center.
+
+Seal refuses without mutation when stores/profile/landing point are absent. A
+successful seal retains selected uid/relative poses and the copied impact profile;
+Manifest resolves only those selected equipment rows. The existing automatic
+manifest and materializer paths remain unchanged. Landing reuses named physical
+bodies and parts; its full integration/save/placement checks are still pending.
+
+Focused Arrival20 passes (6 s): all 28 actual structure/equipment identities exist
+once, visible emergency readiness, no implicit board load, removed/empty stores
+refuse, restaging preserves depleted contents, invalid seal is read-only, and a
+repeat seal cannot reroll or refill. Real input loading, save/resume, external
+board fitting and descended cargo placement remain the next acceptance checks.
