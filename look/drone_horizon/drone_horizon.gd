@@ -1,5 +1,5 @@
 extends Node3D
-## GPU regression: a distant ridge hides the sky proxy while the exposed hull remains.
+## GPU regression: finite sky-proxy depth puts the hull between nearer and farther ground.
 ## Run with scripts/unseen.sh and pass the capture directory after --.
 var scene: Node3D
 var camera: Camera3D
@@ -55,6 +55,8 @@ func run() -> void:
 	craft.place(camera.global_position, Vector3(0,.0,-1).normalized(),6000,Vector3.RIGHT,Vector3.UP)
 	craft.light(Vector3(0,1,0),Color.WHITE,Color(.3,.3,.3))
 	craft.flash(1)
+	craft._overlay.set_shader_parameter(&"veil", 0.4)
+	craft._overlay.set_shader_parameter(&"veil_color", Vector3(0.2, 0.7, 0.9))
 	craft.visible = false
 	var empty := await shot("ridge")
 	craft.visible = true
@@ -69,10 +71,45 @@ func run() -> void:
 			elif y < empty.get_height()/2-2:
 				above_fixed += int(changed)
 	ridge.visible = false
+	camera.far = 20000
 	craft.place(camera.global_position, Vector3(0,.4,-1).normalized(),6000,Vector3.RIGHT,Vector3.UP)
 	camera.look_at(camera.global_position + Vector3(0,.4,-1))
-	await shot("unobstructed")
-	var passed := below_fixed == 0 and above_fixed > 0
+	var flashing := await shot("unobstructed")
+	craft.flash(0)
+	var quiet := await shot("unobstructed-quiet")
+	var muzzle_pixels := difference(quiet, flashing)
+	var ground := MeshInstance3D.new()
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(80000, 80000)
+	ground.mesh = plane
+	ground.material_override = mat
+	scene.add_child(ground)
+	camera.position = Vector3(0,10000,0)
+	camera.far = 20000
+	var toward := Vector3(0,-4000,-4000).normalized()
+	camera.look_at(camera.global_position + toward)
+	craft.visible = false
+	var behind := await shot("high-ground")
+	craft.place(camera.global_position, toward, sqrt(32000000.0), Vector3.RIGHT, Vector3.UP)
+	craft.flash(0)
+	craft._view.material_overlay = null
+	var hull := await shot("high-hull")
+	craft.flash(1)
+	var muzzle := await shot("high-muzzle")
+	craft._view.material_overlay = craft._overlay
+	var overlay := await shot("high-overlay")
+	var hull_pixels := difference(behind, hull)
+	var hidden_muzzle_pixels := difference(hull, muzzle)
+	var overlay_pixels := difference(muzzle, overlay)
+	var passed := below_fixed == 0 and above_fixed > 0 and hull_pixels > 0 and muzzle_pixels > 0 and overlay_pixels > 0
 	print("Drone ridge occlusion pixels hidden=%d visible_above=%d" % [below_fixed,above_fixed])
-	print("PROBE PASS" if passed else "PROBE FAIL: ridge did not occlude the drone")
+	print("Drone above ground pixels hull=%d hidden_belly_muzzle=%d overlay=%d; exposed_muzzle=%d" % [hull_pixels,hidden_muzzle_pixels,overlay_pixels,muzzle_pixels])
+	print("PROBE PASS" if passed else "PROBE FAIL: drone depth did not order between ground surfaces")
 	get_tree().quit(0 if passed else 1)
+
+func difference(a: Image, b: Image) -> int:
+	var changed := 0
+	for y in a.get_height():
+		for x in a.get_width():
+			changed += int(a.get_pixel(x,y) != b.get_pixel(x,y))
+	return changed
