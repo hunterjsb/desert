@@ -114,3 +114,37 @@ shows actionable launch blockers before entering. A default shown as ready must
 be genuinely committed. Loading, launching and save restoration must remain real
 ordinary interactions. This revision supersedes the numeric/modal UI above;
 prior measured results describe the previous implementation, not acceptance here.
+
+### Shared departure model (selected 2026-10-21)
+
+Persist one regulated carrier survey pass, initialized once from the original
+regional anchor so its initial default pulse reaches the validated fallback.
+The powered carrier holds latitude and nearly matches the moon's rotation, with
+a small residual ground-track drift. This is stationkeeping, not an unpowered
+Kepler orbit. It gives ordinary packing time without reanchoring the ship when
+the pulse is confirmed. Do not move the carrier to an unrelated Tu-facing point
+merely to compose the window; the window shows Tu only when that geometry permits.
+
+The pod receives one inward/retrograde/cross-track impulse and then follows a
+bounded point-mass ballistic integration. The numerical field and time are a
+gameplay trajectory model, not a derivation of physical gravity from the visual
+moon radius. It neither changes 9.8 m/s² surface gravity nor claims a full orbital
+simulation. The computer, window and flight use the same sampled path and saved
+clock; the model never advances time. The controller advances departure time by
+actual unpaused preparation time and carries it into the world at launch.
+
+Body-fixed geography rotates into a shared inertial frame once per existing game
+day. Public positions and paths use planet-radius units; physical navigation
+continues to use the 150 km compressed circumference. A ray-dragged pulse changes
+the same velocity used by the path and landing prediction. Launch time changes
+the predicted ground point. No numeric angle interaction, continuous pod thrust,
+candidate snapping, hidden time advance or selection-dependent ship relocation.
+
+Only points inside the original surveyed corridor are supported. Convert the
+predicted body point through the original Sites.Anchor, then sample its actual
+seeded footprint and coarse history again. A clear continuous landing point may
+be committed as an ordinary LandingPlan candidate; an unsafe or outside-survey
+point has an explicit unsupported state and cannot be committed. Revalidate at
+actual launch time; stale forecasts need updating at the station. The regulated
+pass's default residual drift is 3 compressed metres per second, leaving minutes
+for packing instead of a few seconds. This is not an indefinite launch guarantee.
