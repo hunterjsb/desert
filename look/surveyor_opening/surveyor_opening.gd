@@ -1,6 +1,8 @@
 extends MenuProbe
-## The real new-game controller, real terrain, surviving equipment and recovery action.
+## The legacy automatic controller, real terrain, survivors and recovery action.
 func run() -> void:
+	# Capture automatic flight phases; the interactive ship has its own capture.
+	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 1234
 	Tuning.current().salvage = false
 	main = MAIN.instantiate()

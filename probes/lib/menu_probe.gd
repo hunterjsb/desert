@@ -13,6 +13,8 @@ var main: Main
 func open_main(on_menu := true) -> Main:
 	Tuning.current().run_seed = 1234
 	Tuning.current().salvage = false
+	# These menu fixtures need a surface run; Arrival 16 covers interactive preparation.
+	Tuning.current().surveyor_preflight["enabled"] = false
 	main = MAIN.instantiate()
 	main.opens_on_menu = on_menu
 	add_child(main)

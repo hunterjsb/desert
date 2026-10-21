@@ -3,6 +3,8 @@ extends MenuProbe
 
 func run() -> void:
 	var tuning := Tuning.current()
+	# Exercise the saved automatic opening; preparation has separate acceptance.
+	tuning.surveyor_preflight["enabled"] = false
 	tuning.run_seed = 1234
 	tuning.salvage = false
 	_short_flight()
@@ -63,7 +65,7 @@ func run() -> void:
 	_short_flight()
 	await main.new_game(true, false, Kit.standard())
 	world = main.world()
-	check(world.arrival_enabled and world.arrival_state.get("phase", &"") == &"recovery", "a new normal Surveyor uses the integrated arrival")
+	check(world.arrival_enabled and world.arrival_state.get("phase", &"") == &"recovery", "the automatic Surveyor fixture still reaches physical recovery")
 	seed_was = world.run_seed
 	was_id = world.get_instance_id()
 	world.player.vitals.hurt(1000.0)

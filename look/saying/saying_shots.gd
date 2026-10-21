@@ -24,6 +24,8 @@ func _ready() -> void:
 	for keeper in [^"/root/Saves", ^"/root/Profile"]:
 		get_node(keeper).dir = own
 	Settings.path = own.path_join("settings.cfg")
+	# This surface capture retains the automatic-arrival baseline.
+	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 1234
 	Tuning.current().salvage = false
 	Tuning.current().eye_adapts = false
