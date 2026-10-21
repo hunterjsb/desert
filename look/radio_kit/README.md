@@ -32,12 +32,12 @@ fitted. A converter's tell stripe is its band's colour too.
 | **FM** | Sea green | 88–108 MHz | 88 … 108 | Short reach, line of sight, no sky wave, but clean: storm static barely touches it (it's frequency, not amplitude). Camp-to-camp, the city's scouts close in, a beacon you're nearly on |
 | **SW** | Violet | 2–26 MHz | 2 … 26 | Bounces off the sky: far, faint, fading voices. Only really heard from a kite flown high. The Surveyor's schedule, distant stations, Varran "above the storms" |
 
-**Shortwave reach** (gonkhub, 2026-10-21): every shortwave broadcast can be
-heard from anywhere, over the horizon or not, as long as the signal comes in
-strong enough. That takes a SW converter and the kite to boost it. A
-broadcast's strength falls with distance and storm as AM's does, and the
-kite's height lifts it (see *Height is signal* below). The crop survey's
-flight plan already reaches over the horizon on its AM carrier as a stand-in.
+**Shortwave reach** (gonkhub, 2026-10-21, revised the same day): satellites
+are heard only while they're up, faint and chewed up low over the horizon,
+gone below it. The Surveyor's schedule is read instead by Port Morgan
+Control Tower, an FM station on the port's mast, every 5 minutes. (Built on
+master with the radio progression; the tower is the home for the port's other
+worldbuilding broadcasts.)
 
 ![bands](out/bands.png)
 
