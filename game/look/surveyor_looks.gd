@@ -203,3 +203,55 @@ static func _foot(b: Paint.Pieces, c: Dictionary, side: float) -> void:
 	b.box(Vector3(0.14, 0.03, 0.3), Vector3(0.0, -0.09, -0.05), Paint.coat(Color(0.05, 0.05, 0.05), 0.3, 0.0, 0.9), 0.01)
 	b.box(Vector3(0.12, 0.05, 0.05), Vector3(0.0, -0.05, -0.18), c.joint, 0.015)
 	b.box(Vector3(0.145, 0.025, 0.14), Vector3(0.0, 0.045, 0.0), c.joint, 0.008)
+
+
+## Two plaited turns follow the real belt above the hips. Shared with every waist tie.
+static func waist_wrap() -> ArrayMesh:
+	if _made.has(&"waist_wrap"):
+		return _made[&"waist_wrap"]
+	var b := Paint.Pieces.new()
+	var rules := Tuning.current().rope_coil_visual
+	var fibre := Paint.coat(Paint.ROPE.lightened(0.14), 0.0, 0.0, 0.95, 0.35)
+	var binding := Paint.coat(Paint.TEAL.darkened(0.24), 0.0, 0.0, 0.95, 0.25)
+	for strand in int(rules.end_strands):
+		var phase := float(strand) * TAU / float(rules.end_strands)
+		for i in 96:
+			var ends: Array[Vector3] = []
+			for t in [float(i) / 96.0, float(i + 1) / 96.0]:
+				var angle: float = t * TAU * 2.0
+				var radius := Vector3(sin(angle), 0.0, -cos(angle))
+				var at := Vector3(radius.x * 0.215, 0.045 + t * 0.05, radius.z * 0.16)
+				var twist: float = phase + t * float(rules.fibre_turns) * TAU
+				ends.append(at + (radius * cos(twist) + Vector3.UP * sin(twist)) * float(rules.end_strand_orbit))
+			var span := ends[1] - ends[0]
+			b.drum(float(rules.end_strand_radius), span.length(), (ends[0] + ends[1]) * 0.5, fibre,
+				Basis(Quaternion(Vector3.UP, span.normalized())), int(rules.sides))
+	# A small crossing and muted whipping make the forward tie readable.
+	b.drum(float(rules.gauge), 0.065, Vector3(0, 0.07, -0.17), fibre, Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
+	for x in [-0.022, -0.014, 0.014, 0.022]:
+		b.drum(float(rules.end_wrap_radius), float(rules.end_wrap_width), Vector3(x, 0.07, -0.17), binding,
+			Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
+	_made[&"waist_wrap"] = b.commit()
+	return _made[&"waist_wrap"]
+
+
+## A short laid lead, stretched only visually between the belt knot and its real tie point.
+static func waist_lead() -> ArrayMesh:
+	if _made.has(&"waist_lead"):
+		return _made[&"waist_lead"]
+	var b := Paint.Pieces.new()
+	var rules := Tuning.current().rope_coil_visual
+	var fibre := Paint.coat(Paint.ROPE.lightened(0.14), 0.0, 0.0, 0.95, 0.35)
+	for strand in int(rules.end_strands):
+		var phase := float(strand) * TAU / float(rules.end_strands)
+		for i in int(rules.end_sections):
+			var ends: Array[Vector3] = []
+			for t in [float(i) / float(rules.end_sections), float(i + 1) / float(rules.end_sections)]:
+				var angle: float = phase + t * float(rules.end_twists) * TAU
+				ends.append(Vector3(cos(angle) * float(rules.end_strand_orbit), t,
+					sin(angle) * float(rules.end_strand_orbit)))
+			var span := ends[1] - ends[0]
+			b.drum(float(rules.end_strand_radius), span.length(), (ends[0] + ends[1]) * 0.5, fibre,
+				Basis(Quaternion(Vector3.UP, span.normalized())), int(rules.sides))
+	_made[&"waist_lead"] = b.commit()
+	return _made[&"waist_lead"]

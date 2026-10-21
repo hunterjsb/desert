@@ -888,3 +888,41 @@ retrieval, exact fitted/loose masses, Make Fast and drop momentum (7 s). Existin
 selected untie, yank and last-on/first-off checks pass. Save 46 passes real disk
 roundtrips for held, anchored and loose knots (19 s; Survival). Combined CI and
 actual visual inspection remain pending; these timings are focused checks.
+
+## Rope around the suit's waist (selected 2026-10-21; visual correction)
+
+A real waist tie should read as cord around the suited body, not an item coil
+floating ahead of it. Keep the current loose and held item coil untouched.
+For each actual waist holder carrying live rope, show a cached plaited wrap
+following the rendered suit belt and a short lead to its existing drawn rope
+endpoint. A grouped knot is one physical holder and gets one wrap. Use the
+existing rope-end fibre gauge/colours; clear the wrap when that actual holder
+leaves the waist. The existing spare-rope coil display is suppressed only when
+its live endpoint is at the waist; held payout/reeling keeps the existing coil.
+
+The force attachment remains Waist.AT. It lies ahead of the modelled belt, so
+show the connecting lead honestly. Do not move physical ends, consume length,
+change forces, alter ownership/selection, or replace current coil geometry.
+Follow Body's between-tick translation and its actual hips pose during standing,
+riding and ground rest. Cache meshes; update only transforms/visibility during
+ordinary rendering. New meshes have no colliders. Inspect actual held/waist and
+external belt captures, and test that tying/returning a real end changes only the
+appropriate visual state without changing its rope or body state.
+
+As built: each actual waist holder gets one shared plaited belt mesh, short
+lead and muted teal whipping. The lead ends exactly at the existing rendered
+rope endpoint. RopeTip meshes use shared render copies only while tied at the
+waist so their original physics-root pose cannot reintroduce riding jitter;
+returning an end restores its original meshes. Direct player-waist endpoints
+are also supported. No physical node, collider, mass, length, selection or
+attachment changes during rendering. Held payout uses the original coil mesh
+and its continuous amount shader.
+
+Focused rope 31 passes in 8 s, including actual untie/return, cached geometry,
+unchanged physics state, exact drawn endpoint, render-copy ownership and original
+mesh visibility restoration. Existing paying-coil 25 and continuous-coil 26 pass
+in 9 s each. Actual unseen 1280×720 captures inspect the belt close-up, whole
+suited player, own-camera waist and returned held coil. A first GPU inspection
+caught world-axis scaling of the lead; local longitudinal scaling now passes
+the exact endpoint check and the corrected capture is inspected. Combined CI
+and ordinary-player acceptance remain pending.

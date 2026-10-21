@@ -1236,3 +1236,13 @@ scale; local movement/collision remains a tangent approximation. Do not bend the
 orbital globe or inventory previews through the main ground projection. Existing
 Tu angular size, sun direction, worn materials and accepted sand stay the visual
 baseline. This is a presentation correction, not a new gravity or movement scale.
+
+### Cord on the suit (2026-10-21; visual correction)
+
+A waist tie now reads as two plaited turns around gonkhub's existing belt,
+with a small crossing, muted teal whipping and a lead to the real attachment.
+Use the current rope-end fibre gauge and colour. Cached tip render copies share
+the existing mesh while at the waist; the original loose/held tip and current
+continuous item coil return unchanged when untied. No invented belt hardware,
+new force attachment or extra physical rope constraint is introduced. Actual
+unseen belt-close, whole-player, own-waist and held-coil views were inspected.
