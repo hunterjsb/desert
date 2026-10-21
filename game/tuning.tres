@@ -199,6 +199,7 @@ exposure_calm_wind = 16.0
 exposure_gale_wind = 30.0
 wind_catch_per_m2 = 0.5
 sand_friction = 0.5
+runner_clearance = 0.04
 face_shaded = 0.1
 face_cup = 1.3
 

@@ -9,9 +9,6 @@ extends RefCounted
 ## motion it leaves, so the load shares out by how hard each corner presses,
 ## a heavy load sinks a little and a gust heels it smoothly, at any tick rate.
 
-## The runner's face rides this far over the sand, so its box never meets the
-## lattice between its corners, m.
-const CLEARANCE := 0.02
 ## Farther off the sand than this, a corner is in the air, m; coming down,
 ## it presses in no deeper than this in a tick before it's stopped, m.
 const REACH := 0.25
@@ -135,7 +132,7 @@ func rest_height() -> float:
 		for corner: Vector3 in runner[0]:
 			depth -= corner.y
 			count += 1
-	return CLEARANCE + depth / maxi(count, 1)
+	return Tuning.current().runner_clearance + depth / maxi(count, 1)
 
 
 ## One tick on the sand: each corner pressed into it pushes back along the
@@ -211,7 +208,7 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 		var along := (length - normal * length.dot(normal)).normalized()
 		var across := normal.cross(along)
 		for i in at.size():
-			var gap := (at[i].y - sand[i]) * normal.y - CLEARANCE
+			var gap := (at[i].y - sand[i]) * normal.y - world.tuning.runner_clearance
 			if gap > REACH:
 				continue
 			var arm := at[i] - middle

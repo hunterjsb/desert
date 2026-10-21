@@ -1246,6 +1246,8 @@ static var _current: Tuning
 ## The share of its weight the sand holds a resting body by: the sand's own
 ## friction, as Godot's Jolt takes the lesser of two and bodies keep 1.0.
 @export var sand_friction: float = 0.5
+## Runner face clearance before settled spring compression, m.
+@export var runner_clearance: float = 0.04
 
 @export_group("Wind on faces")
 ## A face with another just upwind square across it catches this share of

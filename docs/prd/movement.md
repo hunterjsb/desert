@@ -1835,3 +1835,47 @@ attachment. Resting must not leave waist lines floating above the low body.
 The combined rest/coil branch passes the actual low-belt attachment check
 (8 s), retaining the standing attachment on rising. Its seven combined
 posture, save, ground-sleep and continuous-coil checks pass (4–13 s each).
+
+
+### Runner clearance and native hull contacts (agreed 2026-10-20)
+
+Keep fitted runner support outside Jolt's speculative native contact distance
+under its ordinary settled load. Native collision remains available when a hull
+or runner actually meets the ground or another physical object; add no force,
+velocity cap, or collision exception. Set the runner face clearance in Tuning to
+0.04 m. With the existing 0.01 m settled compression, its nominal 0.03 m gap is
+outside pinned Jolt's 0.02 m speculative contact distance. This raises the same
+physical support geometry by 0.02 m, preserving its spring, grip and damping.
+
+The Home candidate exposed a native hull contact jolt in sailing check 7:
+1.495 m/s at 74.383 s, with terrain collision present and neither hull nor world
+frozen. An isolated Ubuntu reproduction gives the same position and velocities.
+Reporting boom contacts leaves that event unchanged; reporting one hull contact,
+with contact monitoring disabled, removes it (maximum tick change 0.095 m/s).
+Godot 4.7.2's
+[`JoltBody3D::set_max_contacts_reported`](https://github.com/godotengine/godot/blob/4.7.2-stable/modules/jolt_physics/objects/jolt_body_3d.cpp#L809)
+turns off manifold reduction when any contacts are reported. Contact reporting is
+therefore an engine policy change, not passive instrumentation. Its
+[`JoltProjectSettings`](https://github.com/godotengine/godot/blob/4.7.2-stable/modules/jolt_physics/jolt_project_settings.cpp#L42)
+defines the 0.02 m speculative distance.
+
+Disabling hull manifold reduction was rejected: on the 108-piece mixed-deck audit,
+process CPU per physics tick increased from 8.00–8.38 ms to 11.71–12.06 ms grounded,
+while airborne cost remained about 7.0–7.4 ms. These are whole-process CPU samples,
+not isolated native solver timings. The alternative 0.04 m runner clearance keeps
+default manifold reduction and measured 7.85–8.35 ms grounded, 7.06–7.21 ms airborne.
+Runner script cost remained about 1.24 ms grounded and 0.62–0.63 ms airborne.
+
+The 108-piece, 1,584 kg, 54-skate/54-tray/18-battery craft passed both grounded and
+powered cases at yaw 0/45 degrees: grounded support about 15,508 N, spin below
+0.00029 rad/s, tilt below 0.66 degrees; airborne runner support zero, speed 4.23 m/s,
+spin below 0.0068 rad/s and tilt below 0.72 degrees. The controlled CPU comparison
+paused terrain streaming after loading and held rendering at 60 frames/s. Native
+collision-pair counters cannot validate a constraint budget: pinned
+`JoltPhysicsServer3D::get_process_info` returns zero. This audit does not establish
+the cost of every larger craft or rough terrain.
+
+An isolated Ubuntu sailing check 7 with only the clearance change passes unchanged:
+maximum tick change 0.124 m/s, speed 4.11 m/s, spin 0.73 rad/s, heel 15.5 degrees,
+penetration 0.012 m, 11 seams and three origin shifts. Its 30/60/120 Hz comparisons
+also pass. Combined CI and ordinary play acceptance remain pending.
