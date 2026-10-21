@@ -1,54 +1,64 @@
-extends ShieldProbe
-## Radio probe 47: the Surveyor's schedule. Tuned to Frontier Ag's crop
-## survey while it's up, the radio reads out when it's next high enough over
-## you to fire at a flare, where to look and how high; the time it gives is
-## when it comes, and while it's up there it says to light one. Hearing it is
-## Flight Plan. Under clear skies.
+extends WeatherProbe
+## Radio probe 47: the Surveyor's schedule. Frontier Ag's crop survey
+## passes over Port Morgan every lap, its route swinging round the port lap
+## by lap. Port Morgan Control Tower, on FM beside the port, reads the
+## Surveyor's speed, altitude and how long until it's over Port Morgan, and
+## that's when it is; it reads again only once survey_report_every has gone
+## by. Hearing it is Flight Plan.
+
+## How far from the port's middle the radio stands, m.
+const NEAR := 800.0
 
 
 func run() -> void:
-	await load_storm(0.0)
+	await load_weather()
 	world.counts_deeds = true
-	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
-	radio.freeze = true
-	await physics_frames(2)
+	world.player.set_physics_process(false)
 	var sky := Radio.constellation_of(world)
-	var p := radio.point_at(world.world_x(radio.global_position.x), world.world_z(radio.global_position.z))
 	var orbit: Satellite = sky.orbits[Airdrop.SURVEYOR]
-	var high := world.tuning.airdrop_elevation_degrees
-	var up := _first(world.time, func(u: float) -> bool:
-		var e := rad_to_deg(orbit.seen_from(p, u).elevation)
-		return sky.on_air(Airdrop.SURVEYOR, u) and e > 15.0 and e < high - 10.0)
-	world.time = up
+	var history := world.shape.history
+	var port: Vector3 = history.landmark(&"port_morgan").p
+
+	# Over Port Morgan every lap, its route turning round the port.
+	var nearest := []
+	var tracks := []
+	for lap in 3:
+		var best := INF
+		var t := lap * orbit.period
+		while t < (lap + 1) * orbit.period:
+			best = minf(best, orbit.at(t).normalized().angle_to(port))
+			t += 1.0
+		nearest.append(rad_to_deg(best))
+		var start := lap * orbit.period
+		tracks.append(orbit.at(start).cross(orbit.at(start + 1.0)).normalized())
+	print("nearest Port Morgan each lap: %s°; its route turns %.0f° a lap" % [
+		nearest.map(func(d: float) -> String: return "%.2f" % d), rad_to_deg(tracks[0].angle_to(tracks[1]))])
+	check(nearest.max() < 0.2, "over Port Morgan every lap")
+	check(rad_to_deg(tracks[0].angle_to(tracks[1])) > 20.0, "its route swings round the port lap by lap")
+
+	# The tower's schedule, beside the port on FM, and the time it gives.
+	var at := Sphere.toward(port, Sphere.bearing(port, history.sub_tu), NEAR / history.radius)
+	world.travel(rad_to_deg(Sphere.latitude(at)), rad_to_deg(Sphere.longitude(at)), 0.0)
+	await settle()
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"fm_converter"], [0.0, 2.0]) as Radio
+	radio.freeze = true
+	radio.switch_band()
 	radio.on = true
-	radio.frequency = sky.carrier(Airdrop.SURVEYOR, up)
+	radio.fm_mhz = Fm.stations(Radio.gods_of(world), world.run_seed, Tuning.current()).filter(
+		func(each: Dictionary) -> bool: return each.id == Fm.TOWER)[0].mhz
 	await physics_frames(5)
-	var plan := Airdrop.next_pass(world, radio.global_position, world.time)
-	print("tuned to it %.0f° up: \"%s\"" % [rad_to_deg(orbit.seen_from(p, world.time).elevation), radio.said])
-	check(radio.channel == Radio.SURVEY and radio.said.contains("Due in"), "on its carrier, it reads out when it's due")
+	print("tuned to the tower: \"%s\"" % radio.said)
+	check(radio.channel == Radio.SURVEY and radio.said.contains("Port Morgan in"), "the tower reads its schedule")
 	check(get_node(^"/root/Profile").did(&"flight_plan"), "hearing it is Flight Plan")
-
-	# The time it gives is when it comes.
-	check(not plan.is_empty(), "a pass due within %d hours" % roundi(Airdrop.LOOK_AHEAD / 3600.0))
-	if plan.is_empty():
-		return
-	var due_at: float = world.time + plan.due
-	var then: float = Airdrop.surveyor(world, radio.global_position, due_at).up
-	var before: float = Airdrop.surveyor(world, radio.global_position, due_at - 2.0).up
-	print("due in %.0f s, from %.0f° bearing, %.0f° at its highest" % [plan.due, plan.bearing, plan.peak])
-	check(rad_to_deg(then) >= high and rad_to_deg(before) < high, "it gets high enough to fire just when it said")
-	world.time = due_at + 1.0
-	radio.frequency = sky.carrier(Airdrop.SURVEYOR, world.time)
-	await physics_frames(5)
-	print("overhead: \"%s\"" % radio.said)
-	check(radio.said.contains("Light signal flare"), "while it's up there, it says to light one")
-
-
-func _first(from: float, wanted: Callable) -> float:
-	var t := from
-	while t < from + 3.0 * 24.0 * 3600.0:
-		if wanted.call(t):
-			return t
-		t += 5.0
-	check(false, "found a moment")
-	return from
+	var eta := orbit.until_through(world.time)
+	var off := rad_to_deg(orbit.at(world.time + eta).normalized().angle_to(port))
+	print("over Port Morgan in %.0f s: %.2f° off it then" % [eta, off])
+	check(off < 0.1, "over Port Morgan when it says")
+	var count := radio.spoken_count
+	world.time += world.tuning.survey_report_every * 0.5
+	await physics_frames(3)
+	var early := radio.spoken_count
+	world.time += world.tuning.survey_report_every * 0.5 + 1.0
+	await physics_frames(3)
+	print("read %d times by halfway, %d once its time came" % [early - count, radio.spoken_count - count])
+	check(early == count and radio.spoken_count == count + 1, "it reads again only once its time comes")

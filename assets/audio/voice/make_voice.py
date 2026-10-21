@@ -16,13 +16,14 @@ an utterance from silence too softly ("battery" comes out "factory"). Piper's
 takes vary, a word now and then slurred, so each is rendered up to TAKES
 times and the one Whisper hears surest as its words through the radio's
 small speaker is kept. Named phrases ("Wind speed forty.") are rendered
-again alone. Needs ffmpeg.
+again alone. Encodes with ffmpeg, or soundfile without it.
 """
 import argparse
 import os
 import re
 import subprocess
 import tempfile
+import shutil
 import wave
 
 import numpy as np
@@ -48,6 +49,9 @@ TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eight
 POINTS = ["north", "north-north-east", "north-east", "east-north-east", "east", "east-south-east",
           "south-east", "south-south-east", "south", "south-south-west", "south-west", "west-south-west",
           "west", "west-north-west", "north-west", "north-north-west"]
+# What Piper is given for a phrase it says unclearly as written: alone, "Oh
+# one." comes out "a what", and "Eighty," "A.J.".
+SAID = {"Oh one.": "Oh, one.", "Oh five.": "Oh, five.", "Eighty,": "Eightee.", "Metres a second.": "Meters a second."}
 # What the station says numbers up to, exactly, and past it to the ten.
 EXACT = 60
 
@@ -68,6 +72,13 @@ def phrases():
     out += ["Wind speed %s." % words(n) for n in numbers]
     out += ["One minute."] + ["%s minutes." % words(n).capitalize() for n in numbers if n > 1]
     out += ["%s seconds." % words(n).capitalize() for n in range(10, 100, 10)]
+    # The regular report and the advisories (gonkhub, 2026-10-20): the local
+    # time, the temperature and the bare numbers they're read in.
+    out += ["Weather station.", "Local time,", "Hundred.", "Temperature,", "Minus,", "Degrees.",
+            "Weather advisory.", "Fast sandstorm,", "Large sandstorm,", "Fast and large sandstorm,", "On you now.",
+            "Moving,", "Metres a second.", "Lasting,", "Lasting more than,", "Take shelter."]
+    out += ["Oh %s." % ONES[n] for n in range(1, 10)]
+    out += ["%s," % words(n).capitalize() for n in numbers]
     return out
 
 
@@ -115,6 +126,13 @@ def score(phrase, text, sure):
     # Alone, "wind speed" is now and then heard as "win speed"; its number has to be right.
     if phrase.startswith("Wind speed ") and re.fullmatch(r"[a-z]{0,12}?" + canon(phrase[11:]), got):
         return 1, sure
+    # The minutes past ("Oh five.") are heard as 05 or O5, and the hour ("Hundred.") as 100.
+    if phrase.startswith("Oh ") and re.fullmatch(r"(oh|o|zero)?" + canon(phrase[3:]), got):
+        return 1, sure
+    if phrase == "Metres a second." and got == "metersasecond":
+        return 2, sure
+    if phrase == "Hundred." and got == "ahundred":
+        return 1, sure
     return 0, sure
 
 
@@ -143,6 +161,15 @@ def levelled(audio, voiced):
 
 
 def save(path, audio, rate):
+    if not shutil.which("ffmpeg"):
+        # Without ffmpeg, libsndfile's Vorbis at about the same rate, written
+        # in blocks: it crashes taking a whole clip at once.
+        import soundfile
+        with soundfile.SoundFile(path, "w", rate, 1, format="OGG", subtype="VORBIS", compression_level=0.85) as out:
+            data = np.clip(audio, -1.0, 1.0).astype(np.float32)
+            for at in range(0, len(data), 4096):
+                out.write(data[at:at + 4096])
+        return
     with tempfile.NamedTemporaryFile(suffix=".wav") as tmp:
         with wave.open(tmp.name, "wb") as w:
             w.setnchannels(1)
@@ -166,7 +193,7 @@ def main():
     for phrase in args.phrase or phrases():
         takes = []
         while len(takes) < TAKES and not (takes and takes[-1][0] >= (2, SURE)):
-            audio, voiced = trimmed(render(voice, phrase), rate)
+            audio, voiced = trimmed(render(voice, SAID.get(phrase, phrase)), rate)
             text, sure = heard(ears, audio, rate)
             takes.append((score(phrase, text, sure), text, audio, voiced))
         best, text, audio, voiced = max(takes, key=lambda take: take[0])

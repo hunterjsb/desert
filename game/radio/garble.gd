@@ -79,8 +79,9 @@ static func add_chain(bus: int) -> int:
 
 
 ## The chain on bus `bus` from effect `from` set for dirt at world time t;
-## `key` keeps one signal's jumps its own.
-static func shape(bus: int, from: int, amount: float, t: float, key: int) -> void:
+## `key` keeps one signal's jumps its own. `top` is as high as the set plays
+## even clean, Hz: AM's narrow audio (am_audio_hz) or FM's full range.
+static func shape(bus: int, from: int, amount: float, t: float, key: int, top := OPEN_HZ) -> void:
 	var d := clampf(amount, 0.0, 1.0)
 	# Settings jump, the more often the worse: a fresh roll each step.
 	var step := floori(t / (STEP * lerpf(4.0, 1.0, d)))
@@ -88,7 +89,7 @@ static func shape(bus: int, from: int, amount: float, t: float, key: int) -> voi
 	var lows := AudioServer.get_bus_effect(bus, from + Stage.LOWS) as AudioEffectHighPassFilter
 	var highs := AudioServer.get_bus_effect(bus, from + Stage.HIGHS) as AudioEffectLowPassFilter
 	lows.cutoff_hz = lerpf(20.0, THIN_HZ, pow(d, 1.3))
-	highs.cutoff_hz = exp(lerpf(log(OPEN_HZ), log(SHUT_HZ), d)) * lerpf(1.0, 0.6 + 0.6 * roll.call(1), d)
+	highs.cutoff_hz = exp(lerpf(log(top), log(minf(SHUT_HZ, top)), d)) * lerpf(1.0, 0.6 + 0.6 * roll.call(1), d)
 	highs.resonance = 0.5 + 0.35 * d
 	_stage(bus, from + Stage.CRUSH, d > 0.03)
 	if d > 0.03:

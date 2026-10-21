@@ -21,6 +21,7 @@ func run() -> void:
 	radio.freeze = true
 	await physics_frames(2)
 	var gods := Radio.gods_of(world)
+	broadside(radio, &"walker")
 	radio.on = true
 	radio.frequency = gods.carrier(&"walker", world.time)
 	await physics_frames(5)
@@ -38,6 +39,7 @@ func run() -> void:
 	check(radio.reading.stormy, "the report is of the storm")
 
 	weather_everywhere(0.0)
+	broadside(radio, &"stoker")
 	radio.frequency = gods.carrier(&"stoker", world.time)
 	gods.meltdown(world.time)
 	await physics_frames(8)

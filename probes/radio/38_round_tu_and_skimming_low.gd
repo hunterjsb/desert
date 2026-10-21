@@ -7,8 +7,7 @@ extends WeatherProbe
 ## and sweeps across overhead, many times faster; it's modelled (CropSurvey),
 ## not drawn on the sky, far bigger overhead than low down, and shows even in
 ## Zan's shadow. By day only the nearest and brightest show: the low hull
-## always, the dim formation never, the relay only as near as its ellipse
-## brings it.
+## always, the dim ones never.
 
 
 func run() -> void:
@@ -103,26 +102,9 @@ func run() -> void:
 	world.time = noon
 	await physics_frames(3)
 	var forms := material.get_shader_parameter("sat_form") as PackedVector3Array
-	var sounder := Constellation.voiced().find(&"sounder")
-	print("by day: the survey hull shows %s, the sounder %.2f" % [craft.visible, forms[sounder].z])
-	check(craft.visible and forms[sounder].z == 0.0, "by day the low hull shows, a dim one of the formation doesn't")
-	var relay := sky.relay()
-	var bright := _first(func(u: float) -> bool: return _relay_by_day(relay, p, u) and relay.nearness(u) > 1.6)
-	world.time = bright
-	await physics_frames(3)
-	var near_day: float = material.get_shader_parameter("relay_day")
-	var dim := _first(func(u: float) -> bool: return _relay_by_day(relay, p, u) and relay.nearness(u) < 0.8)
-	world.time = dim
-	await physics_frames(3)
-	print("the relay by day: %.2f near its perigee, %.2f far out" % [near_day, material.get_shader_parameter("relay_day")])
-	check(near_day > 0.2 and material.get_shader_parameter("relay_day") == 0.0,
-		"the relay shows by day only as near as its ellipse brings it")
-
-
-## Whether the relay is up by day, high and sunlit, from point p at world time t.
-func _relay_by_day(relay: Satellite, p: Vector3, t: float) -> bool:
-	var day := world.weather.day
-	return day.is_day(t, world.moon.longitude) and relay.seen_from(p, t).elevation > deg_to_rad(30.0) 		and relay.sunlit(t, day.sun_toward(t))
+	var dim := Constellation.voiced().find(&"windsock")
+	print("by day: the survey hull shows %s, the windsock %.2f" % [craft.visible, forms[dim].z])
+	check(craft.visible and forms[dim].z == 0.0, "by day the low hull shows, a dim one doesn't")
 
 
 ## How many degrees across the crop survey's model looks from the camera.

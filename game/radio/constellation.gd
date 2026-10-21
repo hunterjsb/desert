@@ -10,8 +10,11 @@ extends RefCounted
 ## shaped by the world as an LFO would shape it: the temperature, the sun, the
 ## wind, the time to the eclipse and more turn its pitch, its loudness, its
 ## tone. Each looks its own in the night sky too: colour, shape and size, and
-## a route of its own; eight fly in a formation that keeps two overhead always. The relay, which carries the music, is one
-## of them. Pure in the seed and world time.
+## a route of its own, each orbit unique and most irregular: about two of
+## those crossing the sky are up at once, sometimes none, sometimes four
+## (gonkhub, 2026-10-21: "Put them back on unique and variable orbits, rolling
+## back to '2 in the sky at once' rule"; radio probe 34). The relay, which
+## carries the music, is one of them. Pure in the seed and world time.
 ##
 ## Tracks are placeholders, sounds the game already has, until gonkhub's own:
 ## the cinder's and the metronome's are in.
@@ -21,7 +24,7 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 
 ## Each satellite: id; era; band kHz (its carrier a fresh place inside it each
 ## moon day); orbit {altitude radii, minutes a lap, tilt degrees, backward:
-## the share of seeds it goes round backwards}, or {slot} in the FORMATION; look {color, size (1 a
+## the share of seeds it goes round backwards}; look {color, size (1 a
 ## star's point), shape, light (against the brightest stars' 0.09), blink,
 ## low (so near the ground it shows as its shadow, lit or not, the bigger the nearer
 ## it passes you), hidden (never seen)};
@@ -38,9 +41,13 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 ## much as `share` of full static on its carrier and falling off over `kHz`
 ## either side, burying what's near it}. The relay's music is the radio's own.
 ##
-## Bands overlap on purpose, the gods' and each other's: the windsock's skirt
-## crosses the music's, the choir's Mother Cistern's, the lullaby's the
-## Ledger's and the metronome's the Eye's, so you tune in on the one you want.
+## Their bands are on shortwave, above the ceiling the air puts over the AM
+## dial, which turns back anything sent down under a few MHz (2026-10-20): five
+## side by side at 29 MHz, where real satellites have been heard on a wire,
+## 30 kHz apart so their skirts overlap and you tune in on the one you want,
+## the jammer burying its neighbours; the rest lower down, the
+## Pendulum on 10 MHz exactly, a time signal, as WWV's is. The relay's music
+## comes down on the FM band instead (Fm), and its band here is unused.
 ##
 ## Sources, 0 to 1: temperature (-40 to 70 °C where the radio is), sun (0 at
 ## local midnight, 1 at noon), night (1 after sunset), wind (0 to 25 m/s),
@@ -50,75 +57,71 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 ## to Zan's side it is) and drift (a slow wander of its own). Targets: pitch (scale), volume (dB), cutoff (Hz), drive (0 to 1),
 ## tremolo (Hz, 0 for none) and pulse (s between plays).
 const ROSTER := [
-	# Its orbit long since knocked out of true: an ellipse that swings round, and a slow tumble.
-	# (Thirteen in all: this, the formation's eight, the crop survey flying low, the ghost,
-	# the cinder and the lantern round Tu.)
+	# Hung at L1, beside Tu in the near side's sky, looping slowly round it: it sends the
+	# port's music down on the FM band, not this dial (Fm), and glints as it turns.
+	# (Eleven in all: this, the Pendulum at L2, the five at 29 MHz, the crop survey flying
+	# low, the ghost, the cinder and the lantern round Tu. The sounder, the lullaby and the
+	# tollgate were scrapped, gonkhub 2026-10-21.)
 	{"id": &"relay", "era": "colonial", "band": Vector2(1020.0, 1020.0),
-		"orbit": {"eccentricity": 0.3, "precess": 40.0, "apsides": 70.0},
+		"orbit": {"lagrange": 1},
 		"look": {"color": Color(1.0, 0.97, 0.9), "size": 1.0, "shape": Shape.POINT, "light": 0.35},
 		"sound": {}, "lfo": [], "duty": [], "behave": {"tumble": [0.05, 0.3]}},
 	# Frontier Ag's crop survey, flying low to read the ground's heat: 6 km up, a great
 	# hull modelled and lit (CropSurvey), crawling up from the horizon and sweeping
 	# overhead (gonkhub, 2026-10-19; "6km is better", 2026-10-20). A run begins with it
 	# passing over.
-	{"id": &"thermal", "era": "Frontier Ag", "band": Vector2(320.0, 350.0),
-		# Its lap no whole share of the day, and its plane swinging slowly round, so its
-		# track sweeps over every place in time rather than retracing the same lines.
+	{"id": &"thermal", "era": "Frontier Ag", "band": Vector2(14200.0, 14300.0),
+		# Over Port Morgan every lap (gonkhub, 2026-10-21), its route swinging 37° a lap
+		# round the port, so the rest of its track sweeps over every place in time.
 		"orbit": {"altitude": 0.2513, "minutes": 7.95, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
-			"precess": 37.0},
+			"precess": 37.0, "through_port": true},
 		"look": {"color": Color(1.0, 0.55, 0.15), "size": 16.0, "shape": Shape.HULK, "light": 0.6, "low": true},
 		"sound": {"track": Sounds.RADIO_EYE_TUNNEL, "db": -2.0, "pulse": 0.0},
 		"lfo": [[&"temperature", &"pitch", 0.7, 1.4], [&"elevation", &"cutoff", 700.0, 7000.0]], "duty": []},
-	# StarCom's ionospheric sounder, still sweeping the band to measure the air: a roar
-	# that rises and falls, brighter by day. It took the crop survey's place in the formation.
-	{"id": &"sounder", "era": "StarCom", "band": Vector2(560.0, 590.0),
-		"orbit": {"slot": 0},
-		"look": {"color": Color(0.85, 1.0, 0.35), "size": 1.0, "shape": Shape.DIAMOND, "light": 0.3},
-		"sound": {"track": Sounds.STORM, "db": -6.0, "pulse": 0.0},
-		"lfo": [[&"drift", &"pitch", 0.6, 1.6], [&"sun", &"cutoff", 800.0, 6000.0]], "duty": []},
-	# StarCom's timing beacon: its tick quickens as the eclipse comes.
-	{"id": &"pendulum", "era": "StarCom", "band": Vector2(700.0, 730.0),
-		"orbit": {"slot": 1},
+	# StarCom's timing beacon, hung at L2 over the far side's middle, where the
+	# observatory stands: its tick quickens as the eclipse comes.
+	{"id": &"pendulum", "era": "StarCom", "band": Vector2(10000.0, 10000.0),
+		"orbit": {"lagrange": 2},
 		"look": {"color": Color(0.4, 0.9, 1.0), "size": 1.1, "shape": Shape.CROSS, "light": 0.32},
 		"sound": {"track": Sounds.RADIO_PING, "db": 0.0, "pulse": 2.0},
 		"lfo": [[&"eclipse", &"pulse", 3.0, 0.25], [&"drift", &"pitch", 0.97, 1.03]], "duty": []},
+	# StarCom's navigation beacon, a quick double ping, higher the higher it stands: a
+	# lazy ellipse low over the equator, its perigee wandering round.
+	{"id": &"sextant", "era": "StarCom", "band": Vector2(29030.0, 29050.0),
+		"orbit": {"altitude": 1.8, "minutes": 26.6, "tilt": Vector2(10.0, 35.0), "backward": 0.4,
+			"eccentricity": 0.35, "precess": 20.0, "apsides": 60.0},
+		"look": {"color": Color(0.8, 0.92, 1.0), "size": 1.2, "shape": Shape.POINT, "light": 0.3},
+		"sound": {"track": Sounds.RADIO_PING, "db": -3.0, "pulse": 0.45},
+		"lfo": [[&"elevation", &"pitch", 1.35, 1.8], [&"drift", &"cutoff", 2500.0, 6000.0]], "duty": []},
 	# A weather satellite: it roars as the wind does where you are, and frays in a storm.
-	{"id": &"windsock", "era": "StarCom", "band": Vector2(1032.0, 1060.0),
-		"orbit": {"slot": 2},
+	# Low and quick, a mid-latitude track creeping round.
+	{"id": &"windsock", "era": "StarCom", "band": Vector2(29060.0, 29080.0),
+		"orbit": {"altitude": 0.9, "minutes": 14.9, "tilt": Vector2(30.0, 50.0), "backward": 0.3, "precess": 25.0},
 		"look": {"color": Color(0.6, 1.0, 0.6), "size": 1.3, "shape": Shape.RING, "light": 0.28},
 		"sound": {"track": Sounds.WIND, "db": 2.0, "pulse": 0.0},
 		"lfo": [[&"wind", &"volume", -18.0, 0.0], [&"wind", &"cutoff", 400.0, 8000.0], [&"storm", &"drive", 0.0, 0.6]],
 		"duty": []},
-	# The colony's hymn, high and slow, its pitch sinking with the sun.
-	{"id": &"choir", "era": "colonial", "band": Vector2(430.0, 470.0),
-		"orbit": {"slot": 3},
+	# The colony's hymn, high and slow, its pitch sinking with the sun: a steep, high
+	# orbit, its plane backing slowly round.
+	{"id": &"choir", "era": "colonial", "band": Vector2(29090.0, 29110.0),
+		"orbit": {"altitude": 1.4, "minutes": 21.1, "tilt": Vector2(60.0, 80.0), "backward": 0.5, "precess": -15.0},
 		"look": {"color": Color(0.8, 0.7, 1.0), "size": 1.0, "shape": Shape.PAIR, "light": 0.3},
 		"sound": {"track": Sounds.RADIO_EYE, "db": 0.0, "pulse": 0.0},
 		"lfo": [[&"sun", &"pitch", 0.85, 1.0], [&"drift", &"cutoff", 1200.0, 5000.0]], "duty": []},
 	# Wartime noise, still jamming: chirps that never mean anything, wilder near an anomaly,
-	# and static it sprays across the band round it while it's overhead.
-	{"id": &"babel", "era": "the war", "band": Vector2(1290.0, 1340.0),
-		"orbit": {"slot": 4},
+	# and static it sprays across the band round it while it's overhead. An uneven ellipse
+	# swinging fast round, so it's never where you left it.
+	{"id": &"babel", "era": "the war", "band": Vector2(29120.0, 29150.0),
+		"orbit": {"altitude": 1.2, "minutes": 18.5, "tilt": Vector2(40.0, 60.0), "backward": 0.6,
+			"eccentricity": 0.2, "precess": 50.0, "apsides": 30.0},
 		"look": {"color": Color(1.0, 0.25, 0.2), "size": 1.1, "shape": Shape.DIAMOND, "light": 0.3, "blink": true},
 		"sound": {"track": Sounds.RADIO_TONES, "db": 0.0, "pulse": 0.6},
 		"lfo": [[&"drift", &"pulse", 0.3, 1.2], [&"anomaly", &"drive", 0.2, 0.9], [&"drift", &"pitch", 0.6, 1.8]],
 		"duty": [], "behave": {"jam": [0.7, 60.0]}},
-	# A children's station from the first years, louder after dark, slower in the cold.
-	{"id": &"lullaby", "era": "colonial", "band": Vector2(860.0, 895.0),
-		"orbit": {"slot": 5},
-		"look": {"color": Color(1.0, 0.6, 0.8), "size": 0.8, "shape": Shape.POINT, "light": 0.3},
-		"sound": {"track": Sounds.RADIO_NIGHT, "db": 0.0, "pulse": 0.0},
-		"lfo": [[&"temperature", &"pitch", 0.88, 1.05], [&"night", &"volume", -14.0, 0.0]], "duty": []},
-	# Mon's customs, large and gold, humming a toll nobody pays.
-	{"id": &"tollgate", "era": "Mon", "band": Vector2(1500.0, 1540.0),
-		"orbit": {"slot": 6},
-		"look": {"color": Color(1.0, 0.85, 0.3), "size": 1.6, "shape": Shape.CROSS, "light": 0.33},
-		"sound": {"track": Sounds.SHIELD_HUM, "db": 0.0, "pulse": 0.0},
-		"lfo": [[&"sun", &"pitch", 0.5, 0.8], [&"drift", &"tremolo", 0.5, 6.0]], "duty": []},
 	# Nobody knows whose: a wild ellipse that dives to the dunes and hangs far out, its plane
 	# and perigee swinging round; dim, tumbling, on in fits, never long on one frequency,
 	# and loudest in a storm.
-	{"id": &"ghost", "era": "unknown", "band": Vector2(60.0, 100.0),
+	{"id": &"ghost", "era": "unknown", "band": Vector2(3200.0, 3500.0),
 		"orbit": {"altitude": 6.0, "minutes": 23.0, "tilt": Vector2(60.0, 85.0), "backward": 0.5,
 			"eccentricity": 0.75, "precess": 110.0, "apsides": 80.0},
 		"look": {"color": Color(0.45, 0.55, 1.0), "size": 0.7, "shape": Shape.RING, "light": 0.18},
@@ -128,7 +131,7 @@ const ROSTER := [
 	# A spent tug, its orbit decaying: it sinks lap by lap, roaring brighter as it
 	# skims the air, then a burn throws it back up; spinning, wildly swinging round.
 	# Its track is gonkhub's own, "Cinder".
-	{"id": &"cinder", "era": "the war", "band": Vector2(1150.0, 1175.0),
+	{"id": &"cinder", "era": "the war", "band": Vector2(7100.0, 7175.0),
 		"orbit": {"altitude": 2.0, "minutes": 4.4, "tilt": Vector2(20.0, 80.0), "backward": 0.7,
 			"eccentricity": 0.15, "precess": 160.0, "apsides": 45.0, "decay": [1.6, 5.0]},
 		"look": {"color": Color(1.0, 0.45, 0.12), "size": 1.4, "shape": Shape.POINT, "light": 0.3},
@@ -138,29 +141,20 @@ const ROSTER := [
 	# StarCom's Tu survey probe, still circling the planet it was sent to map. It can't be
 	# seen from Zan; it's heard only from the near side, while it swings round Tu's face
 	# toward Zan, faint from so far, clearest straight between, gone behind Tu.
-	{"id": &"lantern", "era": "StarCom", "band": Vector2(1590.0, 1620.0),
+	{"id": &"lantern", "era": "StarCom", "band": Vector2(21500.0, 21600.0),
 		"orbit": {"around_tu": {"distance": 60.0, "radii": 1.8}, "minutes": 11.0},
 		"look": {"color": Color(0.55, 0.45, 0.35), "size": 0.0, "shape": Shape.POINT, "light": 0.0, "hidden": true},
 		"sound": {"track": Sounds.RADIO_DAY, "db": -3.0, "pulse": 0.0},
 		"lfo": [[&"facing", &"cutoff", 900.0, 6000.0], [&"facing", &"volume", -12.0, 0.0],
 			[&"drift", &"pitch", 0.55, 0.62]], "duty": [], "behave": {"facing_zan": true, "power": 0.6}},
 	# A survey drone's dead telemetry, a loop it still plays, rising a little with the
-	# sun. Its track is gonkhub's own, "satellite1".
-	{"id": &"metronome", "era": "Frontier Ag", "band": Vector2(1695.0, 1735.0),
-		"orbit": {"slot": 7},
+	# sun. Its track is gonkhub's own, "satellite1". Low, near polar, over every latitude.
+	{"id": &"metronome", "era": "Frontier Ag", "band": Vector2(29220.0, 29240.0),
+		"orbit": {"altitude": 1.0, "minutes": 16.1, "tilt": Vector2(70.0, 88.0), "backward": 0.5, "precess": 33.0},
 		"look": {"color": Color(0.75, 1.0, 0.85), "size": 0.9, "shape": Shape.BAR, "light": 0.28},
 		"sound": {"track": Sounds.RADIO_SAT_METRONOME, "db": 0.0, "pulse": 0.0},
 		"lfo": [[&"sun", &"pitch", 0.9, 1.1], [&"elevation", &"cutoff", 500.0, 4000.0]], "duty": []},
 ]
-## The formation eight of them fly in (gonkhub, 2026-10-19: "always at least
-## two active signals throughout a full day night cycle"): eight planes, one
-## satellite in each, each 2/8 of a lap on from the last, tilted 55°, 5 radii
-## up, a lap in 9 minutes. Laid out so, at least two are 8° or more over the
-## horizon everywhere on Zan at every moment, whatever the moon's turn under
-## them (searched, and radio probe 28), however the seed turns the whole. Each
-## still has a route of its own, its plane; they share one lap, or they'd
-## drift out of it.
-const FORMATION := {"count": 8, "phasing": 2, "inclination": 55.0, "altitude": 5.0, "minutes": 9.0}
 ## A cannon's muzzle flash: this many times as bright, fading over this long, s.
 const MUZZLE_FLARE := 12.0
 const MUZZLE_SECONDS := 0.5
@@ -188,16 +182,18 @@ var _drift: float
 var _fired := {}
 
 
-func _init(seed_value: int, tuning: Tuning, start: Vector3) -> void:
+## `port`: Port Morgan's place on the sphere, which the crop survey's route
+## holds to; zero, its route is an orbit among the stars like the rest.
+func _init(seed_value: int, tuning: Tuning, start: Vector3, port := Vector3.ZERO) -> void:
 	run_seed = seed_value
 	_day_seconds = tuning.day_minutes * 60.0
 	_drift = tuning.carrier_drift_khz
 	for row: Dictionary in ROSTER:
 		var orbit: Dictionary = row.orbit.duplicate()
-		if orbit.has("slot"):
-			orbit.merge(FORMATION)
 		if not orbit.is_empty():
 			orbit["id"] = row.id
+		if orbit.get("through_port", false):
+			orbit["through"] = port
 		orbits[row.id] = Satellite.new(seed_value, tuning, start, orbit)
 		rows[row.id] = row
 

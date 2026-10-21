@@ -1057,6 +1057,21 @@ static var _current: Tuning
 @export var relay_period_minutes: float = 6.5
 @export var relay_doppler_khz: float = 1.5
 @export var relay_rise_degrees: float = 8.0
+## Zan and Tu's Lagrange points, where the relay and the Pendulum hang (a moon
+## that keeps one face to its planet has no stationary orbit): this many moon
+## radii from Zan's middle, toward Tu (L1) and away (L2), at the leaning size's
+## real scale; each loops round its point on a halo this many radii across
+## the line to Tu, once in this many minutes, about half a day as a real
+## halo's is about half a month.
+@export var lagrange_radii: float = 8.0
+@export var halo_radii: float = 0.9
+@export var halo_minutes: float = 10.0
+## The relay sends the port's music down on the FM band from L1 by a dish aimed
+## at Zan: this many dB over Port Morgan's own station's margin at a kilometre,
+## so from so far it still clears the noise, until the ground near you hides it.
+## The ground toward a satellite is read this far out, m.
+@export var relay_fm_db: float = 55.0
+@export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
 ## Frontier Ag's crop survey (CropSurvey) is drawn this many times the size
 ## CropSurveyLooks builds it: 2.3 makes it about 940 m tip to tip, about 9
@@ -1074,6 +1089,10 @@ static var _current: Tuning
 ## real life min)"; world time runs at real time); heard this far, m.
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
+## Frontier Ag's crop survey reads its flight plan this often, s of world
+## time, and at once as you tune in (gonkhub, 2026-10-21: "announce its
+## update every 5 min").
+@export var survey_report_every: float = 300.0
 ## Speech-only station character; weather and local computer speech stay unchanged.
 @export var radio_voice_profiles: Dictionary = {}
 ## Its advisories: a sandstorm riding a prevailing wind this fast or faster,
@@ -1109,6 +1128,65 @@ static var _current: Tuning
 ## you want (gonkhub, 2026-10-19). Within this many skirts of a carrier, the
 ## dial counts it as the one it hears.
 @export var dial_skirt_khz: float = 20.0
+## The FM band (VHF, 87.5 to 108 MHz, through an FM converter): a notch of
+## tuning moves this far, MHz, or a fine step this far; a station comes in
+## this wide either side, MHz.
+@export var fm_notch_mhz: float = 0.1
+@export var fm_fine_mhz: float = 0.02
+@export var fm_width_mhz: float = 0.08
+## How a VHF station reaches you, by line of sight over the moon's curve and
+## the ground between: the curve as radio bends round it, against the true one
+## (4/3, a standard atmosphere's); a station's margin over the noise a
+## kilometre off with nothing in the way, dB; and how many points along the
+## way the ground is read at.
+@export var fm_bend: float = 1.3333
+@export var fm_margin_db: float = 30.0
+@export var fm_profile_points: int = 24
+## The FM threshold: under this margin, dB, it's lost to hiss, and this many
+## dB over it it's fully quiet. Two stations on one frequency: the stronger
+## takes it whole once it's this many dB ahead (the capture ratio).
+@export var fm_threshold_db: float = 0.0
+@export var fm_quiet_db: float = 14.0
+@export var fm_capture_db: float = 2.0
+## Port Morgan's FM mast, m over the port's ground.
+@export var fm_mast_m: float = 60.0
+## The shortwave band (2 to 30 MHz, through a shortwave converter): a notch of
+## tuning moves it this far, kHz; a fine step is the AM dial's.
+@export var sw_notch_khz: float = 25.0
+## An antenna reel holds this much wire, m: walked farther from its radio, its
+## clip pops off the set.
+@export var antenna_reel_m: float = 30.0
+## A shortwave set's long wire: on its converter's terminals alone it hears
+## this share of what's sent from above the ceiling; an antenna reel's wire
+## strung out this long, m, hears all of it, strung low only this share,
+## and fully once it's this high over the ground somewhere, m. Under the
+## ceiling, on the AM dial, a wire adds nothing: the world's own noise is the
+## floor there, not the set's.
+@export var sw_bare: float = 0.25
+@export var sw_wire_m: float = 10.0
+@export var sw_wire_low: float = 0.75
+@export var sw_wire_high_m: float = 3.0
+## Natural radio at the bottom of the AM dial (Natural), on a long wire: storms
+## counted for its sferics out to this far, m; this many sferics a second with
+## none about, and this many with one on you; a whistler may come once in this
+## long, s; and a camp's own power drawing this much in the radio's pool, W,
+## hums over it all.
+@export var vlf_reach_m: float = 30000.0
+@export var vlf_rate: Vector2 = Vector2(0.4, 30.0)
+@export var vlf_whistler_every: float = 40.0
+@export var vlf_hum_w: float = 10.0
+## Tu's roar on shortwave: it comes in from the bottom of this span, kHz, to
+## full at its top; Tu storms while Zan is within half of tu_roar_window (a
+## share of a day) of one of these places round its orbit (shares of a day),
+## as Io gates Jupiter's storms, and Tu's turn is within this far of bringing
+## its source to face Zan, rad.
+@export var tu_roar_khz: Vector2 = Vector2(15000.0, 21000.0)
+@export var tu_roar_phases: PackedFloat32Array = PackedFloat32Array([0.25, 0.67])
+@export var tu_roar_window: float = 0.12
+@export var tu_roar_turn: float = 1.2
+## The AM dial plays sound up to this, Hz: AM's narrow audio, and the FM
+## converter's too, since it plays through the AM set.
+@export var am_audio_hz: float = 5000.0
 ## A signal flare burns this long, s (Flare). The Surveyor fires its
 ## care-package cannon at a lit one it passes this high over, degrees, and the
 ## container takes this long to come down, s, landing this near the flare, m,
@@ -1146,6 +1224,16 @@ static var _current: Tuning
 @export var sky_wave: float = 0.6
 ## Under this share of a clean signal, a transmission is lost in the static.
 @export var signal_floor: float = 0.08
+## The AM set's ferrite rod: a station end-on to it comes in at this share of
+## its strength, its null; heard by sky wave at night, past the skip, only this
+## deep, the sky wave coming down from above and wandering (the night effect,
+## why real direction finders distrust night bearings).
+@export var rod_null: float = 0.03
+## The set's gain control holds a station's level as the rod turns, so it's
+## heard falling away only within this much of end-on (the sine of the angle
+## off its axis): a sharp null, as a real set's is.
+@export var rod_width: float = 0.25
+@export var rod_night_null: float = 0.45
 ## The storm on the path toward a god is read this far out at most, m, and
 ## at this many points. Through a full storm the carrier drifts this far
 ## either way, kHz, and the signal drops out this share of the time.

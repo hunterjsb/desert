@@ -24,10 +24,6 @@ extends Node3D
 ## floating origin carries the whole fall with it.
 
 const SURVEYOR := &"thermal"
-## Its schedule looks this far ahead, s; its height over a place never
-## changes faster than this, degrees a second (about 4.8 overhead at 6 km).
-const LOOK_AHEAD := 4.0 * 3600.0
-const CLIMB := 6.0
 ## The container keeps the craft's motion for this long, s, before it turns
 ## down: how far along the craft's way its curve bends.
 const CARRY := 1.2
@@ -97,33 +93,6 @@ static func surveyor(world: World, at: Vector3, t: float) -> Dictionary:
 ## time to fire at a flare there.
 static func overhead(world: World, at: Vector3) -> bool:
 	return surveyor(world, at, world.time).up >= deg_to_rad(world.tuning.airdrop_elevation_degrees)
-
-
-## The drone's next pass high enough over a place to fire at a flare there,
-## from world time t, as it reads its schedule out (Radio): {due (s from t,
-## 0 while it's up there now), bearing (where to look as it gets there,
-## degrees on the ground from the engine's -z), peak (how high it comes,
-## degrees)}; {} with none within LOOK_AHEAD. It steps on as far as its
-## height can't reach the cannon's sooner (it never climbs faster than
-## CLIMB), finely only as it nears.
-static func next_pass(world: World, at: Vector3, t: float) -> Dictionary:
-	var high := deg_to_rad(world.tuning.airdrop_elevation_degrees)
-	var u := t
-	while u < t + LOOK_AHEAD:
-		var craft := surveyor(world, at, u)
-		if craft.up >= high:
-			var peak: float = craft.up
-			var w := u
-			while true:
-				w += 1.0
-				var on: float = surveyor(world, at, w).up
-				if on < peak:
-					break
-				peak = on
-			var to: Vector3 = craft.at - at
-			return {"due": u - t, "bearing": Radio.bearing(Vector2(to.x, to.z)), "peak": rad_to_deg(peak)}
-		u += clampf((high - craft.up) / deg_to_rad(CLIMB), 1.0, 60.0)
-	return {}
 
 
 ## The cannon fired at a place, from wherever the drone is now: the
