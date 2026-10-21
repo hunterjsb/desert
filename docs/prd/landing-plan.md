@@ -152,3 +152,25 @@ drift. The overview camera stays inertially fixed so the real rotating geography
 is visible; the cabin camera follows the actual carrier. Unsafe selected pulses
 still require adjustment. The model returns actual timestamps alongside path
 vertices and body-fixed impact forward direction for faithful flight playback.
+
+#### Departure model evidence (2026-10-21)
+
+Arrival31 passes against actual seeded terrain/history: the initial single pulse
+resolves to a fresh safe footprint, its ordinary LandingPlan validates, save
+roundtrip preserves the complete forecast, ray-drag changes the actual pulse,
+and timestamped inertial impact agrees with the rotating body-fixed destination.
+The overview camera remains inertially fixed while body geography rotates.
+Seed 1234's default flight takes 21.850358 seconds; the computed point differs
+from the known start by about 0.002 compressed metres (float32 sphere conversion).
+Fresh footprint checks remain ready after 5, 10 and 20 seconds of preparation.
+The same focused check also passed external runs with seeds 42 and 9876.
+Sampling preparation up to one hour remains within the original survey corridor;
+this demonstrates bounded stationkeeping, not safe terrain for every pulse or
+launch time. Actual launch still validates its current footprint.
+
+Path vertices carry their integration timestamps, including the interpolated
+impact endpoint, rather than assuming equal array-index durations. The model
+provides the true body-fixed ground-relative forward direction for entry framing.
+These pure terrain/model checks do not establish connected physical-screen drag,
+cabin framing, continuous first-person playback or launch-controller acceptance;
+those are integration checks owned by the corresponding systems.
