@@ -71,6 +71,7 @@ jobs:
         group:
           - probes/rope probes/devices probes/weather probes/salvage probes/shield
           - probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
+          - probes/arrival probes/camp probes/movement
           - the rest
     name: ${{ startsWith(matrix.os, 'macos') && 'macOS' || 'Windows' }} ${{ matrix.group }}
     runs-on: ${{ matrix.os }}
@@ -82,6 +83,7 @@ jobs:
       REST_EXCEPT: >-
         probes/rope probes/devices probes/weather probes/salvage probes/shield
         probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
+        probes/arrival probes/camp probes/movement
       BASH_FOR_PROBES: ${{ startsWith(matrix.os, 'macos') && '/bin/bash' || 'bash' }}
       PROBE_NOISY: 1
     steps:

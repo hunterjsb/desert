@@ -33,6 +33,8 @@ the existing nine Linux groups, with all failures still blocking landing. Run po
 is once a minute. Documentation-only changes skip CI as before.
 
 Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
+Native probes split arrival, camp and movement into their own parallel group to
+keep the remaining families within the job budget. New folders still join “the rest”.
 Manual Probes dispatches default to `full_platforms=true`, retaining full preview
 coverage; only an explicit branch dispatch with `full_platforms=false` omits the native
 and build jobs. Master/tag coverage cannot be disabled by that input.
