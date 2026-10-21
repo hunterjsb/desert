@@ -1909,3 +1909,29 @@ The 30/60/120 Hz comparisons retain 2.907/2.908/2.908 m/s. The contact model
 is constructed only after a contact point enters its existing ground reach;
 upright large-deck runner support is unchanged. This does not measure the
 cost of many simultaneous contacts on a large capsized craft.
+
+### Coupled normal and friction at a capsized point (2026-10-21)
+
+The native assembly response exposes an older contact-law omission: normal
+and friction impulses were computed independently from the same incoming
+point velocity. The point mobility has off-diagonal terms. Friction therefore
+changes normal velocity, and normal support changes tangential slip. An isolated
+Ubuntu reproduction retains the tipping failure at 1.14 m/s per tick after
+the assembly correction. A measured penetrating masthead contact targets
++0.5 m/s separation but predicts -0.373 m/s after the summed impulses.
+
+Solve normal support first, then compute slip from the resulting virtual point
+velocity. Eliminate the friction impulse's normal response from its tangential
+mobility and compensate that response in the normal impulse. Bound friction
+by the existing coefficient times this corrected normal impulse. This preserves
+the contact's existing separation/penetration target while reducing tangential
+slip without reversing it along the chosen friction direction. Deliver the
+combined impulse once to the actual hull; do not clamp native velocities or
+change clearance, recovery speeds, restitution, friction, or acceptance bounds.
+The new real hinged-rig contact check places its masthead 0.03 m into sand
+with 3.163 m/s incoming normal speed. The independent impulse law recovers at
+0.572 m/s and fails the unchanged 0.01 m/s target tolerance; the constrained
+law gives 0.500 m/s and passes. The separate tipping check still fails native
+Ubuntu at 1.25 m/s per tick while local Linux and native macOS pass. Its spar
+is 0.408 m above sand at that peak, so spar collision is excluded. Carrier
+frame contact investigation remains pending.

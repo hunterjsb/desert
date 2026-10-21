@@ -362,19 +362,35 @@ static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, 
 		spin = coupled.spin
 	var arm := point - middle
 	var moving := velocity + Vector3.DOWN * world.gravity * h + spin.cross(arm)
-	var up := _contact_mass(model, inv_mass, turn, arm, Vector3.UP)
-	var pushed := maxf(0.0, -up * (moving.y + (gap / h if gap > 0.0 else maxf(gap * TOUCH_OUT / h, -TOUCH_SPEED))))
+	var normal := _contact_response(model, inv_mass, turn, arm, Vector3.UP)
+	if normal.y <= 0.0:
+		return
+	var pushed := maxf(0.0, -(moving.y + (gap / h if gap > 0.0 else maxf(gap * TOUCH_OUT / h, -TOUCH_SPEED))) / normal.y)
 	if pushed <= 0.0:
 		return
-	var flat := Vector3(moving.x, 0.0, moving.z)
+	var supported := moving + normal * pushed
+	var flat := Vector3(supported.x, 0.0, supported.z)
 	var way := flat.normalized() if flat.length() > 1e-4 else Vector3.ZERO
-	var drag := minf(_contact_mass(model, inv_mass, turn, arm, way) * flat.length(), grip * pushed) if way != Vector3.ZERO else 0.0
+	var drag := 0.0
+	if way != Vector3.ZERO:
+		var friction := _contact_response(model, inv_mass, turn, arm, way)
+		# Friction's normal response is supplied by the same contact's support.
+		var response := friction - normal * (friction.y / normal.y)
+		var slip_response := way.dot(response)
+		if slip_response > 0.0:
+			drag = flat.length() / slip_response
+			# N = N0 + D*Knt/Knn; D <= grip*N gives this sliding bound.
+			var cone := 1.0 - grip * friction.y / normal.y
+			if cone > 0.0:
+				drag = minf(drag, grip * pushed / cone)
+			pushed += drag * friction.y / normal.y
 	body.apply_impulse(Vector3.UP * pushed - way * drag, point - body.global_position)
 
 
-## A contact on the hull also turns its freely hinged load through the joint.
-static func _contact_mass(model: RopeArticulation, inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> float:
+## A point's velocity response includes its freely hinged load through the joint.
+static func _contact_response(model: RopeArticulation, inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> Vector3:
+	var lever := arm.cross(way)
 	if model == null:
-		return _mass(inv_mass, turn, arm, way)
-	var response: Array = model.response([model.bodies[0]], [way], [arm.cross(way)])[0]
-	return 1.0 / way.dot(response[1] + response[2].cross(arm))
+		return way * inv_mass + (turn * lever).cross(arm)
+	var response: Array = model.response([model.bodies[0]], [way], [lever])[0]
+	return response[1] + response[2].cross(arm)
