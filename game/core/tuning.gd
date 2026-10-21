@@ -1304,3 +1304,13 @@ static func current() -> Tuning:
 @export var horizon_drop_m := 8.0
 @export var mountain_rock := Color(0.38, 0.34, 0.30)
 @export var mountain_rock_height := Vector2(60.0, 180.0)
+
+@export_group("Marked Home")
+## Admission limits include the camp's owned assembly and supporting terrain halo.
+@export var home_max_bodies: int = 512
+@export var home_span_m: float = 128.0
+@export var home_support_chunks: int = 25
+@export var home_signal_m: float = 2000.0
+@export var home_beacon_w: float = 1.0
+@export var home_depart_m: float = 700.0
+@export var home_return_m: float = 30.0

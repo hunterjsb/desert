@@ -256,3 +256,11 @@ mountain_bedrock_depth = 40.0
 horizon_drop_m = 8.0
 mountain_rock = Color(0.38, 0.34, 0.30, 1)
 mountain_rock_height = Vector2(60, 180)
+
+home_max_bodies = 512
+home_span_m = 128.0
+home_support_chunks = 25
+home_signal_m = 2000.0
+home_beacon_w = 1.0
+home_depart_m = 700.0
+home_return_m = 30.0
