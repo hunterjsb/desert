@@ -33,17 +33,19 @@ func run() -> void:
 	stand_at(prep.ship.computer_at.global_position + Vector3(0, -1.03, 0.9), prep.ship.computer_at.global_position)
 	await physics_frames(2)
 	press(&"interact")
-	check(is_instance_valid(prep.computer), "use opens the launch computer through its real collider")
-	if not is_instance_valid(prep.computer):
+	check(prep.computer_open(), "use focuses the persistent display through its real collider")
+	if not prep.computer_open():
 		return
-	var computer := prep.computer as LaunchComputer
-	var id: StringName = world.arrival_state.landing_plan.candidates[-1].id
-	computer._buttons[id].pressed.emit()
-	check(world.arrival_state.preflight.plan_confirmed and world.arrival_state.landing_plan.selected_id == id,
-		"the computer's destination control confirms the saved landing choice")
+	await get_tree().create_timer(0.6).timeout
+	var computer := prep.computer.ui
+	var original_id: StringName = world.arrival_state.landing_plan.selected_id
+	computer._confirm.pressed.emit()
+	check(world.arrival_state.preflight.plan_confirmed and world.arrival_state.landing_plan.selected_id == original_id,
+		"confirming the visibly selected default makes that same course ready")
 	press(&"ui_cancel")
-	await get_tree().process_frame
-	check(not is_instance_valid(prep.computer) and world.player.is_physics_processing(), "closing the computer restores walking")
+	await get_tree().create_timer(0.6).timeout
+	check(is_instance_valid(prep.computer) and not prep.computer_open() and world.player.is_physics_processing(),
+		"stepping back restores walking and leaves the actual screen lit")
 	check(prep.readiness().is_empty(), "the real preloaded survival stores allow launch after planning")
 	stand_at(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
 	await physics_frames(2)

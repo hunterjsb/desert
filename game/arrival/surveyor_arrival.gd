@@ -13,6 +13,8 @@ var _input := true
 var _hands_input := true
 var _suit_input := true
 var _vitals := true
+var _body_visible := true
+var _body_processing := true
 
 func start() -> void:
 	if not world.arrival_state.is_empty():
@@ -112,6 +114,8 @@ func _physics_process(delta: float) -> void:
 	if not active():
 		return
 	var state := world.arrival_state
+	if state.get("phase") == &"landing" and _first_person():
+		_ground_seat()
 	state.elapsed = float(state.get("elapsed", 0.0)) + delta
 	var phase: StringName = state.phase
 	var duration := _seconds(phase)
@@ -161,14 +165,34 @@ func _land() -> bool:
 		world.counts_deeds = counting
 		if not state.get("materialized", false):
 			return false
-	var exit: Vector2 = state.exit_world
-	var position := Vector3(world.engine_x(exit.x), world.height_at(exit.x, exit.y) + world.tuning.surveyor_arrival.landing_clearance_m, world.engine_z(exit.y))
-	world.teleport(world.player, Transform3D(Basis(Vector3.UP, float(state.heading) - PI * 0.5), position))
-	world.player.restore_ground_pose(&"stand")
-	world.player.velocity = Vector3.ZERO
-	world.player.camera.rotation.x = -0.18
+	if _first_person():
+		_ground_seat()
+	else:
+		var exit: Vector2 = state.exit_world
+		var position := Vector3(world.engine_x(exit.x), world.height_at(exit.x, exit.y) + world.tuning.surveyor_arrival.landing_clearance_m, world.engine_z(exit.y))
+		world.teleport(world.player, Transform3D(Basis(Vector3.UP, float(state.heading) - PI * 0.5), position))
+		world.player.restore_ground_pose(&"stand")
+		world.player.velocity = Vector3.ZERO
+		world.player.camera.rotation.x = -0.18
 	world.set_meta(&"kit", world.arrival_nodes.values().filter(func(node: Node) -> bool: return is_instance_valid(node)))
 	return true
+
+func _first_person() -> bool:
+	return world.arrival_state.get("preflight", {}).get("flight_view", 0) >= 2
+
+
+func _ground_seat() -> void:
+	var floor := world.arrival_nodes.get(&"floor_a") as Chassis
+	if not is_instance_valid(floor):
+		return
+	var deck := floor.deck if floor.deck != null else floor
+	var seat := deck.global_transform * floor.pose() * PodShell.seat_pose()
+	world.teleport(world.player, seat)
+	world.player.restore_ground_pose(&"prone")
+	world.player.camera.position = Vector3(0, float(world.tuning.surveyor_preflight.seat_eye_m), 0)
+	world.player.camera.rotation = Vector3(0.1, 0, 0)
+	world.player.velocity = Vector3.ZERO
+
 
 func _hold() -> void:
 	if _held:
@@ -180,6 +204,11 @@ func _hold() -> void:
 	_hands_input = player.hands.is_processing_unhandled_input()
 	_suit_input = player.suit.is_processing_unhandled_input()
 	_vitals = player.vitals.is_physics_processing()
+	_body_visible = player.body.visible
+	_body_processing = player.body.is_processing()
+	if _first_person():
+		player.body.hide()
+		player.body.set_process(false)
 	world.time_warp = 0.0
 	player.velocity = Vector3.ZERO
 	player.set_physics_process(false)
@@ -201,6 +230,8 @@ func _release() -> void:
 	world.player.hands.set_process_unhandled_input(_hands_input)
 	world.player.suit.set_process_unhandled_input(_suit_input)
 	world.player.vitals.set_physics_process(_vitals)
+	world.player.body.visible = _body_visible
+	world.player.body.set_process(_body_processing)
 	_held = false
 
 func _show() -> void:

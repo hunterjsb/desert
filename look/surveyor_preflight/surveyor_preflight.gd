@@ -23,15 +23,15 @@ func run() -> void:
 	stand(prep.ship.computer_at.global_position + Vector3(0, -1.03, 0.9), prep.ship.computer_at.global_position)
 	await physics_frames(2)
 	press(&"interact")
-	check(is_instance_valid(prep.computer), "real launch computer opens")
-	if not is_instance_valid(prep.computer):
+	check(prep.computer_open(), "real launch computer focuses")
+	if not prep.computer_open():
 		return
-	var view := prep.computer as LaunchComputer
-	var id: StringName = world.arrival_state.landing_plan.candidates[-1].id
-	view._buttons[id].pressed.emit()
+	await get_tree().create_timer(0.6).timeout
+	var view := prep.computer.ui
 	await shoot("computer")
+	view._confirm.pressed.emit()
 	press(&"ui_cancel")
-	await get_tree().process_frame
+	await get_tree().create_timer(0.6).timeout
 	stand(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
 	await shoot("pod")
 	press(&"interact")

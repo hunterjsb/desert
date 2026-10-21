@@ -151,7 +151,7 @@ static func _box(body: StaticBody3D, size: Vector3, pose: Transform3D) -> void:
 
 
 func computer_screen_pose() -> Transform3D:
-	return Transform3D(ShipLooks.COMPUTER_TILT, ShipLooks.COMPUTER_AT) * Transform3D(Basis.IDENTITY, Vector3(0, 0, 0.084))
+	return Transform3D(ShipLooks.COMPUTER_TILT, ShipLooks.COMPUTER_AT) * Transform3D(Basis.IDENTITY, Vector3(0, 0, 0.089))
 
 
 func computer_screen_size() -> Vector2:

@@ -221,6 +221,7 @@ func launch() -> bool:
 	sealed.progress = 0.0
 	sealed.phase_seconds = world.tuning.surveyor_arrival.ejection_s
 	sealed.materialized = false
+	sealed.preflight.flight_view = 2
 	_move_transport(selected.landing_world)
 	Deeds.done(world, &"pod_launch")
 	dispose()
