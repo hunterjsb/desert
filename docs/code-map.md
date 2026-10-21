@@ -5,6 +5,7 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 
 | System | Entry points | Checks |
 | --- | --- | --- |
+| Large-moon presentation | `game/world/surface_projection.gd` and `.gdshaderinc` share the visual radius, tangent falloff/inverse and normals; navigation remains `MoonPosition`, solar time remains `DayCycle` | `probes/world/15_travelling_changes_the_solar_day.gd`; distant-ground and sky integration in progress |
 | Boot and runs | `game/main.gd`, `game/run.tscn`, `game/world/world.tscn`; `game/survival/runs.gd` starts runs from `kit.gd` and the kit resources | `probes/foundation`, `probes/saves` |
 | Tuning and controls | `game/core/tuning.gd`, `game/tuning.tres`; `game/core/controls.gd` owns bindings and action text | `probes/dev`, `probes/menus` |
 | World coordinates | `game/world/world.gd`: `height_at`, `teleport`, `world_x`/`world_z`, `engine_x`/`engine_z`; the engine origin moves while world coordinates stay fixed | `probes/world` |
