@@ -49,6 +49,10 @@ fi
 # Ordinary runners still execute real-frame probes.
 PROBE_NOISY='' scripts/probe.sh "$scratch/realtime.gd" >"$scratch/out"
 grep -q '^realtime.gd$' "$scratch/ran"
+# Universal exclusivity also protects ordinary runners.
+printf '## Exclusive\n' >"$scratch/exclusive.gd"
+PROBE_NOISY='' scripts/probe.sh "$scratch/ordinary.gd" "$scratch/exclusive.gd" >"$scratch/out"
+grep -q '^2 probes, 0 not passing$' "$scratch/out"
 # An exclusive failure must fail the run, even after its permitted retry.
 printf '## Exclusive on noisy runners\n' >"$scratch/broken.gd"
 if PROBE_NOISY=1 scripts/probe.sh "$scratch/ordinary.gd" "$scratch/broken.gd" >"$scratch/out"; then

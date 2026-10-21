@@ -1,5 +1,5 @@
 extends WorldProbe
-## Exclusive on noisy runners
+## Exclusive
 ## World & terrain probe 3: 20 km, half straight and half wandering, dropping boxes
 ## every kilometre. Nothing ends up below the ground, chunks stay bounded, and
 ## memory stays flat as the boxes are left behind and forgotten. Memory is

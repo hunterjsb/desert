@@ -17,10 +17,12 @@ on the world walk, 601 + 339 s on warnings, and 301 + 243 s on salvage retention
 
 - Accelerate the ruin-opening traversal using MovementProbe's existing clock:
   retain 60 physics steps per simulated second, every tour and every per-tick check.
-- Add `## Exclusive on noisy runners` for measured contention-sensitive probes.
+- Add `## Exclusive` for checks that need the worker pool to themselves on every
+  platform, and `## Exclusive on noisy runners` for measured contention-sensitive probes.
   Under `PROBE_NOISY`, run these sequentially without first attempting them in the
   parallel pool. Unlike `## Runs alone`, they must still run on native platforms.
-  Linux keeps its existing parallel schedule and real-frame checks.
+  Real-frame checks retain their existing semantics. World 3 needs exclusivity on
+  Linux too: it timed out at 300 s when grouped with radio in run 39632652358.
 - Preserve scheduling durations separately from the immutable imported-asset
   cache. Save a fresh per-platform, per-group timing cache after each CI run so
   long probes actually start first on subsequent runs. Retry durations should
@@ -40,7 +42,10 @@ No timeout increases, shorter walks or removed assertions are part of this pass.
 
 The ruin-opening traversal uses `set_rate(60, 6)`: all tours and per-tick
 assertions remain, while the focused local run fell from 345 s to 88 s (74% less).
-Native exclusivity is attached to world 3, salvage 7 and movement 5. The runner
+World 3 runs exclusively everywhere; salvage 7 and movement 5 do so on native
+runners. Radio 39 waits up to two real seconds for its speech diagnostic consumer
+to observe the expected transmission, instead of assuming the first process-frame signal
+already includes the consumer's update. Both god words and the actual beacon bearing remain checked. The runner
 still retries failures and records the retry duration. Scheduling checks exercise
 exclusivity, retained native coverage, real-frame exclusion and failure propagation.
 

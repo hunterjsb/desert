@@ -21,15 +21,26 @@ func run() -> void:
 			best = id
 	check(best != &"", "a god's real signal reaches the fixture")
 	radio.frequency = gods.carrier(best, world.time)
-	await physics_frames(5)
-	await get_tree().process_frame
-	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
-	check(" ".join(radio.spoken) != "" and " ".join(radio.spoken) == Radio.spoken_words(radio.reception.words)
-		and broadcast.reading == " ".join(radio.spoken), "the god's transmitted words reach speech")
+	check(await _heard(radio, func() -> String: return Radio.spoken_words(radio.reception.get("words", ""))),
+		"the god's transmitted words reach speech")
 	radio.frequency = Dial.BEACON_KHZ
 	await physics_frames(2)
 	radio.target = {"x": x + 100.0, "z": z, "coord": Vector2i.ZERO, "index": 0}
-	await physics_frames(5)
-	await get_tree().process_frame
-	check(" ".join(radio.spoken).contains(radio.say_point(radio.beacon_bearing())) and broadcast.reading == " ".join(radio.spoken),
+	check(await _heard(radio, func() -> String: return radio.say_point(radio.beacon_bearing()), true),
 		"the beacon's actual bearing reaches speech too")
+
+
+## Physics updates the receiver; its diagnostic consumer runs on process frames.
+func _heard(radio: Radio, expected: Callable, contains := false) -> bool:
+	await physics_frames(2)
+	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
+	var until := Time.get_ticks_msec() + 2000
+	while Time.get_ticks_msec() < until:
+		await get_tree().process_frame
+		var words := " ".join(radio.spoken)
+		var wanted: String = expected.call()
+		if words != "" and wanted != "" and broadcast.reading == words \
+				and (words.contains(wanted) if contains else words == wanted):
+			return true
+	printerr("speech handoff: wanted '%s', spoken '%s', heard '%s'" % [expected.call(), " ".join(radio.spoken), broadcast.reading])
+	return false

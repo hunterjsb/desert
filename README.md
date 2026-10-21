@@ -38,6 +38,7 @@ keep the remaining families within the job budget. New folders still join “the
 Linux balances radio with foundation/world checks and menus with devices, leaving
 the catch-all group for unlisted folders.
 Probe durations have their own per-platform/group cache so long checks start first.
+`## Exclusive` runs a check alone on every platform.
 `## Exclusive on noisy runners` keeps measured contention-sensitive checks out of the
 native parallel pool; those checks still run, unlike real-frame timing checks.
 `scripts/probe-runner-test.sh` checks scheduling without starting Godot.
