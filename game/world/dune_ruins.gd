@@ -65,6 +65,8 @@ var builds := 0
 var slowest_turn_ms := 0.0
 var slowest_step_ms := 0.0
 var slowest_ms := 0.0
+## Explicit support can keep excavated seeds when the player leaves.
+var retained := func(_seed: Seed) -> bool: return false
 
 var _ctx: StructureKit.Context
 var _tuning: Tuning
@@ -362,7 +364,7 @@ func _forget(here: Vector2) -> void:
 	var lift := _tuning.history_lift_m
 	for key: Vector2i in _cells.keys():
 		var seed: Seed = _cells[key]
-		if middle(seed).distance_to(here) > lift + _tuning.dune_spacing:
+		if middle(seed).distance_to(here) > lift + _tuning.dune_spacing and not retained.call(seed):
 			_cells.erase(key)
 
 

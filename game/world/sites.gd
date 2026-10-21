@@ -95,6 +95,14 @@ class Unit:
 	var todo: Array[Array] = []
 
 
+## A bounded second area, laid from its own geographic map.
+class Support:
+	var rect: Rect2
+	var anchor: Anchor
+	var keys := {}
+	var pending := {}
+
+
 var history: History
 ## The ruins seeded under big dunes, each a seed until it's built (DuneRuins).
 var dunes: DuneRuins
@@ -129,6 +137,11 @@ var _queued := {}
 var _making: Unit
 ## Units made and handed to a worker to survey their structures: [unit, task].
 var _surveying: Array[Array] = []
+var _retained := {}
+var _support_queue: Array[Array] = []
+var _support_making: Unit
+var _support_owner: Support
+var _support_turn := false
 var _sites := {}
 var _pieces := {}
 ## The next key for a unit laid by hand, below every landmark's; a dune's
@@ -157,6 +170,11 @@ func _init(world_history: History, shape: TerrainShape, tuning: Tuning) -> void:
 	_ctx.tuning = tuning
 	_ctx.field = WeatherField.new(history.run_seed, tuning)
 	dunes = DuneRuins.new(history.run_seed, _ctx, tuning)
+	var owner: WeakRef = weakref(self)
+	dunes.retained = func(seed: DuneRuins.Seed) -> bool:
+		var sites: Sites = owner.get_ref()
+		return sites != null and seed.site != null and sites._retained_at(
+			Rect2(seed.site.x - seed.site.reach, seed.site.z - seed.site.reach, seed.site.reach * 2, seed.site.reach * 2))
 
 
 ## Where structures read the time from: the world's clock, world seconds.
@@ -353,7 +371,11 @@ func hold(coord: Vector2i) -> Array[Structure]:
 
 ## A chunk's ground is gone: what only it held is the weather's alone again.
 ## The desert ate it: come back and it's as the weather has it then.
-func release(coord: Vector2i) -> void:
+func release(where: Variant) -> void:
+	if where is StringName or where is String:
+		_retained.erase(StringName(where))
+		return
+	var coord: Vector2i = where
 	if not _built:
 		return
 	for site in query(_square(coord)):
@@ -423,14 +445,125 @@ func units() -> Array[Unit]:
 ## Whether everything that could touch a rectangle of world metres is laid,
 ## so ground there can be built.
 func ready(rect: Rect2) -> bool:
+	var covered := true
 	for corner in [rect.position, rect.end, Vector2(rect.position.x, rect.end.y), Vector2(rect.end.x, rect.position.y)]:
 		if corner.distance_to(_ready_at) > _ready_m:
-			return false
+			covered = false
+	if not covered:
+		for support: Support in _retained.values():
+			if support.rect.encloses(rect) and support.keys.keys().all(
+					func(key: int) -> bool: return _support_has(key, support)):
+				covered = true
+				break
+	if not covered:
+		return false
 	# Nor while what could touch it is still being surveyed.
 	for each in _surveying:
-		if each[0].ground.intersects(rect):
+		if each[0].ground.intersects(rect, true):
 			return false
 	return true
+
+
+## Retains just the requested ground, without changing the player's sheet anchor.
+func retain(id: StringName, rect: Rect2, from: Anchor) -> void:
+	if from == null or not rect.has_area():
+		release(id)
+		return
+	var lo := (rect.position / _size).floor() * _size
+	var hi := (rect.end / _size).ceil() * _size
+	var aligned := Rect2(lo, hi - lo)
+	var support: Support = _retained.get(id)
+	if support != null and support.rect == aligned and _same(support.anchor, from):
+		return
+	if support == null:
+		support = Support.new()
+		_retained[id] = support
+	support.rect = aligned
+	support.anchor = from
+	support.keys.clear()
+	var center := aligned.get_center()
+	var point := from.point_at(center.x, center.y)
+	var reach := aligned.size.length() * 0.5 + SiteKinds.most_reach() + PathNetwork.CORRIDOR + _size
+	for key in history.cells.within(point, reach):
+		if _cell_ground(key, from).intersects(aligned, true):
+			support.keys[key] = true
+	for i in history.landmarks.size():
+		var mark: Dictionary = history.landmarks[i]
+		var at := from.place(mark.p)
+		if Rect2(at - Vector2.ONE * mark.radius, Vector2.ONE * mark.radius * 2).intersects(aligned, true):
+			support.keys[-1 - i] = true
+	_schedule_support()
+
+
+func _retained_at(rect: Rect2) -> bool:
+	return _retained.values().any(func(support: Support) -> bool: return support.rect.intersects(rect, true))
+
+
+func _support_has(key: int, support: Support) -> bool:
+	var unit: Unit = _units.get(key)
+	if unit != null and unit.ground.intersects(support.rect, true) and _same_sheet(unit.anchor, support.anchor):
+		return true
+	return _orphans.any(func(old: Unit) -> bool: return old.key == key \
+		and old.ground.intersects(support.rect, true) and _same_sheet(old.anchor, support.anchor))
+
+
+func _schedule_support() -> void:
+	for support: Support in _retained.values():
+		for key: int in support.keys:
+			if _support_has(key, support) or support.pending.has(key):
+				continue
+			var waiting: Variant = _queued.get(key)
+			if waiting is Array and _same_sheet(waiting[1], support.anchor):
+				continue
+			if _surveying.any(func(each: Array) -> bool: return each[0].key == key \
+				and _same_sheet(each[0].anchor, support.anchor)):
+				continue
+			support.pending[key] = true
+			_support_queue.append([support, key])
+
+
+func _support_active(support: Support) -> bool:
+	return _retained.values().has(support)
+
+
+func _lay_support() -> void:
+	var entry: Array = _support_queue[0]
+	var support: Support = entry[0]
+	var key: int = entry[1]
+	if not _support_active(support) or not support.keys.has(key) or _support_has(key, support):
+		support.pending.erase(key)
+		_support_queue.pop_front()
+		_support_making = null
+		_support_owner = null
+		return
+	if _support_making == null or _support_making.key != key or _support_owner != support:
+		_support_making = _begun(key, support.anchor)
+		_support_owner = support
+	if not _support_making.todo.is_empty():
+		_make(_support_making, _support_making.todo.pop_front())
+		if not _support_making.todo.is_empty():
+			return
+	var unit := _support_making
+	_support_making = null
+	_support_owner = null
+	_support_queue.pop_front()
+	if not unit.sites.any(func(site: Site) -> bool: return site is Structure):
+		_support_put(unit, support)
+		return
+	_surveying.append([unit, WorkerThreadPool.add_task(_survey.bind(unit.sites), true), support])
+
+
+func _support_put(unit: Unit, support: Support) -> void:
+	support.pending.erase(unit.key)
+	if not _support_active(support) or not support.keys.has(unit.key) or _support_has(unit.key, support):
+		return
+	if not unit.ground.intersects(support.rect, true) or not _same_sheet(unit.anchor, support.anchor):
+		return
+	# The old loaded sheet owns its ground until it retires.
+	for old in units():
+		if old.ground.intersects(unit.ground, true) and not _same_sheet(old.anchor, unit.anchor):
+			return
+	_index(unit, true)
 
 
 # --- The sheet. ---
@@ -451,10 +584,10 @@ func follow(x: float, z: float, latitude: float, longitude: float, facing: float
 	shape.landforms.follow(anchor, jumped, loaded)
 	shape._held.clear()
 	for unit: Unit in _units.values():
-		if _off(unit, x, z):
+		if _off(unit, x, z) and not _retained_at(unit.ground):
 			_take_up(unit)
 	for unit in _orphans.duplicate():
-		if _off(unit, x, z) or not loaded.call(unit.ground):
+		if not _retained_at(unit.ground) and (_off(unit, x, z) or not loaded.call(unit.ground)):
 			_take_up(unit)
 	var cells := history.cells
 	for cell in cells.within(anchor.p, _lay):
@@ -473,23 +606,31 @@ func follow(x: float, z: float, latitude: float, longitude: float, facing: float
 			_surveyed(each)
 	_ready_at = Vector2(x, z)
 	_ready_m = due
+	_schedule_support()
 
 
 ## Lays waiting units until the frame's streaming deadline, Time ticks (usec).
 func step(deadline: int) -> void:
 	var started := Time.get_ticks_usec()
+	_schedule_support()
 	for each in _surveying.duplicate():
 		if WorkerThreadPool.is_task_completed(each[1]):
 			_surveyed(each)
-	while not _queue.is_empty() and Time.get_ticks_usec() < deadline:
-		_lay_next()
+	while (not _queue.is_empty() or not _support_queue.is_empty()) and Time.get_ticks_usec() < deadline:
+		if not _support_queue.is_empty() and (_queue.is_empty() or _support_turn):
+			_lay_support()
+		else:
+			_lay_next()
+		_support_turn = not _support_turn
 	slowest_ms = maxf(slowest_ms, (Time.get_ticks_usec() - started) / 1000.0)
 
 
 ## Waits for every survey a worker has in hand: before the shape goes.
 func finish() -> void:
-	for each in _surveying:
+	for each in _surveying.duplicate():
 		WorkerThreadPool.wait_for_task_completion(each[1])
+		if each.size() > 2:
+			_surveyed(each)
 	_surveying.clear()
 	dunes.finish()
 
@@ -602,7 +743,7 @@ func anchored() -> bool:
 
 ## Nothing waiting to be laid.
 func is_idle() -> bool:
-	return _queue.is_empty() and _surveying.is_empty()
+	return _queue.is_empty() and _support_queue.is_empty() and _surveying.is_empty()
 
 
 ## What a save keeps of the sand held off sites over you or your camp:
@@ -643,8 +784,8 @@ func resumed() -> void:
 ## What a save keeps: each laid unit's key and the anchor it was laid from.
 func memories() -> Array:
 	var out := []
-	for unit: Unit in _units.values():
-		if unit.key <= BY_HAND:
+	for unit in units():
+		if unit.key <= BY_HAND or (_orphans.has(unit) and not _retained_at(unit.ground)):
 			continue
 		var a := unit.anchor
 		out.append([unit.key, a.x, a.z, Sphere.latitude(a.p), Sphere.longitude(a.p), a.facing])
@@ -676,6 +817,12 @@ func recall(memories: Array) -> void:
 	_making = null
 	_anchor = null
 	_ready_m = -1.0
+	_support_queue.clear()
+	_support_making = null
+	_support_owner = null
+	for support: Support in _retained.values():
+		support.pending.clear()
+	_schedule_support()
 
 
 func _lift_rebuilding(unit: Unit) -> void:
@@ -734,8 +881,11 @@ func _surveyed(each: Array) -> void:
 	WorkerThreadPool.wait_for_task_completion(each[1])
 	_surveying.erase(each)
 	var unit: Unit = each[0]
-	_queued.erase(unit.key)
-	_put(unit)
+	if each.size() > 2:
+		_support_put(unit, each[2])
+	else:
+		_queued.erase(unit.key)
+		_put(unit)
 
 
 ## Surveys structures where they're laid: pure in the seed and the dunes, so
@@ -783,10 +933,7 @@ func _begun(key: int, anchor: Anchor) -> Unit:
 				"source": &"landmark", "region": &"han"}, anchor))
 		return unit
 	var cells := history.cells
-	var ground := Rect2(anchor.place(cells.center(key)), Vector2.ZERO)
-	for corner in cells.corners(key):
-		ground = ground.expand(anchor.place(corner))
-	unit.ground = ground.grow(SiteKinds.most_reach() + PathNetwork.CORRIDOR)
+	unit.ground = _cell_ground(key, anchor)
 	unit.todo = history.cell_parts(key)
 	unit.todo.append([&"pieces"])
 	return unit
@@ -803,12 +950,18 @@ func _make(unit: Unit, part: Array) -> void:
 
 
 func _put(unit: Unit, anyway := false) -> void:
-	var key := unit.key
 	# Over ground an earlier sheet left, it waits until that ground has gone.
 	if not anyway and not _orphans.is_empty() and (loaded.call(unit.ground)
 			or _orphans.any(func(o: Unit) -> bool: return o.ground.intersects(unit.ground))):
 		return
-	_units[key] = unit
+	_index(unit)
+
+
+func _index(unit: Unit, orphan := false) -> void:
+	if orphan:
+		_orphans.append(unit)
+	else:
+		_units[unit.key] = unit
 	laid += 1
 	for site in unit.sites:
 		if not _dug.is_empty() and site is Structure and _dug.has(site.id):
@@ -936,7 +1089,7 @@ func _take_up(unit: Unit) -> void:
 func _new_sheet() -> void:
 	finish()
 	for unit: Unit in _units.values():
-		if loaded.call(unit.ground):
+		if loaded.call(unit.ground) or _retained_at(unit.ground):
 			_orphans.append(unit)
 		else:
 			_take_up(unit)
@@ -950,9 +1103,21 @@ func _new_sheet() -> void:
 ## The moon point is where the ground walked from the last anchor should put it,
 ## within dead reckoning's own drift from a straight map.
 func _jumped(anchor: Anchor) -> bool:
-	var moved := Vector2(anchor.x - _anchor.x, anchor.z - _anchor.z)
-	var expected := _anchor.point_at(anchor.x, anchor.z)
-	return Sphere.angle(expected, anchor.p) * history.radius > 50.0 + 0.05 * moved.length()
+	return not _same_sheet(_anchor, anchor)
+
+
+func _same_sheet(a: Anchor, b: Anchor) -> bool:
+	if a == null or b == null:
+		return false
+	var moved := Vector2(b.x - a.x, b.z - a.z)
+	return Sphere.angle(a.point_at(b.x, b.z), b.p) * history.radius <= 50.0 + 0.05 * moved.length()
+
+
+func _cell_ground(key: int, from: Anchor) -> Rect2:
+	var ground := Rect2(from.place(history.cells.center(key)), Vector2.ZERO)
+	for corner in history.cells.corners(key):
+		ground = ground.expand(from.place(corner))
+	return ground.grow(SiteKinds.most_reach() + PathNetwork.CORRIDOR)
 
 
 func _off(unit: Unit, x: float, z: float) -> bool:
