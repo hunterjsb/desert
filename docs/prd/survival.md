@@ -1128,4 +1128,13 @@ Menu entry cancels continuation; completed physical membership survives. The
 selected member is restored only for a group still in hand or at the waist;
 anchored and loose groups do not retain a remote reel target. Saves from before
 gathering retain ordinary single-line behavior with no added sockets or choice.
-Verification is pending for held, anchored and loose groups and old single lines.
+Focused save 46 passes (19 s) through real disk saves and fresh-world restores:
+empty hands keep the chosen waist line; a legacy record without a choice remains
+unselected; a two-end knot survives with a third transfer cancelled, while taking
+that save leaves the live timer unchanged. Three independent original Lines then
+retain exact paid/full lengths, endpoint ownership and a real fitted-hook route
+through held, anchored and loose states. The held group works the saved member
+rope; anchored and loose groups clear remote choice. Loose mass sums all three
+ends and the anchor retains its exact pre-save mass with each end counted once.
+This focused fixture uses the normal fitting and save systems; ordinary gesture
+and pickup acceptance is covered by the rope interaction checks.
