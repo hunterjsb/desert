@@ -1130,6 +1130,8 @@ func _no_fit() -> String:
 static func _outermost(socket: Socket) -> Socket:
 	if socket == null or socket.part == null:
 		return socket
+	if socket.part is RopeTip and RopeBundle.members(socket.part).size() > 1:
+		return socket
 	for node in socket.fitted:
 		var added := node as Socket
 		if added != null and added.part != null:
@@ -1503,7 +1505,8 @@ func punch() -> bool:
 ## way, or off the face it was stuck on, then the part comes to your hand.
 func _take_out(device: Device, from: Socket) -> void:
 	_begin_slide(device, from.transform, from.outward())
-	var part := device.take(from)
+	var grouped := from.part is RopeTip and RopeBundle.members(from.part).size() > 1
+	var part := device.pop(from) if grouped else device.take(from)
 	_grip(part)
 	_slide = part.depth()
 	_slide_from = from.part.depth() if from.part != null else 0.0
