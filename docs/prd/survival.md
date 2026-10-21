@@ -1039,7 +1039,7 @@ provisional equipment balance live in tuning. Acceptance includes new Surveyor,
 other-origin/scenario compatibility, mid-flight/landed/recovered save round trips,
 normal recovery and assembly, real GPU captures and combined CI before landing.
 
-#### Implemented development slice (2026-10-20; not landed)
+#### Integrated development slice (landed 2026-10-21; native checks pending)
 
 Main/Runs now select the opening for new normal Surveyors before suit setup.
 The default controlled sequence lasts 16.2 seconds, plus any required terrain
@@ -1055,7 +1055,8 @@ A real GPU run captured all six phases with 24 physical roles and no ground
 rescues for seed 1234. Existing World sounds provide transition cues; dummy
 audio verifies routing and lifetime, not listening balance. Orbital relief is
 illustrative, not exact local dune geometry. Equipment balance, broader opening
-viability, unassisted recovery and combined CI remain acceptance work.
+viability and unassisted recovery remain acceptance work. Combined Linux verification
+passed at `49af744f`; native platform/build checks are running.
 
 ## Ground rest (selected 2026-10-20; implemented development)
 

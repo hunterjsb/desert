@@ -1,7 +1,8 @@
 ## 0.3.0-alpha “Sanddune” — development, unreleased
 
-This preparatory candidate combines Home, Surveyor arrival, ground rest and rope-coil improvements.
-It has not been published; combined CI and playtest acceptance remain pending.
+Master combines Home, Surveyor arrival, ground rest and rope-coil improvements.
+This release is unpublished. Combined Linux verification passed; native platform
+checks for Home/arrival and playtest acceptance remain pending.
 
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
   collect seeded surviving physical equipment. Other origins, developer scenarios
