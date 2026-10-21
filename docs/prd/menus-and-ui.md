@@ -690,3 +690,10 @@ Distinguish a live powered-beacon reception from its last-known fix. With no cam
 explain that a fitted Home beacon marks one. The same view may offer explicit
 unmarking, but only after the old camp can safely use ordinary nearby support.
 Do not change radio marks, selected waist lines or baseline suit equipment.
+
+**Implementation evidence (2026-10-20; integration verification pending):** Home
+opens from the carry view and uses the existing theme. It reports distance, compass
+bearing, relative turn, reception and support separately; failed unmarking explains
+why. Menus 49, one-theme and mouse-inventory checks pass. An actual powered marked
+camp was captured 1 km west, with a live signal and ready collision/history.
+This is a requested known-point view; no permanent overlay or terrain map was added.

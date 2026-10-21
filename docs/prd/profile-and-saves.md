@@ -775,3 +775,14 @@ in eleven families. It is recorded where a worked hand winch winds an actual
 halyard to the configured raised fraction; setting cloth height or loading a
 save alone does not award it. Mast hoist/legacy state joins ordinary rig state;
 the existing line/end/guide references preserve its physical halyard route.
+
+### Home identity and return (2026-10-20; integration verification pending)
+
+Home Again adds one deed, bringing the roster to 56 in eleven families. CampHome
+records it on returning within 30 m after a departure of at least 700 m, while
+support is ready. The saved Home contains stable assembly/member references,
+its geographic anchor, local poses and last received fix. Snapshot prepares the
+remote footprint before the ground wait and reconnects references after ordinary
+attachments and lines. Old saves without Home keep their previous behavior.
+The focused camp integration check passes a 2.1 km departure, far save/restore and
+safe unmark after return; broader combined verification remains pending.

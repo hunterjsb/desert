@@ -441,3 +441,10 @@ one camp-family deed at arrival; tune departure and arrival distances centrally.
 This feature is complete only when marking, admission, remote simulation, return
 navigation and far restore work together. A marker alone does not make scouting
 safe. The current travelling camp and baseline suit protection remain usable.
+
+**Initial implementation evidence (2026-10-20):** The physical beacon, requested
+return view, explicit claimed membership, second support region and far-save
+references are connected. A 2.1 km round trip/restore and remote battery draw pass.
+The beacon model is one cached surface (1,164 triangles), inspected in real GPU
+captures. These checks cover a small camp; combined CI, larger camp budgets and
+unassisted expedition play remain acceptance gates.

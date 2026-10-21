@@ -891,3 +891,23 @@ A footprint revision replans terrain even if the player's centre does not change
 Request saved Home support before `Saves._ready_at` waits. Body retention alone is
 not readiness. Audit positional sunlight/temperature and camp warnings alongside
 world-time equivalence, without adding a separate remote simulation clock.
+
+### First Home implementation evidence (2026-10-20; combined verification pending)
+
+The terrain policy copies the player radii and a separate camp footprint. Player
+collision builds first; ready camp collision precedes distant player decoration.
+Overlap builds once. An unready survey rotates behind ready work under the existing
+stream deadline. Moving support retains old and replacement collision together
+until ready, within the 49-cell keep budget. If physical movement exceeds that
+transition budget, preserve the admitted identity and previous support, report
+unsupported ground and use the ordinary missing-collision safety behavior; this
+is not a promise of unlimited moving support or an invisible physical constraint.
+
+Camp 5 passed a 2.1 km departure across an origin/history change, actual remote
+collision, unfrozen chassis, continued battery consumption, distant save/resume,
+and return/unmark (13 s on the shared desktop). The real GPU capture 1 km away
+reported 331 loaded chunks, 50 collision chunks, two active camp bodies/three work
+items and a 1.23 ms maximum measured terrain callback. This small fixture does not
+validate the 512-item/128 m worst case or establish a general frame-time guarantee.
+Weather 26 holds camp light and temperature fixed through a 2 km player trip and
+origin shift; player and legacy forecast queries retain local geographic behavior.
