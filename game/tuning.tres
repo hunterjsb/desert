@@ -285,5 +285,8 @@ surveyor_arrival = {
 "landing_clearance_m": 0.04,
 "spill_columns": 5,
 "spill_attempts": 80,
-"exit_offset_m": 3.2
+"exit_offset_m": 3.2,
+"ejection_db": -8.0,
+"entry_db": -18.0,
+"landing_db": -10.0
 }

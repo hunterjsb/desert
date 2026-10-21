@@ -30,7 +30,9 @@ func start() -> void:
 	restore()
 
 func restore() -> void:
+	restoring = false
 	if world.arrival_state.is_empty():
+		cancel()
 		return
 	if active():
 		_hold()
@@ -60,7 +62,7 @@ func cancel() -> void:
 	set_physics_process(false)
 
 func _physics_process(delta: float) -> void:
-	if world == null or world.arrival_state.is_empty() or world.get_meta(&"arrival_restoring", false):
+	if restoring or world == null or world.arrival_state.is_empty() or world.get_meta(&"arrival_restoring", false):
 		return
 	if not active():
 		return
@@ -102,7 +104,10 @@ func _land() -> bool:
 		var materializer: Script = load("res://game/arrival/surveyor_recovery.gd")
 		if materializer == null:
 			return false
+		var counting := world.counts_deeds
+		world.counts_deeds = false
 		world.arrival_nodes = materializer.call(&"materialize", world, state)
+		world.counts_deeds = counting
 		if not state.get("materialized", false):
 			return false
 	var exit: Vector2 = state.exit_world
