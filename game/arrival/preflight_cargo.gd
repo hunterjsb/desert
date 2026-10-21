@@ -3,6 +3,7 @@ extends RefCounted
 ## Physical ship stores share ordinary catalog bodies and saved arrival identities.
 
 const GEOMETRY_EPS := 0.00001
+const CLOSURES := [&"roof_a", &"roof_b", &"hatch"]
 const REQUIRED := [&"water", &"food", &"shield", &"camp_cell"]
 
 
@@ -93,7 +94,9 @@ static func loaded(world: World, ship: SurveyorShip) -> Array[StringName]:
 
 
 static func readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
-	var missing := PackedStringArray()
+	var missing := _structure_readiness(world, ship)
+	if not missing.is_empty():
+		return missing
 	var aboard := loaded(world, ship)
 	var named := SurveyorRecovery.named(world)
 	for uid: StringName in REQUIRED:
@@ -104,6 +107,48 @@ static func readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
 		elif named[uid] is Battery and named[uid].charge_wh <= 0.0:
 			missing.append("Charge the camp cell")
 	return missing
+
+
+## Automatic closing may move retained lids, never reconstruct dismantled supports.
+static func _structure_readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
+	if ship.pod == null or not is_instance_valid(ship.pod.deck):
+		return PackedStringArray(["Repair the pod floor"])
+	var root := ship.pod.deck
+	if not root.is_inside_tree() or root.deck != null or _carried(world, root):
+		return PackedStringArray(["Set down the pod"])
+	for role: StringName in [&"floor_a", &"floor_b", &"frame_a", &"frame_b"]:
+		if not is_instance_valid(ship.pod_parts.get(role)):
+			return PackedStringArray(["Repair the pod support"])
+	var a := ship.pod_parts[&"floor_a"] as Chassis
+	var b := ship.pod_parts[&"floor_b"] as Chassis
+	if not (a == root or a.deck == root and root.joined.has(a)) \
+		or not (b == root or b.deck == root and root.joined.has(b)) \
+		or not (a.pose().affine_inverse() * b.pose()).is_equal_approx(Transform3D(Basis.IDENTITY, Vector3.RIGHT * Chassis.WIDTH)):
+		return PackedStringArray(["Repair the pod floor"])
+	for index in 2:
+		var frame := ship.pod_parts[&"frame_a" if index == 0 else &"frame_b"] as Frame
+		var floor := a if index == 0 else b
+		if frame == null or not is_instance_valid(frame.socket) or frame.socket.get_parent() != root \
+			or root.own_piece(frame.socket) != floor \
+			or not frame.socket.transform.is_equal_approx(Stick.pose_on(root, floor, Chassis.TOP, Vector2.ZERO, 0.0, frame)):
+			return PackedStringArray(["Repair the pod frame"])
+	for role: StringName in PodShell.PANELS:
+		if not is_instance_valid(ship.pod_parts.get(role)):
+			return PackedStringArray(["Replace the pod " + str(role).replace("_", " ")])
+		var panel := ship.pod_parts[role] as Chassis
+		var spec: Array = PodShell.PANELS[role]
+		var frame := ship.pod_parts[&"frame_a" if spec[0].x == 0 else &"frame_b"] as Frame
+		var face := frame.faces().get(spec[1]) as Socket
+		if panel == null or not is_instance_valid(face) or face.get_parent() != root:
+			return PackedStringArray(["Repair the pod shell"])
+		if panel.deck == root and root.joined.has(panel) and panel.joined_at == face:
+			continue
+		if not role in CLOSURES:
+			return PackedStringArray(["Repair the pod shell"])
+		if panel.deck != null or panel.host() != null or not panel.joined.is_empty() \
+			or panel.get_parent() != world.content or _carried(world, panel) or not face.is_open():
+			return PackedStringArray(["Free the pod " + str(role).replace("_", " ")])
+	return PackedStringArray()
 
 
 ## Refusal is read-only. The controller commits its phase only after this succeeds.

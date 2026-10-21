@@ -202,3 +202,19 @@ and permit normal repair with the same actual parts. This guard adds no binding,
 part grant, new assembly system or silent reconstruction of dismantled supports.
 A focused check must remove a real support/closure piece, prove refusal without
 mutation, repair it through existing attachment operations and allow launch.
+
+Structural readiness is now implemented in the private preflight candidate. It
+checks the same two original floors in one deck at their authored relative pose,
+the original frames centred on their named floor tops, and every fixed panel on
+its proper original frame face. Roof/hatch parts may already be correctly joined
+or remain loose under ordinary world content; a carried part, another craft, an
+incorrect attachment face, or an occupied closing face refuses before resealing.
+No additional distance restriction is placed on intentionally parked loose lids.
+
+Arrival26 passes (7 s): actual side/frame/floor removal, hand/suit/waist custody,
+other-craft attachment, a roof on the wrong pod face and an occupied closing face
+all refuse without changing arrival state, body poses or content count. Ordinary
+refitting/rejoining and suit retrieval of the same original parts make readiness
+valid again; the repaired shell seals normally. Existing focused20/22/24/25 pass
+(8/14/9/6 s), including actual restored preflight saves and impact carrier loss.
+This guard changes no generic Chassis, Snapshot, controller or input behavior.
