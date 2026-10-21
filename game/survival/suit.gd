@@ -40,6 +40,8 @@ var _player: Player
 var _layer: CanvasLayer
 var _view: Control
 var _waist_lines: WaistLines
+var _home_button := Button.new()
+var _home_view := HomeView.new()
 ## Each stack's picture, made as the view first needs them.
 var _looks: Array[InventoryLook] = []
 
@@ -64,6 +66,15 @@ func _ready() -> void:
 	_waist_lines.waist = _player.get_node("Waist") as Waist
 	_waist_lines.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_view.add_child(_waist_lines)
+	_home_button.text = "Home"
+	_home_button.theme_type_variation = &"MenuWordMain"
+	_home_button.pressed.connect(_home_view.show_home)
+	_view.add_child(_home_button)
+	_home_view.source = _home_service
+	_home_view.heading = _heading
+	_home_view.closed.connect(_home_view.hide)
+	_view.add_child(_home_view)
+	_home_view.hide()
 	restock()
 
 
@@ -247,6 +258,8 @@ func show_view(to: bool) -> void:
 	open = to
 	hover = -1
 	_layer.visible = to
+	if not to:
+		_home_view.hide()
 	Controls.free_mouse(to)
 
 
@@ -254,6 +267,9 @@ func show_view(to: bool) -> void:
 func close() -> bool:
 	if not open:
 		return false
+	if _home_view.visible:
+		_home_view.hide()
+		return true
 	show_view(false)
 	Sounds.play(self, Sounds.BAG_CLOSE)
 	return true
@@ -457,7 +473,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		show_view(not open)
 		Sounds.play(self, Sounds.BAG_OPEN if open else Sounds.BAG_CLOSE)
 		get_viewport().set_input_as_handled()
-	elif open and hover != -1 and event.is_action_pressed("interact"):
+	elif open and not _home_view.visible and hover != -1 and event.is_action_pressed("interact"):
 		# Over a thing, use is the thing's; elsewhere it's the world's.
 		use(hover)
 		get_viewport().set_input_as_handled()
@@ -486,6 +502,12 @@ func _process(_delta: float) -> void:
 		Controls.free_mouse(true)
 	_layer.visible = showing
 	if showing:
+		_home_button.visible = not _home_view.visible
+		_home_button.position = tile_rect(0).position + Vector2(0.0, -78.0)
+		_waist_lines.visible = not _home_view.visible
+		if _home_view.visible:
+			_view.queue_redraw()
+			return
 		var last := tile_rect(stacks().size()).end
 		_waist_lines.controls_at = Vector2(tile_rect(0).position.x, last.y + 12.0)
 		_waist_lines.refresh()
@@ -524,6 +546,8 @@ func look_of(stack: int) -> InventoryLook:
 ## in, marked where it starts to tell; the stacks, each drawn with its name,
 ## its number and how many; your waist; the keys.
 func _draw_view() -> void:
+	if _home_view.visible:
+		return
 	var tuning := Tuning.current()
 	var shown := stacks()
 	var tiles := shown.size() + 1
@@ -626,3 +650,21 @@ static func _brief(things: Array) -> String:
 		return held
 	var tuned: String = radio.stats()["tuned"]
 	return tuned if held == "" else tuned + " · " + held
+
+
+## Optional until the Home service is present in this build.
+func _home_service() -> Object:
+	var world := _player.world
+	if not is_instance_valid(world):
+		return null
+	for property in world.get_property_list():
+		if property.name == &"home":
+			return world.get(&"home")
+	return null
+
+
+## Geographic north, matching the requested Home bearing across a pole.
+func _heading() -> float:
+	var forward := -_player.camera.global_basis.z
+	var bearing := atan2(forward.x, -forward.z)
+	return fposmod(bearing + (0.0 if _player.world.moon.north().z < 0.0 else PI), TAU)
