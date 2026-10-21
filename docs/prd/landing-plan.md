@@ -121,7 +121,7 @@ Persist one regulated carrier survey pass, initialized once from the original
 regional anchor so its initial default pulse reaches the validated fallback.
 The powered carrier holds latitude and nearly matches the moon's rotation, with
 a bounded smooth residual along-track loiter (600 compressed metres each way,
-3 m/s peak speed), so reading or packing cannot permanently exhaust the pass. This is stationkeeping, not an unpowered
+0.3 m/s peak speed), so reading or packing cannot permanently exhaust the pass. This is stationkeeping, not an unpowered
 Kepler orbit. It gives ordinary packing time without reanchoring the ship when
 the pulse is confirmed. Do not move the carrier to an unrelated Tu-facing point
 merely to compose the window; the window shows Tu only when that geometry permits.

@@ -15,7 +15,9 @@ static func build(plan: Dictionary, epoch_s: float, tuning: Tuning) -> Dictionar
 	var nav_radius := tuning.moon_circumference / TAU
 	var cfg := {"radius": radius, "mu": reference_speed * reference_speed * radius,
 		"day_s": tuning.day_minutes * 60.0,
-		"carrier_omega": TAU / (tuning.day_minutes * 60.0) + float(rules.departure_drift_mps) / (nav_radius * maxf(cos(Sphere.latitude(target)), 0.1)),
+		"carrier_omega": TAU / (tuning.day_minutes * 60.0),
+		"loiter_angle": float(rules.departure_loiter_m) / (nav_radius * maxf(cos(Sphere.latitude(target)), 0.1)),
+		"loiter_rate": float(rules.departure_drift_mps) / float(rules.departure_loiter_m),
 		"down": float(rules.departure_down_kick), "retro": float(rules.departure_retro_max),
 		"cross": float(rules.departure_cross_max), "step": float(rules.departure_step_s),
 		"max_s": float(rules.departure_max_s), "stride": int(rules.departure_path_stride),
@@ -34,7 +36,7 @@ static func build(plan: Dictionary, epoch_s: float, tuning: Tuning) -> Dictionar
 			return {}
 		var landed := _body_basis(epoch_s + float(shot.seconds), cfg).inverse() * (shot.point as Vector3)
 		var correction := Sphere.flat_from(landed, target)
-		if correction.length() < 0.00000001:
+		if correction.length() < 0.0000002:
 			return model
 		start = Sphere.from_flat(start, correction)
 	return {}
@@ -48,7 +50,9 @@ static func sample(model: Dictionary, clock_s: float, _tuning: Tuning) -> Dictio
 	var result := {"status": &"no_intercept", "safe": false, "body_basis": body,
 		"ship_position": carrier.point, "path": PackedVector3Array(),
 		"pulse_handle": _handle(model, carrier), "clock": clock_s}
-	var look := ((carrier.radial as Vector3) - (carrier.east as Vector3) * 0.7 + (carrier.north as Vector3) * 0.45).normalized()
+	var initial: Vector3 = model.orbit_start
+	var east := Sphere.east(initial)
+	var look := (initial - east * 0.7 + initial.cross(east) * 0.45).normalized()
 	var camera := look * float(cfg.view)
 	result.camera_transform = Transform3D(Basis.looking_at(-camera, NORTH), camera)
 	var shot := _flight(model, clock_s, true)
@@ -67,7 +71,8 @@ static func sample(model: Dictionary, clock_s: float, _tuning: Tuning) -> Dictio
 	var profile: StringName = &"shallow" if pitch < PI / 6.0 else &"steep" if pitch > PI / 3.0 else &"standard"
 	var inside := at.distance_to(model.anchor.world) <= float(model.corridor_m)
 	result.merge({"status": &"unverified" if inside else &"outside_survey", "inside_survey": inside,
-		"path": shot.path, "landing_point": landed, "landing_world": at,
+		"path": shot.path, "path_times": shot.path_times, "landing_point": landed, "landing_world": at,
+		"landing_forward": ground_velocity.slide(landed).normalized(),
 		"arrival_time": arrival, "flight_s": shot.seconds,
 		"heading": wrapf(-anchor.ground_bearing(bearing) - PI * 0.5, -PI, PI), "profile": profile}, true)
 	return result
@@ -132,9 +137,13 @@ static func _body_basis(clock_s: float, cfg: Dictionary) -> Basis:
 
 static func _carrier(model: Dictionary, clock_s: float) -> Dictionary:
 	var cfg: Dictionary = model.settings
-	var radial: Vector3 = (model.orbit_start as Vector3).rotated(NORTH, float(cfg.carrier_omega) * (clock_s - float(model.epoch)))
+	var elapsed := clock_s - float(model.epoch)
+	var phase := elapsed * float(cfg.loiter_rate)
+	var angle := float(cfg.carrier_omega) * elapsed + float(cfg.loiter_angle) * sin(phase)
+	var omega := float(cfg.carrier_omega) + float(cfg.loiter_angle) * float(cfg.loiter_rate) * cos(phase)
+	var radial: Vector3 = (model.orbit_start as Vector3).rotated(NORTH, angle)
 	var east := Sphere.east(radial)
-	return {"point": radial * float(cfg.radius), "radial": radial, "east": east, "north": radial.cross(east).normalized()}
+	return {"point": radial * float(cfg.radius), "omega": omega, "radial": radial, "east": east, "north": radial.cross(east).normalized()}
 
 static func _handle(model: Dictionary, carrier: Dictionary) -> Vector3:
 	var cfg: Dictionary = model.settings
@@ -147,10 +156,11 @@ static func _flight(model: Dictionary, clock_s: float, keep_path: bool) -> Dicti
 	var carrier := _carrier(model, clock_s)
 	var point: Vector3 = carrier.point
 	var speed := sqrt(float(cfg.mu) / float(cfg.radius))
-	var velocity: Vector3 = NORTH.cross(point) * float(cfg.carrier_omega) + speed * (
+	var velocity: Vector3 = NORTH.cross(point) * float(carrier.omega) + speed * (
 		-(carrier.radial as Vector3) * float(cfg.down) - (carrier.east as Vector3) * float(cfg.retro) * model.pulse.x
 		+ (carrier.north as Vector3) * float(cfg.cross) * model.pulse.y)
 	var path := PackedVector3Array([point])
+	var times := PackedFloat32Array([0.0])
 	var acceleration: Vector3 = -float(cfg.mu) * point / pow(point.length(), 3.0)
 	var elapsed := 0.0
 	var steps := ceili(float(cfg.max_s) / float(cfg.step))
@@ -164,13 +174,15 @@ static func _flight(model: Dictionary, clock_s: float, keep_path: bool) -> Dicti
 			var hit := point.lerp(next, fraction).normalized()
 			if keep_path:
 				path.append(hit)
-			return {"point": hit, "velocity": velocity.lerp(next_velocity, fraction), "seconds": elapsed + dt * fraction, "path": path}
+				times.append(elapsed + dt * fraction)
+			return {"point": hit, "velocity": velocity.lerp(next_velocity, fraction), "seconds": elapsed + dt * fraction, "path": path, "path_times": times}
 		point = next
 		velocity = next_velocity
 		acceleration = next_acceleration
 		elapsed += dt
-		if keep_path and i % int(cfg.stride) == 0:
+		if keep_path and (i + 1) % int(cfg.stride) == 0:
 			path.append(point)
+			times.append(elapsed)
 	return {}
 
 static func _valid(model: Dictionary) -> bool:
@@ -182,7 +194,7 @@ static func _valid(model: Dictionary) -> bool:
 	if not start.is_finite() or not is_equal_approx(start.length_squared(), 1.0) or not pulse.is_finite() \
 			or pulse.x < 0.0 or pulse.x > 1.0 or absf(pulse.y) > 1.0 or not is_finite(float(model.get("epoch", NAN))):
 		return false
-	for key in [&"radius", &"mu", &"day_s", &"carrier_omega", &"down", &"retro", &"cross", &"step", &"max_s", &"stride", &"handle", &"view"]:
+	for key in [&"radius", &"mu", &"day_s", &"carrier_omega", &"loiter_angle", &"loiter_rate", &"down", &"retro", &"cross", &"step", &"max_s", &"stride", &"handle", &"view"]:
 		var value := float(model.settings.get(key, NAN))
 		if not is_finite(value) or value <= 0.0:
 			return false
