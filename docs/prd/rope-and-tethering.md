@@ -926,3 +926,11 @@ suited player, own-camera waist and returned held coil. A first GPU inspection
 caught world-axis scaling of the lead; local longitudinal scaling now passes
 the exact endpoint check and the corrected capture is inspected. Combined CI
 and ordinary-player acceptance remain pending.
+
+
+The waist-wrap integration with the selected swept vault and riding suit passes
+Rope 25/26/31 together with the seven focused movement checks. The real loaded
+14 FPS/60 Hz riding capture follows the same physical end: all 72 measured
+rendered frames have zero belt-lead endpoint error, without changing line
+forces, lengths or the held/loose coil. Captures are inspected; combined CI and
+unassisted play remain required.

@@ -2279,3 +2279,20 @@ mounting/removal and an origin shift; it passes in 5 s. This guard holds its
 fixture above sand to inspect geometry without applying impulses; the live
 108-piece A/B supplies the physical contact/motion evidence. Combined CI and
 native-platform acceptance remain the integration gate.
+
+
+### Body and boarding integration (2026-10-21; verified locally)
+
+The selected vault traversal, rigid-suit gesture and waist-wrap presentation now
+combine with the urgent riding view and existing bounded held-object grips.
+Focused Movement 32/35/39/41/42/43/44 and Rope 25/26/31 pass together (ten checks;
+8–18 s each). Thresholds and ordinary collision/rope/held-item behavior remain
+unchanged. In actual 14 FPS/60 Hz GPU riding with a real waist line towing a
+loose stake, 72 drawn frames reach 7.54 m/s under load: body/board origin error
+is below 0.000001 m and the drawn waist lead matches the rope endpoint exactly.
+Inspected looking-down frames retain boots, belt cord and a clear torso-free
+view. The ordinary unloaded riding check separately retains its existing speed
+and comfort assertions; the loaded capture is not a top-speed measurement.
+Actual 30/60 FPS powered-deck captures retain the free-hand reach and knee
+gather; existing vault checks retain their momentum and clearance assertions.
+Combined CI/native verification and human movement acceptance remain required.
