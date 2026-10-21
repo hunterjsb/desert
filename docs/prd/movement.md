@@ -885,6 +885,36 @@ carving out from camp fired it again, chime and all, and the line dropped and ca
 back; past the edge it said "lost in 0 s" until streaming let the camp's chunk go,
 seconds later on a busy machine.
 
+## Your body (2026-10-21; integration candidate)
+
+You have a body: the Surveyor's suit (`SurveyorLooks`, art direction), posed
+each frame by `Body` from how you move, with no shapes of its own.
+
+- **Walking:** your legs stride with a footfall each half stride, as Feel's
+  steps fall, and lift more at a run. Your arms swing against them.
+- **Crouched or sat:** your hips drop with your eye and your knees bend to
+  keep your boots on the sand. Sat, your hands rest on your knees.
+- **Lying down:** you're stretched out face down behind your eyes, arms
+  forward.
+- **Other states:** in the air your legs gather under you; on a board your
+  feet stand apart along it. Tumbling or flying, it isn't drawn.
+- **Holding something:** your hands go to either side of it, as wide as it
+  is; a small thing goes in your right hand alone. Held things float 0.9 m
+  ahead of your eyes (`hold_distance`), past a suited arm's reach, so your
+  arms reach toward them, straight.
+- **In first person:** your eyes stand 0.24 m in front of your trunk's
+  middle, so looking down you see your boots and not the inside of your
+  chest.
+
+Body probe 39 passes on current master plus this candidate (9 s), alongside
+existing ground-rest/crawl and headroom probes 36/37 (6 s each). Actual unseen
+1280×720 captures cover standing, walking, held radio, crouching, sitting and
+prone, through the player's eyes and from outside. Looking down shows the boots;
+helmet/collar do not obscure the first-person view. Held-radio hands still stop
+short of the item at the existing hold distance. Combined CI and human acceptance
+remain pending. Open: bring held things nearer, about 0.6 m, so your hands close
+on them?
+
 ## Rules
 
 1. **The board floats on the ground's one function.** Its hover height follows

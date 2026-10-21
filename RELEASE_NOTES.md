@@ -19,6 +19,8 @@ acceptance remains.
   Returning from a scouting trip records Home Again.
 - Save and resume distant camps without discarding their excavation or exceeding
   the support budget. Overstretched camps keep their objects and report unsupported ground.
+- See the Surveyor suit in first person: boots, posed legs and arms, with a full
+  external model and shadow. Held-item hand reach remains preliminary.
 - Sit on supported ground or lie down and crawl with physical low clearance.
   Getting up checks headroom; wind, ropes, slopes and moving decks still move you.
 - Offer the existing safe sleep choices while lying still with empty hands.

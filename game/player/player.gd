@@ -81,6 +81,8 @@ var tumble: Tumble
 var helm: Helm
 
 var vault: LedgeVault
+## How you look: your suit, posed as you move.
+var body: Body
 
 var _tuning := Tuning.current()
 var _sliding := false
@@ -126,6 +128,9 @@ func _ready() -> void:
 	add_child(close_up)
 	walker = AutoWalk.new()
 	add_child(walker)
+	body = Body.new()
+	body.name = "Body"
+	add_child(body)
 
 
 func _unhandled_input(event: InputEvent) -> void:
