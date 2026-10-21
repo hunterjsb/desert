@@ -2,6 +2,7 @@ extends Node
 ## Controlled real-GPU sky, storm-roof and nearby shelter acceptance.
 var world: World
 var out: String
+var _timing_flat := false
 
 func _ready() -> void:
 	out = OS.get_cmdline_user_args()[0]
@@ -57,17 +58,24 @@ func _ready() -> void:
 func shoot(label: String) -> void:
 	for i in 12:
 		await get_tree().process_frame
-	var gpu := 0.0
-	for i in 40:
-		await RenderingServer.frame_post_draw
-		gpu += RenderingServer.viewport_get_measured_render_time_gpu(get_viewport().get_viewport_rid())
+	var gpu := Vector2.ZERO
+	for block in 4:
+		_timing_flat = block % 2 == 0
+		for i in 32:
+			await get_tree().process_frame
+			await RenderingServer.frame_post_draw
+			if i >= 8:
+				gpu[block % 2] += RenderingServer.viewport_get_measured_render_time_gpu(get_viewport().get_viewport_rid())
+	_timing_flat = false
+	for i in 3:
 		await get_tree().process_frame
-	print("GPU ", label, ": ", gpu / 40.0, "ms")
+	await RenderingServer.frame_post_draw
+	print("GPU ", label, ": flat=", gpu.x / 48.0, "ms curved=", gpu.y / 48.0, "ms")
 	get_viewport().get_texture().get_image().save_png(out.path_join(label + ".png"))
 	print("large-moon atmosphere: ", label, "; eye=", world.player.camera.global_position,
 		" dip=", world.weather.sky.material.get_shader_parameter(&"horizon_dip"),
 		" frame=", world.weather.face.material.get_shader_parameter(&"surface_frame"))
 
 func _diagnostic_frame() -> void:
-	if OS.get_cmdline_user_args().has("--flat-atmosphere"):
+	if _timing_flat or OS.get_cmdline_user_args().has("--flat-atmosphere"):
 		world.weather.face.material.set_shader_parameter(&"surface_frame", Vector3.ZERO)

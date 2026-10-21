@@ -95,25 +95,31 @@ float storm_skirt_depth_curved(vec3 ro, vec3 rd, float tb, vec3 frame) {
 	float tau = clamp(abs(k) < 1.0e-5 ? at_b * tb : (at_b - at_o) / k,
 		min(at_b, at_o) * tb, max(at_b, at_o) * tb);
 	if (frame.z > 0.0) {
-		// Four bounded quadrature taps lift dust samples back to the weather sheet.
-		// Keep the one front lookup and the exact flat integral for other consumers.
-		vec4 taps = vec4(-0.861136312, -0.339981044, 0.339981044, 0.861136312);
-		vec4 weights = vec4(0.347854845, 0.652145155, 0.652145155, 0.347854845);
-		float curved = 0.0;
-		float straight = 0.0;
-		for (int i = 0; i < 4; i++) {
-			float along = tb * (0.5 + 0.5 * taps[i]);
-			vec3 p = ro + rd * along;
-			vec2 off = p.xz - frame.xy;
-			float h = p.y + dot(off, off) / (2.0 * frame.z);
-			float front = min(ahead_o + slope * along, 0.0) / storm_skirt_reach;
-			straight += weights[i] * exp(front - max(p.y, 0.0) / storm_skirt_height);
-			curved += weights[i] * exp(front - max(h, 0.0) / storm_skirt_height);
+		vec2 endpoint = pb.xz - frame.xy;
+		vec2 start = ro.xz - frame.xy;
+		float sag = dot(endpoint, endpoint) / (2.0 * frame.z);
+		float most = max(sag, dot(start, start) / (2.0 * frame.z));
+		// Convex sag stays between endpoint bounds: omitted extinction is about0.1%.
+		if (tau > 0.0 && most > storm_skirt_height * 0.001) {
+			// Four bounded quadrature taps lift dust samples back to the weather sheet.
+			// Keep the one front lookup and the exact flat integral for other consumers.
+			vec4 taps = vec4(-0.861136312, -0.339981044, 0.339981044, 0.861136312);
+			vec4 weights = vec4(0.347854845, 0.652145155, 0.652145155, 0.347854845);
+			float curved = 0.0;
+			float straight = 0.0;
+			for (int i = 0; i < 4; i++) {
+				float along = tb * (0.5 + 0.5 * taps[i]);
+				vec3 p = ro + rd * along;
+				vec2 off = p.xz - frame.xy;
+				float h = p.y + dot(off, off) / (2.0 * frame.z);
+				float front = min(ahead_o + slope * along, 0.0) / storm_skirt_reach;
+				straight += weights[i] * exp(front - max(p.y, 0.0) / storm_skirt_height);
+				curved += weights[i] * exp(front - max(h, 0.0) / storm_skirt_height);
+			}
+			// A ratio preserves the existing integral as curvature tends to zero.
+			tau *= straight > 0.0 ? curved / straight : 1.0;
 		}
-		// A ratio preserves the existing integral as curvature tends to zero.
-		tau *= straight > 0.0 ? curved / straight : 1.0;
-		vec2 off = pb.xz - frame.xy;
-		pb.y += dot(off, off) / (2.0 * frame.z);
+		pb.y += sag;
 	}
 	vec2 a = pb.xz + storm_air - storm_gust_shift;
 	vec2 across = vec2(-storm_wind_dir.y, storm_wind_dir.x);

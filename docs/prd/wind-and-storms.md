@@ -1180,5 +1180,19 @@ does not change the crop veil, and higher observers see less dust. Existing Tu10
 intersection rather than discarding all downward rays above the roof. Ground-dust
 curvature uses four weighted taps against the original integral; the curved/straight
 ratio tends to one at zero curvature, and other consumers retain the existing flat
-function. This adds no map reads. Final GPU timing and combined-terrain horizon
-acceptance remain pending; the isolated sky fixture still uses the old finite terrain.
+function. This adds no map reads. Controlled real GPU clear/storm captures now pass: the high downward view enters
+the storm roof, the shield interior remains clear, and the 20 m exterior view is dusty.
+No shader/script/resource errors remain. The correction skips exactly zero optical
+depth. Alternating per-material flat/curved blocks at 1280×720 measured low clear
+2.32→2.60 ms and full storm 3.08→3.61 ms, with 3.61→3.72 ms inside the storm
+shield. These whole-viewport samples include camera-dependent changed ray work.
+Gamescope retained VSync despite a disable request, and high/exterior views varied
+substantially, so no improvement or precise isolated shader-cost claim follows.
+A final clear repeat measured 3.42→3.73 ms at the low observer. Combined-terrain
+horizon acceptance remains pending: the isolated fixture still uses finite flat terrain.
+
+A numerical fast path is agreed for the skirt: when the maximum endpoint sag divided
+by dust scale height is at most 0.001, omit the four-tap integral ratio (at most 0.101%
+relative optical-depth error). The sag is convex along a ray, so its maximum is bounded
+by the endpoints. Endpoint height for the streak texture remains inverse-projected.
+This is a numerical approximation tolerance, not an added gameplay distance.
