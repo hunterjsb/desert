@@ -1196,3 +1196,9 @@ by dust scale height is at most 0.001, omit the four-tap integral ratio (at most
 relative optical-depth error). The sag is convex along a ray, so its maximum is bounded
 by the endpoints. Endpoint height for the streak texture remains inverse-projected.
 This is a numerical approximation tolerance, not an added gameplay distance.
+
+The bounded fast-path shader was recompiled on the GPU and the downward storm and
+shield captures inspected again, without shader/script/resource errors. Its paired
+full-storm repeat measured low observer 5.323→5.455 ms (+0.132 ms), shield interior
+4.559→4.734 ms (+0.175 ms); high-view differences remained noisy. Cross-run clock
+variation prevents subtracting this directly from the earlier cost measurement.
