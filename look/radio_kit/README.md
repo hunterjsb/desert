@@ -63,10 +63,11 @@ where it's been.
 
 ![modules](out/modules.png)
 
-The field radio's sockets:
+The field radio's sockets (gonkhub, 2026-10-21: "a slot for both"):
 
-- **Converter bay** (right cheek): one converter, FM or SW.
-- **Misc bay** (left cheek): any one module, a second converter included.
+- **Converter bay** (right cheek): a slot for each converter, FM and SW, so
+  one set can hear all three bands.
+- **Misc bay** (left cheek): any one other module.
 - **Battery** (back): the game's battery, as now.
 - **Hook boss** (top): the kite's hook.
 
@@ -74,15 +75,16 @@ A module is a cartridge with a tell stripe in its colour and two thumb
 screws. It slides in and out of a bay the way a part goes into a socket
 today (`Device.fit`).
 
-The tension is in the misc bay. SW needs earthing: the stake outside, or a
-bleed resistor in the misc bay. A set with FM *and* SW can't also carry the
-bleed resistor, so it has to be staked. A set that bleeds can carry only one
-converter.
+The trade-off is now the misc bay alone. SW needs earthing: the stake
+outside, or the bleed resistor, which takes the misc bay. So a set that
+bleeds gives up the preamp, the loop, the logger and the rest. The converter
+bay is drawn as two half-height slots, FM over SW (`"converters"`; the last
+tile of the modules sheet).
 
 | Module | Bay | Does | Costs |
 |---|---|---|---|
-| **FM converter** (sea green, fins, a coax stub) | Either | Hears FM | +0.5 W |
-| **Shortwave converter** (violet, a windowed toroid, a ceramic aerial port) | Either | Hears SW; takes the kite's lead at its port | +0.5 W; the piece most often burnt out |
+| **FM converter** (sea green, fins, a coax stub) | Converter | Hears FM | +0.5 W |
+| **Shortwave converter** (violet, a windowed toroid, a ceramic aerial port) | Converter | Hears SW; takes the kite's lead at its port | +0.5 W; the piece most often burnt out |
 | **Bleed resistor** (yellow, a finned ceramic resistor, a neon that flickers as it bleeds, a copper earth strap with a clip) | Misc | Leaks the aerial's charge off steadily. Enough in fair weather and a breeze; overwhelmed by a dust front | The misc bay |
 | **Valve preamp** (orange, a glowing valve in a cage) | Misc | Lifts weak signals out of the hiss (+6 dB) | ×3 power |
 | **Direction loop** (steel, a copper loop on a bearing ring) | Misc | Turn it for the null: the carrier's bearing. Finds a god, or a Walker | Turning it by hand |
@@ -190,8 +192,7 @@ from afar. That's a reason to fly one.
 
 ## Open questions
 
-1. **Converter bay rule:** one bay plus the misc bay (as proposed), or
-   both converters in one bay?
+1. *(Settled 2026-10-21: a slot for each converter.)*
 2. **FM content:** what's on FM? Camp-to-camp, scouts, a lost colony
    station?
 3. **Repair:** burnt pieces are wrecked like any device ("nothing mends

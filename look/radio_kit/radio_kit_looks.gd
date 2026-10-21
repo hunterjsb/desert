@@ -70,7 +70,8 @@ static func glow(color: Color, amount := 1.0) -> Paint.Coat:
 # --- The field radio -------------------------------------------------------
 
 ## The set the game carries, in a maker's look, with what's fitted:
-## {"bay": &"fm"/&"sw", "misc": a module id, "hook": bool, "battery": bool},
+## {"converters": [&"fm", &"sw"] (its converter bay's two slots), or "bay":
+## one cartridge; "misc": a module id, "hook": bool, "battery": bool},
 ## on `band` (lit if `lit`).
 static func field_radio(style: StringName, fit := {}, band := &"am", lit := true) -> ArrayMesh:
 	var b := Paint.Pieces.new()
@@ -143,7 +144,16 @@ static func _field_radio(b: Paint.Pieces, style: StringName, fit: Dictionary, ba
 	b.drum(0.006, 0.3, Vector3(-h.x + 0.045, h.y + 0.15, -h.z + 0.03), coat(Paint.STEEL, 0.3, 0.6), Basis.IDENTITY, 8)
 	# The sockets, empty or filled.
 	var right := Transform3D(Basis.IDENTITY, Vector3(h.x + CART.x * 0.5, 0.0, 0.0))
-	if fit.has("bay"):
+	if fit.has("converters"):
+		# The converter bay: a half-height slot for each, FM over SW.
+		for i in 2:
+			var id: StringName = [&"fm", &"sw"][i]
+			var slot := Transform3D(Basis.from_scale(Vector3(1.0, 0.5, 1.0)), right.origin + Vector3(0.0, (0.5 - i) * CART.y * 0.5, 0.0))
+			if fit.converters.has(id):
+				module(b, id, slot, fit.get("burnt", &"") == id)
+			else:
+				_bay_plate(b, slot, s)
+	elif fit.has("bay"):
 		module(b, fit.bay, right, fit.get("burnt", &"") == fit.bay)
 		if fit.get("burnt", &"") == fit.bay:
 			# Soot blown back over the case from the bay.
@@ -191,7 +201,7 @@ static func _band_tells(b: Paint.Pieces, at: Vector3, fit: Dictionary, band: Str
 	for i in 3:
 		var tell: Dictionary = BANDS.ALL[i]
 		var reach: bool = tell.id == &"am" or fit.get("bay", &"") == tell.id or fit.get("misc", &"") == tell.id \
-			or fit.get("built_in", []).has(tell.id)
+			or fit.get("built_in", []).has(tell.id) or fit.get("converters", []).has(tell.id)
 		var where := at + Vector3(i * 0.022, 0.0, 0.0)
 		b.box(Vector3(0.016, 0.01, 0.004), where + Vector3(0.0, 0.0, -0.001), coat(Paint.GUNMETAL, 0.5), 0.001)
 		var look: Paint.Coat

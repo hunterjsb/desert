@@ -88,10 +88,12 @@ func _shots() -> Array:
 			&"sw"), Vector3(-0.5, 0.3, 1.0), 0.25, 1.3],
 		["tier2_survey_sw", LOOKS.survey_set(&"sw", {"bay": &"preamp", "misc": &"counter", "hook": true}), three, 0.1, 1.2],
 		["tier2_survey_fm", LOOKS.survey_set(&"fm", {}), front, 0.1, 1.0],
-		["face_am", LOOKS.field_radio(&"company", {"bay": &"fm", "misc": &"sw"}, &"am"), front, 0.2, 2.6],
-		["face_fm", LOOKS.field_radio(&"company", {"bay": &"fm", "misc": &"sw"}, &"fm"), front, 0.2, 2.6],
-		["face_sw", LOOKS.field_radio(&"company", {"bay": &"fm", "misc": &"sw"}, &"sw"), front, 0.2, 2.6],
-		["face_off", LOOKS.field_radio(&"company", {"bay": &"fm", "misc": &"sw"}, &"sw", false), front, 0.2, 2.6],
+		["face_am", LOOKS.field_radio(&"company", {"converters": [&"fm", &"sw"]}, &"am"), front, 0.2, 2.6],
+		["face_fm", LOOKS.field_radio(&"company", {"converters": [&"fm", &"sw"]}, &"fm"), front, 0.2, 2.6],
+		["face_sw", LOOKS.field_radio(&"company", {"converters": [&"fm", &"sw"]}, &"sw"), front, 0.2, 2.6],
+		["face_off", LOOKS.field_radio(&"company", {"converters": [&"fm", &"sw"]}, &"sw", false), front, 0.2, 2.6],
+		["tier1_both_converters", LOOKS.field_radio(&"company", {"converters": [&"fm", &"sw"], "misc": &"bleed", "hook": true},
+			&"fm"), Vector3(0.9, 0.35, 0.8), 0.2, 1.3],
 	]
 	for id: StringName in LOOKS.MODULES:
 		var b := Paint.Pieces.new()
