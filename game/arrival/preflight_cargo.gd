@@ -110,7 +110,7 @@ static func readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
 static func seal(world: World, ship: SurveyorShip, state: Dictionary, profile: Dictionary) -> Dictionary:
 	if state.get("preflight", {}).get("launched", false):
 		return state
-	if not readiness(world, ship).is_empty() or profile.is_empty() or not state.has("landing_point"):
+	if not readiness(world, ship).is_empty() or not _valid_profile(world, profile) or not _valid_point(state.get("landing_point")):
 		return {}
 	var named := SurveyorRecovery.named(world)
 	var selected := loaded(world, ship)
@@ -159,6 +159,31 @@ static func seal(world: World, ship: SurveyorShip, state: Dictionary, profile: D
 			body.linear_velocity = Vector3.ZERO
 			body.angular_velocity = Vector3.ZERO
 	return out
+
+
+static func _valid_point(point: Variant) -> bool:
+	return point is Vector3 and point.is_finite() and is_equal_approx(point.length_squared(), 1.0)
+
+
+static func _valid_profile(world: World, profile: Dictionary) -> bool:
+	if not world.tuning.surveyor_preflight.profiles.has(profile.get("id", &"")):
+		return false
+	for key in ["outer_survival", "frame_survival", "extra_survival", "usable_min"]:
+		if profile.has(key):
+			var value: Variant = profile[key]
+			if not (value is float or value is int) or not is_finite(float(value)) or value < 0.0 or value > 1.0:
+				return false
+	for key in ["device_durability", "chassis_durability"]:
+		if profile.has(key):
+			var span: Variant = profile[key]
+			if not span is Vector2 or not span.is_finite() or minf(span.x, span.y) < 0.0 or maxf(span.x, span.y) > 1.0:
+				return false
+	for key in ["descent_s", "entry_s"]:
+		if profile.has(key):
+			var value: Variant = profile[key]
+			if not (value is float or value is int) or not is_finite(float(value)) or value < 0.0:
+				return false
+	return true
 
 
 static func land(world: World, state: Dictionary) -> Dictionary:

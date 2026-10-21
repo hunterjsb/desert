@@ -181,3 +181,9 @@ and cell clear the actual shell before and after closure/landing. Opened real
 roof/hatch and recovered supplies remain visible beside the surface pod. This
 is a fitting/continuity fixture, not a player-input recording or body-grip polish
 claim. Arrival21/22/23 also pass again after the carrier-loss correction (7/14/11 s).
+
+Seal also rejects non-finite/non-unit landing points and unknown or malformed
+impact profiles before any physical closure or state change, protecting the
+manifest's geographic assertion. Stronger Arrival20 passes (6 s) for invalid
+point and out-of-range profile refusal with unchanged state; real disk Arrival22
+passes again (13 s). This validates input rather than changing impact balance.

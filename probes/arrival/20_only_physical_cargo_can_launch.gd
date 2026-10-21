@@ -27,6 +27,13 @@ func run() -> void:
 	var amount := water.amount
 	var snapshot := state.duplicate(true)
 	check(PreflightCargo.seal(world, ship, state, {}).is_empty() and state == snapshot, "an invalid profile refuses without committing state")
+	var invalid := state.duplicate(true)
+	invalid.landing_point = Vector3.ZERO
+	var invalid_before := invalid.duplicate(true)
+	check(PreflightCargo.seal(world, ship, invalid, {"id": &"standard"}).is_empty() and invalid == invalid_before,
+		"an invalid geographic point refuses without mutation")
+	check(PreflightCargo.seal(world, ship, state, {"id": &"standard", "extra_survival": 2.0}).is_empty() and state == snapshot,
+		"an invalid impact profile refuses without mutation")
 	var identities := nodes.values().map(func(body: Node) -> int: return body.get_instance_id())
 	check(PreflightCargo.stage(world, ship, state).values().map(func(body: Node) -> int: return body.get_instance_id()).all(func(id: int) -> bool: return identities.has(id)) and water.amount == amount,
 		"restaging neither duplicates objects nor refills supplies")
@@ -42,7 +49,7 @@ func run() -> void:
 	cell.charge_wh = 0.0
 	check(not PreflightCargo.readiness(world, ship).is_empty(), "an empty emergency cell blocks launch")
 	cell.charge_wh = charge
-	var profile := {"id": &"gentle", "extra_survival": 1.0, "outer_survival": 1.0, "frame_survival": 1.0,
+	var profile := {"id": &"shallow", "extra_survival": 1.0, "outer_survival": 1.0, "frame_survival": 1.0,
 		"device_durability": Vector2.ONE, "chassis_durability": Vector2.ONE}
 	var sealed := PreflightCargo.seal(world, ship, state, profile)
 	check(not sealed.is_empty() and sealed.preflight.launched, "ready physical cargo seals once")
