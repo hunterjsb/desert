@@ -412,8 +412,10 @@ ordinary physical action. Replacing/unmarking Home is allowed only when its old
 support can safely return to the player area, without immediately deleting it.
 
 Admit the whole graph before reporting Home ready. Initial engineering limits are
-512 bodies, a 128 m horizontal span and 25 additional support chunks including a
-one-chunk collision halo. Store these in tuning; measure before accepting them as
+512 bodies, a 128 m horizontal span and 49 additional support chunks including a
+one-chunk collision halo and one retirement margin. A maximum aligned footprint
+can cover three-by-three chunks; collision support expands that to five-by-five,
+and safe retirement keeps at most seven-by-seven. Store these in tuning; measure before accepting them as
 an operating budget. Refuse an oversized mark visibly rather than keeping a
 partial camp. Later motion/extension must not delete an existing admitted member
 or introduce magnetic forces; retain its last supported footprint while reporting

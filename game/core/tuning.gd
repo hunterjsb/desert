@@ -1309,7 +1309,7 @@ static func current() -> Tuning:
 ## Admission limits include the camp's owned assembly and supporting terrain halo.
 @export var home_max_bodies: int = 512
 @export var home_span_m: float = 128.0
-@export var home_support_chunks: int = 25
+@export var home_support_chunks: int = 49
 @export var home_signal_m: float = 2000.0
 @export var home_beacon_w: float = 1.0
 @export var home_depart_m: float = 700.0
