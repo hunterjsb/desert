@@ -107,3 +107,22 @@ once, visible emergency readiness, no implicit board load, removed/empty stores
 refuse, restaging preserves depleted contents, invalid seal is read-only, and a
 repeat seal cannot reroll or refill. Real input loading, save/resume, external
 board fitting and descended cargo placement remain the next acceptance checks.
+
+### Connected opening acceptance (private candidate, 2026-10-21)
+
+Arrival16 passes (4 s) through actual Main input: a fresh Surveyor starts walking
+in the ship; entering the pod cannot bypass a missing course; leaving restores
+walking; Use opens the real computer collider; its destination control commits
+the plan; closing restores input; entering and launching starts ejection with the
+original pod and leaves the optional rack board behind. Surface time remains
+frozen during preparation. Same-frame flight saves exclude omitted gear before
+deferred deletion.
+
+The unseen `look/surveyor_preflight` capture passes the connected fresh flow at
+1280×720: ship, computer, pod approach, seated view, ejection, descent, entry,
+landing and recovery. All nine captures were inspected. The selected landing
+reaches recovery with 13 real roles, empty suit inventory and zero ground rescues.
+This fresh-flow result does not certify restored cargo: real disk preparation,
+seated, flight and post-impact saves remain under focused acceptance, including
+lost-frame ownership cleanup and extended-rope identity. Combined CI, native
+builds and ordinary-player acceptance are still pending.
