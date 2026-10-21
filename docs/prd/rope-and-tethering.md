@@ -837,3 +837,9 @@ worn material and fits the original 0.05 × 0.05 × 0.08 m envelope. The paying-
 check passes again (7 s). Isolated end and front/back/oblique coil captures were
 inspected; the synthetic fill sweep hides stale world strands while rope solving
 is suspended, so those strands cannot obscure the coil's cap geometry.
+
+A separate live GPU fixture uses ordinary wheel actions with the rope solver and
+world strand active throughout: the held line reels from 3.463 m to 1.463 m and
+pays back to 3.463 m without losing its end. It captures 150 rendered frames,
+including the gathered coil and live strand together. This complements the
+isolated synthetic fill sweep; neither is a GPU frame-time measurement.
