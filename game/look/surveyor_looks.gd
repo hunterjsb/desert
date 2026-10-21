@@ -16,6 +16,8 @@ const NECK := Vector3(0.0, 1.56, -0.01)
 const SHOULDER := Vector3(0.2, 1.46, 0.0)
 const ELBOW := Vector3(0.24, 1.18, 0.03)
 const WRIST := Vector3(0.26, 0.93, -0.01)
+## An authored free-hand reach during a climb, mirrored for the left side.
+const CLIMB_HAND := Vector3(0.25, 1.48, -0.52)
 const HIP := Vector3(0.11, 0.93, 0.0)
 const KNEE := Vector3(0.12, 0.51, -0.02)
 const ANKLE := Vector3(0.12, 0.1, 0.02)

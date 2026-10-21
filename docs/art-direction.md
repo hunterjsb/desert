@@ -1224,3 +1224,14 @@ the standard radio and battery carry poses remain a documented limitation in
 Movement. Neither the physics object nor the shoulders move to disguise it.
 The cutter's low rear grip can sit partly below the first-person viewport;
 external views show that actual grasp. This does not add finger articulation.
+
+
+### A body during the vault (2026-10-21; bounded pose)
+
+The existing rigid suit now gives the swept climb a free-hand reach and a
+leading knee gather, then releases into its ordinary stance. Use the real
+climb's progress and rise. Fixed limb lengths, meshes, colour and camera
+comfort exclusions stay in place; carried-item hand poses take precedence.
+Actual first-person captures show the gloves entering the lower view while
+external captures show the knee gather. These are visual gestures, not
+physical hand anchors or a new locomotion controller.

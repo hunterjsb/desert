@@ -993,6 +993,33 @@ across the view; the corrected frames retain clear board, arms and boots.
 A 24-frame corrected riding clip is retained outside the repository. Existing
 movement physics remain unchanged; combined verification is still required.
 
+### Body follows the swept vault (selected 2026-10-21)
+
+Use the existing LedgeVault active state, normalized progress and measured ledge
+height for a bounded visual gesture. Empty hands reach forward during the climb;
+the leading knee gathers farther than the trailing one, in proportion to the
+actual rise, then boots settle back into the normal pose. Retain fixed limb
+lengths and the existing pose easing. Held-item grips take precedence, so this
+never moves a carried thing or pretends the hands are free. The gesture reaches
+toward the ledge; it does not claim a planted physical glove contact. No camera,
+capsule, climb trajectory, force, stamina or input changes belong to Body.
+
+As built: a free-hand reach holds through the middle of the swept climb, with
+an authored hand target still within the existing 0.61 m arm-and-grip reach.
+Knee gathering follows actual ledge rise; the trailing leg gathers half as far.
+Movement 44 fails the pre-animation Body and passes the correction: across 42
+render frames, the forward grip reaches -0.254 m in body space and a boot rises
+to 0.727 m, with zero measured arm-segment length error. Repeated posing writes
+no player transform, velocity or collision shape. Both exact before/after
+30/60-FPS powered-deck courses retain identical physical results: 0.87368 m
+rise, 0.10620 m maximum swept tick, 0.04202 rad/s peak craft spin, standing on
+the still-hovering deck at completion. Actual unseen 1280×720 external and
+first-person captures inspect the reach, knee gather and hand release. A first
+render showed the reach below the own-camera frame; the adjusted authored pose
+now visibly enters it without stretching the arm. This is a gesture toward the
+ledge, not a simulated planted handhold. Combined verification and human feel
+acceptance remain required.
+
 ## Rules
 
 1. **The board floats on the ground's one function.** Its hover height follows
