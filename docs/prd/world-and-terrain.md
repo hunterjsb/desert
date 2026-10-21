@@ -34,7 +34,12 @@ at the foot and in hollows; smaller structures still survey and carve normally. 
 archaeology excludes exposed bedrock crests: wind does not excavate the volcano itself. Projections
 are pinned within the terrain/far-ring reach, and old loaded sheets retain their ground.
 Taking a worker's profile-array reference is locked against save restoration and reprojection;
-chunk and far-ring jobs hold one snapshot for their entire build. Moon-only relocation also
+chunk and far-ring jobs hold one snapshot for their entire build. Each job filters that
+snapshot to its sampled bounds, including the normal border: ordinary dune chunks must
+not repeat distant-mountain tests at every vertex. An explicitly empty snapshot stays
+empty rather than fetching live profiles partway through a build. The 20 km streaming
+probe passed locally in 99 s versus 108 s before this filtering, both at low priority
+while a game was running; chunk seams, dune shading and physical summit arrival passed. Moon-only relocation also
 defers any new mountain that would intersect loaded ground, preventing rises beneath bodies.
 
 `Horizons` draws 128 m samples beyond the ordinary 3 km far ring, lowered 8 m into its

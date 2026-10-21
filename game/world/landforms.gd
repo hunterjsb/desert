@@ -88,6 +88,14 @@ func profiles() -> Array[Hill]:
 	_lock.unlock()
 	return held
 
+## A job only needs mountains intersecting its complete sample bounds.
+func profiles_in(bounds: Rect2) -> Array[Hill]:
+	var out: Array[Hill] = []
+	for hill in profiles():
+		if bounds.intersects(Rect2(hill.at - Vector2.ONE * hill.radius, Vector2.ONE * hill.radius * 2)):
+			out.append(hill)
+	return out
+
 func rise(x: float, z: float) -> float:
 	return rise_from(profiles(), x, z)
 
