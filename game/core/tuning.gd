@@ -1194,6 +1194,16 @@ static var _current: Tuning
 @export var sky_wave: float = 0.6
 ## Under this share of a clean signal, a transmission is lost in the static.
 @export var signal_floor: float = 0.08
+## The AM set's ferrite rod: a station end-on to it comes in at this share of
+## its strength, its null; heard by sky wave at night, past the skip, only this
+## deep, the sky wave coming down from above and wandering (the night effect,
+## why real direction finders distrust night bearings).
+@export var rod_null: float = 0.03
+## The set's gain control holds a station's level as the rod turns, so it's
+## heard falling away only within this much of end-on (the sine of the angle
+## off its axis): a sharp null, as a real set's is.
+@export var rod_width: float = 0.25
+@export var rod_night_null: float = 0.45
 ## The storm on the path toward a god is read this far out at most, m, and
 ## at this many points. Through a full storm the carrier drifts this far
 ## either way, kHz, and the signal drops out this share of the time.

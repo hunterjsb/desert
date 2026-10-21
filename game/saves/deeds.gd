@@ -95,6 +95,8 @@ const TABLE := {
 	&"god_heard": {"name": "First Light", "asks": "Hear a god inside its window", "family": &"signals", "icon": &"radio"},
 	&"fm_heard": {"name": "Line of Sight", "asks": "Hear an FM station come through quiet", "family": &"signals",
 		"after": [&"god_heard"], "icon": &"radio"},
+	&"null": {"name": "Null", "asks": "Turn a radio until a god you hear falls silent", "family": &"signals",
+		"after": [&"god_heard"], "icon": &"bearings"},
 	&"long_wire": {"name": "Long Wire", "asks": "Hear a satellite clear on a long wire strung from the radio",
 		"family": &"signals", "after": [&"god_heard"], "icon": &"radio"},
 	&"tu_roar": {"name": "Storm on Tu", "asks": "Hear Tu roar on shortwave", "family": &"signals",

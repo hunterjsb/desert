@@ -711,6 +711,24 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **Not yet:** a kite to lift the wire, after the Gibson Girl's box kite; the wire's own look where it
   clips to the converter's terminals.
 
+**The ferrite rod's null, as built (2026-10-20, slice F):**
+- **The radio is its own direction finder** (`Radio.rod`): its ferrite rod lies along the set's width, as a
+  real AM set's does, or across your view while you carry it. On the AM dial a god, the port's music and the
+  living city's chatter come in whole broadside to it, and its gain control holds them there as it turns,
+  until within about 15° of end-on (`rod_width`, the sine of the angle off its axis) they fall into its null,
+  down to 3% of their strength (`rod_null`). So turning the set, or yourself with it, finds a station's line
+  by its silence: facing a station while carrying the set, it's at its loudest; a quarter turn and it's gone.
+  The line runs both ways, so a null alone leaves which way open.
+- **The night effect** (`Dial.by_sky`): a station heard by night's sky wave, past the skip, comes down from
+  above and wanders, so its null is only so deep (`rod_night_null`, 45%): night bearings can't be trusted, as
+  real direction finders found. Seed 1234 at the start: the Quartermaster by day, whole broadside, silent
+  end-on; the Almanac by night 58 km off, 0.33 clean end-on (radio probe 47).
+- **The deed** Null: turn a radio until a god you hear falls silent.
+- **Probes:** 47 (the rod's null); 7, 11 and 14 stand their radio broadside to the god they hear
+  (`WorldProbe.broadside`), since a set at any angle might have its god in the null.
+- **Not yet:** a sense antenna to tell which way along the line, and a loop to take the rod's place for
+  sharper bearings; the shortwave and FM bands have no rod.
+
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a

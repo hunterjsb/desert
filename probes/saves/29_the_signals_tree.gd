@@ -20,6 +20,7 @@ func run() -> void:
 	await physics_frames(5)
 	# Off its window at midnight, the Ledger talks only noise.
 	world.time = _when(radio, &"ledger", false)
+	broadside(radio, &"ledger")
 	radio.frequency = gods.carrier(&"ledger", world.time)
 	await physics_frames(3)
 	check(radio.reception.get("id") == &"ledger" and radio.reception.clean > 0.0 and not profile.did("god_heard"),
@@ -27,6 +28,7 @@ func run() -> void:
 	var heard := 0
 	for id in Gods.ids():
 		world.time = _when(radio, id, true)
+		broadside(radio, id)
 		radio.frequency = gods.carrier(id, world.time)
 		await physics_frames(3)
 		heard += 1

@@ -951,6 +951,9 @@ func _listen(delta: float) -> void:
 			if reception.useful and not reception.cut and reception.clean > 0.0 and heard():
 				Deeds.done(world, &"god_heard")
 				Deeds.done(world, &"gods", id)
+			if not reception.cut and reception.broadside >= WHOLE and reception.clean <= 0.0 and volume > 0.0 \
+					and heard():
+				Deeds.done(world, &"null")
 			if reception.cut:
 				said = dial + "· · ·"
 			elif reception.clean <= 0.0:
@@ -1086,6 +1089,25 @@ func _read_wire() -> void:
 			wire = Vector2(maxf(wire.x, rope.length), maxf(wire.y, high))
 
 
+## How much of a station on the AM dial its ferrite rod picks up, coming from
+## `bearing` (degrees from -z, on the ground), 0 to 1. The rod lies along the
+## set's own width, as a real AM set's does, or across your view while you carry
+## it: all of a station broadside to it, and held there by the set's gain
+## control as it turns, until within rod_width of end-on it falls into its null
+## (rod_null), or only so deep by night's sky wave (`sky`, rod_night_null).
+## So turning the set, or yourself with it, finds a station's line by its
+## silence, both ways along it.
+func rod(bearing: float, sky: bool) -> float:
+	var axis := world.player.camera.global_basis.x if carried() else global_basis.x
+	var flat := Vector2(axis.x, axis.z)
+	# Stood on its end the rod's upright, and every way's the same to it.
+	if flat.length() < 0.2:
+		return 1.0
+	var to := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
+	var across := absf(flat.normalized().cross(to))
+	return lerpf(_tuning.rod_night_null if sky else _tuning.rod_null, 1.0, smoothstep(0.0, _tuning.rod_width, across))
+
+
 ## How much of what's sent from above the ceiling it hears, 0 to 1: on
 ## shortwave, a little on its converter's terminals alone, all of it on a long
 ## wire strung out, less strung low along the sand; elsewhere all of it.
@@ -1217,11 +1239,16 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
 	var slid := Interference.warp(storm, t, id, _tuning)
 	var share := Dial.heard(frequency - khz - slid, _tuning)
-	var power := Dial.strength(id, khz, metres, night, _tuning)
+	var turned := rod(ground, Dial.by_sky(khz, metres, night, _tuning))
+	var broadside := Dial.strength(id, khz, metres, night, _tuning)
+	var power := broadside * turned
 	var strength := share * power
 	# A jammer overhead buries what's near it on the dial.
 	var jammed := constellation_of(world).jamming(frequency, p, t)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning) \
+		* (1.0 - jammed)
+	# Broadside to its rod, it would come in this clean.
+	var whole := smoothstep(_tuning.signal_floor, WHOLE, share * broadside) * Interference.let_through(storm, _tuning) \
 		* (1.0 - jammed)
 	var dirt := Garble.dirt(power, Interference.let_through(storm, _tuning), jammed, odd,
 		1.0 - Dial.pull(frequency - khz - slid, _tuning.dial_width_khz), _tuning)
@@ -1229,7 +1256,7 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	var heard := {"id": id, "khz": khz, "metres": metres, "bearing": ground,
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
-		"share": share, "dirt": dirt, "useful": words.useful, "calm": words.get("calm", false), "words": words.text,
+		"share": share, "dirt": dirt, "rod": turned, "broadside": whole, "useful": words.useful, "calm": words.get("calm", false), "words": words.text,
 		"spoken": words.get("spoken", PackedStringArray()), "text": Interference.distort(words.text, clean, t, id)}
 	if words.has("log"):
 		# Its log goes out weaker than its forecast: whole only near it.
@@ -1254,7 +1281,7 @@ func receive_city(x: float, z: float, t: float) -> Dictionary:
 	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
 	var slid := Interference.warp(storm, t, &"city", _tuning)
 	var near := 1.0 - smoothstep(_tuning.city_heard_m.x, _tuning.city_heard_m.y, metres)
-	var strength := Dial.pull(frequency - city.carrier() - slid, _tuning.dial_width_khz) * near
+	var strength := Dial.pull(frequency - city.carrier() - slid, _tuning.dial_width_khz) * near * rod(ground, false)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning)
 	var heard := {"id": &"city", "khz": city.carrier(), "metres": metres, "bearing": ground, "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, &"city", _tuning),
@@ -1319,7 +1346,8 @@ func receive_music(x: float, z: float, t: float) -> Dictionary:
 	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
 	var slid := Interference.warp(storm, t, &"music", _tuning)
 	var share := Dial.heard(frequency - Dial.MUSIC_KHZ - slid, _tuning)
-	var power := Dial.strength(&"ledger", Dial.MUSIC_KHZ, metres, night, _tuning)
+	var power := Dial.strength(&"ledger", Dial.MUSIC_KHZ, metres, night, _tuning) \
+		* rod(ground, Dial.by_sky(Dial.MUSIC_KHZ, metres, night, _tuning))
 	var jammed := constellation_of(world).jamming(frequency, p, t)
 	var through := Interference.let_through(storm, _tuning)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, share * power) * through * (1.0 - jammed)

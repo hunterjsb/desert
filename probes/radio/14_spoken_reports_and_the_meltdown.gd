@@ -26,6 +26,7 @@ func run() -> void:
 	for k in 120:
 		never = never and gods.stoker_song(k * 30.0, length) < 0.0
 	check(never, "its song never plays by itself")
+	broadside(radio, &"stoker")
 	radio.on = true
 	radio.frequency = gods.carrier(&"stoker", world.time)
 	await physics_frames(5)
@@ -46,6 +47,7 @@ func run() -> void:
 	# Count weather reports after the Stoker's own transmissions.
 	var earlier := radio.spoken_count
 	world.time = 0.0
+	broadside(radio, &"walker")
 	radio.frequency = gods.carrier(&"walker", world.time)
 	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
 	await _heard(radio, earlier + 1)
