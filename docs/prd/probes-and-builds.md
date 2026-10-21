@@ -157,3 +157,35 @@ succeeded and publicly reported the failed run, both attempts, their 601 s total
 and 16 available game measurements. Browser checks confirmed those results on the
 live page. Missing measurements stayed absent. A targeted retry of the failed job
 is tracked in [the source run](https://github.com/hunterjsb/desert/actions/runs/39669517959).
+
+
+### Plain run report (agreed 2026-10-21)
+
+Replace the large summary cards with a compact selected-run table. Move the game
+measurements into that same report, without a separate “Game performance” section
+or decorative sparklines. Each measurement names its platform, value, assertion
+limit when supplied, and whether it is below, at or above that limit. Keep the
+probe's actual verdict separate: a measurement alone cannot certify a whole probe.
+Without a limit, say “No limit” rather than implying good or bad. Show the nearest
+earlier passing sample on the same platform and workflow, with its source run and
+numeric change; absent history is explicitly “No earlier sample”. Keep history,
+slow probes, job details and artifacts. Favor compact tables over presentation.
+
+The plain report replaces the four summary cards and measurement cards with tables,
+removes the large introductory heading and the separate game-performance section,
+and preserves source links and filters. Desktop and 390 px browser checks passed:
+summary rows, limit/no-limit states, absent history, metric search, empty results,
+probe expansion and job details. Five collector checks and JavaScript syntax pass.
+
+
+Combined master [39672634648](https://github.com/hunterjsb/desert/actions/runs/39672634648)
+passed all 21 jobs, including macOS salvage retention. The redundant retry of the
+original run was cancelled; no assertions or budgets changed. The public report
+contains all 18 measurements from the successful combined run.
+
+The plain-table revision passed all nine Linux verification groups in
+[39680975173](https://github.com/hunterjsb/desert/actions/runs/39680975173) and
+[deployed successfully](https://github.com/hunterjsb/desert/actions/runs/39683448632).
+Public desktop/mobile checks confirmed the tables, limit/no-limit labels, filtering,
+and actual earlier-run references; a controlled comparison also verified numeric
+and percentage deltas. Missing history remains explicit rather than implying zero.
