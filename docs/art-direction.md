@@ -1215,3 +1215,26 @@ ArrivalOrbit renderer in an isolated viewport, with its projection following
 the real observer; no painted planet or ground sky substitutes for Zan.
 The same actual player walks on solid floor, walls, shelves and berth ramp.
 Controller, landing choices and cargo accounting remain separate systems.
+
+
+### Departure cabin geometry acceptance (2026-10-21)
+
+The room's solid floor, sealed window, rack and console use matching drawn and
+physical boxes. A loading ramp ends on a short landing over the actual pod sill.
+Arrival 15 passes in 14 s: the unchanged player walks 6.23 m across the room,
+stays on the floor, and stops at the sealed observation aperture. The real
+prone capsule crawls up the ramp and through the existing one-metre frame head
+onto the capsule floor, ending 0.2405 m above the cabin floor. Standing entry
+through that low frame is not claimed; the controller may seat the player from
+the entry marker. All twelve original shell roles remain real saveable parts,
+including the three detached retained panels. Disposing the room leaves the
+physical pod intact. Room/cargo logic and integrated launch acceptance remain
+separate work.
+
+Actual unseen 1280×720 captures inspect the first-person room, observation
+window, launch station and pod berth, plus the exterior pressure-module skin.
+The window uses the real seeded ArrivalOrbit renderer and a frustum fitted to
+the aperture from the observer's eye; the ground World's sky never appears
+inside it. Aft retainers and the empty rack reserve space for actual cargo.
+Exterior inset panels, dark ribs and yellow corner guards keep the small room
+readable as one industrial pressure compartment rather than a whole ship model.
