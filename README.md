@@ -54,6 +54,9 @@ have a name. The current 0.2 line is **“Sailboat”**; the next minor release 
 **0.3 “Sanddune”**. Patch releases keep
 their minor release's identity; 0.2.4 is **“Creaky Sailboat”**. Versions change per release, not per commit.
 The [1.0 Alpha roadmap](docs/alpha-roadmap.md) tracks the proposed completion gate.
+The [version-policy proposal](docs/version-policy-proposal.md) makes the milestone
+interpretation, maturity gates, optional patch names and separate save-compatibility
+contract explicit for review; it does not change the current release version.
 
 The version lives in one place, `application/config/version` in `project.godot`, and
 shows in the main menu's corner alongside `application/config/release_name`.
