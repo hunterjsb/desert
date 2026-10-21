@@ -2,6 +2,13 @@ class_name ShipLooks
 extends RefCounted
 ## A modest contractor departure cabin, using the same worn industrial pieces as its kit.
 
+const WINDOW_AT := Vector3(0, 1.44, -5.0)
+const WINDOW_SIZE := Vector2(4.6, 2.28)
+const COMPUTER_AT := Vector3(-1.8, 1.35, -3.73)
+const COMPUTER_TILT := Basis(Vector3.RIGHT, -0.25)
+const COMPUTER_SIZE := Vector3(1.34, 0.88, 0.14)
+const DISPLAY_SIZE := Vector2(1.15, 0.68)
+
 static func boxes() -> Array:
 	# [size, center, basis]: every solid architectural piece has the same drawn skin.
 	var out := [
@@ -10,10 +17,10 @@ static func boxes() -> Array:
 		[Vector3(0.18, 3.0, 8.4), Vector3(-3.11, 1.5, -1), Basis.IDENTITY],
 		[Vector3(0.18, 3.0, 8.4), Vector3(3.11, 1.5, -1), Basis.IDENTITY],
 		[Vector3(6.4, 3.0, 0.18), Vector3(0, 1.5, 3.11), Basis.IDENTITY],
-		[Vector3(6.4, 0.8, 0.18), Vector3(0, 0.4, -5.11), Basis.IDENTITY],
-		[Vector3(6.4, 0.4, 0.18), Vector3(0, 2.8, -5.11), Basis.IDENTITY],
-		[Vector3(0.9, 1.8, 0.18), Vector3(-2.75, 1.7, -5.11), Basis.IDENTITY],
-		[Vector3(0.9, 1.8, 0.18), Vector3(2.75, 1.7, -5.11), Basis.IDENTITY],
+		[Vector3(6.4, 0.30, 0.18), Vector3(0, 0.15, -5.11), Basis.IDENTITY],
+		[Vector3(6.4, 0.42, 0.18), Vector3(0, 2.79, -5.11), Basis.IDENTITY],
+		[Vector3(0.9, 2.28, 0.18), Vector3(-2.75, 1.44, -5.11), Basis.IDENTITY],
+		[Vector3(0.9, 2.28, 0.18), Vector3(2.75, 1.44, -5.11), Basis.IDENTITY],
 		[Vector3(1.05, 0.06, 0.949), Vector3(1.4, 0.12, 1.8), Basis(Vector3.RIGHT, atan(0.30 / 0.9))],
 		[Vector3(1.05, 0.06, 0.8), Vector3(1.4, 0.27, 0.95), Basis.IDENTITY],
 		[Vector3(0.9, 0.7, 0.65), Vector3(-1.8, 0.35, -3.65), Basis.IDENTITY],
@@ -29,12 +36,11 @@ static func boxes() -> Array:
 
 static func mesh() -> ArrayMesh:
 	var b := Paint.Pieces.new()
-	var bone := Paint.coat(Paint.BONE, 0.4, 0.6, 0.65)
-	var gun := Paint.coat(Paint.GUNMETAL, 0.7, 0.5, 0.65)
-	var teal := Paint.coat(Paint.TEAL, 0.6, 0.3, 0.6)
-	var black := Paint.coat(Paint.BLACK, 0.4, 0.3, 0.8)
-	var yellow := Paint.coat(Paint.YELLOW, 0.7, 0.4, 0.7)
-	var amber := Paint.coat(Color(1.0, 0.48, 0.12), 0.0, 0.0, 0.4, 0.0, 0.9)
+	var bone := Paint.coat(Paint.BONE, 0.4, 0.25, 0.44, 0.025)
+	var gun := Paint.coat(Paint.GUNMETAL, 0.7, 0.65, 0.5, 0.04)
+	var teal := Paint.coat(Paint.TEAL, 0.6, 0.3, 0.45, 0.025)
+	var black := Paint.coat(Paint.BLACK, 0.4, 0.35, 0.68, 0.06)
+	var yellow := Paint.coat(Paint.YELLOW, 0.7, 0.3, 0.5, 0.025)
 	var lamp := Paint.coat(Color(1.0, 0.88, 0.65), 0.0, 0.0, 0.3, 0.0, 1.2)
 	for item: Array in boxes():
 		b.box(item[0], item[1], gun, 0.015, item[2])
@@ -46,6 +52,8 @@ static func mesh() -> ArrayMesh:
 			b.box(Vector3(0.06, 0.05, 1.4), Vector3(side * 2.96, 2.66, z), lamp, 0.01)
 		for x in [-2.0, 0.0, 2.0]:
 			b.box(Vector3(1.85, 0.025, 1.85), Vector3(x, 0.016, z), black, 0.018)
+			for rib in 9:
+				b.box(Vector3(1.65, 0.004, 0.014), Vector3(x, 0.031, z - 0.72 + rib * 0.18), gun, 0.001)
 			b.box(Vector3(1.84, 0.025, 1.84), Vector3(x, 2.987, z), bone, 0.025)
 	# Outside, the same pressure compartment has inset service plates and corner guards.
 	for z in [-4.0, -2.0, 0.0, 2.0]:
@@ -66,21 +74,25 @@ static func mesh() -> ArrayMesh:
 		b.box(Vector3(1.8, 2.6, 0.025), Vector3(x, 1.5, 3.005), bone, 0.04)
 	b.box(Vector3(1.25, 2.25, 0.045), Vector3(0, 1.2, 3.23), teal, 0.08)
 	b.box(Vector3(0.12, 0.38, 0.09), Vector3(0.38, 1.1, 3.29), gun, 0.018)
-	for x in [-0.4, 2.2]:
-		b.box(Vector3(0.05, 0.008, 3.6), Vector3(x, 0.035, 0.3), yellow, 0.002)
-	# Window jambs and a broad sill: the renderer fills only the real aperture.
+	# A bay boundary closes around the actual capsule, opening only at its boarding ramp.
+	for x in [0.65, 2.15]:
+		b.box(Vector3(0.055, 0.008, 2.65), Vector3(x, 0.038, -0.15), yellow, 0.002)
+	for z in [-1.45, 1.18]:
+		for x in [0.77, 2.03]:
+			b.box(Vector3(0.28, 0.008, 0.055), Vector3(x, 0.038, z), yellow, 0.002)
+	for z in [1.65, 1.95]:
+		for side in [-1.0, 1.0]:
+			b.box(Vector3(0.30, 0.009, 0.04), Vector3(1.4 + side * 0.11, 0.039, z),
+				yellow, 0.002, Basis(Vector3.UP, side * -0.5))
+	# The lower real sill clears the existing reclined eye.
 	for x in [-2.34, 2.34]:
-		b.box(Vector3(0.14, 1.98, 0.3), Vector3(x, 1.7, -4.99), gun, 0.025)
-	for y in [0.76, 2.64]:
+		b.box(Vector3(0.14, 2.46, 0.3), Vector3(x, WINDOW_AT.y, -4.99), gun, 0.025)
+	for y in [0.26, 2.62]:
 		b.box(Vector3(4.82, 0.13, 0.3), Vector3(0, y, -4.99), gun, 0.02)
-	b.box(Vector3(4.7, 0.07, 0.48), Vector3(0, 0.77, -4.83), teal, 0.015)
-	# The launch station's angled glass, bezel, recessed keys and mechanical consent lever.
-	var tilt := Basis(Vector3.RIGHT, -0.25)
-	var screen := Vector3(-1.8, 1.03, -3.73)
-	b.box(Vector3(0.88, 0.49, 0.14), screen, bone, 0.035, tilt)
-	b.box(Vector3(0.72, 0.34, 0.018), screen + tilt * Vector3(0, 0, 0.077), black, 0.012, tilt)
-	for i in 4:
-		b.box(Vector3(0.49 - i * 0.07, 0.012, 0.006), screen + tilt * Vector3(-0.045, 0.105 - i * 0.055, 0.089), amber, 0.001, tilt)
+	b.box(Vector3(4.7, 0.07, 0.30), Vector3(0, 0.27, -4.89), teal, 0.015)
+	# A real live display fills this recess; there is no painted imitation UI.
+	b.box(COMPUTER_SIZE, COMPUTER_AT, bone, 0.035, COMPUTER_TILT)
+	b.box(Vector3(1.19, 0.72, 0.018), COMPUTER_AT + COMPUTER_TILT * Vector3(0, 0, 0.077), black, 0.012, COMPUTER_TILT)
 	for x in [-1.98, -1.84, -1.7]:
 		b.box(Vector3(0.09, 0.025, 0.06), Vector3(x, 0.84, -3.4), black, 0.006)
 	b.box(Vector3(0.07, 0.13, 0.06), Vector3(-1.48, 0.88, -3.44), yellow, 0.008, Basis(Vector3.RIGHT, -0.3))

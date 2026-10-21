@@ -291,3 +291,24 @@ frames and the final render fence before exit. The final GPU run emits no script
 shader, ObjectDB or resource-in-use errors. An earlier two-frame fixture shutdown
 intermittently reported retained resources; the verbose repeat and final cleanup
 run completed without those warnings. No production teardown behavior was changed.
+
+
+### Cabin readability pass (selected 2026-10-21)
+
+Keep the shared worn industrial material, with explicitly low dust on sheltered
+cabin panels, neutral task lighting, dark inset deck plates and fine traction
+ribs. The pod bay has a closed boundary with broken entry chevrons and a short
+physical POD BAY sign, rather than two unexplained yellow lines. These are
+appearance changes; gear, cargo bounds, normal walkable floors and pod identities
+remain unchanged. Lower the actual observation aperture sill and all matching
+hull/window geometry to clear the existing seated eye; do not move the seat.
+
+The enlarged launch-station bezel exposes `computer_screen_pose()` and
+`computer_screen_size()` in room coordinates; the controller owns the live
+always-on display and focus transition. Remove painted imitation display rows.
+`computer_focus_pose()` is a camera pose 0.72 m outside the real display.
+
+The orbital window may show Zan's close limb and actual Tu by choosing a real
+ship orbital position. It must share the saved departure clock/frame with the
+flight controller; selecting a landing site does not imply it lies directly
+under the ship window. No Tu texture is pasted onto glass or moved in the sky.

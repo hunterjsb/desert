@@ -30,7 +30,8 @@ func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
 	var view := MeshInstance3D.new()
 	view.mesh = ShipLooks.mesh()
 	add_child(view)
-	view.set_instance_shader_parameter(&"age", 0.28)
+	view.set_instance_shader_parameter(&"age", 0.18)
+	view.set_instance_shader_parameter(&"lit", 1.0)
 	var hull := StaticBody3D.new()
 	hull.name = "CabinHull"
 	hull.collision_layer = 1
@@ -39,18 +40,18 @@ func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
 	for item: Array in ShipLooks.boxes():
 		_box(hull, item[0], Transform3D(item[2], item[1]))
 	# The sealed observation aperture is solid glass even though its image is orbital.
-	_box(hull, Vector3(4.6, 1.8, 0.035), Transform3D(Basis.IDENTITY, Vector3(0, 1.7, -5.0)))
+	_box(hull, Vector3(ShipLooks.WINDOW_SIZE.x, ShipLooks.WINDOW_SIZE.y, 0.035), Transform3D(Basis.IDENTITY, ShipLooks.WINDOW_AT))
 	spawn_at = _marker("Spawn", Vector3(-0.8, 0.02, 1.6))
-	window_at = _marker("Window", Vector3(0, 1.7, -5.0))
-	computer_at = _marker("Computer", Vector3(-1.8, 1.03, -3.63))
+	window_at = _marker("Window", ShipLooks.WINDOW_AT)
+	computer_at = _marker("Computer", computer_screen_pose().origin + ShipLooks.COMPUTER_TILT.z * 0.03)
 	computer_body = StaticBody3D.new()
 	computer_body.name = "LaunchComputer"
 	computer_body.set_meta(&"ship_computer", true)
 	computer_body.collision_layer = 1
 	computer_body.collision_mask = 0
 	add_child(computer_body)
-	_box(computer_body, Vector3(0.88, 0.49, 0.14),
-		Transform3D(Basis(Vector3.RIGHT, -0.25), Vector3(-1.8, 1.03, -3.73)))
+	_box(computer_body, ShipLooks.COMPUTER_SIZE,
+		Transform3D(ShipLooks.COMPUTER_TILT, ShipLooks.COMPUTER_AT))
 	pod_entry_at = _marker("PodEntry", Vector3(1.4, 0.02, 1.7))
 	pod_seat_at = _marker("PodSeat", Vector3(1.4, 0.25, -0.2))
 	cargo_bounds = pod_pose * AABB(Vector3(-0.4, Chassis.THICK * 0.5, -0.4), Vector3(1.8, 0.92 - Chassis.THICK * 0.5, 0.8))
@@ -64,11 +65,12 @@ func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
 	for at in [Vector3(-2.1, 2.6, -2.5), Vector3(1.8, 2.6, 0.2), Vector3(-1.7, 2.6, 1.8)]:
 		var light := OmniLight3D.new()
 		light.position = at
-		light.light_color = Color(1.0, 0.86, 0.69)
+		light.light_color = Color(0.9, 0.94, 1.0)
 		light.light_energy = 1.4
 		light.omni_range = 5.0
 		light.shadow_enabled = true
 		add_child(light)
+	_bay_sign()
 	_window()
 	set_view(Sphere.point(world.moon.latitude, world.moon.longitude))
 
@@ -103,7 +105,7 @@ func _process(_delta: float) -> void:
 	orbit.camera.transform = Transform3D(_orbital_basis,
 		_orbital_origin + _orbital_basis * Vector3(eye.x, eye.y - window_at.position.y, distance))
 	# The near plane is the actual aperture: walking past it changes the sightline, not its texture.
-	orbit.camera.set_frustum(1.8, offset, distance, ArrivalOrbit.RADIUS * 10.0)
+	orbit.camera.set_frustum(ShipLooks.WINDOW_SIZE.y, offset, distance, ArrivalOrbit.RADIUS * 10.0)
 
 
 func _window() -> void:
@@ -112,7 +114,7 @@ func _window() -> void:
 	orbit_viewport.own_world_3d = true
 	orbit_viewport.gui_disable_input = true
 	orbit_viewport.handle_input_locally = false
-	orbit_viewport.size = Vector2i(1380, 540)
+	orbit_viewport.size = Vector2i(1380, 684)
 	orbit_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	add_child(orbit_viewport)
 	orbit = ArrivalOrbit.new()
@@ -120,9 +122,9 @@ func _window() -> void:
 	orbit.setup(world.shape.history, world.weather.day)
 	var screen := MeshInstance3D.new()
 	var quad := QuadMesh.new()
-	quad.size = Vector2(4.6, 1.8)
+	quad.size = ShipLooks.WINDOW_SIZE
 	screen.mesh = quad
-	screen.position = Vector3(0, 1.7, -4.98)
+	screen.position = ShipLooks.WINDOW_AT + Vector3(0, 0, 0.02)
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_texture = orbit_viewport.get_texture()
@@ -146,3 +148,30 @@ static func _box(body: StaticBody3D, size: Vector3, pose: Transform3D) -> void:
 	shape.shape = box
 	shape.transform = pose
 	body.add_child(shape)
+
+
+func computer_screen_pose() -> Transform3D:
+	return Transform3D(ShipLooks.COMPUTER_TILT, ShipLooks.COMPUTER_AT) * Transform3D(Basis.IDENTITY, Vector3(0, 0, 0.084))
+
+
+func computer_screen_size() -> Vector2:
+	return ShipLooks.DISPLAY_SIZE
+
+
+func computer_focus_pose() -> Transform3D:
+	var screen := computer_screen_pose()
+	return Transform3D(Basis.looking_at(-screen.basis.z, Vector3.UP), screen.origin + screen.basis.z * 0.72)
+
+
+func _bay_sign() -> void:
+	var label := Label3D.new()
+	label.text = "POD BAY"
+	label.font = ThemeDB.fallback_font
+	label.font_size = 48
+	label.pixel_size = 0.0018
+	label.position = Vector3(1.4, 2.55, 2.99)
+	label.rotation.y = PI
+	label.modulate = Paint.BONE
+	label.outline_size = 0
+	label.no_depth_test = false
+	add_child(label)
