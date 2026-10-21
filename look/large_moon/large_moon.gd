@@ -43,4 +43,10 @@ func _ready() -> void:
 	world.shift_origin(Vector2i(3, -2))
 	await shoot("high_shifted")
 	print("LARGE_MOON apron vertices ", (world.tuning.horizon_apron_rings + 1) * world.tuning.horizon_apron_sides)
+	# Let ordinary world teardown finish its workers, audio and render resources.
+	world.queue_free()
+	world = null
+	for i in 3:
+		await get_tree().process_frame
+	await RenderingServer.frame_post_draw
 	get_tree().quit()
