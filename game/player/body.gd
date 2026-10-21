@@ -53,6 +53,10 @@ func _ready() -> void:
 		(_parts[name] as MeshInstance3D).layers = OWN_LAYER
 	if player != null and player.camera != null:
 		player.camera.cull_mask &= ~OWN_LAYER
+	var wrap := WaistWrap.new()
+	wrap.name = "WaistWrap"
+	wrap.body = self
+	add_child(wrap)
 
 
 func _process(delta: float) -> void:
