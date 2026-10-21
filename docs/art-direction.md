@@ -1152,3 +1152,24 @@ in hand. The amber lens lights only for the marked powered transmitter mounted
 on its Home chassis; removing it leaves the saved Home identity and last fix.
 This is a readability/assembly check, not a GPU timing measurement or proof of
 remote camp support.
+
+## Surveyor arrival prototypes (2026-10-20; isolated, not production)
+
+`look/orbit` now renders a real Godot globe with a separate dusty limb and star
+background. It uses the actual seeded Geology rift, resampled across its whole
+path, plus DayCycle sun/Tu directions and the existing Tu cloud shader. Regional
+albedo and relief are illustrative procedural art; they do not yet reproduce
+the local TerrainShape heights. The first full-lit render was too flat and its
+contour pattern looked artificial. Inspected iterations remove the contour lines,
+move the camera/light toward the terminator and reduce noisy high-frequency bump
+shading. This remains a rough orbital material study, not the generated concept
+image's visual quality, a completed descent or a seamless global terrain renderer.
+
+`look/pod_shell` captures a closed, opened and reclined interior layout built from
+ten real detachable chassis panels and two frames. The cream outer skins and
+charred underside belong to their physical panels and carry no extra collision.
+Opening the roof provides standing exit space. Closed assembly measurements:
+149 nodes, 62 visible mesh surfaces, 43,648 triangles, 34 collision shapes and one
+active chassis body; collision bounds 2.24 by 1.24 by 1.24 m. Real GPU checks pass
+normal hatch/roof removal. The pod-specific skin variant is not yet reconstructed
+by ordinary catalog/save loading, so it is not ready to replace a live start.
