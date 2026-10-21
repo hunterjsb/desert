@@ -218,3 +218,20 @@ refitting/rejoining and suit retrieval of the same original parts make readiness
 valid again; the repaired shell seals normally. Existing focused20/22/24/25 pass
 (8/14/9/6 s), including actual restored preflight saves and impact carrier loss.
 This guard changes no generic Chassis, Snapshot, controller or input behavior.
+
+### Combined opening acceptance (development candidate, 2026-10-21)
+
+The integrated ship/cargo/planner/closure flow has been checked with the current
+large-moon model, boarding movement and visible player body. Focused Arrival15/16/22/26
+pass (13/5/13/6 s), including real preparation/flight disk saves and repaired shell
+launch. The saved automatic flight path remains compatible: Arrival11 passes (8 s)
+with preparation explicitly disabled. Powered boarding43 and body-vault44 pass
+(17 s each). These focused results do not replace full cross-platform CI.
+
+The real unseen GPU run completes all nine connected phases at1280×720: ship,
+computer, pod approach, seated preparation, ejection, descent, entry, landing and
+recovery. Every capture was inspected. It lands13 real roles, zero ground rescues
+and an empty suit inventory; omitted rack equipment is not granted. Actual shell
+and supplies remain readable through the current atmosphere. No shader, script or
+resource errors were emitted. Landing/native verification and ordinary player
+acceptance remain pending; this does not declare a release or migrate old saves.
