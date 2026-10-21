@@ -147,18 +147,18 @@ static func _flight(model: Dictionary, clock_s: float, keep_path: bool) -> Dicti
 	var carrier := _carrier(model, clock_s)
 	var point: Vector3 = carrier.point
 	var speed := sqrt(float(cfg.mu) / float(cfg.radius))
-	var velocity := NORTH.cross(point) * float(cfg.carrier_omega) + speed * (
+	var velocity: Vector3 = NORTH.cross(point) * float(cfg.carrier_omega) + speed * (
 		-(carrier.radial as Vector3) * float(cfg.down) - (carrier.east as Vector3) * float(cfg.retro) * model.pulse.x
 		+ (carrier.north as Vector3) * float(cfg.cross) * model.pulse.y)
 	var path := PackedVector3Array([point])
-	var acceleration := -float(cfg.mu) * point / pow(point.length(), 3.0)
+	var acceleration: Vector3 = -float(cfg.mu) * point / pow(point.length(), 3.0)
 	var elapsed := 0.0
 	var steps := ceili(float(cfg.max_s) / float(cfg.step))
 	for i in steps:
 		var dt := minf(float(cfg.step), float(cfg.max_s) - elapsed)
-		var next := point + velocity * dt + acceleration * (dt * dt * 0.5)
-		var next_acceleration := -float(cfg.mu) * next / pow(next.length(), 3.0)
-		var next_velocity := velocity + (acceleration + next_acceleration) * (dt * 0.5)
+		var next: Vector3 = point + velocity * dt + acceleration * (dt * dt * 0.5)
+		var next_acceleration: Vector3 = -float(cfg.mu) * next / pow(next.length(), 3.0)
+		var next_velocity: Vector3 = velocity + (acceleration + next_acceleration) * (dt * 0.5)
 		if next.length() <= 1.0:
 			var fraction := clampf((point.length() - 1.0) / (point.length() - next.length()), 0.0, 1.0)
 			var hit := point.lerp(next, fraction).normalized()
