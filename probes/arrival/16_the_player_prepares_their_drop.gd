@@ -30,7 +30,7 @@ func run() -> void:
 	check(world.arrival.preparing(), "use cannot bypass the missing landing plan")
 	press(&"hands_grab")
 	check(not world.arrival_state.preflight.seated and world.player.is_physics_processing(), "take leaves the pod and restores walking")
-	stand_at(prep.ship.computer_at.global_position + Vector3(0, -1.03, 0.9), prep.ship.computer_at.global_position)
+	stand_at(Vector3(prep.ship.computer_at.global_position.x, prep.ship.global_position.y + 0.02, prep.ship.computer_at.global_position.z + 0.9), prep.ship.computer_at.global_position)
 	await physics_frames(2)
 	press(&"interact")
 	check(prep.computer_open(), "use focuses the persistent display through its real collider")

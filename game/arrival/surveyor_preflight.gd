@@ -56,6 +56,10 @@ func setup(controller: SurveyorArrival) -> void:
 		var anchor := Sites.Anchor.new(at.x, at.y,
 			Sphere.point(world.moon.latitude, world.moon.longitude), -world.moon.north().z, world.moon.radius)
 		state.landing_plan = LandingPlan.build(world.shape, anchor)
+	if not saved.has("departure_time"):
+		saved.departure_time = world.time
+	if not state.landing_plan.has("departure_trajectory"):
+		state.landing_plan.departure_trajectory = DepartureTrajectory.build(state.landing_plan, saved.departure_time, world.tuning)
 	_view_plan()
 	computer = PhysicalLaunchStation.new()
 	ship.add_child(computer)
@@ -70,7 +74,7 @@ func setup(controller: SurveyorArrival) -> void:
 	else:
 		_walk()
 	world.set_meta(&"kit", world.arrival_nodes.values())
-	world.player.hands.say("Scout a landing zone at the computer. Load the pod, then enter it.")
+	world.player.hands.say("Load your gear. Set a launch pulse at the station, then enter the pod.")
 
 
 func _rules() -> Dictionary:
@@ -80,6 +84,8 @@ func _rules() -> Dictionary:
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(ship) or not is_instance_valid(world):
 		return
+	world.arrival_state.preflight.departure_time = float(world.arrival_state.preflight.get("departure_time", world.time)) + _delta
+	_update_departure_frame()
 	if world.player.global_position.y < ship.global_position.y - 3.0:
 		world.teleport(world.player, ship.spawn_at.global_transform)
 		world.player.velocity = Vector3.ZERO
@@ -179,10 +185,24 @@ func _plan_changed(plan: Dictionary) -> void:
 
 
 func _view_plan() -> void:
+	_update_departure_frame()
+
+
+func _update_departure_frame() -> void:
 	var plan: Dictionary = world.arrival_state.get("landing_plan", {})
-	var selected := LandingPlan.selected(plan)
-	if not selected.is_empty():
-		ship.set_view(selected.point, plan.heading)
+	if not plan.has("departure_trajectory") or not is_instance_valid(ship):
+		return
+	var clock := float(world.arrival_state.preflight.get("departure_time", world.time))
+	var forecast := DepartureTrajectory.sample(plan.departure_trajectory, clock, world.tuning)
+	ship.set_departure_sample(forecast, clock)
+
+
+func course_forecast() -> Dictionary:
+	var plan: Dictionary = world.arrival_state.landing_plan
+	if not plan.has("departure_trajectory"):
+		return {}
+	return DepartureTrajectory.resolve(world.shape, plan, plan.departure_trajectory,
+		float(world.arrival_state.preflight.get("departure_time", world.time)), world.tuning)
 
 
 func readiness() -> PackedStringArray:
@@ -202,6 +222,12 @@ func launch() -> bool:
 	if not missing.is_empty():
 		world.player.hands.say("Before launch: " + "; ".join(missing))
 		return false
+	var forecast := course_forecast()
+	if not forecast.is_empty():
+		if not forecast.get("safe", false):
+			world.player.hands.say("Update the launch forecast at the station.")
+			return false
+		world.arrival_state.landing_plan = forecast.plan
 	var plan: Dictionary = world.arrival_state.landing_plan
 	var profile: Dictionary = _rules().profiles[String(plan.profile)].duplicate(true)
 	var candidate := world.arrival_state.duplicate(true)
@@ -222,6 +248,10 @@ func launch() -> bool:
 	sealed.phase_seconds = world.tuning.surveyor_arrival.ejection_s
 	sealed.materialized = false
 	sealed.preflight.flight_view = 2
+	if not forecast.is_empty():
+		sealed.preflight.flight_sample = forecast.sample
+		sealed.preflight.flight_s = forecast.sample.flight_s
+	sealed.flight_elapsed = 0.0
 	_move_transport(selected.landing_world)
 	Deeds.done(world, &"pod_launch")
 	dispose()

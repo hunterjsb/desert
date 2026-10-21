@@ -20,7 +20,7 @@ func run() -> void:
 		return
 	var prep := world.arrival.preflight
 	await shoot("ship")
-	stand(prep.ship.computer_at.global_position + Vector3(0, -1.03, 0.9), prep.ship.computer_at.global_position)
+	stand(Vector3(prep.ship.computer_at.global_position.x, prep.ship.global_position.y + 0.02, prep.ship.computer_at.global_position.z + 0.9), prep.ship.computer_at.global_position)
 	await physics_frames(2)
 	press(&"interact")
 	check(prep.computer_open(), "real launch computer focuses")
@@ -29,6 +29,8 @@ func run() -> void:
 	await get_tree().create_timer(0.6).timeout
 	var view := prep.computer.ui
 	await shoot("computer")
+	if OS.get_cmdline_user_args().has("--station-only"):
+		return
 	view._confirm.pressed.emit()
 	press(&"ui_cancel")
 	await get_tree().create_timer(0.6).timeout

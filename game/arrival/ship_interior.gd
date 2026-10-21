@@ -22,6 +22,7 @@ var orbit_viewport: SubViewport
 var orbit: ArrivalOrbit
 var _orbital_origin := Vector3.ZERO
 var _orbital_basis := Basis.IDENTITY
+var _departure_clock := -1.0
 
 
 func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
@@ -95,10 +96,25 @@ func set_view(point: Vector3, heading := 0.0) -> void:
 	_orbital_basis = Basis.looking_at(point * ArrivalOrbit.RADIUS - _orbital_origin, Sphere.north(direction))
 
 
+## The station and window use one saved departure, expressed in the moon's frame.
+func set_departure_sample(sample: Dictionary, clock: float) -> void:
+	if sample.is_empty():
+		return
+	var body: Basis = sample.body_basis
+	var position: Vector3 = body.inverse() * sample.ship_position
+	_orbital_origin = position * ArrivalOrbit.RADIUS
+	var radial := position.normalized()
+	var north := Sphere.north(radial)
+	var limb := asin(clampf(1.0 / maxf(position.length(), 1.0001), 0.0, 1.0))
+	var toward := (-radial * cos(limb * 0.85) + north * sin(limb * 0.85)).normalized()
+	_orbital_basis = Basis.looking_at(toward, north)
+	_departure_clock = clock
+
+
 func _process(_delta: float) -> void:
 	if not is_instance_valid(world) or not is_instance_valid(orbit):
 		return
-	orbit.update_light(world.time)
+	orbit.update_light(_departure_clock if _departure_clock >= 0.0 else world.time)
 	var eye := to_local(world.player.camera.global_position)
 	var distance := maxf(eye.z - window_at.position.z, 0.05)
 	var offset := Vector2(-eye.x, window_at.position.y - eye.y)
@@ -160,7 +176,7 @@ func computer_screen_size() -> Vector2:
 
 func computer_focus_pose() -> Transform3D:
 	var screen := computer_screen_pose()
-	return Transform3D(Basis.looking_at(-screen.basis.z, Vector3.UP), screen.origin + screen.basis.z * 0.72)
+	return Transform3D(Basis.looking_at(-screen.basis.z, Vector3.UP), screen.origin + screen.basis.z * float(world.tuning.surveyor_preflight.computer_focus_m))
 
 
 func _bay_sign() -> void:

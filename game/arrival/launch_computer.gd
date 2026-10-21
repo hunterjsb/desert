@@ -18,7 +18,8 @@ var _confirm := Button.new()
 var _back := Button.new()
 var _clock := 0.0
 var _dragging := false
-var _pulse := Vector2(0.2, -0.25)
+var _sample := {}
+var _forecast := {}
 var _pending := true
 var _refresh_at := 0.0
 
@@ -106,11 +107,11 @@ func set_focused(value: bool) -> void:
 func refresh() -> void:
 	if not is_node_ready():
 		return
-	var candidate := LandingPlan.selected(_plan)
+	var candidate: Dictionary = _forecast.get("candidate", LandingPlan.selected(_plan))
 	if candidate.is_empty():
-		_result.text = "No safe landing forecast."
+		_result.text = "Outside the surveyed corridor. Adjust the pulse to bring the landing back."
 		return
-	_result.text = "Landing forecast\n" + ("Long approach · gentler impact" if _plan.profile == &"shallow" else "Short approach · harder impact" if _plan.profile == &"steep" else "Balanced approach")
+	_result.text = "Landing forecast\n" + ("Long approach · gentler impact" if _sample.get("profile", _plan.profile) == &"shallow" else "Short approach · harder impact" if _sample.get("profile", _plan.profile) == &"steep" else "Balanced approach")
 	var kinds: Array[String] = []
 	for reading: Dictionary in candidate.get("signals", []):
 		var kind := String(reading.kind).replace("_", " ")
@@ -130,34 +131,68 @@ func _update_readiness() -> void:
 func _process(delta: float) -> void:
 	_clock += delta
 	if is_instance_valid(_world) and is_instance_valid(_orbit.camera):
-		_orbit.update_light(_world.time)
 		_update_orbit()
 	if _clock >= _refresh_at:
 		_refresh_at = _clock + 0.3
-		_update_readiness()
+		if is_instance_valid(_world) and _plan.has("departure_trajectory"):
+			_forecast = DepartureTrajectory.resolve(_world.shape, _plan, _plan.departure_trajectory, _departure_time(), _world.tuning)
+		refresh()
 	_chart.queue_redraw()
 	if _chart.get_child_count() > 1:
 		_chart.get_child(1).queue_redraw()
 
+func _departure_time() -> float:
+	return float(_world.arrival_state.get("preflight", {}).get("departure_time", _world.time))
+
 func _update_orbit() -> void:
-	var point: Vector3 = _plan.get("anchor", {}).get("point", Vector3.RIGHT)
-	var north := Sphere.north(point)
-	var direction := (point + north * 0.3).normalized()
-	_orbit.camera.position = direction * ArrivalOrbit.RADIUS * 3.0
-	_orbit.camera.look_at(Vector3.ZERO, north)
+	if not _plan.has("departure_trajectory"):
+		return
+	_sample = DepartureTrajectory.sample(_plan.departure_trajectory, _departure_time(), _world.tuning)
+	if _sample.is_empty():
+		return
+	var inverse: Basis = (_sample.body_basis as Basis).inverse()
+	var pose: Transform3D = _sample.camera_transform
+	_orbit.camera.transform = Transform3D(inverse * pose.basis, inverse * pose.origin * ArrivalOrbit.RADIUS)
 	_orbit.camera.fov = 45.0
+	_orbit.update_light(_departure_time())
 
 func _draw_chart() -> void:
 	pass
 
+func _project(point: Vector3) -> Vector2:
+	var inverse: Basis = (_sample.body_basis as Basis).inverse()
+	return _orbit.camera.unproject_position(inverse * point * ArrivalOrbit.RADIUS) / Vector2(_orbit_port.size) * _chart.size
+
+func _exposed(point: Vector3) -> bool:
+	var eye: Vector3 = _sample.camera_transform.origin
+	var ray := point - eye
+	var along := clampf(-eye.dot(ray) / maxf(ray.length_squared(), 0.000001), 0.0, 1.0)
+	return (eye + ray * along).length() >= 0.997
+
 func _draw_overlay(canvas: Control) -> void:
-	# The trajectory model supplies positions in this same globe frame.
-	if not is_instance_valid(_orbit.camera) or _plan.is_empty():
+	if _sample.is_empty():
 		return
-	var center := _chart.size * 0.5
-	var handle := center + _pulse * _chart.size * 0.5
-	canvas.draw_line(center, handle, Color(0.95, 0.73, 0.36), 3.0)
-	canvas.draw_circle(handle, 12.0, Color(0.95, 0.73, 0.36), false, 3.0)
+	var amber := Color(0.95, 0.73, 0.36)
+	var teal := Color(0.55, 0.85, 0.82)
+	var path: PackedVector3Array = _sample.path
+	for i in range(1, path.size()):
+		if _exposed(path[i - 1]) and _exposed(path[i]):
+			canvas.draw_line(_project(path[i - 1]), _project(path[i]), amber, 2.5, true)
+	var ship := _project(_sample.ship_position)
+	canvas.draw_circle(ship, 5.0, teal)
+	var handle := _project(_sample.pulse_handle)
+	canvas.draw_line(ship, handle, amber, 2.0, true)
+	canvas.draw_circle(handle, 12.0, amber, false, 3.0, true)
+	var font := get_theme_font(&"font", &"Label")
+	canvas.draw_string(font, ship + Vector2(10, -10), "SHIP", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, teal)
+	canvas.draw_string(font, handle + Vector2(15, 5), "PULSE", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, amber)
+	var landing: Vector3 = (_sample.body_basis as Basis) * (_sample.landing_point as Vector3)
+	if _exposed(landing):
+		var at := _project(landing)
+		canvas.draw_arc(at, 9.0, 0.0, TAU, 32, amber, 2.0, true)
+		canvas.draw_line(at - Vector2(14, 0), at + Vector2(14, 0), amber, 2.0)
+		canvas.draw_line(at - Vector2(0, 14), at + Vector2(0, 14), amber, 2.0)
+		canvas.draw_string(font, at + Vector2(16, 24), "LANDING", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, amber)
 
 func _chart_input(event: InputEvent) -> void:
 	if not _focused:
@@ -172,16 +207,34 @@ func _chart_input(event: InputEvent) -> void:
 		accept_event()
 
 func _drag(at: Vector2) -> void:
-	_pulse = ((at / _chart.size - Vector2(0.5, 0.5)) * 2.0).limit_length(0.85)
+	if not is_instance_valid(_world) or _sample.is_empty():
+		return
+	var pixel := at / _chart.size * Vector2(_orbit_port.size)
+	var basis: Basis = _sample.body_basis
+	var origin := basis * _orbit.camera.project_ray_origin(pixel) / ArrivalOrbit.RADIUS
+	var direction := basis * _orbit.camera.project_ray_normal(pixel)
+	_plan.departure_trajectory = DepartureTrajectory.drag(_plan.departure_trajectory, _departure_time(), origin, direction, _world.tuning)
+	_world.arrival_state.landing_plan.departure_trajectory = _plan.departure_trajectory.duplicate(true)
+	_world.arrival_state.preflight.plan_confirmed = false
 	_pending = true
 	_confirm.text = "Set launch pulse"
+	_refresh_at = 0.0
+	_update_orbit()
 	_chart.queue_redraw()
 
 func _commit() -> void:
 	if not _focused or _plan.is_empty():
 		return
+	var choice := _plan.duplicate(true)
+	if is_instance_valid(_world) and _plan.has("departure_trajectory"):
+		_forecast = DepartureTrajectory.resolve(_world.shape, _plan, _plan.departure_trajectory, _departure_time(), _world.tuning)
+		if not _forecast.get("safe", false):
+			_result.text = "No safe landing forecast. Adjust the pulse inside the survey corridor."
+			return
+		choice = _forecast.plan
+	_plan = choice.duplicate(true)
 	if _changed.is_valid():
-		_changed.call(_plan.duplicate(true))
+		_changed.call(choice.duplicate(true))
 	_pending = false
 	_confirm.text = "Launch pulse set"
 	_update_readiness()

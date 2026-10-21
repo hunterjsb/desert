@@ -371,6 +371,7 @@ posture_prone_catch = 0.25
 
 surveyor_preflight = {
 "computer_focus_s": 0.45,
+"computer_focus_m": 0.56,
 "enabled": true,
 "ship_height_m": 30.0,
 "cabin_radius_m": 7.0,

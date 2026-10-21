@@ -227,6 +227,8 @@ var _marks: Node3D
 var _mark_look: StandardMaterial3D
 var _readout: Label
 ## The aim dot and its line, out of the way while a menu is up.
+## A physical display has its own readable controls while the eye is focused.
+var display_focused := false
 var _hud: CanvasLayer
 var _dot: Control
 var _sound: AudioStreamPlayer
@@ -883,7 +885,7 @@ func _physics_process(delta: float) -> void:
 ## turn; the next tick puts it back where the last one left it.
 func _process(_delta: float) -> void:
 	if _hud != null:
-		_hud.visible = Controls.playing()
+		_hud.visible = Controls.playing() and not display_focused
 		# Close up on a dial the view isn't your aim.
 		_dot.visible = _player.close_up.close < 0.5
 	if phase == Phase.HELD and is_instance_valid(held):
