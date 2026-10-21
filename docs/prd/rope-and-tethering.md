@@ -881,4 +881,10 @@ Save the count as optional bundle_slots; absent means the ordinary end.
 Reuse the normal precreated Line-end refs and nested socket ownership. After
 ordinary reconstruction, RopeBundle.refresh_mass(primary) restores aggregate
 loose mass or own fitted mass; selection is a separate original-end ref.
-Implementation and focused interaction/roundtrip checks are pending.
+Implemented in the development candidate. Rope 29 passes the actual held-input
+continuation, full per-end delays, cancellation, original identity/lengths, loose
+mass and selected member (11 s). Rope 30 passes ordinary Hands anchoring and
+retrieval, exact fitted/loose masses, Make Fast and drop momentum (7 s). Existing
+selected untie, yank and last-on/first-off checks pass. Save 46 passes real disk
+roundtrips for held, anchored and loose knots (19 s; Survival). Combined CI and
+actual visual inspection remain pending; these timings are focused checks.

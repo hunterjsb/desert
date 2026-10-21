@@ -21,6 +21,9 @@ acceptance remains.
 - Offer the existing safe sleep choices while lying still with empty hands.
   Posture survives saves, and the first ground rest earns A Moment's Rest.
 
+- Continue holding Use to untie successive waist lines into a knot in hand, then
+  anchor, retrieve or drop it normally. Select each original member in the carry
+  view; lengths and routes survive saves. Securing multiple lines earns Make Fast.
 - Continuously unwind and gather the rope coil while preserving its gauge and
   held-end attachment.
 - Resolve capsized mast contacts against the mass response of the hull and hinged

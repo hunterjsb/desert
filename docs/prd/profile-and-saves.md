@@ -843,4 +843,6 @@ placement finishes securing a gathered group with at least two distinct live
 lines to one anchor. Gathering, dropping, failed placement and restore do not
 record it. Its card uses the existing stake image. This adds one candidate deed,
 bringing the development roster from 64 to 65 in the same eleven families;
-integration and the real placement/save checks remain pending.
+the real placement check passes (Rope 30, 7 s) and real save/resume passes
+(Save 46, 19 s). Gathering alone does not award it; ordinary anchoring does.
+Combined candidate verification remains pending.
