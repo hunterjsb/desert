@@ -357,6 +357,9 @@ const DEVICES := {
 		]},
 	# Music, the weather station and beacons, a channel a use. Carried, set
 	# down or stuck on a deck, it runs on its battery or its deck's power.
+	&"home_beacon": {"label": "Home beacon", "size": Vector3(0.28, 0.36, 0.24), "mass": 1.2,
+		"home_beacon": true, "carryable": true, "sticks": true, "stands": true,
+		"sockets": [[&"port", Vector3(0.14, -0.10, 0.0), Vector3.RIGHT]]},
 	&"survey_receiver": {"label": "Survey receiver", "size": Vector3(0.36, 0.50, 0.26), "mass": 1.4,
 		"radio": true, "receiver": true, "carryable": true, "sticks": true,
 		"sockets": [[&"battery", Vector3(0.0, -0.12, -0.10), Vector3.FORWARD]]},
@@ -676,7 +679,7 @@ static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
 
 static func device(id: StringName) -> Device:
 	var spec: Dictionary = DEVICES[id]
-	var made: Device = ShieldGenerator.new() if spec.get("shield", false) \
+	var made: Device = HomeBeacon.new() if spec.get("home_beacon", false) else ShieldGenerator.new() if spec.get("shield", false) \
 		else (Condenser.new() if spec.get("condenser", false) \
 		else (Planter.new() if spec.get("planter", false) \
 		else (Hoverboard.new() if spec.get("board", false) \

@@ -8,7 +8,8 @@ carried = Dictionary[StringName, int]({
 &"canister": 1,
 &"ration": 1,
 &"bedroll": 1,
-&"surveyor_guide": 1
+&"surveyor_guide": 1,
+&"home_beacon": 1
 })
 beside = Dictionary[StringName, Vector2]({
 &"camp": Vector2(1.6, 2.2),

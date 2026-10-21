@@ -299,6 +299,26 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	if PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
 		return b.commit()
 	match id:
+		&"home_beacon":
+			var bone := Paint.coat(Paint.BONE)
+			var brass := Paint.coat(Paint.BRASS, 0.5, 0.65)
+			b.box(Vector3(0.27, 0.035, 0.21), Vector3(0, -0.1625, 0), gun, 0.008)
+			b.box(Vector3(0.235, 0.22, 0.18), Vector3(0, -0.035, 0), bone, 0.022)
+			b.box(Vector3(0.17, 0.15, 0.018), Vector3(0, -0.035, 0.088), teal, 0.006)
+			for x in [-0.10, 0.10]:
+				for z in [-0.075, 0.075]:
+					b.box(Vector3(0.035, 0.032, 0.035), Vector3(x, -0.14, z), black, 0.006)
+				b.drum(0.007, 0.006, Vector3(x, 0.079, 0.05), brass, Basis.IDENTITY, 8)
+			b.box(Vector3(0.09, 0.042, 0.013), Vector3(0, 0.008, 0.103), black, 0.004)
+			b.box(Vector3(0.067, 0.022, 0.006), Vector3(0, 0.008, 0.112),
+				Paint.coat(Paint.YELLOW, 0.0, 0.0, 0.35, 0.0, 1.8), 0.003)
+			for y in [-0.045, -0.062, -0.079]:
+				b.box(Vector3(0.087, 0.006, 0.006), Vector3(-0.012, y, 0.101), black, 0.001)
+			b.drum(0.024, 0.018, Vector3(0, 0.083, 0), brass, Basis.IDENTITY, 12)
+			b.drum(0.015, 0.072, Vector3(0, 0.125, 0), black, Basis.IDENTITY, 10)
+			for y in [0.10, 0.115, 0.13, 0.145]:
+				b.drum(0.019, 0.006, Vector3(0, y, 0), gun, Basis.IDENTITY, 10)
+			b.ball(0.018, Vector3(0, 0.161, 0), bone)
 		&"planter":
 			# Another maker's growing tub, bone white on gunmetal skids.
 			# Its top sits under the rim, and the rim's rails meet rather than cross.

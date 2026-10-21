@@ -55,6 +55,7 @@ const DEVICES := {
 		[&"survival_kit", 1],
 		[&"radio", 2],
 		[&"survey_receiver", 2],
+		[&"home_beacon", 1],
 		[&"bedroll", 1],
 		# What a company surveyor before you dropped: its own issue.
 		[&"power_box", 1],

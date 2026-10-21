@@ -1132,3 +1132,14 @@ Actual Forward+ 1280 × 720 captures show the bundle close on sand beside a real
 strand, from eye height, and carried face-on and tilted. These are rendered
 readability and geometry checks, not a measured GPU frame-time claim. The
 gathered-coil behavior and fill selection live in Reel, using this shared mesh.
+
+
+## Home beacon (2026-10-20; selected)
+
+A compact field transponder bolts upright to an ordinary chassis: a low gunmetal
+mounting shoe, bone enamel enclosure with teal recessed service face, protected
+amber status lens, ribbed antenna stub and brass fasteners. Its restrained light
+identifies the marked transmitter; it makes no shield or navigation projection.
+Keep the complete model inside the existing catalog box, merged into one shared
+worn-material mesh. Read its assembly in actual close, carried and mounted GPU
+views before acceptance.
