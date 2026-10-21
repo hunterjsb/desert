@@ -202,7 +202,10 @@ func _clear_of_you() -> void:
 ## Each tied body sits with its tie point at your waist, facing out in front.
 func _place() -> void:
 	var facing := Basis(Vector3.UP, _player.global_rotation.y + PI)
-	var at := _player.global_transform * AT
+	var belt := AT
+	if _player.ground_pose != &"stand":
+		belt.y *= _player.posture.height(_player.ground_pose) / _player.posture.height(&"stand")
+	var at := _player.global_transform * belt
 	for body in tied:
 		if not is_instance_valid(body):
 			continue
