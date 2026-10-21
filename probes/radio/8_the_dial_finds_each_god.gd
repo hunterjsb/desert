@@ -4,8 +4,8 @@ extends WeatherProbe
 ## day before. Tuned to it, the dial is on
 ## that god; tuned halfway to the next carrier, it hears only static, and the
 ## line says nothing but the frequency and static. Use sweeps up through every
-## carrier on the dial, the gods, the music, the beacon and the satellites on
-## the air overhead, and then off.
+## carrier on the dial, the gods, the music and the beacon, and then off: the
+## satellites are on shortwave, above the ceiling, and never on this dial.
 
 
 func run() -> void:
@@ -59,10 +59,6 @@ func run() -> void:
 		radio.interact(world.player)
 	var all: Array[float] = []
 	for each in carriers:
-		all.append(each[0])
-	var x := world.world_x(radio.global_position.x)
-	var z := world.world_z(radio.global_position.z)
-	for each in Radio.constellation_of(world).carriers(radio.point_at(x, z), t):
 		all.append(each[0])
 	all.sort()
 	print("use swept %s" % [swept])

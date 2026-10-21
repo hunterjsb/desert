@@ -1133,6 +1133,18 @@ static var _current: Tuning
 @export var fm_capture_db: float = 2.0
 ## Port Morgan's FM mast, m over the port's ground.
 @export var fm_mast_m: float = 60.0
+## The shortwave band (2 to 30 MHz, through a shortwave converter): a notch of
+## tuning moves it this far, kHz; a fine step is the AM dial's.
+@export var sw_notch_khz: float = 25.0
+## Tu's roar on shortwave: it comes in from the bottom of this span, kHz, to
+## full at its top; Tu storms while Zan is within half of tu_roar_window (a
+## share of a day) of one of these places round its orbit (shares of a day),
+## as Io gates Jupiter's storms, and Tu's turn is within this far of bringing
+## its source to face Zan, rad.
+@export var tu_roar_khz: Vector2 = Vector2(15000.0, 21000.0)
+@export var tu_roar_phases: PackedFloat32Array = PackedFloat32Array([0.25, 0.67])
+@export var tu_roar_window: float = 0.12
+@export var tu_roar_turn: float = 1.2
 ## The AM dial plays sound up to this, Hz: AM's narrow audio, and the FM
 ## converter's too, since it plays through the AM set.
 @export var am_audio_hz: float = 5000.0

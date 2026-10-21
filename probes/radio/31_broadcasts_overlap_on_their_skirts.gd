@@ -3,9 +3,9 @@ extends ShieldProbe
 ## heard whole on its carrier, and near it at a share of its strength, so
 ## you hear it as you tune toward it and tune in on it; far off, nothing. A
 ## god heard off its carrier is still the one the dial hears, faint. Two
-## broadcasts near each other on the dial, the port's music at night and a
-## satellite, are heard together between their carriers, each the louder
-## nearer its own.
+## broadcasts near each other on the dial, two of the formation's satellites
+## side by side on shortwave, are heard together between their carriers, each
+## the louder nearer its own.
 ## Under clear skies everywhere.
 
 
@@ -49,30 +49,40 @@ func run() -> void:
 	radio.frequency = home + Dial.reach(tuning) + 15.0
 	check(radio.tuned_to() != best, "past its skirt it's gone")
 
-	# The music at night, come round from the port, and the windsock overhead:
-	# heard together between them.
+	# Two of the formation side by side at 29 MHz, both overhead: heard together
+	# between them on shortwave.
+	Scenarios.fill(world, radio, [&"sw_converter"])
+	radio.switch_band()
+	check(radio.band == Radio.SW_BAND, "with a shortwave converter it's on shortwave")
 	var sky := Radio.constellation_of(world)
 	var p := radio.point_at(x, z)
+	var side := ["sounder", "sextant", "windsock", "choir", "babel", "lullaby", "tollgate", "metronome"]
+	var pair := []
 	var both := _first(t, func(u: float) -> bool:
-		return not world.weather.day.is_day(u, world.moon.longitude) \
-			and sky.orbits[&"windsock"].seen_from(p, u).elevation > deg_to_rad(20.0))
+		for i in side.size() - 1:
+			if sky.orbits[StringName(side[i])].seen_from(p, u).elevation > deg_to_rad(20.0) 					and sky.orbits[StringName(side[i + 1])].seen_from(p, u).elevation > deg_to_rad(20.0) 					and not &"babel" in [StringName(side[i]), StringName(side[i + 1])]:
+				pair.assign([StringName(side[i]), StringName(side[i + 1])])
+				return true
+		return false)
 	world.time = both
-	var windsock := sky.carrier(&"windsock", both)
-	var between := roundf((Dial.MUSIC_KHZ + windsock) * 0.5)
+	var a: StringName = pair[0]
+	var b: StringName = pair[1]
+	var a_khz := sky.carrier(a, both)
+	var b_khz := sky.carrier(b, both)
+	var between := roundf((a_khz + b_khz) * 0.5)
 	radio.frequency = between
 	await physics_frames(5)
-	var music: float = radio.receive_music(x, z, both).clean
-	var satellite: float = radio.sky.levels.get(&"windsock", 0.0)
-	print("at %.0f s, tuned to %d kHz between the music (1020) and the windsock (%d): music %.2f, windsock %.2f" % [
-		both, roundi(between), roundi(windsock), music, satellite])
-	check(music > 0.0 and satellite > 0.0 and radio.music.playing and radio.sky.voice_of(&"windsock").playing,
+	var one: float = radio.sky.levels.get(a, 0.0)
+	var other: float = radio.sky.levels.get(b, 0.0)
+	print("at %.0f s, tuned to %d kHz between the %s (%d) and the %s (%d): %.2f and %.2f" % [
+		both, roundi(between), a, roundi(a_khz), b, roundi(b_khz), one, other])
+	check(one > 0.0 and other > 0.0 and radio.sky.voice_of(a).playing and radio.sky.voice_of(b).playing,
 		"between them, both are heard at once")
-	radio.frequency = windsock
+	radio.frequency = a_khz
 	await physics_frames(3)
-	var on_windsock: float = radio.sky.levels.get(&"windsock", 0.0)
-	check(on_windsock > satellite and radio.receive_music(x, z, world.time).clean < music,
-		"tuned onto the windsock, it's the louder and the music the fainter (%.2f)" % on_windsock)
-
+	var on_a: float = radio.sky.levels.get(a, 0.0)
+	check(on_a > one and radio.sky.levels.get(b, 0.0) < other,
+		"tuned onto the %s, it's the louder and the %s the fainter (%.2f)" % [a, b, on_a])
 
 func _first(from: float, wanted: Callable) -> float:
 	var t := from

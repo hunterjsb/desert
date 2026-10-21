@@ -196,8 +196,13 @@ const PARTS := {
 	# A colonial FM converter, as AM car radios once took: it hears the FM band
 	# on its own whip and hands it to the set as a carrier the set already
 	# tunes, so the radio reaches FM, still as narrow as AM sounds.
-	&"fm_converter": {"kind": &"radio_mod", "label": "FM converter", "mass": 0.6, "size": Vector3(0.12, 0.1, 0.06),
+	&"fm_converter": {"kind": &"radio_mod", "label": "FM converter", "mass": 0.6, "size": Vector3(0.12, 0.095, 0.06),
 		"color": Color(0.22, 0.23, 0.22), "stats": {"fm": 1, "draw_w": 0.5}},
+	# Its shortwave sibling, as car radios once took too: the band from 2 to 30
+	# MHz handed to the set the same way, wire terminals on its top for a long
+	# antenna in place of a whip.
+	&"sw_converter": {"kind": &"radio_mod", "label": "Shortwave converter", "mass": 0.6,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.24, 0.22, 0.2), "stats": {"sw": 1, "draw_w": 0.5}},
 	&"radar": {"kind": &"computer_top", "label": "Weather radar", "mass": 2.5, "size": Vector3(0.32, 0.32, 0.26),
 		"color": Color(0.8, 0.76, 0.66), "stats": {"radar": 1, "radar_m": 6000.0, "draw_w": 6.0}},
 }
@@ -371,8 +376,10 @@ const DEVICES := {
 		"sockets": [
 			[&"battery", Vector3(0.0, -0.02, -0.08), Vector3.FORWARD],
 			[&"port", Vector3(0.16, -0.035, -0.01), Vector3.RIGHT],
-			# Its left side takes a band's front end: an FM converter.
-			[&"radio_mod", Vector3(-0.16, -0.01, -0.01), Vector3.LEFT],
+			# Its left side takes two bands' front ends, one over the other: the
+			# FM converter and the shortwave converter.
+			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
+			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
 		]},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,

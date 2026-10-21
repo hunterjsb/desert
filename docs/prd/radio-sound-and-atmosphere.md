@@ -443,6 +443,8 @@ they swap to their next saved frequency."*
   (radio probe 28), never fewer than two: two 20.5% of the time, three 42.5%, four 33.8%, five or six 3%.
   Storms can still cut them, as they do any signal. Use's sweep stops on the satellites overhead too.
 
+  *The bands below were on the AM dial; since 2026-10-20 every satellite is on shortwave (Bands, below).*
+
   | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
   |---|---|---|---|---|---|---|
   | The relay | colonial | the FM band (since 2026-10-20) | white point, glinting | hung at L1 beside Tu, on a halo 0.9 radii across, 10 min (since 2026-10-20) | the music | a slow tumble: its glint |
@@ -659,8 +661,40 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
 - **The "night" scenario** faces the relay beside Tu, 10–50° up; "relay_up" is gone with the passes.
 - **Probes:** 13 rewritten (the relay hangs beside Tu), and 17, 19, 31, 32, 35, 36 and 38 follow the
   relay's move: no passes, no ellipse, the music at night where they needed it clean.
-- **Not yet:** the constellation through the ceiling; a link from L1 to L2 carrying the music to the far
-  side; Tu's shadow on the relay in the eclipse.
+- **Not yet:** a link from L1 to L2 carrying the music to the far side; Tu's shadow on the relay in the
+  eclipse.
+
+**The constellation through the ceiling, and Tu's roar, as built (2026-10-20, slice D):**
+- **The shortwave converter** (`sw_converter`), the FM converter's sibling: the same gunmetal box with an
+  amber band and two brass wire terminals on its top in place of a whip, 0.6 kg, 0.5 W. The radio's left
+  side now takes two radio mods one over the other, so both converters fit. Found on skimmer-era shelves and
+  in a relay mast's cabinet; in the creative menu beside the FM converter.
+- **The band switch goes round** AM, FM and shortwave, skipping a band without its converter.
+- **The shortwave band** runs 2 to 30 MHz, the dial going on in kHz past the AM dial's top (`Shortwave`),
+  a notch 25 kHz (`sw_notch_khz`) and a fine step 1 kHz; the look-at line reads "Radio · 29.07 MHz". The AM
+  dial and shortwave share one `frequency`, each band's place kept while the other's in use (`am_khz`,
+  `sw_khz`), so the AM dial's listening, skirts and jammer work on shortwave unchanged. Nothing on the
+  ground sends there; use sweeps the satellites overhead.
+- **The satellites are on shortwave and nowhere else**, above the ceiling (radio probe 44: with satellites
+  overhead, nothing along the whole AM dial; on shortwave, tuned to one, it's there). The formation's eight
+  pack side by side at 29 MHz, 30 kHz apart, so their skirts overlap and the jammer buries its neighbours:
+  the sounder 29.00–29.02 MHz, the sextant 29.03–29.05, the windsock 29.06–29.08, the choir 29.09–29.11,
+  babel 29.12–29.15, the lullaby 29.16–29.18, the tollgate 29.19–29.21, the metronome 29.22–29.24. The rest
+  lower down: the ghost 3.2–3.5, the cinder 7.10–7.175, the Pendulum on 10 MHz exactly (a time signal, as
+  WWV's is, fixed), the crop survey 14.2–14.3, the lantern 21.5–21.6. Their sound, LFOs and looks are
+  unchanged; "always two overhead" now needs a shortwave converter to hear.
+- **Tu's roar** (`Shortwave.roar`): on shortwave from 15 MHz, full from 21 (`tu_roar_khz`), wherever Tu is
+  up, the stronger the higher, never on the far side. Tu storms only while Zan is within half of 0.12 of a
+  day of 0.25 or 0.67 round its orbit (`tu_roar_phases`, `tu_roar_window`), as Io gates Jupiter's loudest
+  storms, and while Tu's turn has its source within 1.2 rad of facing Zan (`tu_roar_turn`): a timetable to
+  learn. In a storm it comes in slow swells, a long burst every second or two, the static pitched down on
+  a voice of its own (placeholder), under what else plays. Seed 1234 at the start, 22 MHz: 13 dB in a
+  storm, silent out of one (probe 45). The deed **Storm on Tu**: hear it.
+- **Probes:** 44 (the ceiling) and 45 (Tu roars on a timetable); 8's sweep no longer meets satellites on
+  the AM dial, and 31's overlap is two of the formation's side by side on shortwave.
+- **Not yet:** a wire or kite antenna for shortwave (now a converter's whip-less terminals hear it all);
+  skip and dead zones for ground stations on shortwave; the satellites that belong higher still (VHF, the
+  dish's bands); Tu's short bursts, its "popcorn"; gonkhub's own sound for the roar.
 
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 

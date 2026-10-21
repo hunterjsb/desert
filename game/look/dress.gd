@@ -773,6 +773,19 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				Paint.coat(Paint.TEAL, 0.6), 0.001)
 			b.drum(0.006, 0.02, Vector3(-h.x + 0.016, h.y + 0.01, size.z * 0.5), steel, Basis.IDENTITY, 8)
 			b.drum(0.0025, 0.22, Vector3(-h.x + 0.016, h.y + 0.13, size.z * 0.5), steel, Basis.IDENTITY, 6)
+		&"sw_converter":
+			# The FM converter's sibling: the same box with an amber band, its
+			# own small dial, and two brass terminals on its top for a wire.
+			b.box(Vector3(size.x, size.y, size.z - 0.01), Vector3(0.0, 0.0, (size.z - 0.01) * 0.5), gun, 0.008)
+			b.box(Vector3(size.x - 0.016, size.y - 0.03, 0.006), Vector3(0.0, -0.006, size.z - 0.006),
+				Paint.coat(Paint.BONE, 0.5, 0.1, 0.6), 0.002)
+			b.drum(0.014, 0.012, Vector3(0.026, -0.008, size.z + 0.004), black, along, 12)
+			b.box(Vector3(0.012, 0.022, 0.008), Vector3(-0.03, -0.008, size.z + 0.002), steel, 0.002)
+			b.box(Vector3(size.x - 0.03, 0.008, 0.004), Vector3(0.0, h.y - 0.01, size.z - 0.004),
+				Paint.coat(Paint.YELLOW, 0.6), 0.001)
+			for x in [-0.025, 0.025]:
+				b.drum(0.006, 0.014, Vector3(x, h.y + 0.007, size.z * 0.5), Paint.coat(Paint.BRASS, 0.8, 0.7, 0.4),
+					Basis.IDENTITY, 8)
 		&"radar":
 			# A dish on a post, up from the Console's top.
 			b.drum(0.07, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 16)

@@ -35,9 +35,12 @@ const STATIC := 5
 const CITY := 6
 const FM := 7
 const CHANNELS: Array[String] = ["off", "music", "weather", "beacon", "god", "static", "city", "fm"]
-## Its bands: the AM dial, and the FM band through a converter fitted in its side.
+## Its bands: the AM dial, the FM band and the shortwave band, each of the last
+## two through a converter fitted in its side.
 const AM_BAND := &"am"
 const FM_BAND := &"fm"
+const SW_BAND := &"sw"
+const BANDS: Array[StringName] = [AM_BAND, FM_BAND, SW_BAND]
 const POINTS: Array[String] = ["north", "north-north-east", "north-east", "east-north-east", "east",
 	"east-south-east", "south-east", "south-south-east", "south", "south-south-west", "south-west",
 	"west-south-west", "west", "west-north-west", "north-west", "north-north-west"]
@@ -148,10 +151,14 @@ var on := false:
 		on = to
 		_recompute()
 var frequency := 0.0
-## Which band it's on (AM_BAND or FM_BAND), and where its FM dial stands, MHz:
-## each band keeps its own place, so switching back finds where you were.
+## Which band it's on (BANDS), and where its FM dial stands, MHz: each band
+## keeps its own place, so switching back finds where you were. The AM dial
+## and the shortwave band share `frequency`, kHz, one going on past the
+## other's top: where the one not in use stood is kept here.
 var band := AM_BAND
 var fm_mhz := Fm.LOWEST
+var am_khz := 0.0
+var sw_khz := Shortwave.LOWEST
 ## Where its volume knob stands, 0 silent to 1 full: everything it plays.
 var volume := 1.0
 ## What the dial reads now (OFF to STATIC). Set, as old saves do, it moves
@@ -249,6 +256,8 @@ var _was := UNHEARD
 var _motif_slot := NAN
 ## An old save's channel, waiting for its world to place it on the dial.
 var _wanted := UNHEARD
+## Tu's roar on shortwave, heard under whatever else plays.
+var roar: AudioStreamPlayer3D
 ## How far it has moved, m, for the fade it passes through on FM; where it was
 ## last tick; and each FM station's margin as last worked out, and where.
 var _moved := 0.0
@@ -282,6 +291,9 @@ func _ready() -> void:
 	hiss.stream = Sounds.RADIO_STATIC
 	crackle = _voice()
 	crackle.stream = Sounds.RADIO_STATIC
+	roar = _voice()
+	roar.stream = Sounds.RADIO_STATIC
+	roar.pitch_scale = 0.45
 	_signal = add_voice(signal_bus())
 	sky = SkyVoices.new()
 	add_child(sky)
@@ -350,11 +362,11 @@ func interact(_by: Player) -> bool:
 		_sweep_fm()
 	else:
 		if not on:
-			frequency = Dial.LOWEST
+			frequency = _lowest()
 			on = true
 		var next := _carrier_above(frequency + _tuning.dial_width_khz * ON_IT)
 		if is_nan(next):
-			frequency = Dial.LOWEST
+			frequency = _lowest()
 			on = false
 		else:
 			frequency = next
@@ -385,14 +397,14 @@ func tune(notches: int, fine := false) -> bool:
 		_spin = minf(_spin + 1.0, _tuning.dial_spin_most) if spinning else 1.0
 		_spun_at = now
 		_spun_way = signi(notches)
-		step = _tuning.dial_notch_khz * _spin
+		step = (_tuning.sw_notch_khz if band == SW_BAND else _tuning.dial_notch_khz) * _spin
 	if band == FM_BAND:
 		var mhz := _tuning.fm_fine_mhz if fine else _tuning.fm_notch_mhz
 		fm_mhz = clampf(snappedf(fm_mhz + notches * mhz * (1.0 if fine else _spin), mhz), Fm.LOWEST, Fm.HIGHEST)
 		_retuned(before)
 		return true
-	var snap := _tuning.dial_fine_khz if fine else _tuning.dial_notch_khz
-	frequency = clampf(snappedf(frequency + notches * step, snap), Dial.LOWEST, Dial.HIGHEST)
+	var snap := _tuning.dial_fine_khz if fine else (_tuning.sw_notch_khz if band == SW_BAND else _tuning.dial_notch_khz)
+	frequency = clampf(snappedf(frequency + notches * step, snap), _lowest(), _highest())
 	_retuned(before)
 	return true
 
@@ -414,25 +426,66 @@ func _sweep_fm() -> void:
 
 ## Whether an FM converter is fitted in its side, so it reaches the FM band.
 func has_fm() -> bool:
+	return _has(&"fm")
+
+
+## Whether a shortwave converter is fitted in its side, so it reaches shortwave.
+func has_sw() -> bool:
+	return _has(&"sw")
+
+
+func _has(stat: StringName) -> bool:
 	for part in parts():
-		if part.stats.get("fm", 0) > 0:
+		if part.stats.get(stat, 0) > 0:
 			return true
 	return false
 
 
-## The band switch: from the AM dial to the FM band and back, with a burst of
-## static, if a converter is fitted to reach it. Says whether it switched.
+## Whether it reaches a band: the AM dial always, the others with their converters.
+func reaches(to: StringName) -> bool:
+	return to == AM_BAND or (to == FM_BAND and has_fm()) or (to == SW_BAND and has_sw())
+
+
+## The band switch: round its bands, AM, FM and shortwave, skipping any it has
+## no converter to reach, with a burst of static. Says whether it switched.
 func switch_band() -> bool:
-	if wrecked() or world == null or (band == AM_BAND and not has_fm()):
+	if wrecked() or world == null:
+		return false
+	var to := band
+	for i in BANDS.size():
+		to = BANDS[(BANDS.find(to) + 1) % BANDS.size()]
+		if reaches(to):
+			break
+	if to == band:
 		return false
 	world.salvage.claim(self)
 	var before := channel
-	band = FM_BAND if band == AM_BAND else AM_BAND
+	_set_band(to)
 	_retuned(before)
-	_show_marks()
 	if powered:
 		_click(Sounds.RADIO_TUNE, minf(_tuning.radio_loudness_db, 3.0))
 	return true
+
+
+## Onto a band, the dial kept where it stood on the one it leaves.
+func _set_band(to: StringName) -> void:
+	if band == SW_BAND:
+		sw_khz = frequency
+		frequency = am_khz
+	if to == SW_BAND:
+		am_khz = frequency
+		frequency = sw_khz
+	band = to
+	_show_marks()
+
+
+## The bottom and top of the dial on the band it's on, kHz (the FM band's in MHz).
+func _lowest() -> float:
+	return Shortwave.LOWEST if band == SW_BAND else Dial.LOWEST
+
+
+func _highest() -> float:
+	return Shortwave.HIGHEST if band == SW_BAND else Dial.HIGHEST
 
 
 ## Where its dial stands, kHz, on whichever band it's on: an FM frequency as
@@ -451,7 +504,7 @@ func dial_near_khz() -> float:
 func on_band(khz: float) -> bool:
 	if band == FM_BAND:
 		return khz >= Fm.LOWEST * 1000.0 and khz <= Fm.HIGHEST * 1000.0
-	return khz >= Dial.LOWEST and khz <= Dial.HIGHEST
+	return khz >= _lowest() and khz <= _highest()
 
 
 ## Where a frequency, kHz, stands across the dial's window, 0 at the band's
@@ -459,12 +512,19 @@ func on_band(khz: float) -> bool:
 func dial_share(khz: float) -> float:
 	if band == FM_BAND:
 		return Fm.share(khz / 1000.0)
+	if band == SW_BAND:
+		return Shortwave.share(khz)
 	return khz / Dial.HIGHEST
 
 
-## What the dial reads, as the set shows it: "262 kHz", or "96.7 MHz" on FM.
+## What the dial reads, as the set shows it: "262 kHz", "96.7 MHz" on FM, or
+## "27.45 MHz" on shortwave.
 func dial_reading() -> String:
-	return "%.1f MHz" % fm_mhz if band == FM_BAND else "%d kHz" % roundi(frequency)
+	if band == FM_BAND:
+		return "%.1f MHz" % fm_mhz
+	if band == SW_BAND:
+		return "%.2f MHz" % (frequency / 1000.0)
+	return "%d kHz" % roundi(frequency)
 
 
 ## On or off, the dial where it stands, with a burst of static, as the
@@ -550,6 +610,9 @@ func tuned_to() -> StringName:
 	if world == null:
 		return &""
 	var best := &""
+	if band == SW_BAND:
+		# Nothing on the ground sends up here: only the sky, heard apart (SkyVoices).
+		return best
 	if band == FM_BAND:
 		var near := _tuning.fm_width_mhz * ON_IT
 		for each in Fm.stations(gods_of(world), world.run_seed, _tuning):
@@ -642,7 +705,9 @@ static func knob_turn(khz: float) -> float:
 ## Where the needle stands on its window, as the AM dial's kHz across it:
 ## the FM band spread over the same window.
 func _needle_khz() -> float:
-	return Dial.HIGHEST * Fm.share(fm_mhz) if band == FM_BAND else frequency
+	if band == FM_BAND:
+		return Dial.HIGHEST * Fm.share(fm_mhz)
+	return Dial.HIGHEST * Shortwave.share(frequency) if band == SW_BAND else frequency
 
 
 ## Its needle on the band and its knobs turned to what they show.
@@ -755,7 +820,8 @@ func _tune_to_channel(to: int) -> void:
 	on = to != OFF
 	_wanted = to if world == null else UNHEARD
 	# Every channel an old save or a scenario names is on the AM dial.
-	band = AM_BAND
+	if band != AM_BAND:
+		_set_band(AM_BAND)
 	match to:
 		MUSIC:
 			frequency = Dial.MUSIC_KHZ
@@ -776,8 +842,12 @@ func carriers() -> Array[float]:
 	var z := world.world_z(global_position.z)
 	for each in constellation_of(world).carriers(point_at(x, z), world.time):
 		out.append(each[0])
-	out.sort()
-	return out
+	var kept: Array[float] = []
+	for each in out:
+		if on_band(each):
+			kept.append(each)
+	kept.sort()
+	return kept
 
 
 ## The first carrier above a frequency, or NAN past the last.
@@ -824,10 +894,9 @@ func _listen(delta: float) -> void:
 	var x := world.world_x(global_position.x)
 	var z := world.world_z(global_position.z)
 	var t := world.time
-	if band == FM_BAND and not has_fm():
+	if not reaches(band):
 		# Its converter taken off, it's back on the AM dial.
-		band = AM_BAND
-		_show_marks()
+		_set_band(AM_BAND)
 	if band == FM_BAND:
 		_listen_fm(delta, x, z, t)
 		return
@@ -950,6 +1019,15 @@ func _listen(delta: float) -> void:
 		through = 0.0 if reception.cut else reception.clean
 	# The satellites, all at once over whatever else it hears.
 	through = maxf(through, sky.listen(delta, x, z, t))
+	# Tu's roar, up on shortwave, under the rest and over the static.
+	var tu := 0.0
+	if band == SW_BAND:
+		tu = Shortwave.roar(point_at(x, z), world.shape.history.sub_tu, frequency, t, world.weather.day.tu_turn(t),
+			_tuning)
+		if tu >= CRACKLE_TELL and volume > 0.0 and heard():
+			Deeds.done(world, &"tu_roar")
+	roar.volume_db = linear_to_db(tu + 0.0001) + knob_db()
+	through = maxf(through, tu * 0.5)
 	_show_lamps(through, delta)
 	# Static only while nothing plays (gonkhub, 2026-10-19): interference is in
 	# what you hear, not hiss laid over it.
@@ -974,6 +1052,7 @@ func _listen(delta: float) -> void:
 	if not _hissing:
 		hiss.play(fposmod(t, hiss.stream.get_length()))
 		crackle.play(fposmod(t * 0.7, crackle.stream.get_length()))
+		roar.play(fposmod(t * 0.4, roar.stream.get_length()))
 		_hissing = true
 
 
@@ -1023,6 +1102,7 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 	_show_lamps(_level, delta)
 	hiss.volume_db = linear_to_db(under + 0.0001) + knob_db()
 	crackle.volume_db = linear_to_db(0.0001)
+	roar.volume_db = linear_to_db(0.0001)
 	_loudness()
 	# Through the converter it plays as the AM set does, as narrow.
 	dirt = reception.get("dirt", 0.0)
@@ -1031,6 +1111,7 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 	if not _hissing:
 		hiss.play(fposmod(t, hiss.stream.get_length()))
 		crackle.play(fposmod(t * 0.7, crackle.stream.get_length()))
+		roar.play(fposmod(t * 0.4, roar.stream.get_length()))
 		_hissing = true
 
 
@@ -1267,7 +1348,7 @@ func on_air() -> AudioStream:
 
 
 func _off_air() -> void:
-	for voice: AudioStreamPlayer3D in [music, hiss, crackle, _signal]:
+	for voice: AudioStreamPlayer3D in [music, hiss, crackle, roar, _signal]:
 		voice.stop()
 	_hush()
 	_on_air = null
