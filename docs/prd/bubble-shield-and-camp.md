@@ -460,3 +460,15 @@ refresh across 240 samples after 30 warm-ups; maximum 6.237 ms, initial mark
 6.949 ms. Item 513 refused the whole mark. The fixture used frozen catalog hooks
 and a small footprint, isolating graph CPU cost. It does not establish full
 physics/GPU, heterogeneous-device or maximum-span performance acceptance.
+
+### Live expedition acceptance (2026-10-21; checking)
+
+The bounded follow-up keeps a small marked shield/solar/battery camp and a
+claimed loose supply physically active during a 2.1 km scouting departure.
+Power must continue through ordinary ticks, including generation and demand,
+and shutdown must not erase the loose member. Save while far, restore the
+actual supported objects, then return to the same camp and inspect its GPU view.
+Existing focused history checks remain the duplicate-sheet acceptance; this
+check adds the live-resource and membership combination rather than a second
+remote catch-up simulation. It does not establish the maximum camp budget or
+boarding/hoverboard travel acceptance.
