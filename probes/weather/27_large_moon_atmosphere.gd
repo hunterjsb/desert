@@ -45,3 +45,22 @@ func run() -> void:
 	check(down > 4.9 * float(craft._overlay.get_shader_parameter(&"veil")),
 		"descending through denser air has more dust than staying at the high observer")
 	tuning.dust_height_m = previous_dust
+
+	craft.place(Vector3(0.0, 10000.0, 0.0), Vector3.DOWN, 4000.0, Vector3.FORWARD, Vector3.UP)
+	check(craft.visible, "a finite Drone at6km is visible below a10km observer")
+	check(is_equal_approx(float(craft._paint.get_shader_parameter(&"sky_proxy_distance_scale")), 4000.0 / Vector3(0.0, 10000.0, 0.0).distance_to(craft.global_position)),
+		"paint receives actual finite target distance")
+	craft.place(Vector3(0.0, 10.0, 0.0), Vector3.DOWN, 100.0, Vector3.FORWARD, Vector3.UP)
+	check(not craft.visible, "a target below the presentation surface stays hidden")
+	var tangent := Vector3(1.0, -0.01, 0.0).normalized()
+	check(not craft._clear_segment(10.0, tangent, 100000.0), "planet crossing hides a target even when its far endpoint rises above ground")
+
+	var orbit: Satellite = Radio.constellation_of(world).orbits[&"thermal"]
+	var orbit_at := orbit.at(world.time)
+	var below := orbit_at.normalized()
+	world.moon.place(rad_to_deg(Sphere.latitude(below)), rad_to_deg(Sphere.longitude(below)))
+	world.player.global_position.y = 10000.0
+	sky._show_satellites(world.time)
+	check(craft.visible and (craft.global_position - eye.global_position).normalized().y < -0.99,
+		"actual ephemeris viewed from above places the finite Drone below the observer")
+	check(orbit.at(world.time).is_equal_approx(orbit_at), "observer parallax never modifies the orbit")

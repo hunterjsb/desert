@@ -1215,3 +1215,11 @@ Weather27 reproduces the downward-column bug before the change (5 s RED), then
 passes with the signed analytic column (6 s GREEN). Reversed vertical 6–10 km
 paths match the analytic exponential integral and each other; the descending path
 has over4.9times the opacity of the horizontal path at10 km.
+
+Finite Drone visibility uses clearance of the observer-to-target segment against
+the same parabolic presentation surface: evaluate both endpoints and the quadratic
+stationary point when it falls inside the segment. No extra hull margin is introduced.
+Only the modelled Drone's local observer subtracts actual nonnegative eye altitude
+from its compressed-orbit radial position; the orbit and all other celestial angular
+ephemerides remain unchanged. Both proxy materials receive slant/near distance scale
+for actual-depth rendering rather than forcing the model behind all ground.

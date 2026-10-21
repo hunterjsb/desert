@@ -58,16 +58,18 @@ func _ready() -> void:
 
 
 ## Where it is: `toward` from `eye` (unit), `slant` m off, flying along
-## `along`, its top facing `up` (away from the moon's centre). Below the
-## horizon it isn't drawn.
+## `along`, its top facing `up` (away from the moon's centre). A finite ship
+## below the observer is visible unless its segment crosses the moon.
 func place(eye: Vector3, toward: Vector3, slant: float, along: Vector3, up: Vector3) -> void:
-	visible = toward.y > -sin(SurfaceProjection.horizon_dip(maxf(eye.y, 0.0), SurfaceProjection.radius(_tuning))) - 0.02
+	visible = _clear_segment(maxf(eye.y, 0.0), toward, slant)
 	if not visible:
 		return
 	var env := get_world_3d().environment
 	var near := minf(slant, PROXY)
 	if env != null and env.fog_enabled:
 		near = minf(near, maxf(env.fog_depth_begin * 0.95, 40.0))
+	_paint.set_shader_parameter(&"sky_proxy_distance_scale", slant / near)
+	_overlay.set_shader_parameter(&"sky_proxy_distance_scale", slant / near)
 	var y := up.normalized()
 	var z := -(along - y * along.dot(y)).normalized()
 	var x := y.cross(z)
@@ -75,6 +77,15 @@ func place(eye: Vector3, toward: Vector3, slant: float, along: Vector3, up: Vect
 	global_transform = Transform3D(Basis(x, y, z).scaled_local(Vector3.ONE * size), eye + toward * near)
 	_pick_detail(slant)
 	_veil(env, toward, slant, maxf(eye.y, 0.0))
+
+
+func _clear_segment(height: float, toward: Vector3, slant: float) -> bool:
+	var curve := Vector2(toward.x, toward.z).length_squared() / (2.0 * SurfaceProjection.radius(_tuning))
+	var minimum := minf(height, height + toward.y * slant + curve * slant * slant)
+	if curve > 0.0:
+		var at := clampf(-toward.y / (2.0 * curve), 0.0, slant)
+		minimum = minf(minimum, height + toward.y * at + curve * at * at)
+	return minimum >= 0.0
 
 
 ## The scene's light: which way the sun is and its light (linear, times its
