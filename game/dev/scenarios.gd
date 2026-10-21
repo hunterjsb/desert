@@ -29,16 +29,17 @@ const LIST: Array[Dictionary] = [
 	{"key": "clearing", "label": "a storm about to clear, its back 100 m upwind", "kind": "back", "distance": 100.0,
 		"day": [0.35, 0.55]},
 	{"key": "dusk", "label": "dusk, the sun on the horizon", "kind": "sky", "day": [0.733, 0.745]},
-	# With the relay satellite up and sunlit, low enough to see facing it.
-	{"key": "night", "label": "night, facing the relay satellite crossing the sky", "kind": "sky", "day": [0.8, 0.97],
+	# With the relay satellite sunlit beside Tu, facing it.
+	{"key": "night", "label": "night, facing the relay satellite hanging beside Tu", "kind": "sky", "day": [0.8, 0.97],
 		"relay": true},
 	{"key": "eclipse", "label": "clear, facing Tu, the sun half a minute from going behind it", "kind": "clear",
 		"eclipse": 30.0},
 	{"key": "far", "label": "the far side: a clear night with no Tu, facing the pole star", "kind": "sky",
 		"day": [0.9, 0.97], "moon": [30.0, 180.0]},
-	# To hear the relay's music go as a storm comes over: it's well up, the radio on it.
-	{"key": "far_storm", "label": "the far side: a radio on the relay's music, a storm 1.2 km off", "kind": "front",
-		"distance": 1200.0, "day": [0.0, 1.0], "moon": [30.0, 180.0], "relay_up": true, "lays": &"music"},
+	# To hear the music go as a storm comes over: at night, when the port's AM comes
+	# round the moon to the far side, the radio on it.
+	{"key": "far_storm", "label": "the far side at night: a radio on the port's music, a storm 1.2 km off",
+		"kind": "front", "distance": 1200.0, "day": [0.8, 0.97], "moon": [30.0, 180.0], "lays": &"music"},
 	{"key": "survive", "label": "sealed water at dawn, a deck with a crude condenser and a shield", "kind": "clear",
 		"day": [0.25, 0.3], "lays": &"survive"},
 	{"key": "ruin", "label": "a house ruin's door, finds round it, a bare piece of your own", "kind": "ruin",
@@ -363,11 +364,7 @@ const STEP := 25.0
 const HORIZON := 3.0 * 24.0 * 3600.0
 const TIME_STEP := 10.0
 ## "relay" looks for the relay this many degrees up, at least and at most.
-const RELAY_SEEN := Vector2(10.0, 28.0)
-## "relay_up" looks for the relay at least this many degrees up.
-## High enough that its signal crosses the dust within 900 m of you, so a
-## storm farther off doesn't yet stand in its way.
-const RELAY_UP := 60.0
+const RELAY_SEEN := Vector2(10.0, 50.0)
 ## "deep" means full storm for at least this far either way along the wind.
 const DEEP := 300.0
 
@@ -604,8 +601,7 @@ static func _search(world: World, scenario: Dictionary, spawn: Vector2, longitud
 	while t < HORIZON:
 		var hour := day.time_of_day(t, moon.y)
 		if (scenario.has("eclipse") or (hour >= scenario.day[0] and hour <= scenario.day[1])) \
-				and (not scenario.get("relay", false) or _relay_shows(world, moon, t)) \
-				and (not scenario.get("relay_up", false) or _relay_up(world, moon, t)):
+				and (not scenario.get("relay", false) or _relay_shows(world, moon, t)):
 			var upwind := -field.prevailing_at(t).normalized()
 			var place := _place(field, scenario, spawn, upwind, t)
 			if not place.is_empty():
@@ -966,12 +962,6 @@ static func _relay_shows(world: World, moon: Vector2, t: float) -> bool:
 	var up := rad_to_deg(asin(clampf(_relay_from(world, moon, t).y, -1.0, 1.0)))
 	return up >= RELAY_SEEN.x and up <= RELAY_SEEN.y \
 		and Radio.relay_of(world).sunlit(t, world.weather.day.sun_toward(t))
-
-
-## Whether the relay is well up over a place at world time t, its music clear
-## for a while yet: RELAY_UP degrees and more.
-static func _relay_up(world: World, moon: Vector2, t: float) -> bool:
-	return rad_to_deg(asin(clampf(_relay_from(world, moon, t).y, -1.0, 1.0))) >= RELAY_UP
 
 
 ## A planter floating in front of you on its own tray and battery, a hook on

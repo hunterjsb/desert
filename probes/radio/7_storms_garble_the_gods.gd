@@ -1,6 +1,6 @@
 extends ShieldProbe
 ## Radio probe 7: storms garble the gods. Tuned to the strongest god on the
-## dial under clear skies, what it says comes through whole, never cut, its
+## dial under clear skies, the set broadside to it, what it says comes through whole, never cut, its
 ## carrier where it belongs. With a storm all along the way, the same god is
 ## distorted, its carrier slides off where you tuned, and it drops out part
 ## of the time, and the static under it rises.
@@ -23,10 +23,12 @@ func run() -> void:
 	var strongest := 0.0
 	for id in Gods.ids():
 		radio.frequency = gods.carrier(id, t0)
-		var got: float = radio.receive(id, x, z, t0).strength
+		var heard := radio.receive(id, x, z, t0)
+		var got: float = heard.strength / maxf(heard.rod, 1e-4)
 		if got > strongest:
 			strongest = got
 			best = id
+	broadside(radio, best)
 	radio.on = true
 	radio.frequency = gods.carrier(best, t0)
 	var clear := _listen(radio, best, x, z, t0)

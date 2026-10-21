@@ -81,6 +81,15 @@ static func strength(id: StringName, khz: float, metres: float, night: bool, tun
 	return maxf(ground, sky) * Gods.power(id)
 
 
+## Whether a signal reaches you by its sky wave rather than along the ground:
+## at night, over 500 kHz, past the skip, where the sky wave is the stronger.
+static func by_sky(khz: float, metres: float, night: bool, tuning: Tuning) -> bool:
+	if not night or khz <= GROUND_KHZ or metres <= tuning.skip_m:
+		return false
+	var reach := tuning.ground_wave_m * minf(1.0, pow(GROUND_KHZ / maxf(khz, 1.0), 2.0))
+	return tuning.sky_wave > exp(-metres / reach)
+
+
 ## Which way a god lies from where you stand, as a radio says it: a compass
 ## point near, a rougher one farther, and past that only a way across the
 ## moon. `ground` is its bearing on the ground, degrees from -z; `say_point`

@@ -25,6 +25,8 @@ func run() -> void:
 	world.weather.field = Staged.new(world.run_seed, Tuning.current())
 	var console: Console = dropped.filter(func(n: Node) -> bool: return n is Console)[0]
 	var radio: Radio = dropped.filter(func(n: Node) -> bool: return n is Radio)[0]
+	# Stuck on the deck at whatever angle; the Walker's feed, not the rod's null, is what's tested.
+	Tuning.current().rod_null = 1.0
 	var walker: Walker = get_tree().get_nodes_in_group(&"walker")[0]
 	await physics_frames(5)
 	check(_mapped(console).is_empty() and not "anomaly" in radio.said, "untaught, no map shows it and the feed says nothing")
