@@ -1,4 +1,4 @@
-## 0.2.4-alpha “Sailboat”
+## 0.2.4-alpha “Creaky Sailboat”
 
 A manual sail hoist, physical salvage rewards and clearer radio handling.
 Includes the sailing, traversal and exploration baseline described below.
