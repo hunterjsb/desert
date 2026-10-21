@@ -404,3 +404,19 @@ the orbital viewport while the matched real seated camera is briefly recoiled;
 the renderer restores its unmodified local transform on disposal. The shared
 regional trajectory will supply orbital position/orientation separately; the
 old orbit interpolation remains a temporary renderer path until that integration.
+
+Renderer33 passes (6 s): real shell held at one seat through orbit/ejection/
+descent/entry, projected window wholly on screen, bounded nonaccumulating ground
+recoil, exact settled/disposal camera restoration and no extra physical bodies.
+Saved-time effects28 passes (4 s). Actual GPU renderer captures at1280×720 were
+inspected for orbit, ejection, descent, hot entry, impact and settled ground.
+With the same real renderer pose/light held fixed, entry changes30,940 pixels
+inside the aperture and zero outside; the first fixture incorrectly varied
+orbital attitude as well, so sunlight changed the surrounding shell. The revised
+fixture isolates only the effect without relaxing its zero-outside threshold.
+
+This fixture uses the real View with an explicitly positioned ground-seat body;
+it does not claim controller transport, the new trajectory model, normal recovery
+crawl or full saved-run acceptance. Ground HUD bars remain visible under the
+transparent renderer in this isolated fixture; controller flight suppression is
+owned by the connected integration. The old orbital path remains temporary.

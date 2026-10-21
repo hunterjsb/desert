@@ -139,11 +139,11 @@ func _phase_audio(phase: StringName, progress: float) -> void:
 func dispose() -> void:
 	_voice.stop()
 	_voice.stream = null
-	if _ground_camera_active and is_instance_valid(_world):
+	if _ground_camera_active and is_instance_valid(_world) and is_instance_valid(_world.player) \
+		and is_instance_valid(_world.player.camera):
 		_world.player.camera.transform = _ground_camera_base
 	_ground_camera_active = false
 	_world = null
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_root.hide()
 	queue_free()
-
