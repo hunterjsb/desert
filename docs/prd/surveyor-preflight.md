@@ -155,3 +155,15 @@ actual launch/recovery actions retain their own deed recording.
 
 Optional carrier-loss cases and ordinary first-person packing/collision captures
 remain pending; these focused checks are not full milestone acceptance.
+
+#### Lost-carrier material continuity
+
+Arrival24 first fails cleanly (6 s) when a selected line survives but one of its
+untagged original ends is destroyed with its impact-lost carrier panel. Store
+each actual endpoint pose under qualified keys in the existing plain cargo_poses
+dictionary. Before deleting lost carriers, unseat both surviving original ends;
+land the detached far end at its saved local pose as the same body. This adds no
+second inventory item, replacement line or synthetic identity. The same check
+now passes (6 s): the side-mounted board keeps its original cell after its carrier
+is lost, both actual rope ends and their original line remain, and only the two
+protected real floors stay joined when all outer panels/frames are lost.

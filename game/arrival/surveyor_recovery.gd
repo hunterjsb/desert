@@ -221,6 +221,23 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 	var survived := {}
 	for entry: Dictionary in state.structure + state.equipment:
 		survived[StringName(entry.uid)] = entry.survives
+	var loose_ends := {}
+	# A line has one cargo identity but two original bodies. Neither may be
+	# destroyed with a lost carrier while the line itself survives impact.
+	for entry: Dictionary in state.equipment:
+		var primary := objects.get(StringName(entry.uid)) as RigidBody3D
+		if not entry.survives or not is_instance_valid(primary) or not primary.has_meta(&"line"):
+			continue
+		var line := primary.get_meta(&"line") as Line
+		if not is_instance_valid(line) or line.state != Line.State.LAID:
+			continue
+		for k in line.ends.size():
+			var end := line.ends[k]
+			var parent_uid := PreflightCargo._parent_uid(end)
+			if parent_uid != &"" and not survived.get(parent_uid, false):
+				_unseat(end)
+				if end != primary:
+					loose_ends[PreflightCargo.end_key(entry.uid, k)] = end
 	# Detach survivors before removing a parent lost in impact.
 	for entry: Dictionary in state.equipment:
 		var body := objects.get(StringName(entry.uid)) as RigidBody3D
@@ -297,6 +314,14 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 		body.linear_velocity = Vector3.ZERO
 		body.angular_velocity = Vector3.ZERO
 		placements[uid] = &"pod" if inside else &"spill"
+	for key: StringName in loose_ends:
+		var end := loose_ends[key] as RigidBody3D
+		var desired: Transform3D = pose * poses[key]
+		if not _put(world, end, desired, reserved, gap) and not _spill(world, end, facing, origin, reserved, gap, clearance, rules):
+			return {}
+		end.freeze = false
+		end.linear_velocity = Vector3.ZERO
+		end.angular_velocity = Vector3.ZERO
 	for panel in deck.pieces():
 		PodShell.restore_skin(panel)
 	state.placements = placements

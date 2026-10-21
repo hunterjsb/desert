@@ -144,10 +144,14 @@ static func seal(world: World, ship: SurveyorShip, state: Dictionary, profile: D
 	world.counts_deeds = counting
 	for uid: StringName in named:
 		var body: RigidBody3D = named[uid]
-		if body is Chassis and body.deck != null:
-			poses[uid] = pod_world.affine_inverse() * body.deck.global_transform * body.pose()
-		elif body.is_inside_tree():
-			poses[uid] = pod_world.affine_inverse() * body.global_transform
+		poses[uid] = pod_world.affine_inverse() * body_pose(body)
+	for uid: StringName in selected:
+		var body: RigidBody3D = named[uid]
+		if body.has_meta(&"line"):
+			var line := body.get_meta(&"line") as Line
+			if is_instance_valid(line) and line.state == Line.State.LAID:
+				for i in line.ends.size():
+					poses[end_key(uid, i)] = pod_world.affine_inverse() * body_pose(line.ends[i])
 	for uid: StringName in named:
 		var body: RigidBody3D = named[uid]
 		if body.is_inside_tree() and (selected.has(uid) or ship.pod_parts.has(uid)):
@@ -201,6 +205,19 @@ static func _external(world: World, ship: SurveyorShip, body: RigidBody3D, box: 
 			return envelope.grow(GEOMETRY_EPS).encloses(box)
 		on = on.host() if on is Device else null
 	return false
+
+
+static func end_key(uid: StringName, index: int) -> StringName:
+	return StringName("%s:end:%d" % [uid, index])
+
+
+static func body_pose(body: RigidBody3D) -> Transform3D:
+	if body is Part and body.socket != null:
+		var socket: Socket = body.socket
+		return (socket.get_parent() as Node3D).global_transform * socket.transform
+	if body is Chassis and body.deck != null:
+		return body.deck.global_transform * body.pose()
+	return body.global_transform
 
 
 static func bounds_in(body: RigidBody3D, frame: Transform3D) -> AABB:
