@@ -1293,3 +1293,14 @@ orbital globe or inventory previews through the main ground projection. Existing
 Tu angular size, sun direction, worn materials and accepted sand stay the visual
 baseline. This is a presentation correction, not a new gravity or movement scale.
 
+
+### Surveyor capsule viewing panel (2026-10-21)
+
+The tail remains an ordinary recoverable chassis, with a bone-and-teal window
+surround, dark continuous glazing seals and small safety-yellow fasteners.
+Its center is a real opening in the opaque mesh, closed by two thin clear panes
+on the original chassis faces. Interior copies use the same actual meshes and
+poses; the fallback authors the same shell directly without creating equipment.
+The cramped dark thermal liner and visible frame rails establish a capsule,
+while Zan remains visible through its window rather than painted onto a wall.
+The existing artwork's materials and ordinary detachable panel identity remain.

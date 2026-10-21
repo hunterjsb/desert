@@ -274,3 +274,20 @@ the controller owns eye height. `flight_interior(parts)` makes only meshes at
 the real parts' pod-local poses, excluding cargo. A mesh-only authored fallback
 serves legacy flight without spawning bodies or supplies. The orbital controller
 owns placement and camera continuity; the geometry helper never moves equipment.
+
+The viewing panel is implemented in the isolated first-person geometry branch.
+Arrival29 passes (9 s): complete twelve-role pod, unchanged mass/collision shape
+count, genuine opening through the opaque mesh, idempotent skin update, mesh-only
+actual/legacy interiors, ordinary detach, real disk save/resume, and rejoining the
+same saved window. Existing dismantled-pod8 and reroot-save12 pass (9/10 s).
+Actual1280×720 GPU captures show the sealed berth and the same shell framing Zan
+in an isolated orbital viewport; the authored legacy shell matches that seat.
+The current berth eye sits below the ship observation-window sill, so its straight
+preflight view sees the real ship wall beyond the clear pod glass. That physical
+room/window alignment remains an integration decision; no seat or object was moved
+to conceal it. These geometry checks do not claim full connected-flight acceptance.
+The capture fixture drains the disposable world/viewport across three process
+frames and the final render fence before exit. The final GPU run emits no script,
+shader, ObjectDB or resource-in-use errors. An earlier two-frame fixture shutdown
+intermittently reported retained resources; the verbose repeat and final cleanup
+run completed without those warnings. No production teardown behavior was changed.
