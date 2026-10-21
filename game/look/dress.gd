@@ -25,6 +25,12 @@ static func part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	return _cached(&"part", key, func() -> ArrayMesh: return _part(id, size, count))
 
 
+## A flat coil's axis is +Z, with its back at zero; gathered rope adds windings.
+static func coil(level: int = 2) -> ArrayMesh:
+	var amount := clampi(level, 0, 2)
+	return _cached(&"coil", StringName(str(amount)), func() -> ArrayMesh: return CoilLooks.make(amount))
+
+
 static func halyard_block() -> ArrayMesh:
 	return _cached(&"fitting", &"halyard_block", func() -> ArrayMesh:
 		var b := Paint.Pieces.new()
@@ -735,8 +741,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.drum(0.016, 0.03, Vector3(0.0, h.y, 0.075), steel, Basis.IDENTITY, 10)
 			b.drum(0.02, 0.008, Vector3(0.0, h.y + 0.011, 0.075), Paint.coat(Catalog.KINDS[&"water"], 0.3), Basis.IDENTITY, 10)
 		&"coil":
-			b.ring(0.09, 0.17, Vector3(0.0, 0.0, size.z * 0.5), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.6), along)
-			b.box(Vector3(0.05, 0.1, 0.05), Vector3(0.13, 0.0, size.z * 0.5), Paint.coat(Paint.GUNMETAL, 0.6, 0.3), 0.008)
+			return coil()
 		&"canister":
 			b.drum(h.x * 0.92, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Color(0.55, 0.62, 0.68), 0.6, 0.5, 0.45), along, 16)
 			b.drum(h.x * 0.5, 0.04, Vector3(0.0, 0.0, size.z - 0.02), Paint.coat(Paint.TEAL, 0.5), along, 12)

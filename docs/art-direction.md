@@ -1110,3 +1110,25 @@ Mounted views were also inspected in daylight dust and local midnight dust, with
 a small staged warm light for the night inspection. The face, needle, lamp and
 both wheels remain distinct against the worn chassis. This is a rendered model
 readability check; the staged light does not establish unlit night legibility.
+
+
+## Rope coils (2026-10-20; agreed, in progress)
+
+Replace the heavy ring and metal block with a compact, hand-wound rope bundle:
+individual round windings, a shallow second layer, a quiet cord binding and a short
+whipped free end. Keep the existing 0.34 × 0.34 × 0.07 m part envelope and practical
+sun-worn brown fibre, with a muted teal binding. The gathered rope uses the same
+look, with three cached winding amounts; more rope adds loops and bundle thickness
+without making the rope itself thicker. Merge each variant into one surface using
+the existing worn material. Inspect ground and held views on the actual renderer
+at 720p before acceptance.
+
+**As built and inspected.** `Dress.coil(level)` caches three single-surface native
+meshes, with 1,848 / 2,568 / 4,206 triangles. The rope gauge stays at a nominal
+0.02 m radius beside the world strand's 0.024 m radius; small twisting fibre
+lobes catch the light, with a muted cord binding round the outer courses and a
+whipped free end. The fullest mesh stays inside the existing part envelope.
+Actual Forward+ 1280 × 720 captures show the bundle close on sand beside a real
+strand, from eye height, and carried face-on and tilted. These are rendered
+readability and geometry checks, not a measured GPU frame-time claim. The
+gathered-coil behavior and fill selection live in Reel, using this shared mesh.
