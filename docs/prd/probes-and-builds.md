@@ -31,6 +31,12 @@ on the world walk, 601 + 339 s on warnings, and 301 + 243 s on salvage retention
   devices. The next master run (39629562854) took 1028 s in the catch-all group
   against 320 s for foundation and 345 s for devices; radio and menus account
   for 1370 s of its summed probe time. Its fallback must still include new folders.
+- Balance the existing four native groups after measuring the landed pass. In
+  run 39640555594, saves/kits/sail/power/farming/survival took 2101 s while the
+  other Windows groups took 972–1022 s. Move power/farming beside physical gear
+  checks, and survival beside arrival/camp/movement; keep saves/kits/sail together.
+  Kits 3 hit its 400 s limit in the pool then passed alone in 196 s, so mark it
+  exclusive on noisy runners. No additional jobs or timeout increases.
 - Measure packaging compression before changing it; preserve archive contents,
   executable permissions, macOS symlinks and all native smoke checks.
 
