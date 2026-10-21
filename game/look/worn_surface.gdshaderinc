@@ -69,7 +69,10 @@ void vertex() {
 	vec4 proxy_view = MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
 	proxy_view.xyz *= sky_proxy_distance_scale;
 	POSITION = PROJECTION_MATRIX * proxy_view;
-	POSITION.z = max(POSITION.z, (CLIP_SPACE_FAR + 0.0000000001) * POSITION.w);
+	if (POSITION.z <= CLIP_SPACE_FAR * POSITION.w) {
+		float inside = CLIP_SPACE_FAR < 0.0 ? 0.0000002 : 0.0000000001;
+		POSITION.z = (CLIP_SPACE_FAR + inside) * POSITION.w;
+	}
 #endif
 	obj_pos = VERTEX;
 	obj_n = NORMAL;
