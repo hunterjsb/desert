@@ -159,10 +159,13 @@ func waist_body() -> RigidBody3D:
 
 ## A named target and its live load make the wheel's choice visible.
 func waist_readout() -> String:
-	var body := waist_body()
-	if body == null:
+	if waist_body() == null:
 		return ""
-	return waist_description(body) + (" · selected" if body == chosen_body() else "")
+	var active := line()
+	for body in waist_lines():
+		if _line_of(body) == active:
+			return waist_description(body) + (" · selected" if body == chosen_body() else "")
+	return ""
 
 
 ## The same name and live numbers in the carry view and the sailing readout.

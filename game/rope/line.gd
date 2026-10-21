@@ -364,7 +364,9 @@ func _lost() -> void:
 	for end in ends:
 		if is_instance_valid(end):
 			# A bare end left after a lost line is no longer a waist tether.
-			if _world.player.waist.holds(end) and not _world.player.waist.carries_line(end):
-				_world.player.waist.untie(end)
+			var tip := _tip(end)
+			var holder := tip.holder if is_instance_valid(tip) else end
+			if _world.player.waist.holds(holder) and not _world.player.waist.carries_line(holder):
+				_world.player.waist.untie(holder)
 			end.remove_meta(&"line")
 	queue_free()

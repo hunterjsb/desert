@@ -862,7 +862,9 @@ length, strength and fairlead route remains distinct. Loose knot mass includes
 all its original ends; fitted ends contribute their own mass through ordinary
 device sockets, exactly once. Dropping gives the whole knot the normal player
 momentum. Fitting it to an existing free anchor is the ordinary take action.
-The existing last-on/first-off fitting picker can remove individual ends again.
+Taking the primary knot uses the ordinary group-preserving pop path, so the
+whole knot returns to hand; deliberately aiming at a secondary end's own
+geometry can still remove that individual fitting.
 
 The carry-view rope picker and reel retain an individual active member; a held
 group takes priority over waist ropes and its first live member is the fallback.
