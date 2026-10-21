@@ -1482,22 +1482,6 @@ visible path/clearance, not final craft art or a human judgment of movement feel
 
 ### Large mixed-deck baseline (measured 2026-10-20)
 
-#### Authored placement in loaded boarding checks (selected 2026-10-21)
-
-Use `World.teleport` when a boarding fixture places an already active player at
-its next approach. Directly assigning that CharacterBody's position creates a
-native kinematic impulse before the test's input begins. An external 27-piece
-uneven-craft case initially misidentified that setup impulse as powered-off
-boarding instability: the first no-input tick already spun the deck at 9.287
-rad/s. Keeping the original input cadence and 0.9 s / 0.08 m acceptance while
-using the existing teleport API removes the kick. No Player/vault force law,
-collision policy or acceptance threshold needs changing for this observation.
-
-Keep a focused real-input regression covering the loaded, offset mixed craft,
-ordinary battery exhaustion while aboard and powered-off reboarding. Retain
-live native support and the actual hinged mast, routed sheet and mooring lines;
-the fixture's setup teleport must not become a gameplay force workaround.
-
 A focused Godot 4.7.2/Jolt audit compared 4-piece and 27-piece decks and a 108-piece
 notched deck, alternating skates and trays, hover off/on and yaw 0/45 degrees.
 The 108-piece craft weighed 1,584 kg, with 54 skates, 54 trays and 18 batteries.
@@ -1548,6 +1532,42 @@ below 0.92 degrees and support about 3,993 N, near its weight. No sustained spin
 defect was demonstrated. Solver means were 0.16–0.28 ms/tick across these phases.
 This covers one offset mixed assembly and battery transition, without mast, ropes,
 steep terrain or player loads; the helper emitted teardown warnings after passing.
+
+#### Authored placement in loaded boarding checks (built 2026-10-21)
+
+Use `World.teleport` when a boarding fixture places an already active player at
+its next approach. Directly assigning that CharacterBody's position creates a
+native kinematic impulse before the test's input begins. An external 27-piece
+uneven-craft case initially misidentified that setup impulse as powered-off
+boarding instability: the first no-input tick already spun the deck at 9.287
+rad/s. Keeping the original input cadence and 0.9 s / 0.08 m acceptance while
+using the existing teleport API removes the kick. No Player/vault force law,
+collision policy or acceptance threshold needs changing for this observation.
+
+Keep a focused real-input regression covering the loaded, offset mixed craft,
+ordinary battery exhaustion while aboard and powered-off reboarding. Retain
+live native support and the actual hinged mast, routed sheet and mooring lines;
+the fixture's setup teleport must not become a gameplay force workaround.
+
+Movement 40 now covers that single combined boarding/ordinary-touchdown failure
+mode. The notched 27-piece craft weighs 407 kg, carries eighteen offset hover
+trays, nine offset skates, a real hinged mast and three physical lines, and sits
+on actual sand with 0.514 m height spread. A 5 Wh battery drains through ordinary
+device demand; both boarding attempts use actual movement input and unchanged
+0.9 s / 0.08 m top/floor acceptance. No runtime boarding code changed.
+
+On the inspected Godot 4.7.2 unseen GPU run, powered boarding peaked at 0.1195
+rad/s and 0.790 degrees tilt; grounded reboarding peaked at 0.0892 rad/s and
+2.127 degrees, with feet 0.06076 m above the chassis origin and floor true.
+Natural power loss/touchdown briefly reached 0.6653 rad/s and 4.094 degrees,
+then settled. All sampled frames during depletion/touchdown and the eight
+seconds after reboarding retained floor contact, and no missing-ground rescue
+ran. Movement 32, 35, 39 and 40 pass. The four actual 1280x720 captures in
+`look/loaded_boarding` were inspected at powered boarding, touchdown, grounded
+boarding and settling. They establish the visible endpoints for this one
+moored moderate-wind assembly, not free-sailing/storm boarding or movement feel.
+The GPU run passed before reporting eleven ObjectDB instances and four resources
+still in use at teardown; these warnings remain unresolved.
 
 ## Solid wreck support (2026-10-20; built)
 
