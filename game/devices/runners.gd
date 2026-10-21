@@ -351,13 +351,30 @@ static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, 
 	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())
 	var inv_mass := 1.0 / body.mass
 	var turn := state.inverse_inertia_tensor
-	var arm := point - body.global_transform * body.center_of_mass
-	var moving := state.linear_velocity + Vector3.DOWN * world.gravity * h + state.angular_velocity.cross(arm)
-	var up := _mass(inv_mass, turn, arm, Vector3.UP)
+	var middle := body.global_transform * body.center_of_mass
+	var velocity := state.linear_velocity
+	var spin := state.angular_velocity
+	var model := RopeArticulation.native(body as Device)
+	if model != null:
+		var coupled := model.bodies[0]
+		middle = coupled.center
+		velocity = coupled.velocity
+		spin = coupled.spin
+	var arm := point - middle
+	var moving := velocity + Vector3.DOWN * world.gravity * h + spin.cross(arm)
+	var up := _contact_mass(model, inv_mass, turn, arm, Vector3.UP)
 	var pushed := maxf(0.0, -up * (moving.y + (gap / h if gap > 0.0 else maxf(gap * TOUCH_OUT / h, -TOUCH_SPEED))))
 	if pushed <= 0.0:
 		return
 	var flat := Vector3(moving.x, 0.0, moving.z)
 	var way := flat.normalized() if flat.length() > 1e-4 else Vector3.ZERO
-	var drag := minf(_mass(inv_mass, turn, arm, way) * flat.length(), grip * pushed) if way != Vector3.ZERO else 0.0
+	var drag := minf(_contact_mass(model, inv_mass, turn, arm, way) * flat.length(), grip * pushed) if way != Vector3.ZERO else 0.0
 	body.apply_impulse(Vector3.UP * pushed - way * drag, point - body.global_position)
+
+
+## A contact on the hull also turns its freely hinged load through the joint.
+static func _contact_mass(model: RopeArticulation, inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> float:
+	if model == null:
+		return _mass(inv_mass, turn, arm, way)
+	var response: Array = model.response([model.bodies[0]], [way], [arm.cross(way)])[0]
+	return 1.0 / way.dot(response[1] + response[2].cross(arm))

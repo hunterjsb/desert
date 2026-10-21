@@ -22,13 +22,24 @@ func run() -> void:
 	# The sheet made fast as the gust comes: no one eases it.
 	tending = 0.0
 	# Lambdas copy what they're given: what they change lives in here.
-	var seen := {"most": 0.0, "lifted": 16, "spin": 0.0, "fastest": 0.0, "jolt": 0.0, "was": deck.linear_velocity}
+	var seen := {"most": 0.0, "lifted": 16, "spin": 0.0, "fastest": 0.0, "jolt": 0.0, "was": deck.linear_velocity, "jolt_state": {}}
 	var watch := func() -> void:
 		seen.most = maxf(seen.most, roll())
 		seen.lifted = mini(seen.lifted, deck.glider.touching)
 		seen.spin = maxf(seen.spin, deck.angular_velocity.length())
 		seen.fastest = maxf(seen.fastest, deck.linear_velocity.length())
-		seen.jolt = maxf(seen.jolt, (deck.linear_velocity - seen.was).length())
+		var jolt: float = (deck.linear_velocity - seen.was).length()
+		if jolt > seen.jolt:
+			seen.jolt = jolt
+			seen.jolt_state = {"time": world.time, "position": deck.global_position,
+				"before": seen.was, "after": deck.linear_velocity,
+				"spin": deck.angular_velocity, "heel": heel(), "roll": roll(),
+				"support": deck.glider.pressed_n, "touching": deck.glider.touching,
+				"boom": mast.boom, "boom_spin": mast.boom_spin,
+				"boom_velocity": mast._boom_body.linear_velocity,
+				"sheet_spring": mast.sheet().spring_impulse if mast.sheet() != null else 0.0,
+				"sheet_stop": mast.sheet().stop_impulse if mast.sheet() != null else 0.0,
+				"frozen": deck.freeze, "collision": world.terrain.has_collision_at(world.world_x(deck.global_position.x), world.world_z(deck.global_position.z))}
 		seen.was = deck.linear_velocity
 	blow(downwind * 12.5)
 	await sail_for(3.0, watch)
@@ -46,6 +57,7 @@ func run() -> void:
 		seen.sunk = maxf(seen.sunk, sunk()))
 	print("an 18 m/s blast: over, spinning at most %.2f rad/s, at most %.2f m/s, the most a tick changed it %.2f m/s, in the sand at most %.3f m; lying at %.0f°" % [
 		seen.spin, seen.fastest, seen.jolt, seen.sunk, heel()])
+	print("largest tipping jolt: ", seen.jolt_state)
 	check(heel() > 60.0, "a blast puts it over")
 	check(seen.spin < 6.0 and seen.fastest < 12.0 and seen.jolt < 1.0,
 		"smoothly, nothing flung (%.2f rad/s, %.2f m/s, %.2f m/s in a tick)" % [seen.spin, seen.fastest, seen.jolt])

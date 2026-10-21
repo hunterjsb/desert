@@ -1879,3 +1879,23 @@ An isolated Ubuntu sailing check 7 with only the clearance change passes unchang
 maximum tick change 0.124 m/s, speed 4.11 m/s, spin 0.73 rad/s, heel 15.5 degrees,
 penetration 0.012 m, 11 seams and three origin shifts. Its 30/60/120 Hz comparisons
 also pass. Combined CI and ordinary play acceptance remain pending.
+
+### Capsized mast contact and the native assembly (2026-10-21)
+
+The masthead's existing approximate sand contact must use the same native
+assembly point mobility and projected velocity as runner support. Its hull is
+freely hinged to a physical boom; treating that hull as isolated understates
+the mass meeting the sand and allows the uncollided upper mast to pass through
+it before the spar lands. Keep the existing contact separation, penetration
+recovery and Coulomb friction law, and apply the impulse only to the real hull
+at the mast attachment point. Native hinge reactions remain Jolt's work. No
+velocity clamps, changed acceptance bounds or contact-reporting settings.
+
+An isolated macOS clearance comparison reproduces the landed tipping regression:
+0.02 m passes with maximum tick change 0.32 m/s; the required 0.04 m runner
+clearance fails at 1.09 m/s. Linux reproduces the latter exactly. Clearance
+changes the tipping contact sequence; reverting it would restore the separate
+long-sailing hull-contact failure. The masthead approximation currently assigns
+about 1.43 kg effective contact mass to the 87.3 kg hull and its hinged boom,
+and the uncollided masthead subsequently sinks over a metre. Assembly contact
+verification is pending.
