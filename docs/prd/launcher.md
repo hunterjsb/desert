@@ -99,4 +99,7 @@ labels the selected version as the latest **published** release so these states 
 builds on launcher tags. Its first `workflow_dispatch` packaging run on master passed all
 four platform jobs on 2026-10-20. The workflow was also updated to label the Windows and
 macOS builds as unsigned, with macOS not notarized. Signing and notarization remain
-open.
+open. The first public release, `launcher-v0.1.0`, published all four packages on
+2026-10-21. The initial automated publish job exposed that `gh release create` needs an
+explicit repository in the no-checkout publish job; the workflow now passes
+`GITHUB_REPOSITORY` directly.
