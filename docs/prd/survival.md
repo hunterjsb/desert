@@ -988,3 +988,22 @@ and ejection are the preferred presentation direction; a general orbital flight
 simulator or freely traversable spherical world is not required by this request.
 Keep today's Surveyor start available until the replacement's landing, recovery,
 survival and save/restore work together. Release placement remains undecided.
+
+### First parallel arrival prototypes (2026-10-20; in progress)
+
+Build separate isolated prototypes for the physical shell, pure seeded survivor
+manifest and orbital rendering. None replaces the production Surveyor kit yet.
+The first shell layout explores a reclined one-person enclosure using ten real
+recoverable chassis panels and two frames. This count is a geometry experiment,
+not a final equipment budget. Give structural pieces stable roles for saved damage
+and recovery. Decorative trim must travel with its owning physical panel.
+
+For the manifest prototype, guarantee a usable board and Home beacon alongside
+basic shelter, water, food, power and anchoring so the first scout/return remains
+available. Vary condition, charge, equipment extras and eventual arrangement.
+Exact guarantees and distributions are provisional implementation defaults, not
+accepted balance. Put them in tuning. Resolve plain data once from a local seeded
+random stream; creating, handing out and recovering objects belongs to later
+integration. Match structural roles to the real shell. Test saved phase and
+recovery changes without rerolling. The first orbital view is a visual prototype,
+not an implemented arrival, flight model or starter replacement.
