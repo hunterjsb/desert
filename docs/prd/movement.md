@@ -1999,3 +1999,21 @@ contacts, multiple booms, rough terrain, or larger camps. Upright runner support
 does not enter this added chassis path. Further optimization should investigate
 geometry/height-query reuse while preserving impulse order and fresh projected
 velocities; caching the full physics snapshot changes sequential contact response.
+
+### Cache the chassis's ordered frame geometry (2026-10-21; selected experiment)
+
+For the tipped chassis's own frame only, retain the ordered collision-shape
+references and each shape's eight local AABB endpoints. Keep every contact and
+its original order. Read current enable/socket flags, shape identity, local and
+global transforms before use; continue refreshing native/projected velocity in
+each contact. Mounted devices retain the existing uncached traversal. This does
+not include terrain-read reuse or any change to the contact law.
+
+Rebuild after child order/assembly changes through `_shapes_changed`, including
+join, detach, reroot, fitting, mounting and removal. Shape resource changes
+invalidate cached endpoints; replacement resources must be recognized before
+their first contact. Disabled state and transforms are read live, so enabling a
+shape, changing its pose or shifting the origin cannot reuse stale world points.
+Measure the same 108-piece capsized fixture in candidate/baseline/baseline/
+candidate order and preserve its exact printed contact/motion outputs. Integrate
+only if the bounded measurement demonstrates a benefit.
