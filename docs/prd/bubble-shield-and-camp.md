@@ -395,3 +395,47 @@ an independent full battery. This supersedes the earlier light-shield-on-plate
 starting arrangement for new Salvager runs. The personal shield retains its existing
 2.5 m radius, 3 W clear/50 W storm draw and 85% wind protection. No shield tuning or
 protection mechanic changes. Its portability supports scouting before finding a home.
+
+## Marked Home: first local expedition slice (selected 2026-10-20; in progress)
+
+A small Home beacon fits a chassis through ordinary mounting. Use it with free
+hands to mark one travelling Home. The Surveyor carries one; ordinary surface
+salvage can supply another. Marking explicitly claims no untouched loot.
+
+Membership includes the marked chassis assembly, claimed loose belongings inside
+its attached shield's configured envelope, and the owned stakes, lines, guides
+and cables needed by those belongings. The player and ridden board do not extend
+this graph. Membership survives shield shutdown, battery failure and beacon loss;
+those affect protection/reception, not ownership. Refresh moving assemblies and
+remove genuinely destroyed members. Removing an item from the camp must remain an
+ordinary physical action. Replacing/unmarking Home is allowed only when its old
+support can safely return to the player area, without immediately deleting it.
+
+Admit the whole graph before reporting Home ready. Initial engineering limits are
+512 bodies, a 128 m horizontal span and 25 additional support chunks including a
+one-chunk collision halo. Store these in tuning; measure before accepting them as
+an operating budget. Refuse an oversized mark visibly rather than keeping a
+partial camp. Later motion/extension must not delete an existing admitted member
+or introduce magnetic forces; retain its last supported footprint while reporting
+that it needs attention and prepare new support before retiring the old support.
+
+Retain actual terrain, collision and history as a second bounded area. Keep the
+existing physics, weather, wear, power, water and crop operation. Do not freeze a
+remote camp, grant invulnerability or introduce a second catch-up simulation.
+Save stable member references, geographic anchor and local member poses; request
+remote support before restore waits for distant bodies. Old saves without Home
+retain their existing behavior. Check a two-kilometre scouting round trip,
+including origin/history changes and a distant save/resume; that check does not
+establish an unlimited moon-wide operating range.
+
+The beacon draws 1 W through ordinary device power. Its first reception range is
+2 km, subject to measurement. A requested Home view in the carry interface shows
+bearing, distance and reception/support status. Keep a clearly labelled last-known
+fix when power or range prevents updates. This is known-point navigation with no
+automatic terrain survey or permanent HUD/minimap. A moving camp updates its fix
+when received. A return after leaving the ordinary player retention area records
+one camp-family deed at arrival; tune departure and arrival distances centrally.
+
+This feature is complete only when marking, admission, remote simulation, return
+navigation and far restore work together. A marker alone does not make scouting
+safe. The current travelling camp and baseline suit protection remain usable.

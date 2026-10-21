@@ -680,3 +680,13 @@ its existing photograph. All five pages were inspected on the GPU at 1280×720:
 533×300 images and two-line 20 px captions, with normal navigation. The
 booklet's menu/pickup/reader check passes (6 s). Human teaching acceptance
 remains a playtest gate.
+
+### Requested Home view (2026-10-20; in progress)
+
+The carry view gains a Home entry for an explicitly marked camp. Open it to see
+player/camp direction, distance and support/reception status using existing theme
+and controls. Do not put a permanent bearing, minimap or rope list on the HUD.
+Distinguish a live powered-beacon reception from its last-known fix. With no camp,
+explain that a fitted Home beacon marks one. The same view may offer explicit
+unmarking, but only after the old camp can safely use ordinary nearby support.
+Do not change radio marks, selected waist lines or baseline suit equipment.

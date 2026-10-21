@@ -874,3 +874,20 @@ shield brownout, outside stakes/guides, distant save/resume, history/origin chan
 near/far simulation equivalence and bounded combined player/camp work. No second
 area, camp marker or return UI is implemented by this review. Numerical admission
 budgets and supported range require measurements rather than product promises.
+
+### Marked Home integration contract (2026-10-20; in progress)
+
+`World.home` owns explicit camp identity. Its world-metre footprint and geographic
+anchor request a second history area through `Sites.retain(id, rect, anchor)`;
+`Sites.release(id)` removes that request. Readiness accepts either supported area
+without changing the global player anchor. Retain intersecting units across sheet
+changes, including their excavation/exposure state. Unready camp survey work must
+not block ready player terrain at the front of the build queue.
+
+Terrain construction, collision, uploads, retirement and body lifetime consume the
+same immutable player/camp residency policy. Deduplicate overlap, share the current
+work budget and preserve collision under current and next moving-camp positions.
+A footprint revision replans terrain even if the player's centre does not change.
+Request saved Home support before `Saves._ready_at` waits. Body retention alone is
+not readiness. Audit positional sunlight/temperature and camp warnings alongside
+world-time equivalence, without adding a separate remote simulation clock.
