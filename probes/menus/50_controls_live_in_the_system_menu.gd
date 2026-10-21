@@ -41,12 +41,15 @@ func run() -> void:
 	check(main.ui.top() == system and system.highlighted() == system.words().find("CONTROLS"),
 		"Back restores the exact system menu selection")
 	_select("OPTIONS")
+	var options := main.ui.top()
 	_select("CONTROLS")
 	await _layout()
 	check(_reader() != null and _reader().list.text == bindings,
 		"Options opens the same bindings reader")
 	Dev.set_scene_keys([])
-	for i in 3:
+	press(&"ui_accept")
+	check(main.ui.top() == options, "confirming Back returns to Options")
+	for i in 2:
 		press(&"ui_cancel")
 	check(not main.ui.is_open() and Controls.playing(), "closing the menus restores play")
 
