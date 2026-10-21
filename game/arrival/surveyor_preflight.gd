@@ -40,7 +40,8 @@ func setup(controller: SurveyorArrival) -> void:
 	else:
 		ship.pod = Rig.new()
 		var restored := SurveyorRecovery.named(world)
-		for role: StringName in SurveyorManifest.STRUCTURE:
+		for spec: Array in SurveyorManifest.STRUCTURE:
+			var role: StringName = spec[0]
 			if restored.has(role):
 				ship.pod.named[role] = restored[role]
 		var floor := ship.pod.named.get(&"floor_a") as Chassis
