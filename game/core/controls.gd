@@ -2,7 +2,7 @@ extends Node
 ## Every input binding, registered in code so they live in one readable place.
 ## Physical keys, so movement sits in the same spot on any keyboard layout.
 
-## What the keys list shows, in groups, before whatever the scene adds: each
+## What the Controls reader shows, in groups, before whatever the scene adds: each
 ## {action} drawn as its key, and what it does in a word or two. The rest is
 ## learned where it's needed (UIRoot.teach) or by doing.
 const HELP := [
@@ -18,7 +18,7 @@ const HELP := [
 		["{mark_frequency}", "mark or unmark a radio's frequency; then {interact} goes to the next"]]],
 	["YOU", [["{inventory}", "what you carry"], ["{headlamp}", "headlamp"]]],
 	["GAME", [["{ui_cancel}", "back, menu"], ["{quick_save}", "quick save"], ["{quick_load}", "quick load"],
-		["{toggle_keys}", "these keys"], ["{fullscreen}", "fullscreen"]]],
+		["{fullscreen}", "fullscreen"]]],
 ]
 ## The developer's keys, listed apart under their own heading.
 const DEV_HELP := [["{console}", "console"], ["{creative}", "creative"], ["{toggle_dev_overlay}", "numbers"]]
@@ -31,7 +31,7 @@ const RIDE_HOW_TO := "ride"
 const RIDE_HOW_TO_SAYS := "The move keys push and carve where they point; {move_back} digs an edge in, to bite into a carve" \
 	+ " or, alone, to stop.\n" \
 	+ "{sprint} kicks off the sand, {jump} hops, {crouch} tucks; crouched into a hard carve, you drift."
-## A heading in the keys list sits back in the theme's dim text.
+## A heading in the Controls reader sits back in the theme's dim text.
 static var DIM: Color:
 	get:
 		return ThemeDB.get_project_theme().get_color(&"dim", &"Palette")
@@ -52,7 +52,6 @@ const KEYS := {
 	# Beside forward: turned on or off without leaving the move keys.
 	"auto_walk": KEY_Q,
 	"sprint": KEY_SHIFT,
-	"toggle_keys": KEY_F1,
 	"fullscreen": KEY_F11,
 	"toggle_dev_overlay": KEY_F3,
 	"quick_save": KEY_F5,

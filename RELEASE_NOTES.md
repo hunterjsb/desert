@@ -20,6 +20,8 @@ It has not been published; combined CI and playtest acceptance remain pending.
 
 - Continuously unwind and gather the rope coil while preserving its gauge and
   held-end attachment.
+- Read current controls directly from the system menu or Options in a bounded,
+  scrollable page. Remove the separate keys overlay and its persistent footer.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 

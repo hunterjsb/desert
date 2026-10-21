@@ -114,7 +114,7 @@ behind them, and since 2026-10-18 are bigger and roomier still, below.)
 ## The system menu
 
 The back action, with nothing else open, brings up the system menu over the running
-game. It holds **Options** (controls, audio, graphics), **Deeds**, **Save** in a Normal run, and
+game. It holds **Options** (controls, audio, graphics), **Controls**, **Deeds**, **Save** in a Normal run, and
 **Save & quit**, all safe at any moment, mid-storm included (Profile & saves). **New game**
 asks who you come as, the origin last played highlighted, then which mode, Normal
 highlighted or Ironman; **dying** in a Normal run shows Load last save, highlighted, and
@@ -443,14 +443,14 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   open whatever deeds are done, `deed <id>`, one granted, `deeds`, which are done, and `deeds
   clear`, all forgotten (Profile & saves). Those and `help` and `scenarios` need no world, so the
   console opens over the main menu and its nested menus too;
-  the rest say "only in a run". Closed there, the covered menu and its focus return. The keys list and Options' controls list
-  show the console action, the creative menu's and the dev overlay's under a heading of their own, and the
+  the rest say "only in a run". Closed there, the covered menu and its focus return. The Controls reader, reached directly from the system menu or Options,
+  shows the console action, the creative menu's and the dev overlay's under a heading of their own, and the
   function keys the dev tools held now go to quick save and quick load (Profile & saves).
   The look-tests keep their own keys and have no console.
 - **Options:** volume, fullscreen, vsync and render scale (confirm steps a value on,
   menu left and right change it either way), kept on this machine in
-  `user://settings.cfg`, apart from the profile; the controls list, the keys list's own
-  table at the menus' 20 with no box (`KeysList`): each key as bound now beside what it does
+  `user://settings.cfg`, apart from the profile; the same Controls reader, a bounded
+  table at the menus' 20 (`KeysList`) with a shared PageBar: each key as bound now beside what it does
   in a word or two, under Moving, Hands, You, Game and Dev, read-only until remapping
   comes; and Reset profile behind a question, shown only when there is a profile.
 - **Saves and the profile** are reached only through `/root/Saves` and `/root/Profile`
@@ -713,3 +713,36 @@ input, reach and readability thresholds: they wait for actual scenario staging,
 handle invalidated joined-panel references and inspect the saved multi-piece
 camp instead of assuming the former single starting crate. Focused menu checks
 1/3/6/19 pass (56/28/25/21 s).
+
+
+## Controls in the system menu (selected 2026-10-21)
+
+Move the controls list into the system menu as a direct Controls entry beside
+Options. Keep the Options route to the same reader. Remove the separate keys
+list toggle, its overlay and its persistent footer hint. The running world keeps
+advancing while either menu route holds movement and other gameplay input.
+
+Use the shared controls help and current action bindings, including the existing
+scene-specific key source. Both routes show the same themed, bounded reader with
+the shared PageBar for wheel scrolling and dragging. The title and Back stay on
+screen at 720p; closing restores the exact covered menu and selection. Keep the
+ordinary developer-number overlay and console independent. Update affected input,
+binding, menu and capture fixtures through the actual menu actions; inspect an
+unseen 720p capture before calling the presentation complete.
+
+
+As built in `UIRoot.controls`, `ControlsPage` and `Dev.extra_keys`: the same
+current-bindings reader opens directly from the system menu and through Options.
+The independent keys-list action, overlay and persistent hint are removed. Its
+window uses 80% of viewport width and 62% of height, preserving the shared
+20-pixel text, title and Back at 1280×720. Menu navigation, page navigation, the
+wheel and a dragged PageBar reach the remaining rows; covered readers do not
+consume another modal's navigation. Rebound bindings update the open reader.
+
+Focused menu 50 passes both routes, viewport bounds, keyboard/wheel/bar scrolling,
+scene-specific controls, input holding while the world advances, and exact menu
+selection on return. Devices 11 checks live rebinding and console coverage; theme
+5 and menu/input/save regressions 3, 6, 7, 8, 18 and saves 9 pass. Actual unseen
+1280×720 captures of the system menu and both ends of the controls reader were
+inspected: text, title, Back and scrollbar remain legible and on screen, with no
+persistent keys footer. These captures establish menu layout, not a GPU budget.

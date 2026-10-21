@@ -67,8 +67,8 @@ func run() -> void:
 	teleport(world.spawn.x + 6.0, world.spawn.y - 9.0)
 	await physics_frames(30)
 	press(&"ui_cancel")
-	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "DEEDS", "SAVE", "SAVE & QUIT"]),
-		"the system menu holds Options, Deeds, Save and Save & quit (%s)" % ", ".join(main.ui.top().words()))
+	check(main.ui.top().words() == PackedStringArray(["OPTIONS", "CONTROLS", "DEEDS", "SAVE", "SAVE & QUIT"]),
+		"the system menu holds Options, Controls, Deeds, Save and Save & quit (%s)" % ", ".join(main.ui.top().words()))
 	press(&"ui_up")
 	var stood := Vector2(world.player_world_x(), world.player_world_z())
 	var clock := world.time

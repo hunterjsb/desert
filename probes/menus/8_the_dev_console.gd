@@ -1,7 +1,7 @@
 extends MenuProbe
 ## Menus & UI probe 8: the dev console. Its action opens it over a run, and
 ## while it's up what you type goes to it and nothing reaches the game: the
-## move action held doesn't move you, and the inventory and keys list stay
+## move action held doesn't move you, and the inventory and system menu stay
 ## shut. warp 4 confirmed runs the clock four times as fast; scenario dusk
 ## puts you at dusk, in a run that's never saved from then on. Up brings back
 ## what was typed. Back closes it and nothing else, and then the same hold
@@ -19,9 +19,8 @@ func run() -> void:
 	Input.action_press(&"move_forward")
 	type("warp 4")
 	press(&"inventory")
-	press(&"toggle_keys")
 	await physics_frames(30)
-	check(player.own.length() < 0.01 and player.mode == "stand" and not player.suit.open and not Dev._keys_layer.visible,
+	check(player.own.length() < 0.01 and player.mode == "stand" and not player.suit.open and not main.ui.is_open(),
 		"typing reaches only the console: held, the move action doesn't move you (%.2f m/s, %s)" % [player.own.length(), player.mode])
 	press(&"ui_text_submit")
 	check(world.time_warp == 4.0, "warp 4 runs the clock four times as fast (x%.1f)" % world.time_warp)
