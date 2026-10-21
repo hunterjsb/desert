@@ -3,10 +3,17 @@ extends RefCounted
 ## A short, swept climb follows the ledge rather than kicking its rigid body.
 
 var active := false
+## Body presentation follows the same swept climb, never moves the player itself.
+var height := 0.0
+var progress: float:
+	get:
+		return smoothstep(0.0, 1.0, _elapsed / _duration) if _duration > 0.0 else 0.0
 var last_step := Vector3.ZERO
 var _player: Player
 var _support: Node3D
 var _points: Array[Vector3] = []
+var _curves: Array = []
+var _parameters: Array[float] = []
 var _elapsed := 0.0
 var _duration := 0.0
 var _distances: Array[float] = []
@@ -55,39 +62,52 @@ func begin(direction: Vector2) -> bool:
 	if normal.y >= cos(_player.floor_max_angle) or normal.dot(ahead.normalized()) > -0.5:
 		return false
 	var up := Vector3.UP * (_tuning.vault_height + _tuning.vault_clearance)
-	if _sweep(start, up).get_collision_count() > 0:
-		return false
-	if _sweep(start + up, ahead).get_collision_count() > 0:
-		return false
-	var down := _sweep(start + up + ahead, -up - Vector3.UP * _tuning.vault_clearance)
-	if down.get_collision_count() == 0 or down.get_collision_normal().y < cos(_player.floor_max_angle):
-		return false
-	# A capsule can rest against an edge with its feet still outside the top.
+	# Find the actual top before checking how far this capsule must lift.
 	var query := PhysicsRayQueryParameters3D.create(start + up + ahead, start + ahead - Vector3.UP * _tuning.vault_clearance,
 		_player.collision_mask, [_player.get_rid()])
 	var top := _player.get_world_3d().direct_space_state.intersect_ray(query)
-	if top.is_empty() or top.collider != down.get_collider() or top.normal.y < cos(_player.floor_max_angle):
+	if top.is_empty() or top.normal.y < cos(_player.floor_max_angle):
 		return false
-	var landing := start + up + ahead + down.get_travel()
-	var rise := landing.y - start.y
-	if rise <= _tuning.vault_clearance or rise > _tuning.vault_height + _tuning.vault_clearance:
+	var rise: float = top.position.y - start.y
+	if rise < _tuning.vault_min_height or rise > _tuning.vault_height:
 		return false
+	var lift := Vector3.UP * (rise + _tuning.vault_lift_margin)
+	if _sweep(start, lift).get_collision_count() > 0 or _sweep(start + lift, ahead).get_collision_count() > 0:
+		return false
+	var down := _sweep(start + lift + ahead, -lift - Vector3.UP * _tuning.vault_clearance)
+	if down.get_collision_count() == 0 or down.get_collision_normal().y < cos(_player.floor_max_angle) \
+			or top.collider != down.get_collider():
+		return false
+	var landing := start + lift + ahead + down.get_travel()
 	_support = down.get_collider() as Node3D
 	if _support == null:
 		return false
-	# Only lift far enough to clear this top; a low step is not a full mantle.
-	var lift := Vector3.UP * (rise + _tuning.vault_lift_margin)
-	var corners: Array[Vector3] = [start, start + lift, start + lift + ahead, landing]
-	var path := _round_corners(corners)
+	var curves := _round_corners([start, start + lift, start + lift + ahead, landing])
+	var path: Array[Vector3] = []
+	_parameters.clear()
+	for i in curves.size():
+		var curve: Array = curves[i]
+		var steps := 1 if i % 2 == 0 else 16
+		for sample in range(0 if i == 0 else 1, steps + 1):
+			var t := float(sample) / steps
+			path.append(_curve_point(curve, t))
+			_parameters.append(i + t)
 	for i in range(1, path.size()):
 		if _sweep(path[i - 1], path[i] - path[i - 1]).get_collision_count() > 0:
 			return false
 	_points.clear()
+	_curves.clear()
+	for curve: Array in curves:
+		var local: Array[Vector3] = []
+		for point: Vector3 in curve:
+			local.append(_support.to_local(point))
+		_curves.append(local)
 	_distances.assign([0.0])
 	for point: Vector3 in path:
 		if not _points.is_empty():
 			_distances.append(_distances[-1] + point.distance_to(_support.to_global(_points[-1])))
 		_points.append(_support.to_local(point))
+	height = rise
 	var nominal := _tuning.vault_height + _tuning.vault_reach + 2.0 * _tuning.vault_lift_margin
 	_duration = _tuning.vault_seconds * _distances[-1] / nominal
 	_elapsed = 0.0
@@ -112,12 +132,14 @@ func step(delta: float) -> void:
 		return
 	var first := _elapsed == 0.0
 	_elapsed = minf(_elapsed + delta, _duration)
-	var travel := smoothstep(0.0, 1.0, _elapsed / _duration) * _distances[-1]
+	var travel := progress * _distances[-1]
 	var segment := 0
 	while segment < _points.size() - 2 and travel > _distances[segment + 1]:
 		segment += 1
 	var along := inverse_lerp(_distances[segment], _distances[segment + 1], travel)
-	var target := _support.to_global(_points[segment].lerp(_points[segment + 1], along))
+	var parameter := lerpf(_parameters[segment], _parameters[segment + 1], along)
+	var curve := mini(floori(parameter), _curves.size() - 1)
+	var target := _support.to_global(_curve_point(_curves[curve], parameter - curve))
 	var drag: Vector3 = _player.get_meta(&"rope_drag", Vector3.ZERO)
 	_drag_offset += drag * delta
 	var move := target + _drag_offset - _player.global_position
@@ -166,9 +188,10 @@ func _sweep(at: Vector3, motion: Vector3) -> PhysicsTestMotionResult3D:
 	return result
 
 
-## Round only above the landing, where the feet already clear the edge.
-func _round_corners(corners: Array[Vector3]) -> Array[Vector3]:
-	var path: Array[Vector3] = [corners[0]]
+## Tangents meet above the top; the curved path never cuts through its edge.
+func _round_corners(corners: Array[Vector3]) -> Array:
+	var curves: Array = []
+	var last := corners[0]
 	for i in [1, 2]:
 		var before := corners[i - 1] - corners[i]
 		var after := corners[i + 1] - corners[i]
@@ -176,9 +199,12 @@ func _round_corners(corners: Array[Vector3]) -> Array[Vector3]:
 			minf(before.length(), after.length()) * 0.5)
 		var entry := corners[i] + before.normalized() * maxf(radius, 0.0)
 		var leave := corners[i] + after.normalized() * maxf(radius, 0.0)
-		path.append(entry)
-		for step in range(1, 5):
-			var t := step / 4.0
-			path.append(entry.lerp(corners[i], t).lerp(corners[i].lerp(leave, t), t))
-	path.append(corners[-1])
-	return path
+		curves.append([last, last.lerp(entry, 0.5), entry])
+		curves.append([entry, corners[i], leave])
+		last = leave
+	curves.append([last, last.lerp(corners[-1], 0.5), corners[-1]])
+	return curves
+
+
+func _curve_point(curve: Array, t: float) -> Vector3:
+	return curve[0].lerp(curve[1], t).lerp(curve[1].lerp(curve[2], t), t)

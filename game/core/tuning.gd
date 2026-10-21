@@ -476,13 +476,15 @@ static var _current: Tuning
 
 @export_group("Ledge vault")
 ## Reach above the current feet, forward reach, m; jump rise is not added again.
-@export var vault_height: float = 0.65
+@export var vault_height: float = 1.1
+## Small clutter stays an ordinary obstacle/jump, not a full mantle.
+@export var vault_min_height: float = 0.3
 @export var vault_reach: float = 0.9
 @export var vault_clearance: float = 0.02
 ## Duration of a full-height climb; shorter paths use proportionally less time.
-@export var vault_seconds: float = 0.42
+@export var vault_seconds: float = 0.55
 ## Feet clear the measured top by this much while crossing it, m.
-@export var vault_lift_margin: float = 0.06
+@export var vault_lift_margin: float = 0.18
 @export var vault_stamina: float = 4.0
 @export var vault_settle_speed: float = 0.1
 
