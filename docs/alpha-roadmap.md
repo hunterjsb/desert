@@ -219,10 +219,10 @@ relationship to equipment need separate design decisions. Existing baseline
 protection remains unchanged. “Spaceport” does not itself commit to a functional
 spaceport destination or an orbital travel system.
 
-### Meaningful arrivals and repeat runs — release placement undecided
+### Meaningful arrivals and repeat runs — Surveyor in Sanddune
 
-These are preserved commitments and ideas, not implicit Sanddune or Spaceport
-release gates. Select a bounded slice and its release explicitly after design.
+The bounded Surveyor opening is selected for Sanddune. The broader origin and
+repeat-run ideas below do not become release gates without explicit selection.
 
 | Feature | Status | Intended experience and open decisions |
 | --- | --- | --- |
