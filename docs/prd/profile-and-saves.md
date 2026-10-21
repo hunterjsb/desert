@@ -816,8 +816,9 @@ the default for saves written before this feature.
 ### Flight Plan (2026-10-21; implemented development)
 
 Flight Plan (`flight_plan`, signals family, radio icon) records the first time
-you hear the Surveyor read its flight plan (Radio probe 47),
-bringing the integrated development roster to 59 deeds in eleven families.
+you hear Port Morgan Control Tower read the Surveyor's schedule on FM (Radio
+probe 47). With the radio progression's five, the roster is 64 deeds in eleven
+families.
 
 
 **Combined development resume check (2026-10-20).** The preparatory Sanddune

@@ -8,8 +8,8 @@ extends Probe
 ## hops round its band at uneven gaps; it tumbles, its signal swelling and
 ## fading and its light flashing. The relay, hung at L1 (radio probe 13),
 ## tumbles slowly. The cinder's orbit decays, sinking lap by lap until a burn throws it back up,
-## and its roar brightens as it sinks. Nearer, each looks brighter. The
-## formation stays as it was: circles that don't turn.
+## and its roar brightens as it sinks. Nearer, each looks brighter; a circle
+## (the windsock's) as bright all round, and it doesn't tumble.
 
 const SEED := 1234
 const STEP := 2.0
@@ -47,11 +47,7 @@ func run() -> void:
 		var swung := rad_to_deg(plane.angle_to(later))
 		print("%s: its plane swung %.0f° in three laps" % [row[0], swung])
 		check(swung > row[2], "%s's route moves on lap by lap" % row[0])
-	var formation: Satellite = sky.orbits[&"sounder"]
-	var held := rad_to_deg(_plane(formation, 0.0).angle_to(_plane(formation, formation.period * 3.0)))
-	check(held < 0.5, "the formation's planes hold still (%.2f°)" % held)
-	check(formation.eccentricity == 0.0 and formation.precession == 0.0 and absf(formation.height(0.0)
-		- formation.height(formation.period * 0.37)) < 1e-4, "the formation's orbits stay circles that don't turn")
+	var circle: Satellite = sky.orbits[&"windsock"]
 
 	# On in fits, for spells of uneven length.
 	var on := 0
@@ -118,7 +114,7 @@ func run() -> void:
 	check(faint < 0.3 and full > 0.99, "the ghost's signal swells and fades as it tumbles")
 	check(flash > dim * 10.0, "and it flashes as it turns")
 	check(sky.tumble(&"relay", 0.0) < 1.0 or sky.tumble(&"relay", 10.0) < 1.0, "the relay tumbles too")
-	check(sky.tumble(&"sounder", 3.0) == 1.0 and sky.glint(&"sounder", 3.0) == 1.0, "the formation doesn't")
+	check(sky.tumble(&"windsock", 3.0) == 1.0 and sky.glint(&"windsock", 3.0) == 1.0, "the windsock doesn't")
 
 	# The cinder: sinking lap by lap, then thrown back up by its burn.
 	var cinder: Satellite = sky.orbits[&"cinder"]
@@ -158,7 +154,7 @@ func run() -> void:
 	print("the ghost looks %.2f as bright at its perigee, %.2f at its apogee" % [ghost.nearness(perigee),
 		ghost.nearness(apogee)])
 	check(ghost.nearness(perigee) > 2.0 and ghost.nearness(apogee) < 0.6, "nearer it looks brighter, far out dimmer")
-	check(is_equal_approx(formation.nearness(123.0), 1.0), "a circle looks as bright all round")
+	check(is_equal_approx(circle.nearness(123.0), 1.0), "a circle looks as bright all round")
 
 
 ## Its mean height over a lap from world time t, radii.

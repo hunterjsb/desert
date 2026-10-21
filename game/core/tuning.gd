@@ -1166,13 +1166,6 @@ static var _current: Tuning
 @export var sw_wire_m: float = 10.0
 @export var sw_wire_low: float = 0.75
 @export var sw_wire_high_m: float = 3.0
-## Every shortwave broadcast reaches anywhere off the sky (gonkhub, 2026-10-21:
-## "all shortwave broadcasts should be available as long as you can get a
-## strong enough signal from them via sw converter + kite to boost it"): from
-## under the horizon one comes in at this share of its strength overhead,
-## before the antenna's gain; so on bare terminals it's under the floor, and
-## on a strung wire it comes through.
-@export var sw_sky_wave: float = 0.3
 ## Natural radio at the bottom of the AM dial (Natural), on a long wire: storms
 ## counted for its sferics out to this far, m; this many sferics a second with
 ## none about, and this many with one on you; a whistler may come once in this

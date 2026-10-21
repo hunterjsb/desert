@@ -7,7 +7,7 @@ extends WeatherProbe
 ## and sweeps across overhead, many times faster; it's modelled (CropSurvey),
 ## not drawn on the sky, far bigger overhead than low down, and shows even in
 ## Zan's shadow. By day only the nearest and brightest show: the low hull
-## always, the dim formation never.
+## always, the dim ones never.
 
 
 func run() -> void:
@@ -102,9 +102,9 @@ func run() -> void:
 	world.time = noon
 	await physics_frames(3)
 	var forms := material.get_shader_parameter("sat_form") as PackedVector3Array
-	var sounder := Constellation.voiced().find(&"sounder")
-	print("by day: the survey hull shows %s, the sounder %.2f" % [craft.visible, forms[sounder].z])
-	check(craft.visible and forms[sounder].z == 0.0, "by day the low hull shows, a dim one of the formation doesn't")
+	var dim := Constellation.voiced().find(&"windsock")
+	print("by day: the survey hull shows %s, the windsock %.2f" % [craft.visible, forms[dim].z])
+	check(craft.visible and forms[dim].z == 0.0, "by day the low hull shows, a dim one doesn't")
 
 
 ## How many degrees across the crop survey's model looks from the camera.

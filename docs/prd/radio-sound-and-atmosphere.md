@@ -439,19 +439,24 @@ they swap to their next saved frequency."*
         (`Satellite._through`). It's over the port every lap, and its plane swings 37° a lap round the port,
         so the rest of its track sweeps every place in time. At the run's start it's over the start, on the
         plane through both. `Satellite.until_through` says how long until it's next over the port.
-      - **Flight plan:** tuned to its carrier, the dial reads a channel of its own (`Radio.SURVEY`). It reads,
-        in the bundled voice, every `survey_report_every` (300 s) and at once as you tune in: "Surveyor ·
-        Speed 395 m/s · Elevation 6000 metres · Port Morgan in 2 minutes".
+      - **Schedule, on Port Morgan Control Tower** (gonkhub, 2026-10-21: "Satellites should still have
+        heavy interference/not be heard at all when they cross far below the horizon. Let's just give Port
+        Morgan a Surveyor schedule announcement every 5mins on an FM channel. Port Morgan Control Tower can be
+        an FM broadcast that we use for this and other worldbuilding tracks").
+        - The tower is an FM station of its own on the port's mast (`Fm.TOWER`), heard by line of sight as
+          the port's music station is, a MHz or more off it and off the relay. Tuned to it, the dial reads
+          `Radio.SURVEY`.
+        - It reads, in the bundled voice, every `survey_report_every` (300 s) and at once as you tune in:
+          "Surveyor · Speed 395 m/s · Elevation 6000 metres · Port Morgan in 2 minutes", the tower's name on
+          the line. It plays no music; its other worldbuilding tracks are to come.
         - Its speed over the ground is true. Its altitude is a working figure wandering ±220 m about its
           true 6 km, for flavour.
         - It says "elevation" because the bundled voice has no "altitude" yet, and spells "Morgan", which
           has no recording yet. The next run of `make_words.py` records "morgan" from radio.gd; "altitude"
-          needs adding to its word list.
-        - It comes in from over the horizon too, off the sky as shortwave would, at least half strength;
-          its drones are heard only while it's up.
-      - It's on the survey's own AM carrier until there's shortwave
-        ([radio equipment proposal](../../look/radio_kit/README.md)), where it would move. Hearing it is
-        Flight Plan. Radio probe 47.
+          and "tower" need adding to its word list.
+        - The survey's own shortwave carrier (14.2–14.3 MHz) plays only its drone, heard while it's up, as
+          every satellite is.
+        - Hearing the tower's schedule is Flight Plan. Radio probe 47.
   - **The lantern** (gonkhub, 2026-10-19: "a satellite orbiting Tu, its broadcast accessible when it is on the
     side of the planet facing Zan. Not visible though"): StarCom's Tu survey probe, circling Tu 60 moon radii
     off, 1.8 of Tu's radii out, a lap in 11 minutes, its plane holding the line to Zan, so it swings round in
@@ -466,38 +471,50 @@ they swap to their next saved frequency."*
     the cinder sinking low; and the crop survey's hull always, a dusky H against the bright sky with its
     four lights at the points.
   - The formation stays as it was, circles that don't turn, so its guarantee holds.
-- **Always two overhead** (gonkhub, 2026-10-19: "there is always at least two active signals throughout a
-  full day night cycle"). Eight of them fly in a formation (`Constellation.FORMATION`), laid out as real
-  constellations are (a Walker pattern): eight planes 45° apart round the pole, one satellite in each,
-  each 2/8 of a lap on from the last, all tilted 55°, 5 radii up, a lap in 9 minutes, always on the air.
-  Searched over patterns of 5 to 8 satellites (offline, numpy), it's the least that keeps at least two of
-  them 8° or more over the horizon everywhere on the moon at every moment, twice the margin asked; and
-  since that holds for the formation however it stands, the moon's turn under it can't break it. The seed
-  turns and mirrors the whole formation, so each run's sky is its own. They share one lap (different laps
-  would drift them out of formation), so they differ by route, colour, shape and size; the relay and the
-  ghost keep laps of their own. Before, on independent orbits, fewer than two were up 31.5% of the time
-  and sometimes none. Now, over 16 seeds, 46 places each from pole to pole and four days every 4 s
-  (radio probe 28), never fewer than two: two 20.5% of the time, three 42.5%, four 33.8%, five or six 3%.
-  Storms can still cut them, as they do any signal. Use's sweep stops on the satellites overhead too.
+- **About two in the sky** (gonkhub, 2026-10-21: "With this change, we almost certainly don't need as many
+  satellites as we currently have. Put them back on unique and variable orbits, rolling back to '2 in the sky
+  at once' rule"; then "scrap tollgate, sounder, and lullaby"). The formation is gone, and the sounder, lullaby
+  and tollgate with it. Eleven are left:
+  - two hung at the Lagrange points (the relay at L1, the Pendulum at L2);
+  - the lantern round Tu, never seen;
+  - eight crossing the sky, each on an orbit of its own: the crop survey, the ghost, the cinder, and the five
+    freed from the formation (the sextant, windsock, choir, babel and metronome).
+  
+  The five each have their own height, lap (scaled from the crop survey's by Kepler's third law), tilt and
+  plane swing, and some fly ellipses:
+
+  | | Height, radii | Lap, min | Tilt | Ellipse | Swings, °/lap |
+  |---|---|---|---|---|---|
+  | Sextant | 1.8 | 26.6 | 10–35° | 0.35, perigee wandering 60°/lap | 20 |
+  | Windsock | 0.9 | 14.9 | 30–50° | circle | 25 |
+  | Choir | 1.4 | 21.1 | 60–80° | circle | −15 |
+  | Babel | 1.2 | 18.5 | 40–60° | 0.2, perigee wandering 30°/lap | 50 |
+  | Metronome | 1.0 | 16.1 | 70–88° | circle | 33 |
+
+  Measured over 8 seeds, 15 places and two days every 10 s:
+  - On average 1.90 of the eight are over the horizon at once, and it varies: none 13.9% of the time, one
+    26.7%, two 28.9%, three 19.7%, four or more 10.8%.
+  - On the near side the relay is always up besides.
+  - A satellite is heard only while it's up, faint and chewed up low over the horizon, gone below it.
+
+  Radio probe 34 (now "about two in the sky") checks the mean stays between 1.5 and 2.5 and that it varies.
+
 
   *The bands below were on the AM dial; since 2026-10-20 every satellite is on shortwave (Bands, below).*
 
   | Satellite | Era | Band, kHz | Looks | Orbit | Sound (placeholder) | Turned by |
   |---|---|---|---|---|---|---|
   | The relay | colonial | the FM band (since 2026-10-20) | white point, glinting | hung at L1 beside Tu, on a halo 0.9 radii across, 10 min (since 2026-10-20) | the music | a slow tumble: its glint |
-  | Thermal | Frontier Ag | 320–350 | the modelled craft | 6 km up, 7.95 min, over Port Morgan every lap, swinging 37° a lap round it; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
-  | Sounder | StarCom | 560–590 | lime diamond | formation, plane 1 | the storm's roar | pitch wandering; brighter by day |
+  | Thermal | Frontier Ag | 14200–14300 (since 2026-10-21) | the modelled craft | 6 km up, 7.95 min, over Port Morgan every lap, swinging 37° a lap round it; over the start as a run begins | tunnel drone | pitch by the temperature; tone by its height |
   | Lantern | StarCom | 1590–1620 | never seen | round Tu, 60 radii off, 11 min; heard only on Zan's side of Tu | the day song, slowed | faint; clearest straight between Tu and Zan |
   | Pendulum | StarCom | 700–730 | cyan cross | hung at L2 over the far side's middle, on a halo (since 2026-10-20) | a ping, pulsed | its tick quickening toward the eclipse |
-  | Sextant | StarCom | 975–1000 | pale blue point | formation, plane 2 (since 2026-10-20, in the Pendulum's place) | a quick double ping (placeholder) | pitch by its height |
-  | Windsock | StarCom | 1032–1060 | green ring | formation, plane 3 | the wind | loudness and tone by the wind; grit by a storm |
-  | Choir | colonial | 430–470 | lavender pair | formation, plane 4 | the Eye's drone | pitch sinking with the sun; tone drifting |
-  | Babel | the war | 1290–1340 | red diamond, blinking | formation, plane 5 | tones, chirped | pulse and pitch wandering; grit by an anomaly |
-  | Lullaby | colonial | 860–895 | small pink point | formation, plane 6 | the night song | slower in the cold; louder after dark |
-  | Tollgate | Mon | 1500–1540 | large gold cross | formation, plane 7 | the shield's hum | pitch by the sun; tremolo drifting |
+  | Sextant | StarCom | 975–1000 | pale blue point | its own ellipse (0.35), 1.8 radii, 26.6 min (since 2026-10-21) | a quick double ping (placeholder) | pitch by its height |
+  | Windsock | StarCom | 1032–1060 | green ring | its own circle, 0.9 radii, 14.9 min (since 2026-10-21) | the wind | loudness and tone by the wind; grit by a storm |
+  | Choir | colonial | 430–470 | lavender pair | its own circle, 1.4 radii, 21.1 min (since 2026-10-21) | the Eye's drone | pitch sinking with the sun; tone drifting |
+  | Babel | the war | 1290–1340 | red diamond, blinking | its own ellipse (0.2), 1.2 radii, 18.5 min (since 2026-10-21) | tones, chirped | pulse and pitch wandering; grit by an anomaly |
   | Ghost | unknown | 60–100 | dim blue ring, flashing | a wild ellipse (0.75), 0.75 to 11 radii up, 23 min, swinging round | tunnel drone, low | on in fits, hopping its band, tumbling; loudest in a storm |
   | Cinder | the war | 1150–1175 | large ember point | decaying: sinks 1.6 radii over 5 laps of 4.4 min, then burns back up; swinging round | **gonkhub's "Cinder"** (`radio_sat_cinder.ogg`, 3 min 40 s, looping) | brighter, louder and a little higher as it sinks; spinning |
-  | Metronome | Frontier Ag | 1695–1735 | mint bar | formation, plane 8 | **gonkhub's "satellite1"** (`radio_sat_metronome.ogg`, a 2 s loop) | pitch rising a little with the sun (0.9 to 1.1); tone by its height |
+  | Metronome | Frontier Ag | 1695–1735 | mint bar | its own near-polar circle, 1.0 radii, 16.1 min (since 2026-10-21) | **gonkhub's "satellite1"** (`radio_sat_metronome.ogg`, a 2 s loop) | pitch rising a little with the sun (0.9 to 1.1); tone by its height |
 
   **The LFOs.** Each binding maps a source, 0 to 1, onto a target between two values. Sources: the
   temperature where the radio is (-40 to 70 °C), the sun (local midnight to noon), night, the wind (to
@@ -625,6 +642,7 @@ opposite horizons. The music's relay goes to L1, and the Pendulum to L2.
   carrier the set already tunes, and plays as thin as the set does. A real FM set is the second.
 - "Always two overhead" (radio probe 34) moves with the formation to the shortwave band's top, where a wire hears
   it (real satellites have sent at 29 MHz); a satellite leaving the formation is replaced in its plane.
+  *(Superseded 2026-10-21: the formation is gone; about two in the sky, above.)*
 - Talking back is allowed with machines only (no NPCs): commanding the Surveyor's cannon, a satellite's stored
   dump. It's also how Daventry could hear you.
 

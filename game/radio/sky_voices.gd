@@ -52,10 +52,9 @@ func listen(delta: float, x: float, z: float, t: float) -> float:
 		var level := 0.0
 		var heard := {}
 		# Only one on the air, near enough the dial to hear and over the horizon
-		# (or anywhere, on shortwave, off the sky) is worth the storm on its way:
-		# most of them aren't, most of the time.
+		# is worth the storm on its way: most of them aren't, most of the time.
 		if sky.on_air(id, t) and absf(radio.frequency - khz) < far \
-				and (radio.band == Radio.SW_BAND or sky.orbits[id].seen_from(p, t).elevation > 0.0):
+				and sky.orbits[id].seen_from(p, t).elevation > 0.0:
 			heard = radio.receive_from(sky.orbits[id], khz, id, x, z, t)
 			level = Radio.audible(heard)
 		levels[id] = level

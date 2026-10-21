@@ -11,7 +11,7 @@ extends RefCounted
 ## the constellation (Constellation) orbit the same way on orbits of their
 ## own: each its height, its lap and its tilt, from where the seed starts it.
 ##
-## An orbit can be irregular, as gonkhub asked of those outside the formation
+## An orbit can be irregular, as gonkhub asked of those outside the old formation
 ## (2026-10-19): an ellipse (eccentricity), so it swoops low and fast at its
 ## perigee and hangs high and slow at its apogee, by Kepler's equation; its
 ## plane swinging round the pole lap by lap (nodal precession), and its
@@ -72,12 +72,8 @@ var _swing := 0.0
 ## time 0. `orbit` gives another satellite's own, {id, altitude (radii),
 ## minutes (a lap), tilt (degrees from the equator, the least and most),
 ## backward (the share of seeds it goes round backwards)}, starting it over a
-## point of the seed's choosing instead; left empty, it's the relay's. With a
-## slot ({slot, count, phasing, inclination}), it's one of a formation instead
-## (Constellation.FORMATION): its own plane of `count` spread evenly round,
-## each `phasing` / `count` of a lap on from the last, all at one tilt, the
-## seed turning and mirroring the whole formation as one. Any orbit can be
-## irregular too: {eccentricity, precess (degrees its plane swings round the
+## point of the seed's choosing instead; left empty, it's the relay's. Any
+## orbit can be irregular too: {eccentricity, precess (degrees its plane swings round the
 ## pole a lap), apsides (degrees its perigee wanders a lap)}; its perigee
 ## starts where the seed puts it.
 func _init(run_seed: int, tuning: Tuning, start: Vector3, orbit := {}) -> void:
@@ -93,10 +89,6 @@ func _init(run_seed: int, tuning: Tuning, start: Vector3, orbit := {}) -> void:
 	eccentricity = clampf(orbit.get("eccentricity", 0.0), 0.0, 1.0 - 1.2 / (1.0 + altitude - decay * 0.5))
 	precession = deg_to_rad(orbit.get("precess", 0.0)) / period
 	apsidal = deg_to_rad(orbit.get("apsides", 0.0)) / period
-	if orbit.has("slot"):
-		_in_formation(run_seed, orbit)
-		_start_on_ellipse(run_seed, orbit)
-		return
 	if orbit.has("around_tu"):
 		_round_tu(run_seed, tuning, orbit)
 		return
@@ -316,25 +308,6 @@ func highness(t: float) -> float:
 ## with the square of distance: a near swoop bright, far out dim.
 func nearness(t: float) -> float:
 	return clampf(pow((1.0 + altitude) / at(t).length(), 2.0), 0.25, 4.0)
-
-
-## Its place in a formation (a Walker constellation, as real ones are laid
-## out): a plane of its own at the formation's tilt, its node and its place
-## round it spread evenly through the formation from where the seed turns it.
-func _in_formation(run_seed: int, orbit: Dictionary) -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash([run_seed, "formation"])
-	var turn := rng.randf() * TAU
-	var along := rng.randf() * TAU
-	var tilt := deg_to_rad(orbit.inclination)
-	if rng.randf() < 0.5:
-		tilt = PI - tilt
-	var k: int = orbit.slot
-	var count: int = orbit.count
-	var node_longitude := turn + TAU * k / count
-	_phase = along + TAU * orbit.phasing * k / count
-	_node = Vector3(cos(node_longitude), sin(node_longitude), 0.0)
-	_across = Vector3(-sin(node_longitude) * cos(tilt), cos(node_longitude) * cos(tilt), sin(tilt))
 
 
 ## The point on the sphere it's over at world time t, in the moon's frame:

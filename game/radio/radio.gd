@@ -851,7 +851,8 @@ func _reads() -> int:
 	if not on:
 		return OFF
 	if band == FM_BAND:
-		return FM if tuned_to() != &"" else STATIC
+		var fm := tuned_to()
+		return SURVEY if fm == Fm.TOWER else (FM if fm != &"" else STATIC)
 	match tuned_to():
 		&"music":
 			return MUSIC
@@ -862,18 +863,8 @@ func _reads() -> int:
 		&"city":
 			return CITY
 		&"":
-			return SURVEY if _on_survey() else STATIC
+			return STATIC
 	return GOD
-
-
-## Whether the dial stands on Frontier Ag's crop survey's shortwave carrier
-## while it's on the air: it reads out its flight plan (gonkhub, 2026-10-21),
-## as far as its signal reaches, from under the horizon too (sw_sky_wave).
-func _on_survey() -> bool:
-	var sky := constellation_of(world)
-	var t := world.time
-	return band == SW_BAND and sky.on_air(Airdrop.SURVEYOR, t) \
-		and absf(frequency - sky.carrier(Airdrop.SURVEYOR, t)) <= Dial.reach(_tuning)
 
 
 ## An old save's channel, or a scenario's, as a place on the dial: the
@@ -1054,17 +1045,6 @@ func _listen(delta: float) -> void:
 				_every(delta, lerpf(PING_NEAR, PING_FAR, clampf(far / FAINT, 0.0, 1.0)), Sounds.RADIO_PING)
 		STATIC:
 			said = dial + "static"
-		SURVEY:
-			# Its flight plan, every survey_report_every s and at once as you tune
-			# in, while its signal comes through at all.
-			var reaching: bool = sky.levels.get(Airdrop.SURVEYOR, 0.0) > 0.0
-			if reaching and (t >= _survey_at + _tuning.survey_report_every or t < _survey_at):
-				_survey_words = survey_words(t)
-				_survey_at = t
-				_say_aloud(_survey_words, false, t)
-				if heard():
-					Deeds.done(world, &"flight_plan")
-			said = dial + (_survey_words if reaching and _survey_words != "" else "static")
 		CITY:
 			reception = receive_city(x, z, t)
 			said = dial + ("· · ·" if reception.cut else ("static" if reception.clean <= 0.0 else reception.text))
@@ -1260,6 +1240,22 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 		if _on_air != null:
 			music.stop()
 			_on_air = null
+	elif reception.id == Fm.TOWER:
+		# Port Morgan Control Tower: no music, the Surveyor's schedule read every
+		# survey_report_every s and at once as you tune in, while it's heard at all.
+		if _on_air != null:
+			music.stop()
+			_on_air = null
+		_level = reception.heard
+		under = NOTHING * (1.0 - reception.quiet)
+		if reception.heard > 0.0 and (t >= _survey_at + _tuning.survey_report_every or t < _survey_at):
+			_survey_words = survey_words(t)
+			_survey_at = t
+			_say_aloud(_survey_words, false, t)
+			if heard():
+				Deeds.done(world, &"flight_plan")
+		said = "%.1f MHz · Port Morgan Control Tower · %s" % [reception.mhz,
+			_survey_words if reception.heard > 0.0 and _survey_words != "" else "static"]
 	else:
 		# Port Morgan's station and the relay both play the port's music.
 		_put_on(Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT, t)
@@ -1503,9 +1499,6 @@ func receive_from(relay: Satellite, khz: float, id: StringName, x: float, z: flo
 	var slid: float = -_tuning.relay_doppler_khz * clampf(sky.rate / relay.top_rate(), -1.0, 1.0) \
 		+ Interference.warp(storm, t, id, _tuning)
 	var up := smoothstep(0.0, deg_to_rad(_tuning.relay_rise_degrees), sky.elevation)
-	# On shortwave it comes in off the sky from under the horizon too.
-	if band == SW_BAND:
-		up = maxf(up, _tuning.sw_sky_wave)
 	# A tumbling satellite's signal swells and fades as it turns.
 	var share := Dial.heard(frequency - khz - slid, _tuning)
 	var power := up * constellation_of(world).tumble(id, t) * antenna_gain()
@@ -1787,7 +1780,7 @@ func voice_level() -> float:
 	if channel not in [WEATHER, GOD, BEACON, SURVEY]:
 		return 0.0
 	if channel == SURVEY:
-		return sky.levels.get(Airdrop.SURVEYOR, 0.0) if sky != null else 0.0
+		return reception.get("heard", 0.0)
 	if channel == BEACON:
 		return 0.0 if target.is_empty() else Dial.heard(frequency - Dial.BEACON_KHZ, _tuning)
 	return audible(reception)
@@ -1819,8 +1812,11 @@ func _say_aloud(words: String, urgent: bool, t: float) -> void:
 			_queue(spoken, spoken, 0.0)
 
 
-## Frontier Ag's crop survey's flight plan as it reads it out at world time t
-## (gonkhub, 2026-10-21): its speed over the ground, its altitude (a working
+## Frontier Ag's crop survey's flight plan as Port Morgan Control Tower reads
+## it out on FM at world time t (gonkhub, 2026-10-21: "give Port Morgan a
+## Surveyor schedule announcement every 5mins on an FM channel. Port Morgan
+## Control Tower can be an FM broadcast that we use for this and other
+## worldbuilding tracks"): its speed over the ground, its altitude (a working
 ## figure wandering about its true one: flavour for now) and how long until
 ## it's over Port Morgan, which it passes every lap. Said "elevation": the
 ## bundled voice has no "altitude" yet.

@@ -3,7 +3,7 @@ extends ShieldProbe
 ## heard whole on its carrier, and near it at a share of its strength, so
 ## you hear it as you tune toward it and tune in on it; far off, nothing. A
 ## god heard off its carrier is still the one the dial hears, faint. Two
-## broadcasts near each other on the dial, two of the formation's satellites
+## broadcasts near each other on the dial, two satellites
 ## side by side on shortwave, are heard together between their carriers, each
 ## the louder nearer its own.
 ## Under clear skies everywhere.
@@ -49,14 +49,14 @@ func run() -> void:
 	radio.frequency = home + Dial.reach(tuning) + 15.0
 	check(radio.tuned_to() != best, "past its skirt it's gone")
 
-	# Two of the formation side by side at 29 MHz, both overhead: heard together
+	# Two satellites side by side at 29 MHz, both overhead: heard together
 	# between them on shortwave.
 	Scenarios.fill(world, radio, [&"sw_converter"])
 	radio.switch_band()
 	check(radio.band == Radio.SW_BAND, "with a shortwave converter it's on shortwave")
 	var sky := Radio.constellation_of(world)
 	var p := radio.point_at(x, z)
-	var side := ["sounder", "sextant", "windsock", "choir", "babel", "lullaby", "tollgate", "metronome"]
+	var side := ["sextant", "windsock", "choir", "babel", "metronome"]
 	var pair := []
 	var both := _first(t, func(u: float) -> bool:
 		for i in side.size() - 1:

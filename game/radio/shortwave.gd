@@ -9,9 +9,7 @@ extends RefCounted
 ## gates Tu's: the roar comes when Zan is at the right places round its orbit
 ## and Tu's own turn brings its source round, so it has a timetable you can
 ## learn. It's heard wherever Tu is in the sky, the stronger the higher, and
-## off the sky from where Tu is down, faintly, on a strung wire (gonkhub,
-## 2026-10-21: every shortwave broadcast reaches anywhere with signal enough).
-## Pure in world time.
+## never on the far side, which Zan's own bulk shields. Pure in world time.
 
 const LOWEST := 2000.0
 const HIGHEST := 30000.0
@@ -31,8 +29,7 @@ static func share(khz: float) -> float:
 ## within tu_roar_turn of facing, rad). In a storm it comes in slow swells, as
 ## Jupiter's long bursts do.
 static func roar(p: Vector3, tu: Vector3, khz: float, t: float, tu_turn: float, tuning: Tuning) -> float:
-	# Off the sky from where Tu is down too (sw_sky_wave), as every shortwave broadcast.
-	var up := maxf(smoothstep(0.0, 0.5, p.dot(tu)), tuning.sw_sky_wave)
+	var up := smoothstep(0.0, 0.5, p.dot(tu))
 	var dial := smoothstep(tuning.tu_roar_khz.x, tuning.tu_roar_khz.y, khz)
 	if up <= 0.0 or dial <= 0.0:
 		return 0.0

@@ -31,8 +31,15 @@ native checks; full platform/build checks and human playtest acceptance remain.
   arrays and its care-package cannon, lit by the sun and the sand below and
   hazed by the air between. Its care packages fall for 30 s from the new height.
 - The crop survey now passes over Port Morgan every lap, its route swinging round
-  the moon. Tune to it for its flight plan every 5 minutes: speed, altitude and
-  when it's next over Port Morgan. Hearing it earns Flight Plan.
+  the moon. Port Morgan Control Tower reads its schedule on FM every 5 minutes:
+  speed, altitude and when it's next over the port. Hearing it earns Flight Plan.
+- Fit FM and shortwave converters to the radio and switch bands. FM brings Port
+  Morgan's station by line of sight and the relay's music; shortwave carries the
+  satellites and Tu's roar, clearer on an antenna reel's strung wire.
+- Find a station's direction by the ferrite rod's null, and hear natural radio's
+  sferics and whistlers at the bottom of the AM dial on a long wire.
+- Fewer satellites, each on its own orbit: about two cross the sky at once.
+  New deeds: Line of Sight, Storm on Tu, Long Wire, Null and Whistler.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 

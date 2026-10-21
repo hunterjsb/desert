@@ -11,6 +11,9 @@ extends RefCounted
 ## Two on one frequency don't mix: the stronger takes it (the capture effect).
 ## Pure in the world's shape and the seed.
 
+## Port Morgan Control Tower's station: the Surveyor's schedule (Radio), and
+## later the port's other worldbuilding broadcasts.
+const TOWER := &"tower"
 const LOWEST := 87.5
 const HIGHEST := 108.0
 ## Light's speed, for a wavelength, m/s over MHz.
@@ -18,7 +21,8 @@ const C_MHZ := 299.792458
 
 
 ## Every station on the band, low to high: Port Morgan's own, the port's music
-## on its mast ({id, mhz, at (a point on the sphere), mast_m}); and the relay at
+## on its mast ({id, mhz, at (a point on the sphere), mast_m}); Port Morgan
+## Control Tower on the same mast (TOWER); and the relay at
 ## L1 sending the same music down from the sky ({id, mhz, sky (its id in the
 ## constellation)}). Each on an odd tenth of a MHz the seed picks (as North
 ## America spaces them), apart from each other, and locked there: a station
@@ -29,7 +33,12 @@ static func stations(gods: Gods, run_seed: int, tuning: Tuning) -> Array[Diction
 	var port := snappedf(88.1 + 0.2 * rng.randi_range(0, 99), 0.1)
 	# The relay's somewhere else on the band, at least a MHz off the port's.
 	var relay := snappedf(fposmod(port - 88.1 + 1.0 + 0.2 * rng.randi_range(0, 89), 20.0) + 88.1, 0.1)
+	# The tower too, a MHz or more off both.
+	var tower := port
+	while absf(tower - port) < 1.0 or absf(tower - relay) < 1.0:
+		tower = snappedf(fposmod(port - 88.1 + 2.0 + 0.2 * rng.randi_range(0, 89), 20.0) + 88.1, 0.1)
 	var out: Array[Dictionary] = [{"id": &"port_fm", "mhz": port, "at": gods.home(&"ledger", 0.0),
+		"mast_m": tuning.fm_mast_m}, {"id": TOWER, "mhz": tower, "at": gods.home(&"ledger", 0.0),
 		"mast_m": tuning.fm_mast_m}, {"id": &"relay", "mhz": relay, "sky": &"relay"}]
 	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.mhz < b.mhz)
 	return out
