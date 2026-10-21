@@ -388,3 +388,19 @@ apertures. The berth remains at its original pose. Current old orbital framing
 is a placeholder pending the saved regional departure model, and does not claim
 Tu visibility. Root's integrated display capture caught a2 mm recess overlap;
 the screen pose is now0.089 m outward, beyond its0.086 m opaque backing face.
+
+### Seated flight renderer (selected 2026-10-21)
+
+ArrivalView uses the real pod's mesh-only interior at the inverse of the same
+pod-local seat/eye transform as preparation and landing. Old flights without
+physical parts use the nominal mesh-only shell. No exterior pod proxy remains.
+The arrival controller owns the body's ground pose and freezing; this renderer
+owns only camera recoil and presentation, never body velocity or gameplay forces.
+
+Entry heat and landing dust are clipped to the projected real window rectangle.
+One saved-time recoil moves the camera within the fixed shell, without replaying
+an impact on resume. At materialized landing, ordinary ground rendering replaces
+the orbital viewport while the matched real seated camera is briefly recoiled;
+the renderer restores its unmodified local transform on disposal. The shared
+regional trajectory will supply orbital position/orientation separately; the
+old orbit interpolation remains a temporary renderer path until that integration.
