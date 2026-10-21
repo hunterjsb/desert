@@ -55,8 +55,9 @@ func run() -> void:
 
 	# The same run as a save made when what you carried was five slots.
 	var file: Dictionary = SaveFile.read(saves.path(), saves.KIND, saves.VERSION).data
-	var old: Array = file.carried.slice(0, 5)
-	old.resize(5)
+	var old: Array = []
+	for id: StringName in [&"canister", &"ration", &"bedroll", &"radio", &"compass"]:
+		old.append(file.carried.filter(func(rec: Dictionary) -> bool: return rec.id == id)[0])
 	for rec: Variant in old:
 		if rec != null and rec.id == &"radio":
 			for key: String in ["on", "frequency", "volume"]:
