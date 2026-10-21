@@ -488,7 +488,7 @@ two-piece stationary camp measurements. The scripted scout relocation and camera
 helper do not establish hoverboard travel, human comprehension, storms, moving
 rigs or the maximum camp budget. No remote simulation code change was needed.
 
-**Medium-camp acceptance (2026-10-21; selected, pending):** Exercise a nine-piece
+**Medium-camp acceptance (2026-10-21; focused checks passed):** Exercise a nine-piece
 joined deck with mixed hover/skate mounts, powered shield and beacon, solar,
 battery dock, condenser and radio, plus a separate tethered planter with stored
 produce and a loose claimed supply. Keep ordinary body physics and support
@@ -498,3 +498,32 @@ distant camp would be deleted and is not an equivalent baseline. Record engine
 main-thread/physics frame times and active-body counts without imposing a new
 machine-dependent threshold. Inspect a real unseen return capture. This is a
 medium assembly check, not acceptance of the maximum admission count or span.
+
+Camp 10 and the actual unseen `look/home/medium` fixture pass with nine joined
+pieces, seven hover trays, two skate mounts, a four-cell dock, two solar panels,
+shield, beacon, radio, condenser, tethered planter with four stored coalcane
+bundles, one loose bundle, two stakes and three physical lines. This is **10
+physical Home members / 46 work items**, with a 189.1 kg joined deck. The skates
+are raised clear by powered hover; this checks mixed mounts and actual hover
+support, not simultaneous loaded skate contacts. The planter retains its own
+real battery/tray and tether, rather than being artificially frozen or mounted.
+
+The focused headless check passed in 28 s. Two actual 1280×720 GPU return views
+were inspected: the deck remained assembled and level, with the planter and loose
+supply still beside it inside the shield. The fixture samples 240 ordinary
+physics frames per phase and watches deck motion continuously after initial
+settling, including streaming and origin changes. World resources keep their
+normal ticks. Travel is scripted and player physics is disabled by the shared
+hands fixture; this does not validate an unassisted hoverboard route, long storm
+survival, maximum admission count/span or a general frame-time budget.
+
+In the final GPU run the continuously observed deck stayed below 0.0012 rad/s
+spin, 0.0063 m/s speed and 0.780° tilt, with zero ground rescues. Near the same
+camp, unmarked then marked, median sampled engine process estimates were
+13.904 / 14.218 ms; physics estimates were 6.921 / 7.284 ms. Distant marked
+estimates were 14.087 / 8.045 ms, with 314 terrain / 50 collision chunks instead
+of 289 / 25 near camp. These are **coarse engine-monitor observations on a
+shared desktop**, not independent per-tick timings or isolated Jolt solver cost.
+The physics active-object monitor returned zero despite the live bodies, so it
+does not establish an active-body count. Remote and near scenes differ; their
+whole-frame difference cannot be attributed solely to Home membership.
