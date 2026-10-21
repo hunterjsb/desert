@@ -81,6 +81,9 @@ func setup(world: World, day: DayCycle, environment: Environment, face: StormFac
 func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3, haze: Vector3,
 		tu_light: float, seen_shade: float, dim: float, ring_air: Vector3) -> void:
 	var moon := _world.moon
+	var dip := SurfaceProjection.horizon_dip(maxf(eye.y, 0.0), SurfaceProjection.radius(_world.tuning))
+	material.set_shader_parameter("horizon_dip", dip)
+	_face.set_light(&"horizon_dip", dip)
 	var tu := _day.tu_direction(t, moon.latitude, moon.longitude)
 	var radius := _day.tu_radius()
 	material.set_shader_parameter("sky_glow", glow)

@@ -1161,3 +1161,24 @@ with `look/exposure/first_hour.tscn`, adding `--baseline` for the old refill. Th
 opportunity to notice and investigate, not a guaranteed find next to every camp. A
 controlled fifteen-minute stripping storm leaves a 6 m-deep site partly visible ten
 calm minutes later and buried again after ninety minutes.
+
+## Large-moon atmosphere consumer contract (agreed, 2026-10-21; implementation pending)
+
+Sky ground masks follow SurfaceProjection's visual radius and the observer's nonnegative
+height above the local datum. Celestial angular directions, compressed routes and sizes
+remain unchanged. The crop-survey veil uses that radius and the observer's height when
+integrating its thinning dust column. Storm depth remains render-ray distance; each
+atmospheric field sample is inverse-projected back to the original flat weather sheet.
+The ray's curved altitude also determines its roof interval, so a high observer looking
+down can enter the wall. Nearby shelter intersections and shell geometry stay physical.
+Surface frame uniforms are per material, never global to unrelated viewports.
+
+Weather27 passes (6 s): the actual camera at 2 km gets about 1.88 degrees of
+horizon dip and the same per-material surface frame, changing navigation circumference
+does not change the crop veil, and higher observers see less dust. Existing Tu10
+(26 s) and eclipse11 (7 s) remain green. The storm roof uses a bounded quadratic
+intersection rather than discarding all downward rays above the roof. Ground-dust
+curvature uses four weighted taps against the original integral; the curved/straight
+ratio tends to one at zero curvature, and other consumers retain the existing flat
+function. This adds no map reads. Final GPU timing and combined-terrain horizon
+acceptance remain pending; the isolated sky fixture still uses the old finite terrain.

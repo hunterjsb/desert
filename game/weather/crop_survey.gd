@@ -61,7 +61,7 @@ func _ready() -> void:
 ## `along`, its top facing `up` (away from the moon's centre). Below the
 ## horizon it isn't drawn.
 func place(eye: Vector3, toward: Vector3, slant: float, along: Vector3, up: Vector3) -> void:
-	visible = toward.y > -0.02
+	visible = toward.y > -sin(SurfaceProjection.horizon_dip(maxf(eye.y, 0.0), SurfaceProjection.radius(_tuning))) - 0.02
 	if not visible:
 		return
 	var env := get_world_3d().environment
@@ -74,7 +74,7 @@ func place(eye: Vector3, toward: Vector3, slant: float, along: Vector3, up: Vect
 	var size := near / slant * _tuning.crop_survey_scale
 	global_transform = Transform3D(Basis(x, y, z).scaled_local(Vector3.ONE * size), eye + toward * near)
 	_pick_detail(slant)
-	_veil(env, toward, slant)
+	_veil(env, toward, slant, maxf(eye.y, 0.0))
 
 
 ## The scene's light: which way the sun is and its light (linear, times its
@@ -115,16 +115,16 @@ func _pick_detail(slant: float) -> void:
 ## dust along the line of sight, matched at the ground to the scene's own
 ## haze (its fog reaching its density by its end). Overhead at 6 km that's
 ## about a fifth; low over the horizon, about half. In a storm, all of it.
-func _veil(env: Environment, toward: Vector3, slant: float) -> void:
+func _veil(env: Environment, toward: Vector3, slant: float, observer_height := 0.0) -> void:
 	if env == null or not env.fog_enabled:
 		_overlay.set_shader_parameter(&"veil", 0.0)
 		return
 	var ground_k := -log(1.0 - clampf(env.fog_density, 0.0, 0.99)) / maxf(env.fog_depth_end, 1.0)
-	var moon := _tuning.moon_circumference / TAU
+	var moon := SurfaceProjection.radius(_tuning)
 	var dust := _tuning.dust_height_m
 	# Its height over the curved ground, and the dust between.
 	var height := maxf(toward.y * slant + slant * slant * (1.0 - toward.y * toward.y) / (2.0 * moon), 1.0)
-	var column := dust * (1.0 - exp(-height / dust))
+	var column := exp(-observer_height / dust) * dust * (1.0 - exp(-height / dust))
 	_overlay.set_shader_parameter(&"veil", 1.0 - exp(-ground_k * column * slant / height))
 	var behind := _sky_behind(env, toward)
 	_overlay.set_shader_parameter(&"veil_color", Vector3(behind.r, behind.g, behind.b))
@@ -143,7 +143,9 @@ static func _sky_behind(env: Environment, toward: Vector3) -> Color:
 		return env.fog_light_color * env.fog_light_energy
 	var glow: Vector3 = got[2]
 	var haze: Vector3 = got[3]
-	var t := clampf(pow(1.0 - clampf(toward.y, 0.0, 1.0), 4.0), 0.0, 1.0)
+	var dip := float(sky_material.get_shader_parameter(&"horizon_dip"))
+	var up := sin(clampf(asin(clampf(toward.y, -1.0, 1.0)) + dip, -PI * 0.5, PI * 0.5))
+	var t := clampf(pow(1.0 - clampf(up, 0.0, 1.0), 4.0), 0.0, 1.0)
 	var grad := (got[0] as Color).srgb_to_linear().lerp((got[1] as Color).srgb_to_linear(), t)
 	var lit := Color(grad.r * glow.x, grad.g * glow.y, grad.b * glow.z)
 	return lit.lerp(Color(haze.x, haze.y, haze.z), got[4])

@@ -68,6 +68,10 @@ func sigma() -> float:
 ## after the world moved. holes are each shelter's centre and live radius,
 ## glows how brightly its shell shows.
 func sync(t: float, holes: PackedVector4Array, glows: PackedFloat32Array) -> void:
+	var camera := get_viewport().get_camera_3d()
+	if camera != null:
+		var eye := camera.global_position
+		material.set_shader_parameter("surface_frame", Vector3(eye.x, eye.z, SurfaceProjection.radius(_tuning)))
 	var values := _map.uniforms(t)
 	uniforms = values
 	for key: String in values:
