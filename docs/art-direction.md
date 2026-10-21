@@ -1178,3 +1178,25 @@ normal hatch/roof removal. The integrated development opening now reconstructs t
 physical roles and idempotent appearance helpers. Flight, recovery and skin
 restoration have focused checks; combined CI and unassisted play acceptance
 remain pending.
+
+## The Surveyor's suit (2026-10-21; on review, `codex/player-body`)
+
+gonkhub, 2026-10-21: "start work on polishing, upgrading and implementing the
+player model you previously made. Need to see it in first person POV." The
+lab's kit-built surveyor (lab/anim, M1), in its bone white ("Lab's bone
+white"), refined in the game's own kit (`SurveyorLooks`, worn shader):
+
+- **The suit:** bone white, a shade darker at its seams and pockets; gunmetal
+  where it bends (shoulder yokes, a collar ring, elbows, knees, belt).
+- **The helmet:** a wide dark visor under a gunmetal brow, a lamp on its
+  right (where the headlamp shines from), ear pucks and a stub aerial.
+- **The pack:** teal, banded in safety yellow, its fins, a hose over the
+  right shoulder to the collar.
+- **Hands and boots:** half-closed work gloves with a knuckle guard, an amber
+  readout on the back of the left wrist, black boots with gunmetal toe caps.
+
+Rigid pieces on their joints, 5,916 triangles in 16 draws. In first
+person the helmet, the collar and the shoulder yokes are drawn only for
+their shadow and for others (`Body.OWN_LAYER`). What you see is your arms
+reaching to what you hold, your knees crouched or sat, and your boots
+looking down. Look-test: `look/player_body`.
