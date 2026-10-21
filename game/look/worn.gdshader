@@ -58,7 +58,14 @@ varying vec4 finish;
 varying float above;
 varying vec4 stamp;
 
+uniform bool sky_proxy = false;
+
 void vertex() {
+	POSITION = PROJECTION_MATRIX * MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
+	if (sky_proxy) {
+		// Keep the proxy behind the landscape while retaining hull depth order.
+		POSITION.z = mix(CLIP_SPACE_FAR * POSITION.w, POSITION.z, 0.000001);
+	}
 	obj_pos = VERTEX;
 	obj_n = NORMAL;
 	world_n = (MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz;

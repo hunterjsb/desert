@@ -29,6 +29,7 @@ var hold := ""
 var _view := MeshInstance3D.new()
 var _muzzle := MeshInstance3D.new()
 var _overlay := ShaderMaterial.new()
+var _paint: ShaderMaterial
 var _far := true
 var _tuning: Tuning
 
@@ -39,12 +40,16 @@ func _init(tuning: Tuning) -> void:
 
 func _ready() -> void:
 	_view.mesh = CropSurveyLooks.craft(_far)
+	_paint = Paint.worn().duplicate() as ShaderMaterial
+	_paint.set_shader_parameter(&"sky_proxy", true)
+	_view.material_override = _paint
 	_view.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_view)
 	_view.set_instance_shader_parameter(&"age", AGE)
 	_overlay.shader = BOUNCE
 	_view.material_overlay = _overlay
 	_muzzle.mesh = CropSurveyLooks.flash()
+	_muzzle.material_override = _paint
 	_muzzle.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_muzzle.visible = false
 	add_child(_muzzle)
