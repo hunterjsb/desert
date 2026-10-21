@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/large_moon/timing.gd" id="1_sandlight"]
+[ext_resource type="PackedScene" path="res://game/world/world.tscn" id="2_world"]
+
+[node name="SandlightTest" type="Node"]
+script = ExtResource("1_sandlight")
+
+[node name="World" parent="." instance=ExtResource("2_world")]

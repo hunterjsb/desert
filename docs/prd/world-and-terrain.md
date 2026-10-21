@@ -163,8 +163,8 @@ poles. Walk over a pole and you come down the other side, with north becoming so
 
 **The compressed travel map is about 150 km round** (a navigation radius of about 24 km). That's around 30 hours
 on foot, and about 37 km from the equator to a pole. Circling it is an epic a long run
-can achieve. A real sphere this small would put the horizon about 300 m away. We render
-the ground flat precisely so the big views stay possible.
+can achieve. A real sphere this small would put the horizon about 300 m away. The presentation instead uses the much larger provisional lore radius, preserving
+big views while local physics keeps its tangent approximation.
 
 **The sky follows your point on the moon** (2026-10-17, [the Tu
 spec](../briefs/tu-and-day-2026-10-17.md)). Local time follows longitude, so walking east brings
@@ -987,3 +987,24 @@ Acceptance: focused CPU projection/inverse/normal and moving-local-time checks;
 inspected GPU low/high-observer terrain, landmarks and skyline captures, including
 origin shifts and unaffected near interaction. Combined verification and native
 checks precede landing. Until measured, this presentation work is in progress.
+
+### Distant ground implementation slice (2026-10-21; selected, in progress)
+
+Keep the ordinary streamed/collision lattice and 32 m far ring budgets. Project
+their rendered vertices with SurfaceProjection, retaining undeformed samples for
+tracks and weather. A separate coarse annular apron overlaps the outer far ring
+and extends to the existing haze/draw budget; it samples dunes without mountain
+profiles, leaving the two existing distant hill meshes and their summit models
+as the sole mountain presentation. Distant summit material opts into the shared
+worn shader through a compile flag; ordinary worn items remain unchanged.
+Skyline boxes, bushes and glints use the same projection and transformed normals.
+All selected materials receive the actual main observer frame explicitly each
+frame; shader defaults leave standalone icons/orbital views unprojected. Expand
+render bounds conservatively; do not move any physical node or collider.
+
+The apron uses a small fixed polar mesh with geometric ring spacing, built on
+the existing far worker and uploaded within its existing scheduling budget. Its
+coarse ground is presentation only, with the same distant fade as the hills.
+Local interactive objects stay in the tangent approximation documented above.
+This slice does not claim that ordinary distant camp props or weather-volume
+sampling have been projected; those remain integration review work.

@@ -74,3 +74,44 @@ static func make(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array
 	arrays[Mesh.ARRAY_CUSTOM0] = shades
 	arrays[Mesh.ARRAY_INDEX] = indices
 	return arrays
+
+
+## Cheap continuous ground under the distant sky. Hills keep their existing
+## horizon meshes; the apron must not make a second coarse mountain skin.
+static func apron(shape: TerrainShape, center: Vector2i, tuning: Tuning) -> Array:
+	var sides := maxi(tuning.horizon_apron_sides, 3)
+	var rings := maxi(tuning.horizon_apron_rings, 1)
+	var inner := maxf(tuning.chunk_size, tuning.far_radius - tuning.chunk_size * 2.0)
+	var outer := maxf(inner, tuning.horizon_range.y)
+	var base := Vector2(center) * tuning.chunk_size
+	var vertices := PackedVector3Array()
+	var normals := PackedVector3Array()
+	var indices := PackedInt32Array()
+	vertices.resize((rings + 1) * sides)
+	normals.resize(vertices.size())
+	for j in rings + 1:
+		var distance := inner * pow(outer / inner, float(j) / rings)
+		for i in sides:
+			var offset := Vector2.from_angle(TAU * i / sides) * distance
+			var at := base + offset
+			vertices[j * sides + i] = Vector3(offset.x, shape.dunes(at.x, at.y, []) - tuning.far_drop, offset.y)
+	for j in rings:
+		for i in sides:
+			var a := j * sides + i
+			var b := j * sides + (i + 1) % sides
+			indices.append_array(PackedInt32Array([a, a + sides, b, b, a + sides, b + sides]))
+	for i in range(0, indices.size(), 3):
+		var a := indices[i]
+		var b := indices[i + 1]
+		var c := indices[i + 2]
+		var normal := (vertices[c] - vertices[a]).cross(vertices[b] - vertices[a])
+		for index in [a, b, c]:
+			normals[index] += normal
+	for i in normals.size():
+		normals[i] = normals[i].normalized()
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	arrays[Mesh.ARRAY_INDEX] = indices
+	return arrays
