@@ -3,6 +3,8 @@ extends ShieldProbe
 
 func run() -> void:
 	await load_storm(0.0)
+	# Several physics ticks can precede one rendered consumer update.
+	Engine.max_fps = 5
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	radio.on = true
@@ -23,6 +25,7 @@ func run() -> void:
 	radio.frequency = gods.carrier(best, world.time)
 	await physics_frames(5)
 	await get_tree().process_frame
+	await get_tree().process_frame
 	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
 	check(" ".join(radio.spoken) != "" and " ".join(radio.spoken) == Radio.spoken_words(radio.reception.words)
 		and broadcast.reading == " ".join(radio.spoken), "the god's transmitted words reach speech")
@@ -30,6 +33,7 @@ func run() -> void:
 	await physics_frames(2)
 	radio.target = {"x": x + 100.0, "z": z, "coord": Vector2i.ZERO, "index": 0}
 	await physics_frames(5)
+	await get_tree().process_frame
 	await get_tree().process_frame
 	check(" ".join(radio.spoken).contains(radio.say_point(radio.beacon_bearing())) and broadcast.reading == " ".join(radio.spoken),
 		"the beacon's actual bearing reaches speech too")
