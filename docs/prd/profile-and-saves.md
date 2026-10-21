@@ -269,7 +269,6 @@ the frame is a part stuck on the deck.
 | Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Line of Sight** | Hear an FM station come through quiet | First Light | `Radio`'s tick on the FM band: a station over its threshold enough to be quiet, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **Whistler** | Hear a whistler on an antenna reel's wire, away from your camp's hum | First Light | `Radio`'s tick at the AM dial's bottom: a whistler falling while natural radio comes through whole on a long wire, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Null** | Turn a radio until a god you hear falls silent | First Light | `Radio`'s tick on a god: one that would come through whole broadside to the set's ferrite rod, silent end-on to it, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Long Wire** | Hear a satellite clear on an antenna reel's wire strung from the radio | First Light | `Radio`'s tick on shortwave: an antenna reel's wire strung `sw_wire_m` or more from it and a satellite coming through whole, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Storm on Tu** | Hear Tu roar on shortwave | First Light | `Radio`'s tick on the shortwave band: Tu's roar coming in as loud as an anomaly's crackle is a tell, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
@@ -300,7 +299,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire, Null and Whistler since 2026-10-20; Flight Plan 2026-10-21), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan and Make Fast 2026-10-21; Whistler cut 2026-10-21 with natural radio), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -846,3 +845,8 @@ bringing the development roster from 64 to 65 in the same eleven families;
 the real placement check passes (Rope 30, 7 s) and real save/resume passes
 (Save 46, 19 s). Gathering alone does not award it; ordinary anchoring does.
 Combined candidate verification remains pending.
+
+**Whistler cut (2026-10-21).** Natural radio went when the AM dial became a real
+set's longwave and mediumwave (Radio, sound & atmosphere), and its deed with it:
+the roster is 64 in the same eleven families. A profile that earned it keeps
+its record, unshown: the deeds grid lists only `Deeds.TABLE`.

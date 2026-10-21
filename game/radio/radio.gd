@@ -1,7 +1,7 @@
 class_name Radio
 extends Device
-## A radio you carry, set down or stick on a deck, and tune: a dial from 0
-## to 2000 kHz, rolled a notch at a time as you look at it, and use to sweep up
+## A radio you carry, set down or stick on a deck, and tune: an AM dial of
+## longwave and mediumwave, 150 to 1700 kHz (Dial), rolled a notch at a time as you look at it, and use to sweep up
 ## to the next carrier, and off past the last; its needle crosses the band on
 ## its face and its knobs turn as you do. Nothing on the dial says what a
 ## carrier is. Music plays on one, a beacon pings on another, and the seven
@@ -94,14 +94,12 @@ const UNHEARD := -1
 ## moves); and a tick's move longer than this is the world shifting under it,
 ## not it moving.
 const FM_RECKON_M := 2.0
-## Its long wire is read again this often, s, and the storms about and its
-## camp's hum for natural radio this often.
+## Its long wire is read again this often, s.
 const WIRE_EVERY := 0.5
-const NATURAL_EVERY := 1.0
 const FM_RECKON_S := 1.0
 const FM_JUMP_M := 50.0
 ## Its dial on its face (+Z), m: the band window's middle and size, the band
-## running from 0 kHz to 2000 across these x, and where the tuning and
+## running from Dial.LOWEST to Dial.HIGHEST across these x, and where the tuning and
 ## volume knobs turn.
 const BAND_Y := 0.058
 const BAND_WIDTH := 0.236
@@ -110,11 +108,10 @@ const BAND := Vector2(-0.105, 0.105)
 const KNOB_AT := Vector3(0.06, -0.042, 0.084)
 const VOLUME_AT := Vector3(0.11, -0.06, 0.084)
 const VOLUME_KNOB := 0.55
-## The tuning knob goes once round across the whole dial, 0 to 2000 kHz
+## The tuning knob goes once round across the whole AM dial, bottom to top
 ## (gonkhub, 2026-10-20: "make the visual for the knob turning match the
-## bandwidth, so going from 0-20k is one full knob turn"); the volume knob
-## sweeps three quarters round, silent to full.
-const KHZ_A_TURN := Dial.HIGHEST
+## bandwidth"); the volume knob sweeps three quarters round, silent to full.
+const KHZ_A_TURN := Dial.HIGHEST - Dial.LOWEST
 const VOLUME_SWEEP := PI * 1.5
 ## The needle and knobs catch up with where the dial stands in about this long, s.
 const TURN_SECONDS := 0.05
@@ -164,14 +161,14 @@ var on := false:
 	set(to):
 		on = to
 		_recompute()
-var frequency := 0.0
+var frequency := Dial.LOWEST
 ## Which band it's on (BANDS), and where its FM dial stands, MHz: each band
 ## keeps its own place, so switching back finds where you were. The AM dial
 ## and the shortwave band share `frequency`, kHz, one going on past the
 ## other's top: where the one not in use stood is kept here.
 var band := AM_BAND
 var fm_mhz := Fm.LOWEST
-var am_khz := 0.0
+var am_khz := Dial.LOWEST
 var sw_khz := Shortwave.LOWEST
 ## Where its volume knob stands, 0 silent to 1 full: everything it plays.
 var volume := 1.0
@@ -223,7 +220,7 @@ var needle: MeshInstance3D
 var knob: MeshInstance3D
 var volume_knob: MeshInstance3D
 var band_lamp: MeshInstance3D
-var shown_khz := 0.0
+var shown_khz := Dial.LOWEST
 var shown_volume := 1.0
 var crackle: AudioStreamPlayer3D
 ## The weather station's voice, reading a report a phrase at a time.
@@ -283,17 +280,6 @@ var roar: AudioStreamPlayer3D
 ## m; the higher of its two ends over the ground, m), or zero with none.
 var wire := Vector2.ZERO
 var _wire_at := -INF
-## Natural radio at the bottom of the AM dial: its sferics' clicks, a
-## whistler's falling tone and its camp's hum, each a voice; how much storm is
-## about and how loud the hum, read every NATURAL_EVERY s; and how much of it
-## comes through now, 0 to 1.
-var sferic: AudioStreamPlayer3D
-var whistle: AudioStreamPlayer3D
-var hum: AudioStreamPlayer3D
-var storms_about := 0.0
-var hum_level := 0.0
-var natural := 0.0
-var _natural_at := -INF
 ## How far it has moved, m, for the fade it passes through on FM; where it was
 ## last tick; and each FM station's margin as last worked out, and where.
 var _moved := 0.0
@@ -332,12 +318,6 @@ func _ready() -> void:
 	roar = _voice()
 	roar.stream = Sounds.RADIO_STATIC
 	roar.pitch_scale = 0.45
-	sferic = _voice()
-	sferic.stream = Sounds.RECEIVER_TICK
-	whistle = _voice()
-	whistle.stream = Sounds.SHIELD_HUM
-	hum = _voice()
-	hum.stream = Sounds.TUG
 	_signal = add_voice(signal_bus())
 	sky = SkyVoices.new()
 	add_child(sky)
@@ -450,6 +430,8 @@ func tune(notches: int, fine := false) -> bool:
 		return true
 	var snap := _tuning.dial_fine_khz if fine else (_tuning.sw_notch_khz if band == SW_BAND else _tuning.dial_notch_khz)
 	frequency = clampf(snappedf(frequency + notches * step, snap), _lowest(), _highest())
+	if band == AM_BAND:
+		frequency = Dial.on_dial(frequency, notches > 0)
 	_retuned(before)
 	return true
 
@@ -560,7 +542,7 @@ func dial_share(khz: float) -> float:
 		return Fm.share(khz / 1000.0)
 	if band == SW_BAND:
 		return Shortwave.share(khz)
-	return khz / Dial.HIGHEST
+	return Dial.share(khz)
 
 
 ## What the dial reads, as the set shows it: "262 kHz", "96.7 MHz" on FM, or
@@ -745,20 +727,20 @@ func _process(delta: float) -> void:
 
 ## How far the tuning knob stands turned at a frequency, rad clockwise.
 static func knob_turn(khz: float) -> float:
-	return TAU * khz / KHZ_A_TURN
+	return TAU * (khz - Dial.LOWEST) / KHZ_A_TURN
 
 
 ## Where the needle stands on its window, as the AM dial's kHz across it:
-## the FM band spread over the same window.
+## the FM band and shortwave spread over the same window.
 func _needle_khz() -> float:
 	if band == FM_BAND:
-		return Dial.HIGHEST * Fm.share(fm_mhz)
-	return Dial.HIGHEST * Shortwave.share(frequency) if band == SW_BAND else frequency
+		return lerpf(Dial.LOWEST, Dial.HIGHEST, Fm.share(fm_mhz))
+	return lerpf(Dial.LOWEST, Dial.HIGHEST, Shortwave.share(frequency)) if band == SW_BAND else frequency
 
 
 ## Its needle on the band and its knobs turned to what they show.
 func _show_dial() -> void:
-	needle.position = Vector3(lerpf(BAND.x, BAND.y, shown_khz / Dial.HIGHEST), BAND_Y, FACE.z + 0.0035)
+	needle.position = Vector3(lerpf(BAND.x, BAND.y, Dial.share(shown_khz)), BAND_Y, FACE.z + 0.0035)
 	knob.transform = Transform3D(Basis(Vector3.BACK, -knob_turn(shown_khz)), KNOB_AT)
 	volume_knob.transform = Transform3D(Basis(Vector3.BACK, VOLUME_SWEEP * (0.5 - shown_volume))
 		.scaled(Vector3.ONE * VOLUME_KNOB), VOLUME_AT)
@@ -1089,7 +1071,6 @@ func _listen(delta: float) -> void:
 			Deeds.done(world, &"tu_roar")
 	roar.volume_db = linear_to_db(tu + 0.0001) + knob_db()
 	through = maxf(through, tu * 0.5)
-	through = maxf(through, _natural(delta, x, z, t))
 	_show_lamps(through, delta)
 	# Static only while nothing plays (gonkhub, 2026-10-19): interference is in
 	# what you hear, not hiss laid over it.
@@ -1151,47 +1132,6 @@ func rod(bearing: float, sky: bool) -> float:
 	var to := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
 	var across := absf(flat.normalized().cross(to))
 	return lerpf(_tuning.rod_night_null if sky else _tuning.rod_null, 1.0, smoothstep(0.0, _tuning.rod_width, across))
-
-
-## Natural radio this tick, at world place x, z and time t, on the AM dial's
-## bottom and a long wire: a sferic's click as often as the storms about make
-## them, a whistler's fall when one comes, and its camp's hum over both. Says
-## how much comes through, for the lamps and the static to sink under.
-func _natural(delta: float, x: float, z: float, t: float) -> float:
-	natural = 0.0
-	var reach := Natural.share(frequency) * smoothstep(0.0, _tuning.sw_wire_m, wire.x) if band == AM_BAND else 0.0
-	if reach <= 0.0:
-		hum.volume_db = linear_to_db(0.0001)
-		whistle.volume_db = linear_to_db(0.0001)
-		return 0.0
-	if absf(t - _natural_at) >= NATURAL_EVERY:
-		_natural_at = t
-		storms_about = Natural.storms(world.weather.field, x, z, t, _tuning)
-		var drawn := 0.0
-		for other: Device in world.power.pool_of(self):
-			if other != self and other.powered:
-				drawn += other.demand_w(t)
-		hum_level = smoothstep(0.0, _tuning.vlf_hum_w, drawn)
-	natural = reach * (1.0 - hum_level)
-	if natural > 0.0 and randf() < Natural.rate(storms_about, _tuning) * delta:
-		sferic.pitch_scale = randf_range(0.7, 1.6)
-		sferic.volume_db = linear_to_db(natural * randf_range(0.3, 1.0) + 0.0001) + knob_db()
-		sferic.play()
-	var night := not world.weather.day.is_day(t, world.moon.longitude)
-	var falling := Natural.whistler(world.run_seed, t, storms_about, night, _tuning)
-	if falling >= 0.0:
-		whistle.pitch_scale = lerpf(3.2, 0.6, falling)
-		whistle.volume_db = linear_to_db(natural * sin(PI * falling) + 0.0001) + knob_db()
-		if not whistle.playing:
-			whistle.play()
-		if natural >= WHOLE and volume > 0.0 and heard():
-			Deeds.done(world, &"whistler")
-	else:
-		whistle.volume_db = linear_to_db(0.0001)
-	hum.volume_db = linear_to_db(reach * hum_level + 0.0001) + knob_db()
-	if hum_level > 0.0 and not hum.playing:
-		hum.play()
-	return natural * (0.2 + 0.8 * storms_about)
 
 
 ## How much of what's sent from above the ceiling it hears, 0 to 1: on
@@ -1544,7 +1484,7 @@ func on_air() -> AudioStream:
 
 
 func _off_air() -> void:
-	for voice: AudioStreamPlayer3D in [music, hiss, crackle, roar, sferic, whistle, hum, _signal]:
+	for voice: AudioStreamPlayer3D in [music, hiss, crackle, roar, _signal]:
 		voice.stop()
 	_hush()
 	_on_air = null

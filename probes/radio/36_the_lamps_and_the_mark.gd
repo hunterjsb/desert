@@ -63,7 +63,7 @@ func run() -> void:
 	# The wheel spun fast.
 	var tuning := Tuning.current()
 	var notch := tuning.dial_notch_khz
-	radio.frequency = 500.0
+	radio.frequency = 600.0
 	var went: Array[float] = []
 	for k in 7:
 		var from := radio.frequency

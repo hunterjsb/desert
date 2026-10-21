@@ -1166,15 +1166,6 @@ static var _current: Tuning
 @export var sw_wire_m: float = 10.0
 @export var sw_wire_low: float = 0.75
 @export var sw_wire_high_m: float = 3.0
-## Natural radio at the bottom of the AM dial (Natural), on a long wire: storms
-## counted for its sferics out to this far, m; this many sferics a second with
-## none about, and this many with one on you; a whistler may come once in this
-## long, s; and a camp's own power drawing this much in the radio's pool, W,
-## hums over it all.
-@export var vlf_reach_m: float = 30000.0
-@export var vlf_rate: Vector2 = Vector2(0.4, 30.0)
-@export var vlf_whistler_every: float = 40.0
-@export var vlf_hum_w: float = 10.0
 ## Tu's roar on shortwave: it comes in from the bottom of this span, kHz, to
 ## full at its top; Tu storms while Zan is within half of tu_roar_window (a
 ## share of a day) of one of these places round its orbit (shares of a day),

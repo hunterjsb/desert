@@ -1036,14 +1036,18 @@ static func _band(b: Paint.Pieces, at: Vector3) -> void:
 	var face := at.z + 0.0025
 	# Each row: its foot above the window's middle, m; the band's ends and its
 	# first and last steps in the units it's numbered in; a number every so
-	# many steps from the first.
+	# many steps from the first; and a gap with no steps in it, AM's between
+	# longwave and mediumwave.
 	for row: Array in [
-			[0.0025, Fm.LOWEST, Fm.HIGHEST, 88, 108, 4],
-			[-0.011, Shortwave.LOWEST / 1000.0, Shortwave.HIGHEST / 1000.0, 2, 30, 4],
-			[-0.0245, Dial.LOWEST / 100.0, Dial.HIGHEST / 100.0, 0, 20, 5]]:
+			[0.0025, Fm.LOWEST, Fm.HIGHEST, 88, 108, 4, Vector2.ZERO],
+			[-0.011, Shortwave.LOWEST / 1000.0, Shortwave.HIGHEST / 1000.0, 2, 30, 4, Vector2.ZERO],
+			[-0.0245, Dial.LOWEST / 100.0, Dial.HIGHEST / 100.0, 2, 17, 4,
+				Vector2(Dial.LW_TOP, Dial.MW_BOTTOM) / 100.0]]:
 		var foot: float = at.y + row[0]
 		b.box(Vector3(Radio.BAND.y - Radio.BAND.x + 0.0014, 0.0008, 0.001), Vector3(at.x, foot, face), ink, 0.0)
 		for step in range(row[3], row[4] + 1):
+			if step > row[6].x and step < row[6].y:
+				continue
 			var x := lerpf(Radio.BAND.x, Radio.BAND.y, inverse_lerp(row[1], row[2], step))
 			var long: bool = (step - row[3]) % row[5] == 0
 			var tall := 0.0038 if long else 0.0022

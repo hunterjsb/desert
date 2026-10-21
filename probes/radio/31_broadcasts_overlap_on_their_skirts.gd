@@ -11,6 +11,8 @@ extends ShieldProbe
 
 func run() -> void:
 	await load_storm(0.0)
+	# Beside Mother Cistern, so a god comes in clean whatever the dial's plan.
+	await beside_god(&"cistern")
 	var tuning := Tuning.current()
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	radio.freeze = true

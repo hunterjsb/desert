@@ -20,10 +20,10 @@ func run() -> void:
 	check(Profile.marks().is_empty(), "no marks to begin with")
 
 	radio.on = true
-	radio.frequency = 300.0
+	radio.frequency = 600.0
 	hands.interact()
 	print("no marks, use: %d kHz" % roundi(radio.frequency))
-	check(radio.frequency > 300.0, "with none, use sweeps to the next carrier")
+	check(radio.frequency > 600.0, "with none, use sweeps to the next carrier")
 
 	radio.frequency = 650.0
 	press(&"mark_frequency")
@@ -37,7 +37,7 @@ func run() -> void:
 		first), "a tick on the band in its colour")
 
 	var colours := {first.to_html(): true}
-	for khz: float in [1200.0, 1500.0, 1800.0]:
+	for khz: float in [1200.0, 1500.0, 1650.0]:
 		radio.frequency = khz
 		press(&"mark_frequency")
 		await physics_frames(1)
@@ -53,7 +53,7 @@ func run() -> void:
 		hands.interact()
 		went.append(radio.frequency)
 	print("use with marks, from 700 kHz: %s" % [went])
-	var expected: Array[float] = [1200.0, 1500.0, 1800.0, 650.0, 1200.0]
+	var expected: Array[float] = [1200.0, 1500.0, 1650.0, 650.0, 1200.0]
 	check(went == expected, "use goes to the next mark, round to the lowest")
 
 	radio.frequency = 1502.0

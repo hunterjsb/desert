@@ -45,10 +45,11 @@ acceptance remains.
 - Fit FM and shortwave converters to the radio and switch bands. FM brings Port
   Morgan's station by line of sight and the relay's music; shortwave carries the
   satellites and Tu's roar, clearer on an antenna reel's strung wire.
-- Find a station's direction by the ferrite rod's null, and hear natural radio's
-  sferics and whistlers at the bottom of the AM dial on a long wire.
+- Find a station's direction by the ferrite rod's null.
+- The AM dial is a real set's longwave and mediumwave, 150–280 and 530–1700 kHz,
+  the gap between skipped; the gods, the beacon and the Eye moved inside it.
 - Fewer satellites, each on its own orbit: about two cross the sky at once.
-  New deeds: Line of Sight, Storm on Tu, Long Wire, Null and Whistler.
+  New deeds: Line of Sight, Storm on Tu, Long Wire and Null.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 
