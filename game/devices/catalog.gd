@@ -380,6 +380,8 @@ const DEVICES := {
 			# FM converter and the shortwave converter.
 			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
 			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
+			# A ring on its top for a hook: a line strung from it is its long wire.
+			[&"ring", Vector3(0.1, 0.11, -0.03), Vector3.UP],
 		]},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,

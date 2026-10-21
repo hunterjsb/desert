@@ -93,6 +93,8 @@ const UNHEARD := -1
 ## moves); and a tick's move longer than this is the world shifting under it,
 ## not it moving.
 const FM_RECKON_M := 2.0
+## Its long wire is read again this often, s.
+const WIRE_EVERY := 0.5
 const FM_RECKON_S := 1.0
 const FM_JUMP_M := 50.0
 ## Its dial on its face (+Z), m: the band window's middle and size, the band
@@ -258,6 +260,11 @@ var _motif_slot := NAN
 var _wanted := UNHEARD
 ## Tu's roar on shortwave, heard under whatever else plays.
 var roar: AudioStreamPlayer3D
+## Its long wire: a line hooked to its ring and strung out, as a real
+## shortwave set hears on a wire: (how long it's laid, m; its highest point
+## over the ground, m), or zero with none.
+var wire := Vector2.ZERO
+var _wire_at := -INF
 ## How far it has moved, m, for the fade it passes through on FM; where it was
 ## last tick; and each FM station's margin as last worked out, and where.
 var _moved := 0.0
@@ -875,6 +882,7 @@ func _retuned(before: int) -> void:
 func _listen(delta: float) -> void:
 	_to_your_ears(carried())
 	_track_moves()
+	_read_wire()
 	if not playing():
 		noise = 0.0
 		odd = 0.0
@@ -1018,12 +1026,15 @@ func _listen(delta: float) -> void:
 	elif now == CITY:
 		through = 0.0 if reception.cut else reception.clean
 	# The satellites, all at once over whatever else it hears.
-	through = maxf(through, sky.listen(delta, x, z, t))
+	var sky_heard := sky.listen(delta, x, z, t)
+	through = maxf(through, sky_heard)
+	if band == SW_BAND and wire.x >= _tuning.sw_wire_m and sky_heard >= WHOLE and volume > 0.0 and heard():
+		Deeds.done(world, &"long_wire")
 	# Tu's roar, up on shortwave, under the rest and over the static.
 	var tu := 0.0
 	if band == SW_BAND:
 		tu = Shortwave.roar(point_at(x, z), world.shape.history.sub_tu, frequency, t, world.weather.day.tu_turn(t),
-			_tuning)
+			_tuning) * antenna_gain()
 		if tu >= CRACKLE_TELL and volume > 0.0 and heard():
 			Deeds.done(world, &"tu_roar")
 	roar.volume_db = linear_to_db(tu + 0.0001) + knob_db()
@@ -1054,6 +1065,36 @@ func _listen(delta: float) -> void:
 		crackle.play(fposmod(t * 0.7, crackle.stream.get_length()))
 		roar.play(fposmod(t * 0.4, roar.stream.get_length()))
 		_hissing = true
+
+
+## Its long wire as it lies now, read every WIRE_EVERY s: the longest line
+## on a tie of its own (a hook in its ring), how long it's laid and how high
+## its strand rises over the ground.
+func _read_wire() -> void:
+	if world == null or world.ropes == null or absf(world.time - _wire_at) < WIRE_EVERY:
+		return
+	_wire_at = world.time
+	wire = Vector2.ZERO
+	for socket in sockets():
+		if socket.kind != &"tie" or socket.part == null or not socket.part.has_meta(&"tip"):
+			continue
+		for rope in world.ropes.lines_on(socket.part.get_meta(&"tip")):
+			var high := 0.0
+			if rope.strand != null:
+				for p in rope.strand.points:
+					high = maxf(high, p.y - world.height_under(p))
+			wire = Vector2(maxf(wire.x, rope.length), maxf(wire.y, high))
+
+
+## How much of what's sent from above the ceiling it hears, 0 to 1: on
+## shortwave, a little on its converter's terminals alone, all of it on a long
+## wire strung out, less strung low along the sand; elsewhere all of it.
+func antenna_gain() -> float:
+	if band != SW_BAND:
+		return 1.0
+	var long := smoothstep(0.0, _tuning.sw_wire_m, wire.x)
+	var high := lerpf(_tuning.sw_wire_low, 1.0, smoothstep(0.0, _tuning.sw_wire_high_m, wire.y))
+	return lerpf(_tuning.sw_bare, 1.0, long * high)
 
 
 ## How far it has moved, in the world's own metres so the world shifting
@@ -1305,7 +1346,7 @@ func receive_from(relay: Satellite, khz: float, id: StringName, x: float, z: flo
 	var up := smoothstep(0.0, deg_to_rad(_tuning.relay_rise_degrees), sky.elevation)
 	# A tumbling satellite's signal swells and fades as it turns.
 	var share := Dial.heard(frequency - khz - slid, _tuning)
-	var power := up * constellation_of(world).tumble(id, t)
+	var power := up * constellation_of(world).tumble(id, t) * antenna_gain()
 	var strength := share * power
 	var jammed := constellation_of(world).jamming(frequency, p, t, id)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning) \

@@ -269,6 +269,7 @@ the frame is a part stuck on the deck.
 | Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Line of Sight** | Hear an FM station come through quiet | First Light | `Radio`'s tick on the FM band: a station over its threshold enough to be quiet, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Long Wire** | Hear a satellite clear on a long wire strung from the radio | First Light | `Radio`'s tick on shortwave: a line of `sw_wire_m` or more on its ring and a satellite coming through whole, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Storm on Tu** | Hear Tu roar on shortwave | First Light | `Radio`'s tick on the shortwave band: Tu's roar coming in as loud as an anomaly's crackle is a tell, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
 | Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
@@ -297,7 +298,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 56 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight and Storm on Tu since 2026-10-20), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 57 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu and Long Wire since 2026-10-20), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:

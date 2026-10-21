@@ -692,9 +692,24 @@ crystal set and kite, the loop's direction finding, natural radio, the dish, and
   storm, silent out of one (probe 45). The deed **Storm on Tu**: hear it.
 - **Probes:** 44 (the ceiling) and 45 (Tu roars on a timetable); 8's sweep no longer meets satellites on
   the AM dial, and 31's overlap is two of the formation's side by side on shortwave.
-- **Not yet:** a wire or kite antenna for shortwave (now a converter's whip-less terminals hear it all);
-  skip and dead zones for ground stations on shortwave; the satellites that belong higher still (VHF, the
+- **Not yet:** a kite to lift the wire; skip and dead zones for ground stations on shortwave; the satellites that belong higher still (VHF, the
   dish's bands); Tu's short bursts, its "popcorn"; gonkhub's own sound for the roar.
+
+**A long wire, as built (2026-10-20, slice E):**
+- **The radio has a ring on its top** for a hook, as a chassis has; a line from it, strung out on the rope
+  system to a stake, a deck's ring or anything with a tie, is its long wire (`Radio.wire`: the longest line
+  on a tie of its own, how long it's laid and how high its strand rises over the ground, read every
+  0.5 s).
+- **On shortwave, the wire is gain** (`Radio.antenna_gain`): on a converter's terminals alone the set hears a
+  quarter of what's sent from above the ceiling (`sw_bare`), so a satellite comes through chewed up and Tu's
+  roar is faint; strung out 10 m (`sw_wire_m`) it hears all of it, three quarters strung low along the sand
+  (`sw_wire_low`) and fully once it's 3 m up somewhere (`sw_wire_high_m`), on a mast or a deck. The line's
+  12 m coil reaches it. On the AM dial a wire adds nothing: the world's own noise is the floor there, as in
+  real radio below a few MHz. Seed 1234: the crop survey overhead, dirt 0.65 on the terminals, 0.03 on
+  10.7 m of wire strung to a stake (radio probe 46).
+- **The deed** Long Wire: hear a satellite clear on a long wire strung from the radio.
+- **Not yet:** a kite to lift the wire, after the Gibson Girl's box kite; the wire's own look where it
+  clips to the converter's terminals.
 
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
