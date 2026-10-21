@@ -78,16 +78,24 @@ func present(state: Dictionary) -> void:
 		var path: PackedVector3Array = flight.path
 		var elapsed := float(state.get("flight_elapsed", 0.0))
 		var t := clampf(elapsed / maxf(float(flight.flight_s), 0.001), 0.0, 1.0)
-		var index := t * (path.size() - 1)
-		var i := mini(floori(index), path.size() - 2)
-		var position := path[i].lerp(path[i + 1], index - i)
+		var times: PackedFloat32Array = flight.get("path_times", PackedFloat32Array())
+		var i := 0
+		var fraction := t * (path.size() - 1)
+		if times.size() == path.size():
+			while i < times.size() - 2 and times[i + 1] < elapsed:
+				i += 1
+			fraction = clampf((elapsed - times[i]) / maxf(times[i + 1] - times[i], 0.000001), 0.0, 1.0)
+		else:
+			i = mini(floori(fraction), path.size() - 2)
+			fraction -= i
+		var position := path[i].lerp(path[i + 1], fraction)
 		var clock := float(state.preflight.departure_time) + elapsed
 		var turn := Basis(Vector3(0, 0, 1), TAU * elapsed / (_world.tuning.day_minutes * 60.0))
 		var body: Basis = turn * (flight.body_basis as Basis)
 		var local := body.inverse() * position
 		_orbit.camera.position = local * ArrivalOrbit.RADIUS
 		var north := Sphere.north(local.normalized())
-		var forward := Sphere.north(point) * cos(heading) + Sphere.east(point) * sin(heading)
+		var forward: Vector3 = flight.get("landing_forward", Sphere.north(point) * cos(heading) + Sphere.east(point) * sin(heading))
 		var approaching := (point * ArrivalOrbit.RADIUS - _orbit.camera.position).normalized()
 		var level := smoothstep(0.4, 1.0, progress) if phase == &"entry" else 0.0
 		var radial := local.normalized()

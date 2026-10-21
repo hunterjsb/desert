@@ -18,7 +18,7 @@ func run() -> void:
 	world.teleport(world.player, Transform3D(Basis.IDENTITY, Vector3(screen.x, prep.ship.global_position.y + 0.02, screen.z + 0.9)))
 	world.player.velocity = Vector3.ZERO
 	world.player.camera.look_at(screen)
-	await physics_frames(2)
+	await physics_frames(20)
 	var before := world.player.camera.global_transform
 	press(&"interact")
 	check(prep.computer_open(), "use focuses the persistent physical display")

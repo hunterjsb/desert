@@ -16,6 +16,7 @@ var _vitals := true
 var _body_visible := true
 var _body_processing := true
 var _hands_focused := false
+var _feel_processing := true
 
 func start() -> void:
 	if not world.arrival_state.is_empty():
@@ -52,6 +53,8 @@ func restore() -> void:
 	preflight = null
 	if active():
 		_hold()
+		if world.arrival_state.get("phase") == &"landing" and _first_person() and world.arrival_state.get("materialized", false):
+			_ground_seat()
 		_show()
 		set_physics_process(true)
 	else:
@@ -211,7 +214,9 @@ func _hold() -> void:
 	_body_visible = player.body.visible
 	_body_processing = player.body.is_processing()
 	_hands_focused = player.hands.display_focused
+	_feel_processing = player.feel.is_processing()
 	if _first_person():
+		player.feel.set_process(false)
 		player.hands.display_focused = true
 		player.body.hide()
 		player.body.set_process(false)
@@ -236,6 +241,7 @@ func _release() -> void:
 	world.player.hands.set_process_unhandled_input(_hands_input)
 	world.player.suit.set_process_unhandled_input(_suit_input)
 	world.player.vitals.set_physics_process(_vitals)
+	world.player.feel.set_process(_feel_processing)
 	world.player.hands.display_focused = _hands_focused
 	world.player.body.visible = _body_visible
 	world.player.body.set_process(_body_processing)

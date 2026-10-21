@@ -12,6 +12,7 @@ var _warp := 1.0
 var _vitals := true
 var _camera_at := Vector3.ZERO
 var _camera_turn := Vector3.ZERO
+var _feel_processing := true
 
 
 func setup(controller: SurveyorArrival) -> void:
@@ -19,6 +20,7 @@ func setup(controller: SurveyorArrival) -> void:
 	world = arrival.world
 	_warp = float(world.arrival_state.get("flight_warp", world.time_warp))
 	_vitals = world.player.vitals.is_physics_processing()
+	_feel_processing = world.player.feel.is_processing()
 	world.time_warp = 0.0
 	world.player.vitals.set_physics_process(false)
 	_cargo = load("res://game/arrival/preflight_cargo.gd")
@@ -284,6 +286,7 @@ func _move_transport(at: Vector2) -> void:
 func _seat() -> void:
 	_camera_at = world.player.camera.position
 	_camera_turn = world.player.camera.rotation
+	world.player.feel.set_process(false)
 	world.player.restore_ground_pose(&"prone")
 	world.teleport(world.player, ship.pod_seat_at.global_transform)
 	world.player.camera.position.y = float(_rules().seat_eye_m)
@@ -298,6 +301,7 @@ func _seat() -> void:
 
 
 func _walk() -> void:
+	world.player.feel.set_process(_feel_processing)
 	world.player.set_physics_process(true)
 	world.player.set_process_unhandled_input(true)
 	world.player.hands.set_process_unhandled_input(true)

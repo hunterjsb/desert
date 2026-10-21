@@ -38,7 +38,6 @@ func run() -> void:
 		return
 	await get_tree().create_timer(0.6).timeout
 	var computer := prep.computer.ui
-	var original_id: StringName = world.arrival_state.landing_plan.selected_id
 	computer._confirm.pressed.emit()
 	check(world.arrival_state.preflight.plan_confirmed and world.arrival_state.landing_plan.selected_id == &"launch_pulse",
 		"confirming the visibly selected default makes that same course ready")

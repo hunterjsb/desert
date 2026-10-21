@@ -17,6 +17,7 @@ var _modal_suspended := false
 var _previous_mouse := Input.MOUSE_MODE_CAPTURED
 var _saved_fov := 75.0
 var _body_was_visible := true
+var _feel_was_processing := true
 const PIXELS := Vector2i(1152, 680)
 
 func setup(world: World, ship: SurveyorShip, plan: Dictionary, changed: Callable) -> void:
@@ -47,6 +48,8 @@ func enter() -> void:
 		return
 	focused = true
 	_world.player.hands.display_focused = true
+	_feel_was_processing = _world.player.feel.is_processing()
+	_world.player.feel.set_process(false)
 	_body_was_visible = _world.player.body.visible
 	_world.player.body.hide()
 	_leaving = false
@@ -87,6 +90,7 @@ func _process(delta: float) -> void:
 	_world.player.camera.global_transform = _start_pose.interpolate_with(_target_pose, smoothstep(0.0, 1.0, _transition))
 	if _leaving and _transition >= 1.0:
 		focused = false
+		_world.player.feel.set_process(_feel_was_processing)
 		_world.player.hands.display_focused = false
 		_world.player.body.visible = _body_was_visible
 		_world.player.camera.fov = _saved_fov
@@ -125,6 +129,7 @@ func dispose() -> void:
 	if focused and is_instance_valid(_world) and is_instance_valid(_world.player):
 		_world.player.camera.global_transform = _return_pose
 		Input.mouse_mode = _previous_mouse
+		_world.player.feel.set_process(_feel_was_processing)
 		_world.player.hands.display_focused = false
 		_world.player.body.visible = _body_was_visible
 	focused = false
@@ -133,6 +138,7 @@ func dispose() -> void:
 
 func _exit_tree() -> void:
 	if focused and is_instance_valid(_world) and is_instance_valid(_world.player):
+		_world.player.feel.set_process(_feel_was_processing)
 		_world.player.hands.display_focused = false
 		_world.player.body.visible = _body_was_visible
 		Input.mouse_mode = _previous_mouse
