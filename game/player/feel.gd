@@ -224,6 +224,7 @@ func _process(delta: float) -> void:
 		_shake = maxf(_shake, BITE_SHAKE * clampf(ropes.wrench_n / t.fulcrum_n - 1.0, 0.2, 1.0))
 	var shake := Vector3(sin(_clock * 67.0), sin(_clock * 79.0 + 0.7), 0.0) * SHAKE_REACH * _shake
 	camera.position = _rest + bob + _spring + _lean + judder + shake + Vector3.DOWN * maxf(_drop, tumbled.x) + between
+	_clear_posture_eye(camera)
 	camera.rotation.z = roll + _roll + _bank + tumbled.y + sin(_clock * 59.0 + 2.1) * SHAKE_ROLL * _shake
 	var tip := _tremble(camera)
 	var looked := camera.rotation.x - (_pitched if is_equal_approx(camera.rotation.x, _pitch_left) else 0.0)
@@ -527,3 +528,21 @@ func _sand(amount: int, lifetime: float, burst: bool) -> CPUParticles3D:
 
 static func _ease(from: float, to: float, seconds: float, delta: float) -> float:
 	return to + (from - to) * exp(-delta / seconds)
+
+
+## Saved low clearance must have low eyes before its first rendered frame.
+func restore_posture() -> void:
+	_drop = _eye_drop()
+	_player.camera.position.y = _rest.y - _drop
+
+
+## The eyes ease down, but cannot remain on the far side of a low ceiling.
+func _clear_posture_eye(camera: Camera3D) -> void:
+	if _player.ground_pose == &"stand":
+		return
+	var low_eye := _rest - Vector3.UP * _eye_drop()
+	var query := PhysicsRayQueryParameters3D.create(_player.to_global(low_eye), camera.global_position,
+		_player.collision_mask, [_player.get_rid()])
+	var hit := _player.get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty():
+		camera.global_position = hit.position + hit.normal * _player.safe_margin * 2.0

@@ -931,3 +931,4 @@ static func _ease(from: float, to: float, seconds: float, delta: float) -> float
 func restore_ground_pose(value: StringName) -> void:
 	if posture != null:
 		posture.restore(value)
+		feel.restore_posture()
