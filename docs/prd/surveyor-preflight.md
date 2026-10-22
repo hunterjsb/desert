@@ -420,3 +420,43 @@ it does not claim controller transport, the new trajectory model, normal recover
 crawl or full saved-run acceptance. Ground HUD bars remain visible under the
 transparent renderer in this isolated fixture; controller flight suppression is
 owned by the connected integration. The old orbital path remains temporary.
+
+## Connected physical station and first-person candidate (2026-10-21)
+
+The current candidate replaces the modal planner with a persistent physical glass
+screen using the shared theme. The ordinary Use action smoothly focuses the
+actual camera on that same screen; projected mouse events reach its viewport.
+Stepping back restores the prior viewpoint and normal camera processing. Menus
+and the console cover the station's input, cancel a pending drag and restore its
+pointer when uncovered. The hand readout yields to the focused display.
+
+The diagram shows the seeded globe, carrier, one draggable pulse and a predicted
+landing. Numeric heading/profile controls and the site-button grid are removed.
+The single saved departure model supplies the rotating globe, cabin viewpoint,
+ballistic path, actual landing point and arrival time. The powered carrier's
+bounded survey loiter leaves time to load gear. Pulse edits persist as a draft;
+setting the pulse explicitly confirms it. Actual launch revalidates the current
+continuous forecast and the real cargo/shell. Outside-survey or unsafe forecasts
+remain refusals. See the landing-plan PRD for the model's scope and assumptions.
+
+New launches retain a seated first-person capsule interior through ejection,
+descent and entry. The same path and clock drive the horizon approaching through
+its actual glazed panel; heat builds at the aperture. Impact uses a bounded jolt,
+existing credited hull/boom sounds and dust. When the viewing panel is lost,
+dust fills the opened view rather than leaving a floating window rectangle.
+Recovery stays prone at the real pod floor; ordinary movement resumes there.
+Survival/damage and the identities of selected cargo remain unchanged.
+
+The ordinary Feel controller is suspended while the scripted camera owns the
+seat, flight or screen focus, then restored. Mid-impact disk restore establishes
+the authoritative seat pose before sampling remaining recoil; it does not add
+recoil to an already-recoiled saved camera or replay impact audio.
+
+The combined candidate passes twelve focused checks covering physical planning
+and launch, projected mouse input, draft save, modal coverage, ordinary cargo
+and seated disk saves, legacy flight, aperture teardown and mid-impact resume.
+The actual 1280×720 GPU run reaches recovery with13 surviving roles, zero rescues
+and an empty suit. Its cabin, physical screen, pod, seat, ejection, descent,
+entry, impact and recovery captures were inspected. This is candidate evidence;
+combined CI/native verification and Hunter's feel/comprehension acceptance are
+separate gates. No release or version bump is declared here.

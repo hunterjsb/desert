@@ -174,3 +174,20 @@ provides the true body-fixed ground-relative forward direction for entry framing
 These pure terrain/model checks do not establish connected physical-screen drag,
 cabin framing, continuous first-person playback or launch-controller acceptance;
 those are integration checks owned by the corresponding systems.
+
+### Connected display acceptance (2026-10-21)
+
+The physical display now consumes DepartureTrajectory directly. Its camera and
+path project through the same body/inertial conversion used to unproject a
+mouse drag; the pulse's longer diagram arrow is a display scale, not additional
+force. Separated marker callouts keep the pulse distinct from the real landing.
+The display continuously reports coarse survey and current readiness. Using it
+focuses the actual glass instead of constructing a second planning window.
+
+Actual Main input confirms the visible default without requiring a change,
+launches the pod and leaves omitted rack cargo behind. Projected mouse dragging
+changes the persisted pulse and removes confirmation; disk data preserves that
+draft. Covering the screen with the console cannot change the course, and
+returning restores the visible pointer without a stuck drag. Focus, cargo,
+legacy-flight and mid-impact disk checks pass together. Full combined/native CI
+and ordinary-player comprehension remain separate acceptance gates.
