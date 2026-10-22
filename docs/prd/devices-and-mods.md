@@ -850,6 +850,9 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
   shows on it, through the one wear shader, and what it costs the part is real. Later, one piece of
   gear keeps one model across eras, its era and state carried by condition, wear, modifications and
   repair needs, so the throughline reads at a glance.
+- **Wear costs, and nothing mends it yet (Hunter, 2026-10-22):** asked whether wear should only
+  show until repair exists, he chose "it shows and costs. no repair." A worn part makes less and a
+  worn shield draws more from now on; repair stays planned for 0.5 Saltbush.
 
   *As built (2026-10-22):*
   - **Its condition is data the look reads.** Beside its soundness, a device keeps which way the weather
@@ -901,9 +904,6 @@ per kilogram." Part 5 puts the First Kingdoms at "near-colonial, more durable," 
 row goes. The skimmer era has no row in the new table (open questions).
 
 Where this meets what's built, as readings and not in the session:
-- **Wear costs, and nothing mends it yet (Hunter, 2026-10-22):** asked whether wear should only
-  show until repair exists, he chose "it shows and costs. no repair." A worn part makes less and a
-  worn shield draws more from now on; repair stays planned for 0.5 Saltbush.
 - **Efficiency is the draw.** A tray floats everything on it at about 2 W per kilogram (91 W for the
   kit's 45.5 kg, 112 W for a fully fitted 56 kg), and a device has one durability. "Efficiency" reads as
   that draw per kilogram floated, and an era's frame is data (its own stats, as the light shield's are),
