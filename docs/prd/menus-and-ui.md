@@ -268,7 +268,7 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("16 of 44 deeds"), with Back: a branch or two for each family
+of every deed under the current completed and total counts, with Back: a branch or two for each family
 (Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
 2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
 from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:
@@ -421,7 +421,7 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
   (today 13:40, yesterday 21:05, 3 days ago), the run's day (counted from its own start, the
   day it began day 1), and who you came as; then how many
-  deeds show done ("Deeds 6 of 15"). A save
+  deeds show done using the current completed and total counts. A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
 - **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
   stereo), from its start as the menu's desert shows, on the menus' bus while the menu's storm

@@ -380,7 +380,8 @@ gives a long view for spotting glints, plumes and storm fronts." Found with the 
   the ground shows from it. 42, the streamer hangs, streams and flaps by the wind, shows a moving
   deck's air, and reads in your suit.
 
-## The Console (proposed; first version built)
+<a id="the-console-proposed-first-version-built"></a>
+## The Console (first version built 2026-10-17; Map filters built 2026-10-22; wider specification open)
 
 *Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)), a voice session. Its own
 framing: "Treat them as direction, not a final spec: the Console's slot layout is explicitly due
@@ -1027,7 +1028,8 @@ Readings, not in the session:
   therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
   are built.
 
-## The burner and the humidifier
+<a id="the-burner-and-the-humidifier-proposed-not-built"></a>
+## The burner (built 2026-10-22) and the humidifier (proposed)
 
 The burner is agreed and built through the [coalcane chain](power.md#fuel-crops-and-the-burner-agreed-2026-10-22):
 a deck-mounted device with a fuel hopper and cable port. The humidifier remains proposed.
@@ -1041,16 +1043,10 @@ specified; direction only.*
   for light ([Farming](farming.md#progression-agreed)). Its water and power draw are not said.
 - **The lamp** that grows the office fern is the existing lamp-on-crate snap.
 
-Readings before implementation; the burner choice above resolves its frame and fuel-socket
-questions. The humidifier remains open:
+The burner implementation resolves its frame and fuel-input questions. The humidifier remains open:
 - **"Crate parts like the existing devices" has two readings.** A part fits a socket (a battery, a
-  panel, a hook), and a device is a frame with sockets of its own, and the existing devices include
-  both: the shield and the radio seat on a top mount while the condenser and the charger stand on a
-  deck mount. Which the burner and humidifier are is not said. They would need a fuel input (a stalk
-  of coalcane is neither a battery nor a canister) and a water input, so a frame with its own sockets
-  is the likelier. If so, each gets a row in "what each frame has" below.
-- **The socket kind is open.** A top mount, a deck mount and the planter's mod mount are the
-  candidates for the humidifier, and a new fuel socket for the burner. The session names none.
+  panel, a hook), and a device is a frame with sockets of its own. The humidifier would need water
+  and power inputs; its form and socket kind remain undecided.
 
 ## The kiln (Agreed, session 4, part 5; not built)
 
