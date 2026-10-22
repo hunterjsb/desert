@@ -7,7 +7,9 @@ extends RefCounted
 ## that changed it has made one. A deed done is kept in the profile with its
 ## run, a start that names it as its unlock opens, and its badge shows.
 ## Deeds wait on others (`after`), so they open a branch at a time; one done
-## early is kept all the same, and shows once its branch opens.
+## early is kept all the same, and shows once its branch opens. A capstone
+## waits on any one deed of each of its trees (`after_any`) and is done the
+## moment its last tree has one.
 
 const ALL := &"*"
 ## What all deck_home asks to be stuck on one deck, by catalog id.
@@ -19,13 +21,14 @@ const TELLS := [&"compass", &"crackle", &"load"]
 const SETUP := [&"ground_radar", &"sand_scoop", &"sieve"]
 ## Each deed in the order the grid lays them out, a family a branch or two:
 ##   name; asks, what it asks, its goal in place of %s; family; after, the
-##   deeds it waits on; icon, its card's thing (ItemIcons), or a mark drawn
-##   (DeedsGrid), a landmark's for none;
+##   deeds it waits on; after_any, the families it waits on a deed of; icon,
+##   its card's thing (ItemIcons), or a mark drawn (DeedsGrid), a landmark's
+##   for none;
 ##   goal, a number to reach (measure) or of different things to count
 ##   (`parts`): a tuning field, or every landmark, every age that built,
-##   the home's three, the tells, every god or every wreck kind; unit, what
-##   its progress counts; step, how much better a best must be before the
-##   profile keeps it;
+##   the home's three, the tells, every god, every wreck kind or every
+##   board make; unit, what its progress counts; step, how much better a
+##   best must be before the profile keeps it;
 ##   landmark, where it's reached, or every landmark for ALL; hidden, ????
 ##   and no picture until it's done, so the grid never says what it is.
 const TABLE := {
@@ -39,6 +42,8 @@ const TABLE := {
 		"after": [&"board_distance"], "icon": &"board"},
 	&"board_bogged": {"name": "Bogged Down", "asks": "Load your board's motor until it sputters", "family": &"board",
 		"after": [&"board_tow"], "icon": &"board"},
+	&"quiver": {"name": "Quiver", "asks": "Ride every make of board", "family": &"board",
+		"after": [&"board_distance"], "icon": &"board", "goal": "makes", "parts": true, "unit": "makes"},
 	&"yard_sale": {"name": "Yard Sale", "asks": "Tumble %s m in one wipeout", "family": &"board",
 		"after": [&"board_height"], "icon": &"board", "goal": "deed_tumble_m", "unit": "m", "step": 1.0, "hidden": true},
 	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"wind", "icon": &"sail"},
@@ -54,6 +59,8 @@ const TABLE := {
 		"after": [&"sail_waist"], "icon": &"sail"},
 	&"telltale": {"name": "Telltale", "asks": "Trim a sail with a streamer flying on its rig", "family": &"wind",
 		"after": [&"hand_me_down"], "icon": &"streamer"},
+	&"lookout": {"name": "Lookout", "asks": "Climb into a crow's nest on a standing mast", "family": &"wind",
+		"after": [&"hand_me_down"], "icon": &"helm"},
 	&"close_hauled": {"name": "Close-Hauled", "asks": "Make %s m upwind under sail", "family": &"wind",
 		"after": [&"sail_waist"], "icon": &"sail", "goal": "deed_upwind_m", "unit": "m", "step": 50.0},
 	&"land_yacht": {"name": "Land Yacht", "asks": "Sail a keeled camp %s m from its helm", "family": &"wind",
@@ -81,11 +88,15 @@ const TABLE := {
 		"icon": &"bedroll"},
 	&"deck_home": {"name": "All Mod Cons", "asks": "A Console, a condenser and a battery on one deck", "family": &"camp",
 		"icon": &"console", "goal": "home", "unit": "on one deck", "step": 1.0},
+	&"on_reserve": {"name": "On Reserve", "asks": "Run your camp on a power box's batteries", "family": &"camp",
+		"after": [&"deck_home"], "icon": &"power_box"},
 	&"deck_pieces": {"name": "Six Pack", "asks": "Join %s chassis pieces into one deck", "family": &"camp",
 		"after": [&"deck_home"], "icon": &"chassis", "goal": "deed_deck_pieces", "unit": "pieces", "step": 1.0},
 	&"power": {"name": "Power Trip", "asks": "Make %s W in one system", "family": &"camp", "after": [&"deck_home"],
 		"icon": &"turbine", "goal": "deed_power_w", "unit": "W", "step": 10.0},
 	&"crop": {"name": "Green Thumb", "asks": "Grow a crop", "family": &"farm", "icon": &"crop"},
+	&"coalcane_power": {"name": "Night Harvest", "asks": "Burn coalcane to power your camp", "family": &"farm",
+		"after": [&"crop"], "icon": &"burner"},
 	&"crops": {"name": "Crop Rotation", "asks": "Grow %s kinds of crop", "family": &"farm", "after": [&"crop"],
 		"icon": &"planter", "goal": "deed_crop_kinds", "parts": true, "unit": "kinds"},
 	&"planters_towed": {"name": "Meals on Wheels", "asks": "Have %s planters in tow at once", "family": &"farm",
@@ -162,9 +173,11 @@ const TABLE := {
 		"after": [&"ten_days"], "icon": &"chassis", "goal": "deed_moved_m", "unit": "m", "step": 250.0},
 	&"slept_it_off": {"name": "Slept It Off", "asks": "Sleep through a storm with nothing lost from your camp",
 		"family": &"nomad", "after": [&"ten_days"], "icon": &"bedroll"},
-	&"care_package": {"name": "Care Package", "asks": "Call the drone with a signal flare",
+	&"nomad": {"name": "Nomad", "asks": "A deed from each of Wind, Weather, Ruins, Signals and Far",
+		"family": &"nomad", "after_any": [&"wind", &"weather", &"ruins", &"signals", &"far"], "icon": &"nomad"},
+	&"care_package": {"name": "Care Package", "asks": "Call the deliveryship with a signal flare",
 		"family": &"signals", "icon": &"flare"},
-	&"flight_plan": {"name": "Flight Plan", "asks": "Hear Port Morgan Control Tower read the drone's schedule",
+	&"flight_plan": {"name": "Flight Plan", "asks": "Hear Port Morgan Control Tower read the deliveryship's schedule",
 		"family": &"signals", "icon": &"radio"},
 	&"follow_signal": {"name": "Follow the Signal", "asks": "Find a ruin by following a survey receiver's signal",
 		"family": &"signals", "icon": &"survey_receiver"},
@@ -199,6 +212,9 @@ static func done(world: World, id: StringName, part: StringName = &"") -> bool:
 	if Controls.ui != null:
 		for each in said:
 			Controls.ui.badge(each)
+	for each: StringName in TABLE:
+		if TABLE[each].has("after_any") and not profile.did(each) and is_open(profile, each):
+			done(world, each)
 	return true
 
 
@@ -259,15 +275,26 @@ static func goal(id: StringName, tuning: Tuning) -> float:
 			return Gods.ROSTER.size()
 		"wrecks":
 			return Wreckage.kinds().size()
+		"makes":
+			return BoardMakes.ALL.size()
 	return float(tuning.get(named))
 
 
-## Its branch is open: everything it waits on done, and open in turn.
+## Its branch is open: everything it waits on done, and open in turn, and a
+## deed shown done in each family it waits on any of.
 static func is_open(profile: Node, id: StringName) -> bool:
 	for before: StringName in TABLE[id].get("after", []):
 		if profile == null or not profile.did(before) or not is_open(profile, before):
 			return false
+	for family: StringName in TABLE[id].get("after_any", []):
+		if not any_lit(profile, family):
+			return false
 	return true
+
+
+## Some deed of a family shows done.
+static func any_lit(profile: Node, family: StringName) -> bool:
+	return TABLE.keys().any(func(id: StringName) -> bool: return TABLE[id].family == family and lit(profile, id))
 
 
 ## Done and showing so.

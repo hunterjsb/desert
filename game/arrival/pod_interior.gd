@@ -65,13 +65,16 @@ func _copy(source: MeshInstance3D, pose: Transform3D) -> void:
 		var key: String = property.name
 		if key.begins_with("instance_shader_parameters/"):
 			view.set(key, source.get(key))
+	# In orbit nothing has been out in the weather yet.
+	if view.get_instance_shader_parameter(&"age") != null:
+		view.set_instance_shader_parameter(&"age", 0.0)
 
 
 func _mesh(mesh: Mesh, pose: Transform3D) -> MeshInstance3D:
 	var view := MeshInstance3D.new()
 	view.mesh = mesh
 	if mesh.get_surface_count() > 0 and mesh.surface_get_material(0) is ShaderMaterial:
-		view.set_instance_shader_parameter(&"age", Paint.ERA_NEW)
+		view.set_instance_shader_parameter(&"age", 0.0)
 	view.transform = pose
 	add_child(view)
 	return view

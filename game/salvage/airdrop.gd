@@ -24,17 +24,6 @@ extends Node3D
 ## floating origin carries the whole fall with it.
 
 const DELIVERYSHIP := &"deliveryship"
-## The container keeps the craft's motion for this long, s, before it turns
-## down: how far along the craft's way its curve bends.
-const CARRY := 1.2
-## Of the path's progress, this much is even, the rest gathering as it falls.
-const EVEN := 0.35
-## It tumbles this fast falling, rad/s, and keeps this much of it rolling on.
-const SPIN := 2.6
-const ROLL := 0.5
-## Its speed at the ground, kept for its roll on: along the way it came, and down, m/s.
-const SKID := 7.0
-const DOWN := 3.0
 ## The muzzle's boom: as loud as this at a kilometre, dB, and played this far off
 ## you toward it, m, so it's heard from the craft's way.
 const MUZZLE_AT_KM := 4.0
@@ -47,11 +36,15 @@ const IMPACT_M := 30.0
 const TRAIL_SIZE := Vector2(10.0, 22.0)
 const TRAIL_FULL_M := 600.0
 const TRAIL_LEAST := 0.1
-## How long it lingers after the hit, s, for its sand to settle.
-const SETTLE := 7.0
+## At least this many of its sockets hold something.
+const LEAST := 2
+## A landing is tried this many ways round the flare before settling for the
+## first; and is felt for from this high over it, m.
+const TRIES := 12
+const FEEL_FROM := 20.0
 
 ## The container falling, and when it was fired and lands, world time.
-var cargo: Part
+var cargo: Device
 var fired_at := 0.0
 var lands_at := 0.0
 ## Whether it has hit; and how it was moving and turning as it did, coming
@@ -107,12 +100,43 @@ static func fire(world: World, at: Vector3) -> Airdrop:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([world.run_seed, "airdrop", roundi(world.time)])
 	var land: Vector2 = world.tuning.airdrop_land_m
-	var ground := at + toward.rotated(Vector3.UP, rng.randf_range(-0.7, 0.7)) * rng.randf_range(land.x, land.y)
-	ground.y = world.height_under(ground)
+	var ground := _clear_spot(world, at, toward.rotated(Vector3.UP, rng.randf_range(-0.7, 0.7)),
+		rng.randf_range(land.x, land.y))
 	world.content.add_child(drop)
 	drop.global_position = ground
 	drop._launch(craft, world.time)
 	return drop
+
+
+## Where near the flare it comes down: the way first picked if nothing stands
+## there, else the first clear way round; never into a camp or a wreck.
+static func _clear_spot(world: World, flare: Vector3, way: Vector3, metres: float) -> Vector3:
+	var size: Vector3 = Catalog.DEVICES[&"cargo"].size
+	var room := BoxShape3D.new()
+	room.size = Vector3.ONE * Vector3(size.x, size.y, size.z).length()
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = room
+	var first := Vector3.INF
+	for i in TRIES:
+		var spot := flare + way.rotated(Vector3.UP, TAU * i / TRIES) * metres
+		spot.y = world.height_under(spot)
+		if i == 0:
+			first = spot
+		query.transform = Transform3D(Basis.IDENTITY, spot + Vector3.UP * (room.size.y * 0.5 + 0.3))
+		if not _blocked(world, world.get_world_3d().direct_space_state.intersect_shape(query, 8)):
+			return spot
+	return first
+
+
+## Whether any of these shape hits is something standing, not the sand.
+static func _blocked(world: World, hits: Array[Dictionary]) -> bool:
+	for hit in hits:
+		var body := hit.collider as CollisionObject3D
+		var owner := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D \
+			if body != null else null
+		if owner == null or not owner.shape is HeightMapShape3D:
+			return true
+	return false
 
 
 func _launch(craft: Dictionary, t: float) -> void:
@@ -123,7 +147,7 @@ func _launch(craft: Dictionary, t: float) -> void:
 	# Its way level or down: a cannon fired at the ground doesn't climb first.
 	var way: Vector3 = craft.way
 	way.y = minf(way.y, 0.0)
-	_bend = _from + way * CARRY
+	_bend = _from + way * _world.tuning.airdrop_carry_seconds
 	# It comes in from the bend's side: rolling on away from it, end over end.
 	var coming := -_bend
 	coming.y = 0.0
@@ -132,13 +156,46 @@ func _launch(craft: Dictionary, t: float) -> void:
 	_pose = Basis.looking_at(-_from.normalized() if _from.length() > 0.01 else Vector3.DOWN, _axis)
 	# The muzzle flashes in the sky where the craft is.
 	Radio.constellation_of(_world).fire(DELIVERYSHIP, t)
-	cargo = Catalog.part(&"cargo")
+	cargo = Catalog.device(&"cargo")
 	cargo.freeze_mode = RigidBody3D.FREEZE_MODE_KINEMATIC
 	cargo.freeze = true
 	add_child(cargo)
+	_pack()
 	cargo.position = _from
 	_effects()
 	_fly(t)
+
+
+## Hunter: "might add random loot". It holds a pull of salvage's own tables,
+## seeded by the run and the moment it fired as the landing is: the same drop
+## always holds the same, so nothing more is saved, and it's only laid in its
+## sockets, never granted.
+func _pack() -> void:
+	var loot := hash([_world.run_seed, "airdrop", roundi(fired_at)])
+	var sockets := cargo.frame_sockets()
+	var laid := 0
+	for i in sockets.size():
+		var rng := SiteLoot._stream(loot, i, "cargo")
+		if rng.randf() >= _world.tuning.airdrop_packed_share and sockets.size() - i > LEAST - laid:
+			continue
+		var id := pull(rng, sockets[i].kind)
+		if id == &"":
+			continue
+		# Company stock, sealed and lately charged: a find from deep, not the weather.
+		cargo.fit(Finds._part(id, rng.randf_range(0.6, 1.0), Finds.DEEP, true), sockets[i])
+		laid += 1
+
+
+## One thing a socket of this kind takes, by weight from every era's shelves
+## and caches (SiteLoot); none if nothing there fits it.
+static func pull(rng: RandomNumberGenerator, kind: StringName) -> StringName:
+	var table: Array = []
+	for era: Dictionary in SiteLoot.ERAS.values():
+		for row: StringName in [SiteLoot.SHELF, SiteLoot.CACHE]:
+			for entry: Array in era.get(row, []):
+				if Catalog.PARTS.has(entry[0]) and Catalog.PARTS[entry[0]].kind == kind:
+					table.append(entry)
+	return Finds._pick(rng, table) if not table.is_empty() else &""
 
 
 ## Only effects: loading a drop must not fire the cannon or play an impact again.
@@ -162,7 +219,7 @@ func memory() -> Dictionary:
 		"metres": _metres, "boomed": _boomed, "hit_velocity": hit_velocity, "hit_spin": hit_spin}
 
 
-static func recall(world: World, body: Part, at: Transform3D, state: Dictionary) -> Airdrop:
+static func recall(world: World, body: Device, at: Transform3D, state: Dictionary) -> Airdrop:
 	var drop := Airdrop.new()
 	drop._world = world
 	world.content.add_child(drop)
@@ -189,7 +246,7 @@ static func recall(world: World, body: Part, at: Transform3D, state: Dictionary)
 ## ground: even at first, gathering as it falls.
 func progress(t: float) -> float:
 	var u := clampf((t - fired_at) / maxf(lands_at - fired_at, 0.01), 0.0, 1.0)
-	return lerpf(u, u * u, 1.0 - EVEN)
+	return lerpf(u, u * u, 1.0 - _world.tuning.airdrop_even_share)
 
 
 ## Its place on its path at progress s, from where it lands.
@@ -219,14 +276,14 @@ func _process(_delta: float) -> void:
 			_hit(t)
 		else:
 			_fly(t)
-	elif t >= lands_at + SETTLE:
+	elif t >= lands_at + _world.tuning.airdrop_settle_seconds:
 		_let_go()
 
 
 func _fly(t: float) -> void:
 	var s := progress(t)
 	cargo.position = along(s)
-	cargo.basis = _pose.rotated(_axis, -SPIN * (t - fired_at)).orthonormalized()
+	cargo.basis = _pose.rotated(_axis, -_world.tuning.airdrop_spin * (t - fired_at)).orthonormalized()
 	_trail.global_position = cargo.global_position
 	# Its smoke big enough to see a kilometre up, and no bigger near the ground.
 	var near := clampf(cargo.position.y / TRAIL_FULL_M, TRAIL_LEAST, 1.0)
@@ -237,19 +294,34 @@ func _fly(t: float) -> void:
 
 
 ## How high its middle sits landing, m, so no corner of it starts in the sand
-## however it's turned (the sand holds a body by its corners).
+## however it's turned (the sand holds a body by its corners), and on top of
+## anything that came to stand there while it fell, never inside it.
 func _clearance() -> float:
 	cargo.position = Vector3.ZERO
 	var deepest := 0.0
+	var space := _world.get_world_3d().direct_space_state
+	var query := PhysicsShapeQueryParameters3D.new()
+	# Itself and the supplies strapped to it are not in its way.
+	query.exclude = [cargo.get_rid()]
+	for each in cargo.find_children("*", "CollisionObject3D", true, false):
+		query.exclude.append((each as CollisionObject3D).get_rid())
+	query.motion = Vector3.DOWN * FEEL_FROM
+	var on_top := -INF
 	for child in cargo.get_children():
 		var shape := child as CollisionShape3D
-		if shape == null or shape.shape == null:
+		if shape == null or shape.shape == null or shape.has_meta(&"socket"):
 			continue
 		var box := Catalog.bounds(shape.shape)
 		for i in 8:
 			var corner := cargo.global_transform * shape.transform * box.get_endpoint(i)
 			deepest = maxf(deepest, _world.height_under(corner) - corner.y)
-	return maxf(deepest + 0.1, 0.7)
+		query.shape = shape.shape
+		query.transform = cargo.global_transform * shape.transform
+		query.transform.origin += Vector3.UP * FEEL_FROM
+		var reach := space.cast_motion(query)
+		if reach[0] < 1.0:
+			on_top = maxf(on_top, FEEL_FROM * (1.0 - reach[0]))
+	return maxf(maxf(deepest + 0.1, 0.7), on_top + 0.05)
 
 
 func _hit(t: float) -> void:
@@ -260,8 +332,9 @@ func _hit(t: float) -> void:
 	var flat := Vector3(coming.x, 0.0, coming.z)
 	flat = flat.normalized() if flat.length() > 0.01 else Vector3.ZERO
 	cargo.freeze = false
-	cargo.linear_velocity = flat * SKID + Vector3.DOWN * DOWN
-	cargo.angular_velocity = _axis * SPIN * ROLL
+	var tuning := _world.tuning
+	cargo.linear_velocity = flat * tuning.airdrop_skid.x + Vector3.DOWN * tuning.airdrop_skid.y
+	cargo.angular_velocity = _axis * tuning.airdrop_spin * tuning.airdrop_roll_share
 	hit_velocity = coming
 	hit_spin = cargo.angular_velocity
 	# Sand thrown up in a cloud, and a ring of it out along the ground.
@@ -346,7 +419,7 @@ func _make_beacon() -> MeshInstance3D:
 	look.albedo_texture = _dot()
 	quad.material = look
 	light.mesh = quad
-	light.position = Vector3(0.0, 0.0, Catalog.PARTS[&"cargo"].size.z + 0.05)
+	light.position = Vector3(0.0, 0.0, Catalog.DEVICES[&"cargo"].size.z * 0.5 + 0.05)
 	return light
 
 

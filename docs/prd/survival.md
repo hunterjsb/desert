@@ -937,35 +937,16 @@ connected rope, zero individual reel targets and no selected rope. The readable 
 return cue replaced the hover/click instruction and stayed above the carry tiles. Import
 and the capture completed without script or teardown errors; no local probes were run.
 
-## Surveyor's Guide (agreed and built 2026-10-19)
+## Surveyor's Guide (Hunter, 2026-10-19/22)
 
-A physical Surveyor's Guide starts carried by the Surveyor alone, alongside all its
-existing supplies. Five short pages explain establishing a self-sustaining survey
-camp, recognizing the starter gear, unstaking/towing/parking, scouting and returning,
-and loose salvage upgrades with storm shelter. It teaches current actions with their
-binding macros. A short profile-once carried hint explains the first survey and how
-to open the Guide after live input returns. There is no arrival pod, receiver, map, quest marker or forced reader
-opening. Return advice is physical: short scouts, keeping camp in sight, looking back
-at landmarks and allowing for fading tracks. It is a normal carried,
-placeable, saveable booklet, available in the creative menu, with a distinct procedural
-survey-mark cover using existing materials. Reading adds no deed.
-
-As built, the guide adds 0.3 kg (the same physical booklet size and mass as sailing
-notes), with no existing gear removed. Only the Surveyor kit resource gains it;
-existing saves are not retroactively restocked. A fresh Surveyor's carried guide
-opened from the carry view in an unseen 1280 by 720 run, closed back to that view,
-and remained carried with all five pages after saving and resuming. The initial
-hint appeared without opening a menu. Existing clean-new-run probe 4 passes with
-its exact kit fixture extended for the Guide; other origin kit data is unchanged.
-The current camp streaming/persistence limits remain outside this teaching change;
-the Guide does not promise a permanent distant camp or introduce arrival machinery.
-
-The first integrated remote CI run found one stale development-scenario fixture:
-`survive` restocks the normal Surveyor suit, so its carried set now also contains
-the Guide. Dev probe 1 still expected only water, a ration and a bedroll, although
-the run contained all four intended objects. Extend that existing exact gear list
-for the Guide; preserve its health, hunger, thirst, sealed-water and condenser checks.
-This changes the fixture only, with no scenario or supply behavior change.
+Hunter: "you have a surveyor's guide. And let's keep it really, really simple."
+A physical booklet the Surveyor alone starts with, 0.3 kg, carried, placeable,
+saveable and in the creative menu. Four picture pages, a line each, in the
+sailing notes' reader: take what survived, raise a shield on a deck, mark Home,
+go and look from a nearby rise. Captions name actions through their binding
+macros. One first-time hint says where the Guide is; it never opens itself, and
+reading adds no deed. The pictures are real unseen captures with the HUD hidden
+(`look/guide_pages`).
 
 ## Surveyor arrival
 

@@ -1,5 +1,5 @@
 extends ShieldProbe
-## Power probe 17: what wear costs is real. Beside a sound turbine in the same
+## Power probe 18: what wear costs is real. Beside a sound turbine in the same
 ## wind, one the storms half wore makes less, and a worn shield draws more to
 ## hold the same weather back; their paint says so.
 

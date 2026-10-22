@@ -1,6 +1,6 @@
 # Starcom: a quest spine
 
-*Proposal for Hunter, 2026-10-22. Docs only; no new canon or build approval.*
+*Proposal for Hunter, 2026-10-22. Updated with his answers below; the quest sequence remains a proposal, not build approval.*
 
 Repairing Starcom should grow out of learning to live here: first hear a nearby ruin,
 then learn what a working local network sounds like, then carry a sustainable camp to
@@ -15,9 +15,10 @@ belong to the linked sources, not this brief. Baseline inspected: master `4d3de7
 ## What the proposal must preserve
 
 - [The current ending ladder](../vision.md#the-ladder) supersedes the old five-ending
-  table. StarCom and radio can lead to the long wait; launch has its own authorisations.
+  table. Radio can lead to Starcom; Starcom makes the interstellar call. Launch has its own authorisations.
 - Hunter's contract ship really is coming. Fixing the station must not retroactively
-  make that promise a lie. Whether a call changes the pickup is an open design question.
+  make that promise a lie. An early readiness report can earn a bonus or termination;
+  [the agreed rule](../vision.md#starcom-decisions-agreed-2026-10-22) leaves its criteria and consequences open.
 - Present-day contact is with Tilg & Standard, the successor in the current vision,
   not colonial TILG. Legacy UG credentials are old machinery, not a living empire.
 - [Halloran's decline and ban](../world/lore-research.md#hallorans-decline-and-the-ban-on-the-stoker-agreed-2026-10-22)
@@ -81,8 +82,8 @@ burn neither restores the refinery nor produces launch fuel.
 
 **Proposed experience:** arrive with provisions and portable power. The mountain seen
 from afar becomes the slope climbed. Under the gallery roof, connect power to a service
-socket: a local test responds, but the outgoing circuit stays dark. A visibly absent,
-replaceable coupling identifies a physical repair. Its exact component is undecided.
+socket: a local test responds, but the outgoing circuit stays dark. A physical fault must be readable through the equipment. The earlier absent-coupling
+idea is deferred with the repair-component decision; it is not a selected failure.
 A first visit can be reconnaissance; the player can leave, equip and return.
 
 **Built:** traversable mountain, summit gallery, shelter, salvage sockets, distant-to-near
@@ -94,7 +95,7 @@ Persist state by landmark identity, independent of streamed instances and floati
 
 ### 5. Repair, then choose whether to connect — Starcom's array
 
-**Proposed experience:** bring a compatible salvaged component, install it physically,
+**Deferred proposed experience:** bring the eventually selected repair component, install it physically,
 then align the array using a live meter. Local readiness and network connection are
 separate actions. A repair can stay powered down; opening the circuit can disconnect it
 again. Parts come through salvage, not a compulsory lap of every god's home.
@@ -118,7 +119,7 @@ The exact voice and treatment of obsolete UG authorisation need Hunter's approva
 **Needed:** player transmission, external response, contact persistence and the long-wait
 ending. A shortwave converter alone is not an interstellar transmitter.
 **Smallest next build:** one saved request/acknowledgement transaction at Starcom, including
-power loss and retry. Do not announce a new pickup date until the contract rule is settled.
+power loss and retry. Apply the agreed early readiness report; its assessment and termination behaviour still need decisions.
 Receiving local Tower or satellite traffic must never count as this contact.
 
 ### 7. Decide what the connection is for — the far-side observatory
@@ -140,11 +141,11 @@ read the same saved network state, not independent quest flags that can contradi
 
 | Route | Established rule | Proposed connection to these beats / remaining work |
 |---|---|---|
-| StarCom / long wait | Call, then survive years; communications are instant, travel is not. | Beats 4–6 make contact playable; contract timing and ending resolution remain needed. |
+| StarCom / long wait | Call, then survive years; communications are instant, travel is not. | Beats 4–6 propose playable contact; early readiness assessment and ending resolution remain needed. |
 | Launch / escape | Ledger and Quartermaster authorise; the fed Stoker is the only launch-grade fuel source. Carrying the Quartermaster, a cable or repaired Starcom can bridge them. | Reconnection becomes one bridge, not the only one. Full refinery fuel production, launch craft and authorisation outcomes remain needed; First Fire is only an introduction. |
 | Shot down | Unauthorised launch meets the old air-defence net. Captive Quartermaster and hive-mind exceptions follow the current vision. | Show clearance acceptance or refusal through a physical preflight check before committing. Do not imply Starcom contact alone grants clearance. Launch/net resolution remains needed. |
 | Nomad city | Rare, ambiguous contact with the last city; the exact ending trigger remains open. | Leave it independent. Walker FM contacts, Console bearing triangulation, city movement/chatter and distant lights already support discovery; rescue/tether finale is not built. No Starcom task should reveal its coordinates automatically. |
-| Radio | Alternate call into the long wait is agreed; the older standalone “radio ending” is undesigned. | Better receiving gear can suggest another way to listen. Transmitting hardware, recipient and range are still decisions, not functions secretly present in converters. Do not create a fifth finished ending by renaming listening. |
+| Radio | Hunter: radio cannot go interstellar; it can lead to Starcom. | Receiving gear supports discovery in beats 1–2, not an independent rescue call. Any separate local-radio finale remains undesigned. |
 
 The [captive launch rule](../vision.md#the-captive-launch-rule-agreed-session-4-part-5)
 and [observatory modifier](../vision.md#modifier-the-observatory-beyond-the-eye) own those
@@ -159,7 +160,7 @@ do not silently implement a cure or let contradictory ending conditions both suc
 
 ## Integration boundaries and first build recommendation
 
-**Proposed first build after approval:** beat 4's diagnostic fixture, then beat 5's bounded
+**Deferred first-build recommendation:** after Hunter settles the repair path, beat 4's diagnostic fixture, then beat 5's bounded
 repair. It turns an existing expedition destination into a physical purpose without pretending
 the ending is ready. Keep contact rewards disabled until beat 6 has a truthful response.
 
@@ -177,7 +178,7 @@ the ending is ready. Keep contact rewards disabled until beat 6 has a truthful r
 - Current radio, Console-map and deeds work is separately claimed. This proposal changes
   none of those files; integration must use their landed behaviour rather than pin old UI.
 
-## Hunter's decisions needed
+## Hunter's decisions (updated 2026-10-22)
 
 1. What does a successful call change about the already-promised ten-year pickup: location,
    confirmation, help, or timing? How does that fit the long wait in non-surveyor starts?
@@ -189,3 +190,20 @@ the ending is ready. Keep contact rewards disabled until beat 6 has a truthful r
    Keep the separate radio finale open until that distinction is chosen.
 5. Approve the Halloran ban's blocked-entrance treatment and the optional observatory beat,
    or keep this first quest entirely between Port Morgan and Starcom?
+
+**Answers:** the numbered questions above are preserved for their Design Room references.
+The [vision](../vision.md#starcom-decisions-agreed-2026-10-22) owns answers 1, 2, 4 and 5;
+the [lore research](../world/lore-research.md#starcom-the-gods-and-surviving-satellites-2026-10-22)
+owns answer 3 and a separately labelled satellite proposal.
+
+1. **Answered:** early readiness reporting can earn a bonus or termination. Criteria,
+   consequences and non-surveyor application remain open.
+2. **Deferred by Hunter**, not selected. The specific catalog-part repair path needs design;
+   “ordinary salvage” must not imply a generic material system already exists.
+3. **Answered:** Starcom reconnects the gods; corruption changes the Eye's music and readings.
+   Satellite limitations are proposed, and curing existing corruption remains unresolved.
+4. **Answered:** radio leads to Starcom; it cannot make an interstellar call itself.
+5. **Direction accepted:** work Halloran in. Optional provisioning is SANDGAME's interpretation;
+   the precise ban treatment and observatory beat remain proposed.
+
+No repair implementation starts from this brief while question 2 is deferred.

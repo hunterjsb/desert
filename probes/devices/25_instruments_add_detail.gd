@@ -23,7 +23,7 @@ func run() -> void:
 		[&"stick", Vector2i.ZERO, &"top", Vector2.ZERO, 0.0, [&"console", [&"screen"]], &"console"]], [0.0, 2.0], false)
 	var made: Console = plate.named.console
 	await physics_frames(90)
-	check(_labels(made).is_empty() and made.map_cells() == 0 and "NO INSTRUMENTS" in made.screen_text(Console.Page.RADAR),
+	check(_labels(made).is_empty() and made.map_cells() == 0 and "NO INSTRUMENTS" in made.screen_text(Console.Page.MAP),
 		"bare, it reads nothing and has no map (%s)" % ", ".join(_labels(made)))
 	var seats: Array[Socket] = []
 	var tiers: Array[int] = []

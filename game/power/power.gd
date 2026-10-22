@@ -92,7 +92,7 @@ func _tick(seconds: float, t: float) -> void:
 		var cells: Array[Battery] = []
 		var givers: Array[Battery] = []
 		for device: Device in pool:
-			made += device.production_w(t) * seconds / 3600.0
+			made += device.generate_wh(seconds, t)
 			wants[device] = device.demand_w(t) * seconds / 3600.0
 			cells.append_array(device.pooled())
 			givers.append_array(device.supplies())
@@ -122,6 +122,9 @@ func _tick(seconds: float, t: float) -> void:
 			var given := _share(short, givers, false)
 			if given >= short - 1e-12:
 				used_wh += wanted
+				# More drawn than made, carried by what a power box's bays hold.
+				if Deeds.waiting(_world, &"on_reserve") and pool.any(_box_gives):
+					Deeds.done(_world, &"on_reserve")
 			else:
 				# Not enough: everything that came in or was left is spent trying.
 				used_wh += made + given
@@ -136,6 +139,11 @@ func _tick(seconds: float, t: float) -> void:
 			cells[i].show_charge()
 		for device: Device in pool:
 			device.show_charge()
+
+
+## A power box with a charged bay supplying.
+static func _box_gives(device: Device) -> bool:
+	return device is PowerBox and device.supplies().any(func(cell: Battery) -> bool: return cell.charge_wh > 0.0)
 
 
 ## The devices in a pool that draw this tick, `wants` what each would draw:

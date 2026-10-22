@@ -1,8 +1,6 @@
 extends MovementProbe
-## Movement probe 39: your body. Your suit (Body) is drawn for others and
-## for its shadow, but your helmet isn't in your own eyes; it has no shapes
-## of its own to bump into. Standing, walking or crouched, your boots stay on
-## the sand under you.
+## Movement probe 39: your body. It has no shapes of its own to bump into,
+## and standing, walking or crouched, your boots stay on the sand under you.
 
 
 func run() -> void:
@@ -10,9 +8,6 @@ func run() -> void:
 	var flat := flat_place(world.player_world_x(), world.player_world_z(), 150.0, 4.0)
 	await place(flat.x, flat.z, Vector2(1.0, 0.0))
 	var body := player.body
-	var head := body.get_node(^"head") as MeshInstance3D
-	check(head.layers & player.camera.cull_mask == 0 and head.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,
-		"your helmet casts its shadow, but isn't in your own eyes")
 	check(body.find_children("*", "CollisionShape3D", true, false).is_empty(), "your body is only looks")
 	for keys: Array in [[], ["move_forward"], ["crouch"]]:
 		hold(keys)

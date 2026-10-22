@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Shoots the archaeology look-test at 1920x1080, then builds the sheet
 # ~/Desktop/dunes.png, 8-bit: a big dune's ruin bared after a big storm, the
-# light things a storm let fall in a crest's lee, the ground radar's page, and
+# light things a storm let fall in a crest's lee, the Map's survey, and
 # the archaeology setup on a deck.
 #   look/archaeology/shoot.sh <out dir>            shoot, then build the sheet
 #   look/archaeology/shoot.sh <out dir> --sheet    build the sheet from what's there
@@ -18,7 +18,7 @@ if [[ ${2:-} != --sheet ]]; then
 fi
 
 declare -A labels=([ruin]="a big dune's ruin after a big storm" [lee]="light loot in a crest's lee"
-	[page]="the ground radar's page" [deck]="the archaeology setup on a deck")
+	[page]="the Map's survey" [deck]="the archaeology setup on a deck")
 shots=()
 for shot in ruin lee page deck; do
 	[[ -f $out/$shot.png ]] || continue
