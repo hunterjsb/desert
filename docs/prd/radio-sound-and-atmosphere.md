@@ -454,10 +454,37 @@ nomad/wreck loot as a replacement. Existing wrecks, lifeboats and nomad rigs wit
 real unclaimed loot may carry the same 530 kHz loot beacon as house ruins. Add
 missing crystal sets, maker variants and antenna/band gear to plausible existing
 loot tables; do not create a cache around the landing or move the landing to gear.
-Audit seeds 1234, 1 and 2 within 4 km; the expedition objective remains 1–2 km.
+An eligible wreck or nomad rig qualifies through either its existing distress
+transmitter or the same seeded 530 kHz beacon survival roll used by houses.
+Neither rule depends on the acceptance seed. Audit seeds 1234, 1 and 2 within
+6 km; the expedition objective remains 1–2 km. FM, SW and antenna upgrades may
+vary by world; receiver, one broadcast set, Console, Home and traction kite are
+the required acquisition chain. A real exposed Console at 5.6 km on seed 1234
+is accepted without increasing its loot weight.
 Report remaining gaps before promising guaranteed placements. Existing readouts
 and short hints explain uses and limits, with explicit LIVE / LAST KNOWN Home
 labels on the Console Map. No new tier, signal service, asset or Home range.
+
+**As built, 2026-10-22.** Physical ship stores include the optional receiver;
+ordinary wreck/nomad tables provide replacements, field-radio bodies and aerial
+gear. First-use hints explain the existing sets, converters, wire, aerial and
+Home limits. Console Home marks are filled while live and outlined when stale,
+with explicit labels; a saved stale fix keeps that distinction. Follow the
+Signal continues to record actual receiver approaches to the advertised loot.
+Radio probe 78 checks real ship stores and exposed ordinary salvage within
+6 km on the default pulse at departure clock zero, including a real unclaimed
+target and seed 1's walk toward a nomad rig. It expands only the audit index's
+coverage, retaining ordinary terrain, weather, exposure and loot rules.
+
+| Required find | Seed 1234 | Seed 1 | Seed 2 |
+|---|---:|---:|---:|
+| Broadcast set | 1,093 m | 1,011 m | 441 m |
+| Console | 5,608 m | 625 m | 999 m |
+| Traction kite | 2,588 m | 1,752 m | 885 m |
+
+Receiver and Home also have real physical ship-store slots; packing and impact
+survival remain the player's risks. The check proves acquisition availability,
+not a complete unassisted expedition. Radio upgrades may be absent locally.
 
 An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
 bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,

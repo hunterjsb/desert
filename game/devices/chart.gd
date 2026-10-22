@@ -221,7 +221,8 @@ static func layer(console: Console) -> Dictionary:
 		chart["home"] = Vector2(sin(home.bearing), -cos(home.bearing)) * home.metres
 		chart["live"] = home.live
 		farthest = maxf(farthest, home.metres)
-		rows.append(_place_row("HOME LIVE" if home.live else "HOME LAST KNOWN", chart.home))
+		rows.append(_place_row("HOME", chart.home))
+		rows.append(Console._row(" LIVE" if home.live else " LAST KNOWN"))
 	rows.append(Console._row("EVIDENCE", "%d/3" % console.evidence.size()))
 	chart["rows"] = rows
 	chart["reach"] = clampf(farthest * MARGIN, LEAST, PI * radius)

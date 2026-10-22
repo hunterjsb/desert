@@ -1,5 +1,11 @@
 ## 0.4.0-alpha “Spaceport” — development, unreleased
 
+- Put the survey receiver in the Surveyor's physical ship stores and extend
+  ordinary radio, receiver and aerial salvage. Existing wreck and nomad loot
+  beacons can guide it to real unclaimed gear. Optional cargo still risks impact.
+- Explain navigation equipment through short first-use hints. Distinguish live
+  and last-known Home fixes on the Console Map, including saved stale data.
+
 - Fly a found salvage kite on one ordinary rope from your waist or a camp hook.
   The board and rider steer beneath it; reeling controls its reach. Recover and
   relaunch the same line, or leave it aloft as a physical camp landmark.

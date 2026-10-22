@@ -37,7 +37,7 @@ existing survey receiver joins the physical ship stores, loaded by hand with
 the same optional cargo survival as other extras. The guide briefly explains
 turning it to compare the needle and its limitation to loot beacons. Ordinary
 nomad and wreck finds supply replacements; the world and the chosen landing
-are not rearranged to guarantee a kit. Acquisition is audited within 4 km on
+are not rearranged to guarantee a kit. Acquisition is audited within 6 km on
 fixed ordinary seeds 1234, 1 and 2; the expedition objective stays 1–2 km.
 
 **Cabin.** A small walkable room hangs over the start in the same World, sheltered from

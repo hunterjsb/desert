@@ -131,6 +131,8 @@ func use(by: Player, _at: Vector3) -> bool:
 
 
 func _toggle(by: Player) -> bool:
+	if Controls.ui != null:
+		Controls.ui.teach("antenna_kite", "A shortwave aerial: cable its terminal to the radio's top hook. It needs wind to fly; a driven stake grounds static on the lead.")
 	if flying or line_out > 0.0:
 		reel_in()
 		return true

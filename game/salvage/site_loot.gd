@@ -170,16 +170,17 @@ const KINDS := {
 	# A nomads' rig, wrecked: its mast down beside it with its sail always,
 	# what they stowed in its locker, the rack they scavenged for its power.
 	&"nomad_rig": {"kept": 0.85, "tier": 1, RIGGED: [[&"mast", 1]],
-		MODULE: [[&"survey_receiver", 1], [&"survival_kit", 3], [&"radio", 2], [&"light_shield", 1], [&"streamer", 1]],
+		MODULE: [[&"survey_receiver", 1], [&"antenna_reel", 1], [&"antenna_kite", 1], [&"radio_skimmer", 1], [&"survival_kit", 3], [&"radio", 2], [&"light_shield", 1], [&"streamer", 1]],
 		BAY: [[&"power_rack", 1]]},
 	# A nomads' camp, kept up and just left: their rig, and anything of any era.
 	&"nomad_camp": {"kept": 1.0, RIG: [[&"runner", 2], [&"yacht", 1]],
 		FLOOR: [[&"chassis", 3], [&"frame", 2], [&"turbine", 1], [&"condenser", 1], [&"shield", 1],
 			[&"light_shield", 1], [&"big_battery", 1], [&"radio", 1], [&"survival_kit", 2], [&"bedroll", 2],
 			[&"planter", 1], [&"skates", 1], [&"coil", 2], [&"canister", 2], [&"power_rack", 1], [&"sail", 1],
-			[&"mast", 1]],
+			[&"mast", 1], [&"survey_receiver", 1], [&"crystal_set", 1], [&"antenna_reel", 1], [&"antenna_kite", 1], [&"salvage_kite", 1]],
 		SHELF: [[&"streamer", 3], [&"compass", 2], [&"canister", 2], [&"ration", 2], [&"coil", 2], [&"med_kit", 1],
-			[&"anemometer", 1], [&"barometer", 1], [&"battery", 2], [&"lamp", 1]],
+			[&"anemometer", 1], [&"barometer", 1], [&"battery", 2], [&"lamp", 1],
+			[&"fm_converter", 1], [&"sw_converter", 1]],
 		CACHE: [[&"canister", 4], [&"ration", 3], [&"med_kit", 1], [&"saltbush", 1]],
 		BED: [[&"saltbush", 3], [&"root_tuber", 1]]},
 }

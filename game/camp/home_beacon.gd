@@ -19,6 +19,8 @@ func interact(by: Player) -> bool:
 	if why != "":
 		return by.hands.refuse(why)
 	by.hands.say("home unmarked" if removing else "home marked")
+	if not removing and Controls.ui != null:
+		Controls.ui.teach("home_fix", "{inventory} shows Home. Its powered beacon gives a live fix within range; a lost signal leaves only the last-known fix.")
 	Sounds.play_at(self, Sounds.BOARD_OFF if removing else Sounds.BOARD_ON)
 	return true
 

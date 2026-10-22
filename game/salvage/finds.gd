@@ -198,12 +198,13 @@ static func on_way(sites: Sites, x: float, z: float, scatter: float) -> bool:
 
 ## A surviving loot beacon points at a real unclaimed socket. Houses keep
 ## their hall target; wrecks and nomad rigs can advertise their own stores.
-static func beacon(_run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable, reach_m := -1.0) -> Dictionary:
+static func beacon(run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable, reach_m := -1.0) -> Dictionary:
 	var size := float(tuning.chunk_size)
 	var reach := tuning.radio_reach_m if reach_m < 0.0 else reach_m
 	var found := sites.nearest(x, z, reach, func(site: Site) -> bool:
 		return site is Structure and (site is Ruin or site.kind in Distress.KINDS) \
-			and SiteLoot._stream(site.loot, BEACON).randf() < tuning.beacon_share \
+			and (SiteLoot._stream(site.loot, BEACON).randf() < tuning.beacon_share \
+				or (site.kind in Distress.KINDS and Distress.calling(run_seed, site, tuning))) \
 			and _beacon_socket(site, taken) >= 0) as Structure
 	if found == null:
 		return {}

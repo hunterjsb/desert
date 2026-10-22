@@ -57,6 +57,8 @@ func interact(by: Player) -> bool:
 
 ## In your hands, aimed at `at`: clips to the radio there, or reels in.
 func use(_by: Player, at: Vector3) -> bool:
+	if Controls.ui != null:
+		Controls.ui.teach("antenna_reel", "Use the reel at a radio to clip it on, then walk the wire out. Use it again to wind it in. Longer wire helps shortwave.")
 	if radio != null:
 		reel_in()
 		return true
