@@ -107,7 +107,7 @@ func _physics_process(delta: float) -> void:
 	super(delta)
 	if radio == null:
 		return
-	if not is_instance_valid(radio) or not radio.is_inside_tree() or radio.wrecked():
+	if not is_instance_valid(radio) or not radio.is_inside_tree() or radio.wrecked() or wrecked():
 		radio = null
 	elif strung() > Tuning.current().antenna_reel_m:
 		# Past the end of its wire: the clip pops off the set.

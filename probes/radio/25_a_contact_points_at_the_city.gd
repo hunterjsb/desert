@@ -1,10 +1,10 @@
 extends WeatherProbe
 ## Radio probe 25: a contact's bearing points at the living city. Beside the
-## Walker, a radio on its carrier reads its log a slot at a time: its survey,
+## Walker, a radio on its FM station reads its log a slot at a time: its survey,
 ## then each contact it keeps. Every contact as the line writes it, where the
 ## Walker stood and the bearing from there, lies on a line that passes the
-## city where it was then, ahead along the bearing. Far off, the log
-## comes through as noise.
+## city where it was then, ahead along the bearing. Across the moon from it,
+## past FM's reach, the log doesn't come through.
 ## Time limit: 300 s.
 
 ## As written, a fix to a tenth of a degree and a bearing to a degree: this
@@ -21,9 +21,7 @@ func run() -> void:
 	Scenarios.stand(world, scenario, place)
 	world.time_warp = 0.0
 	await settle(true)
-	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
-	radio.freeze = true
-	Scenarios._on_station(world, radio)
+	var radio := _on_walker()
 	var gods := Radio.gods_of(world)
 	var city := gods.city
 	var radius := world.shape.history.radius
@@ -52,10 +50,17 @@ func run() -> void:
 	var away := -gods.home(&"walker", world.time)
 	world.travel(rad_to_deg(Sphere.latitude(away)), rad_to_deg(Sphere.longitude(away)), 0.0)
 	await settle(true)
-	radio = Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
-	radio.freeze = true
-	Scenarios._on_station(world, radio)
+	radio = _on_walker()
 	await physics_frames(3)
-	print("%.0f km from it: \"%s\"" % [radio.reception.metres / 1000.0, radio.logged])
-	check(radio.reception.metres > world.tuning.walker_log_m.y and _read.search(radio.logged) == null,
-		"far off, its log is noise")
+	print("across the moon from it: \"%s\"" % radio.logged)
+	check(_read.search(radio.logged) == null, "far off, its log doesn't come through")
+
+
+## A radio standing ahead of you, switched on to the Walker's FM station.
+func _on_walker() -> Radio:
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"fm_converter"], [0.0, 2.0]) as Radio
+	radio.freeze = true
+	radio.on = true
+	radio.switch_band()
+	radio.fm_mhz = radio.fm_of(&"walker")
+	return radio

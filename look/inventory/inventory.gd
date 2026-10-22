@@ -76,7 +76,7 @@ func _fill(suit: Suit) -> void:
 	var cell := Catalog.part(&"battery") as Battery
 	radio.fit(cell, radio.sockets().filter(func(s: Socket) -> bool: return s.kind == &"battery")[0])
 	cell.charge_wh = 64.0
-	radio.interact(world.player)
+	radio.sweep()
 	var coil := Catalog.part(&"coil")
 	coil.set_meta(&"rolled", &"coil")
 	coil.set_meta(&"rolled_m", 6.0)

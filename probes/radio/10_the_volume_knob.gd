@@ -13,17 +13,17 @@ class SteadySignal extends Glitch:
 
 
 func run() -> void:
-	# Clear skies everywhere, so the relay's music comes in steady.
+	# Clear skies everywhere and FM carrying everywhere, so the port's music comes in steady.
 	Tuning.current().storm_threshold = 2.0
+	Tuning.current().fm_margin_db = 1e6
 	await load_hands()
 	var radio := device(&"radio", spot(0.0, -1.2), 0.0, true) as Radio
+	Scenarios.fill(world, radio, [&"fm_converter"])
 	await physics_frames(30)
 	# Isolate knob gain from unrelated random interference, as the weather-gain fixture does.
 	radio._glitch = SteadySignal.new(radio.music)
 	radio.freeze = true
-	broadside(radio, &"ledger")
-	while radio.channel != Radio.MUSIC:
-		radio.interact(world.player)
+	radio.channel = Radio.MUSIC
 	await physics_frames(5)
 	look(eye(), radio.global_position)
 	await physics_frames(2)

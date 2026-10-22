@@ -48,8 +48,8 @@ func run() -> void:
 
 
 func _matches_native(chassis: Chassis) -> bool:
-	# High above sand: populate geometry without applying contact impulses.
-	chassis._rest_frame_contacts(1.0 / 60.0, world.tuning.runner_clearance)
+	# Read the frames' corners without meeting the sand.
+	chassis.frame_contact_points(PackedVector3Array(), PackedFloat32Array(), world.tuning.runner_clearance)
 	var native := chassis.get_children().filter(func(child: Node) -> bool: return child is CollisionShape3D)
 	var frames := chassis._contact_frames
 	if frames.map(func(frame: Chassis.FrameContact) -> CollisionShape3D: return frame.shape) != native:

@@ -10,12 +10,8 @@ extends RefCounted
 const DAWN := Vector2(0.21, 0.29)
 const SUNRISE := Vector2(0.24, 0.28)
 const SUNSET := Vector2(0.72, 0.76)
-const DUSK := Vector2(0.74, 0.80)
 const HOT := Vector2(0.54, 0.67)
 const MIDNIGHT := 0.03
-## The Walker reports for this long after a storm starts or ends where it is, s.
-## With nothing to report it holds instead, its clear-skies song on the air.
-const STORM_NEWS := 40.0
 ## How far the gods look for a site they name, m: as far as history is laid.
 const LOOK_M := 5000.0
 ## What the Quartermaster keeps on file: the Dark Age's caches, and the
@@ -116,35 +112,16 @@ static func _quartermaster(radio: Radio, x: float, z: float) -> String:
 		roundi(radio.true_bearing(Radio.bearing(Vector2(cache.x - x, cache.z - z)))), cache.distance_to(x, z) / 1000.0]
 
 
-## The weather station: the routine forecast for where the radio is, always;
-## at dusk or with storm news where it walks, the long report too; taught, an
-## anomaly near the radio flagged after it. Under it its log, read an entry
-## at a time (`log`). What it reads aloud is shorter (Radio.report).
-static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, local: float) -> Dictionary:
-	var said := _walker_report(radio, gods, x, z, t, local)
+## The Walker on FM, heard only near it as it passes (the weather went to
+## Port Morgan Tower, 2026-10-21): its log, read an entry at a time, its
+## survey where it walks and the contacts it keeps; taught, an anomaly near
+## the radio flagged after it.
+static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, _local: float) -> Dictionary:
+	var kept := walker_log(radio.world, gods, t)
+	var text: String = kept.log
 	if radio.world.taught:
-		said.text += _flag(radio, x, z, t)
-	said.merge(walker_log(radio.world, gods, t))
-	return said
-
-
-static func _walker_report(radio: Radio, gods: Gods, x: float, z: float, t: float, local: float) -> Dictionary:
-	var routine := radio.weather_words(t)
-	var at := radio.ground_of(gods.home(&"walker", t))
-	var field := radio.world.weather.field
-	var now := field.raw_storm_at(at.x, at.y, t) > 0.0
-	var before := field.raw_storm_at(at.x, at.y, t - STORM_NEWS) > 0.0
-	if now != before or _within(local, DUSK):
-		var tuning := Tuning.current()
-		var long := Radio.forecast(field, x, z, t, tuning.radio_forecast_minutes * 120.0, Weather.FORECAST_STEP)
-		var none := "no clearing for %d min" if long.stormy else "no storm for %d min"
-		var ahead := none % roundi(tuning.radio_forecast_minutes * 2.0) if long.change == INF \
-			else ("storm clears in %s" % Radio.span(long.change - t) if long.stormy
-				else "storm in %s" % Radio.span(long.change - t))
-		var feet_say := "storm at the walker" if now else "clear at the walker"
-		return {"text": "%s · long range: %s · %s" % [routine, ahead, feet_say], "useful": true,
-			"calm": calm(radio.reading, t), "spoken": radio.report(t, long)}
-	return {"text": routine, "useful": true, "calm": calm(radio.reading, t), "spoken": radio.report(t)}
+		text += _flag(radio, x, z, t)
+	return {"text": text, "useful": true, "contact": kept.contact}
 
 
 ## The anomaly whose heart stands nearest the radio within walker_flag_m,

@@ -5,8 +5,8 @@ extends WeatherProbe
 ## city_warn_s out of clear air; city moving, under way; tether in, a storm
 ## on it moored; all clear, clear air and none due, moored; its position,
 ## the pole star's height its latitude and the stars' turn, against yours,
-## its longitude. Each plays. In clear air a radio near it on its carrier
-## plays each motif and its line shows it.
+## its longitude. Each plays. In clear air a radio near it on its FM
+## chatter plays each motif and its line shows it.
 ## Time limit: 300 s.
 
 ## Slots the radio listens through: one whole round of them.
@@ -27,12 +27,13 @@ func run() -> void:
 	world.time = from
 	world.time_warp = 0.0
 	await settle(true)
-	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"fm_converter"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	# A day and a half of storms would wear it out.
 	world.wear.set_physics_process(false)
 	radio.on = true
-	radio.frequency = city.carrier()
+	radio.switch_band()
+	radio.fm_mhz = radio.fm_of(Fm.CITY_TALK)
 	var counts := {}
 	var heard := {}
 	var every := world.tuning.city_chatter_every
@@ -61,9 +62,11 @@ func run() -> void:
 	for motif in LivingCity.MOTIFS:
 		check(counts.has(motif), "%s plays" % motif)
 
-	# In clear air, a radio near it on its carrier plays each motif it hears and shows it.
+	# In clear air, a radio near it on its chatter plays each motif it hears and shows it.
 	var tuning := Tuning.current()
 	tuning.storm_threshold = 2.0
+	# Its short mast in reach wherever it moors along the leg.
+	tuning.fm_margin_db = 1e6
 	world.weather.field = WeatherField.new(world.run_seed, tuning)
 	t = city.slot_start(from) + every
 	for k in POSITION_SLOTS:

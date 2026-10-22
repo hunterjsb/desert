@@ -17,10 +17,10 @@ func run() -> void:
 	world.content.add_child(radio)
 	radio.global_position = world.player.global_position + Vector3.UP
 	(fit_part(radio, &"battery") as Battery).charge_wh = 61.5
+	fit_part(radio, &"sw_converter")
 	hands.hold(radio)
 	await simulate(0.5)
-	while radio.channel != Radio.WEATHER:
-		radio.interact(world.player)
+	radio.channel = Radio.WEATHER
 	check(suit.put_in(), "a radio on the weather goes in")
 	for id: StringName in [&"compass", &"canister", &"canister"]:
 		var thing := Catalog.part(id)

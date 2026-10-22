@@ -15,9 +15,27 @@
 - Avoid a redundant zero-motion projection in large craft contact work; a
   controlled 108-piece camp measured about 3.4% lower settled CPU time.
 
+- Add the passive crystal set, new field-radio looks, coloured band windows and
+  powered receiver modules. Reorganize AM/FM/shortwave broadcasts around their
+  updated carriers, including wreck distress and the tower weather/schedule.
+- Align the printed AM/FM/shortwave dial marks with actual tuning and needle travel.
+- Fly a radio antenna aerial from its reel and route its lead through a stake
+  for grounding. Static charge, wear and damaged leads affect reception. The
+  traction kite remains a separate Spaceport feature.
+- Rename the delivery craft to the deliveryship and raise its pass; keep the
+  former drone/surveyor developer commands and scenarios as aliases.
+- Migrate old survey-receiver frequencies while preserving their detuning,
+  charge and switch state. Reset queued speech on actual station changes and
+  require power for the counter and logger modules.
+- Keep the aerial aligned through world recentering and disconnect a ruptured
+  strong lead from reception and grounding. Remove the clipped footstep sample.
+
 Existing run/profile formats remain supported. The escape-route repair applies
 when impact materializes; already recovered camps are not rearranged on load.
-Published 0.3.0 remains unchanged. This patch is not yet published.
+The AM dial and station allocation change; full-radio frequency marks retain
+their recorded frequencies. Natural-radio listening and the Whistler deed are
+retired, with existing profile completion data retained. Published 0.3.0 remains
+unchanged. This patch is not yet published.
 
 ## 0.3.0-alpha “Sanddune”
 
@@ -133,6 +151,8 @@ Includes the sailing, traversal and exploration baseline described below.
 
 ## 0.2.3-alpha “Sailboat”
 
+*Tagged, never published; 0.2.4-alpha shipped it (as with 0.2.2-alpha).*
+
 Physical sailing controls, clearer radio reception, and a first encounter at Halloran.
 
 The 0.2.2 and 0.2.3 tags remained unpublished candidates. The first failed its
@@ -182,14 +202,14 @@ Richer sand and trails, recoverable Nomad sailing gear, and fixes from sailing p
 - A physical sailing field guide in the sail scenario explains wind, trim, steering and the Varran bridle.
 - Shorter weather announcements, spoken when storm news changes.
 
-### 0.2.0-alpha
+## 0.2.0-alpha
 
 The second alpha of a cozy survival game on a dead desert moon. Your home is a bubble
 shield you carry with you, on a rig you build and tie down against the wind. Everything
 is still rough: grey boxes, placeholder sounds, numbers still moving. It's here to be
 played and broken.
 
-## New since 0.1
+### New since 0.1
 
 - **The chassis is the one structure.** Crates and slots are gone:
   - Anything sticks on a chassis's faces, and frames take walls and shelves.
@@ -226,7 +246,7 @@ played and broken.
   - grainflows down slip faces.
 - **A creative menu** in the dev console, to build anything in a test run.
 
-## What's in it
+### What's in it
 
 - **The moon:** endless dunes that the wind reshapes. A day and night with the gas giant
   Tu overhead and its eclipses, and storms you can see coming as a wall on the horizon.
