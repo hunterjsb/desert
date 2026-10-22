@@ -183,6 +183,8 @@ var _carry := Basis.IDENTITY
 ## How far in front of your eyes you'd carry it, and how far it is now, m.
 var _away := 0.0
 var _held_at := 0.0
+## How far a small thing in your arms is up to read, eased, 0 to 1.
+var _reads := 0.0
 ## Where the held part is as the simulation knows it: placed by the tick
 ## alone, so its lines pull the same at any frame rate.
 var _ticked := Transform3D.IDENTITY
@@ -867,6 +869,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		_stroke = 0.0
 	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
+	var reads := 1.0 if _reading() else 0.0
+	_reads = reads + (_reads - reads) * exp(-HOLD_EASE * delta)
 	# A radio in your hands you tune turns its face up to your eyes, to read its dial.
 	if held is Radio and _player.close_up.radio == held:
 		var to_eyes := Basis(Vector3.RIGHT, _player.camera.rotation.x)
@@ -1564,8 +1568,10 @@ func _grip(part: RigidBody3D) -> void:
 	_unblock(part)
 	refresh_held_shape()
 	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
-	_away = _tuning.hold_distance
+	# A small thing comes into your arms, all the way in; anything else out ahead.
+	_away = nearest_hold(_bounds) if carried() else _tuning.hold_distance
 	_held_at = _away
+	_reads = 0.0
 	pull = 0.0
 	socket = null
 	gap = INF
@@ -1978,7 +1984,40 @@ func _hand(drawn: bool) -> Transform3D:
 		var low := Transform3D(basis, at - basis * _middle)
 		return low.translated(ahead * _sweep(low, ahead))
 	var start := Transform3D(basis, eye.origin - basis * _middle)
+	if carried():
+		ahead = _in_arms(ahead)
 	return start.translated(ahead * _sweep(start, ahead))
+
+
+## Whether what you hold is a small thing carried in your arms: not a tool
+## you aim, a deck or anything a line is on, which stay out ahead.
+func carried() -> bool:
+	if not is_instance_valid(held) or held is Cutter or held is Chassis or held is RopeTip or held is RopeHook:
+		return false
+	if held is Part and (held as Part).kind == &"coil":
+		return false
+	if held.get_children().any(func(child: Node) -> bool: return child is RopeEnd):
+		return false
+	return _bounds.size.length() < _tuning.pick_small
+
+
+## Where a carried thing goes from your eyes, given `ahead`, where it'd be
+## straight out: all the way in it hangs low in your arms, out of your face,
+## swinging a little with your look (Hunter, 2026-10-22); pushed out, it rises
+## to straight ahead by where you'd hold anything. Read (a radio you're tuning,
+## a booklet open), it comes up into view.
+func _in_arms(ahead: Vector3) -> Vector3:
+	var turn := Basis(Vector3.UP, _player.global_rotation.y)
+	var pitch := _player.camera.rotation.x
+	var low := turn * Basis(Vector3.RIGHT, pitch * _tuning.suit_carry_follow - _tuning.suit_carry_drop) * Vector3.FORWARD
+	var out := clampf(inverse_lerp(nearest_hold(_bounds), _tuning.hold_distance, _held_at), 0.0, 1.0)
+	var carried_at := low.slerp(ahead.normalized(), out) * _held_at
+	return carried_at.lerp(turn * Basis(Vector3.RIGHT, pitch) * _tuning.suit_read, _reads)
+
+
+func _reading() -> bool:
+	return (held is Radio and _player.close_up.radio == held) \
+		or (held is SailingNotes and Controls.ui != null and Controls.ui.is_open())
 
 
 ## A pose for what you hold, kept within reach of its lines: turning round or

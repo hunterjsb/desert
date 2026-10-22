@@ -1643,6 +1643,13 @@ static func current() -> Tuning:
 @export var suit_arm_swing: Vector2 = Vector2(0.25, 0.6)
 ## Looking down or up, the trunk leans with your head this share of it.
 @export var suit_lean: float = 0.1
+## A small thing brought all the way in hangs this far below your eye line,
+## rad: low at your chest, close, in your gloves' reach (Hunter, 2026-10-22);
+## it swings with this share of your look. Read, it comes up to here in your
+## view, m from your eyes in your turn's frame.
+@export var suit_carry_drop: float = 1.03
+@export var suit_carry_follow: float = 0.2
+@export var suit_read: Vector3 = Vector3(0.0, -0.12, -0.36)
 
 @export_group("Wind streamer")
 ## It hangs under the first air, m/s, stands out level from the second, and

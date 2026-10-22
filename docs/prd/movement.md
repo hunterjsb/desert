@@ -926,13 +926,23 @@ pieces posed each frame by `Body` from how you move, with no shapes of its own
 - **Lying down:** stretched out face down behind your eyes, arms forward.
 - **Elsewhere:** in the air the legs gather; on a board the feet stand apart
   along it; tumbling or flying, nothing is drawn.
-- **Holding something:** the gloves take its sides by its back edge (its real
-  collision bounds), a small thing in the right hand; a cutter by its rear
-  handle; a chassis by each shoulder's nearest real frame face. Arms keep their
-  0.61 m length and nothing moves to fake contact, so a radio or battery held
-  0.9 m ahead stays out of the gloves' reach: closing that needs either the
-  eyes nearer the trunk (bringing the chest into view) or small things held
-  about 0.35 m from the eyes. Neither is chosen yet.
+- **Holding something** (Hunter, 2026-10-22: "lets hold small things closer,
+  but we can hold them down maybe to keep them out of our face? it really like
+  our hands/arms to grib the item and move mechanically"). A small thing (a
+  radio, battery, canister, ration, med kit, compass, scoop, sealant, flare, the
+  Guide, anything under `pick_small` across) rides low in your arms, 0.5 m
+  from your eyes and 59° below their line (`suit_carry_drop`), swinging a fifth
+  of your look (`suit_carry_follow`): out of your face looking level, in view
+  looking down. Pushed out it rises to straight ahead by 0.9 m; brought all the way
+  in, it's back in your arms.
+  Both gloves close on its real sides by its back edge and stay on it as it
+  moves; once on, they move with it exactly, and only reaching for it or
+  letting go eases. Read while held, it comes up into view (`suit_read`): a
+  radio while you tune it, a booklet while it's open, then it lowers again.
+  An aimed tool, the cutter, keeps its low working pose at your right, aimed
+  where you look, gripped by its rear handle. A deck is held out ahead by its
+  nearest frame faces; rope ends, hooks, coils and anything a line is on stay
+  out ahead where the lines need them. Arms keep their 0.61 m length.
 - **Vaulting:** empty hands reach for the ledge and the leading knee gathers
   in proportion to its real rise, following `LedgeVault.progress`.
 - **In first person:** your eyes stand 0.24 m ahead of your trunk's middle.
@@ -944,15 +954,16 @@ pieces posed each frame by `Body` from how you move, with no shapes of its own
   camera and the ridden board, so it never jitters against them.
 
 The limbs ease with time (`suit_ease_seconds`), the same at any frame rate.
-Probes: movement 39 (only looks, boots on the sand), 41 (a glove is on a held
-cutter or chassis looking a little down), 42 (the riding suit draws with the
+Probes: movement 39 (only looks, boots on the sand), 41 (gloves on a carried
+radio and battery at any look, low and out of your face, raised to read; on a
+cutter and a chassis), 42 (the riding suit draws with the
 board at 15 FPS, helmet and collar out of view), 44 (the climb gesture).
 
 **Cost.** Nine paired rounds of 60 frames at 1920×1080 on the RTX 3070, the
-slim suit drawn against hidden: from outside +0.003 ms median (-0.109 to
-+0.510), within noise; in your own view looking down -0.405 ms (-0.866 to
-+0.284), since the suit covers the sand's close relief there.
-`look/player_body/cost.tscn` repeats it.
+slim suit holding nothing, drawn against hidden: in your own view looking down
++0.08 ms median (-0.49 to +0.39), from outside -0.04 ms (-0.21 to +0.53), within
+noise; an earlier run gave -0.41 ms looking down, where the suit covers the
+sand's close relief. `look/player_body/cost.tscn` repeats it.
 
 ## Rules
 

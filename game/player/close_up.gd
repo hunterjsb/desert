@@ -45,7 +45,8 @@ func tuned(by: Radio, fine := false) -> void:
 func _process(delta: float) -> void:
 	var eye := _player.camera
 	_since += delta
-	if radio != null and not (is_instance_valid(radio) and radio.is_inside_tree()):
+	# A freed set reads as null here, so ask whether it's still there at all.
+	if not (is_instance_valid(radio) and radio.is_inside_tree()):
 		radio = null
 		close = 0.0
 	var keep := radio != null and _since < _tuning.dial_close_hold and Controls.playing() \
