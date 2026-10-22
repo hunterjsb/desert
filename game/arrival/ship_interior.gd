@@ -182,7 +182,7 @@ func computer_focus_pose() -> Transform3D:
 func _bay_sign() -> void:
 	var label := Label3D.new()
 	label.text = "POD BAY"
-	label.font = ThemeDB.fallback_font
+	label.font = ThemeDB.get_project_theme().get_font(&"font", &"Label")
 	label.font_size = 48
 	label.pixel_size = 0.0018
 	label.position = Vector3(2.985, 2.1, 0.15)

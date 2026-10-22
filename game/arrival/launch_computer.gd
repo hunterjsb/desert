@@ -102,7 +102,7 @@ func set_focused(value: bool) -> void:
 	_dragging = false
 	_confirm.disabled = not value
 	_back.visible = value
-	_instruction.text = "Drag the pulse handle.\nWatch the predicted landing." if value else "Use the station to plan your drop."
+	_instruction.text = "Drag the pulse handle.\nKeep LANDING inside the survey ring." if value else "Use the station to plan your drop."
 
 func refresh() -> void:
 	if not is_node_ready():
@@ -177,6 +177,14 @@ func _draw_overlay(canvas: Control) -> void:
 		return
 	var amber := Color(0.95, 0.73, 0.36)
 	var teal := Color(0.55, 0.85, 0.82)
+	var anchor: Vector3 = _plan.anchor.get("point", Vector3.RIGHT)
+	var reach := LandingPlan.RULES.corridor_radius_m / (_world.tuning.moon_circumference / TAU)
+	var body: Basis = _sample.body_basis
+	for i in 64:
+		var a := body * Sphere.toward(anchor, TAU * i / 64.0, reach)
+		var b := body * Sphere.toward(anchor, TAU * (i + 1) / 64.0, reach)
+		if _exposed(a) and _exposed(b):
+			canvas.draw_line(_project(a), _project(b), Color(teal, 0.6), 1.5, true)
 	var path: PackedVector3Array = _sample.path
 	for i in range(1, path.size()):
 		if _exposed(path[i - 1]) and _exposed(path[i]):
