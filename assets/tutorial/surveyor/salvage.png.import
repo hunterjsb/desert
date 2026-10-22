@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkywk43vixval"
-path="res://.godot/imported/outside.png-91eb2b9fe2a4786918f2669d52f838d1.ctex"
+uid="uid://m3p5wv515q3k"
+path="res://.godot/imported/salvage.png-cd5bd0cf486d824536deb0e0abedd62b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://look/player_body/out/outside.png"
-dest_files=["res://.godot/imported/outside.png-91eb2b9fe2a4786918f2669d52f838d1.ctex"]
+source_file="res://assets/tutorial/surveyor/salvage.png"
+dest_files=["res://.godot/imported/salvage.png-cd5bd0cf486d824536deb0e0abedd62b.ctex"]
 
 [params]
 

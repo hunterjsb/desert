@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b47brq42idka1"
-path="res://.godot/imported/first_person.png-160de92ea41fa6e5ab34eca507ae2230.ctex"
+uid="uid://dfhk0qjqxerr6"
+path="res://.godot/imported/home.png-b8af1e373c5efb87fd45acaf8083d50f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://look/player_body/out/first_person.png"
-dest_files=["res://.godot/imported/first_person.png-160de92ea41fa6e5ab34eca507ae2230.ctex"]
+source_file="res://assets/tutorial/surveyor/home.png"
+dest_files=["res://.godot/imported/home.png-b8af1e373c5efb87fd45acaf8083d50f.ctex"]
 
 [params]
 

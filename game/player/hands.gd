@@ -1543,6 +1543,9 @@ func _grip(part: RigidBody3D) -> void:
 	refresh_held_shape()
 	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
 	_away = _tuning.hold_distance
+	if not (part is Chassis or part is Cutter) and _bounds.size.length() < _tuning.pick_small:
+		# Small things come in where your arms reach them; nothing comes inside you.
+		_away = maxf(nearest_hold(_bounds), _tuning.suit_hold_small)
 	_held_at = _away
 	pull = 0.0
 	socket = null

@@ -319,7 +319,7 @@ func finish(data: Dictionary) -> void:
 	if grasped != null and _made.has(grasped):
 		hands.grasp.recall(_made[grasped], data.grasp)
 	for drop: Dictionary in data.get("airdrops", []):
-		var cargo := _made.get(drop.cargo) as Part
+		var cargo := _made.get(drop.cargo) as Device
 		if is_instance_valid(cargo):
 			Airdrop.recall(world, cargo, _transform_in(drop.at), drop.state)
 	world.home.finish_restore(data.get("home", {}), func(ref: int) -> Node: return _made.get(ref))

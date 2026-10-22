@@ -6,11 +6,10 @@ extends Node3D
 ## footfall each half stride, as Feel's steps fall), bend as you crouch and
 ## fold under you sat; lying down you're stretched out behind your eyes.
 ## Holding something, your hands go to it; empty, your arms swing against
-## your stride. Your helmet and what rings your eyes (its collar, the
-## shoulder yokes) are drawn for their shadow and for others only, on a
-## layer your own eyes skip. It's only looks: no shapes, nothing to hit. A child of the player.
+## your stride. It's only looks: no shapes, nothing to hit. A child of the player.
 
-## Near-camera suit surfaces stay available to external views and shadows.
+## Helmet, collar, trunk and hips sit so near your eyes they'd fill and flicker
+## across the view, so they're drawn for their shadow and for others only.
 const OWN_LAYER := 1 << 17
 ## Each limb's length, m, joint to joint.
 const UPPER_ARM := 0.28
@@ -19,17 +18,11 @@ const THIGH := 0.42
 const SHIN := 0.41
 ## Where the hand grips, m below the wrist along the hand.
 const GRIP := 0.08
-## Your eyes stand this far in front of your trunk's middle, m: looking down
-## you see your chest, not into it.
-const EYES_AHEAD := 0.24
-## Your stride: how far the swinging foot lifts, m, and how far your hips sway
-## and your arms swing, rad, at a walk; more at a run.
-const LIFT := 0.09
-const ARM_SWING := Vector2(0.25, 0.6)
-## Looking down or up, your trunk leans with your head this share of it.
-const LEAN := 0.1
-## The legs and arms ease toward a new pose in about this long, s.
-const EASE := 0.12
+## Your eyes stand this far in front of your trunk's middle, m, as a head
+## carries forward of the shoulders; the trunk itself is out of your own view.
+const EYES_AHEAD := 0.05
+## Lying face down: the hips this far behind your eyes and over the sand, m.
+const PRONE_HIPS := Vector3(0.0, 0.16, 0.62)
 
 var player: Player
 var _parts := {}
@@ -81,6 +74,8 @@ func _process(delta: float) -> void:
 ## Sets every piece from how you're moving now; `delta` 0 snaps to it.
 func pose(delta: float) -> void:
 	var tuning := Tuning.current()
+	# Eased by time, not by frames: the same pose at any frame rate.
+	var settle := 1.0 - exp(-delta / tuning.suit_ease_seconds)
 	var own := Vector3(player.own.x, 0.0, player.own.y)
 	if player.ride != null:
 		own = Vector3.ZERO
@@ -100,13 +95,13 @@ func pose(delta: float) -> void:
 	var climb := smoothstep(0.0, 0.2, progress) * (1.0 - smoothstep(0.8, 1.0, progress))
 	var tuck := minf(player.vault.height, THIGH) * sin(progress * PI)
 	# The trunk: from the hips, leaning with your look, set back of your eyes.
-	var lean := Basis(Vector3.RIGHT, pitch * LEAN)
+	var lean := Basis(Vector3.RIGHT, pitch * tuning.suit_lean)
 	var hips_at := Vector3(0.0, SurveyorLooks.HIPS.y - drop, EYES_AHEAD)
 	var turn := lean
 	if prone:
 		# Face down, stretched out behind your eyes.
 		turn = Basis(Vector3.RIGHT, -PI * 0.5)
-		hips_at = Vector3(0.0, 0.16, 0.62)
+		hips_at = PRONE_HIPS
 	elif sat:
 		hips_at = Vector3(0.0, SurveyorLooks.HIPS.y - drop - 0.05, EYES_AHEAD + 0.05)
 	var waist := hips_at + turn * (SurveyorLooks.WAIST - SurveyorLooks.HIPS)
@@ -132,7 +127,7 @@ func pose(delta: float) -> void:
 			var stride := Feel.stride(maxf(speed, 0.1)) if speed > 0.1 else 0.0
 			var way := moving.normalized() if speed > 0.1 else Vector3.FORWARD
 			var reach := way * (-cos(phase) * stride * 0.5)
-			var lift := maxf(sin(phase), 0.0) * LIFT * minf(speed, 1.0) * (1.0 + pace)
+			var lift := maxf(sin(phase), 0.0) * tuning.suit_step_lift * minf(speed, 1.0) * (1.0 + pace)
 			foot = Vector3(SurveyorLooks.ANKLE.x * side, SurveyorLooks.ANKLE.y + lift, EYES_AHEAD) + reach
 			if not player.is_on_floor() and player.ride == null:
 				# In the air your legs gather under you.
@@ -144,7 +139,7 @@ func pose(delta: float) -> void:
 			# The leading knee clears first; a low ledge needs only a small gather.
 			var gather := tuck * (1.0 if i == 0 else 0.5)
 			foot += Vector3(0.0, gather, -gather)
-		_feet[i] = foot if delta <= 0.0 or not _settled else _feet[i].lerp(foot, minf(delta / EASE, 1.0))
+		_feet[i] = foot if delta <= 0.0 or not _settled else _feet[i].lerp(foot, settle)
 		var bones := _reach(hip, _feet[i], THIGH, SHIN, knee_way)
 		var s := "r" if i == 0 else "l"
 		_put(StringName("thigh_" + s), bones[0], hip)
@@ -165,7 +160,7 @@ func pose(delta: float) -> void:
 		elif prone:
 			hand = shoulder + Vector3(0.12 * side, -0.12, -0.32)
 		else:
-			var swing := sin(_phase + (PI if i == 0 else 0.0)) * lerpf(ARM_SWING.x, ARM_SWING.y, pace) \
+			var swing := sin(_phase + (PI if i == 0 else 0.0)) * lerpf(tuning.suit_arm_swing.x, tuning.suit_arm_swing.y, pace) \
 				* minf(speed, 1.0)
 			var hang := Basis(Vector3.RIGHT, swing) * Vector3(0.05 * side, -(UPPER_ARM + FOREARM + GRIP) * 0.96, 0.0)
 			hand = shoulder + turn * hang
@@ -176,7 +171,7 @@ func pose(delta: float) -> void:
 				SurveyorLooks.CLIMB_HAND.z) - Vector3(SurveyorLooks.SHOULDER.x * side,
 				SurveyorLooks.SHOULDER.y, SurveyorLooks.SHOULDER.z)
 			hand = hand.lerp(shoulder + turn * reach, climb)
-		_hands[i] = hand if delta <= 0.0 or not _settled else _hands[i].lerp(hand, minf(delta / EASE, 1.0))
+		_hands[i] = hand if delta <= 0.0 or not _settled else _hands[i].lerp(hand, settle)
 		var elbow_way := (turn * Vector3(0.4 * side, -0.3, 1.0)).normalized()
 		var arm := _reach(shoulder, _hands[i], UPPER_ARM, FOREARM + GRIP, elbow_way)
 		var s := "r" if i == 0 else "l"
@@ -186,9 +181,9 @@ func pose(delta: float) -> void:
 	_settled = true
 
 
-## Where your hands grip what you hold, in this node's space: either side
-## of it, as wide as it is (its drawn pieces' bounds); a small thing in your
-## right hand alone. Tools use their handle; chassis use this shoulder's
+## Where your hands grip what you hold, in this node's space: its sides by
+## its back edge (its collision bounds); a small thing in your right hand
+## alone. Tools use their handle; chassis use this shoulder's
 ## nearest physical frame surface.
 func _grips(held: Node3D, shoulder := Vector3.ZERO) -> Array[Vector3]:
 	var out: Array[Vector3] = []
@@ -222,16 +217,27 @@ func _grips(held: Node3D, shoulder := Vector3.ZERO) -> Array[Vector3]:
 		if distance < INF:
 			# The caller supplies this arm's shoulder, so both entries are its own grip.
 			return [nearest, nearest]
-	var wide := 0.0
+	# Its real shape as you hold it: by its sides, near its back edge, the way
+	# you'd carry a box within your reach.
+	var box := AABB()
+	var first := true
 	for child in held.get_children():
-		var view := child as VisualInstance3D
-		if view != null and view.visible:
-			wide = maxf(wide, view.get_aabb().size.x * 0.5)
-	wide = clampf(wide, 0.04, 0.25)
-	var at := to_local(held.global_position)
-	out.append(at + Vector3.RIGHT * wide)
+		var shape := child as CollisionShape3D
+		if shape == null or shape.shape == null or shape.disabled or shape.has_meta(&"socket"):
+			continue
+		var own := Catalog.bounds(shape.shape)
+		for i in 8:
+			var corner := to_local(shape.to_global(own.get_endpoint(i)))
+			box = AABB(corner, Vector3.ZERO) if first else box.expand(corner)
+			first = false
+	if first:
+		box = AABB(to_local(held.global_position), Vector3.ZERO)
+	var middle := box.get_center()
+	var wide := clampf(box.size.x * 0.5, 0.04, 0.25)
+	var near := box.end.z - minf(box.size.z * 0.25, GRIP)
+	out.append(Vector3(middle.x + wide, middle.y, near))
 	if wide > 0.08:
-		out.append(at - Vector3.RIGHT * wide)
+		out.append(Vector3(middle.x - wide, middle.y, near))
 	return out
 
 

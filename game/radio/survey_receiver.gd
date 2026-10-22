@@ -4,10 +4,7 @@ extends Radio
 
 const LOOK := preload("res://game/look/survey_receiver_looks.gd")
 const HOW_TO := "survey_receiver"
-const HOW_TO_SAYS := "[font_size=20]{interact} switches on and acquires a nearby ruin beacon; again switches off.\n" \
-	+ "Turn the loop for a stronger needle and pulse. It peaks in two opposite directions.\n" \
-	+ "{reel_in}/{pay_out} tune; {tune_fine_up}/{tune_fine_down} fine tune.\n" \
-	+ "{volume_up}/{volume_down} change volume.[/font_size]"
+const HOW_TO_SAYS := "{interact} switches it on; turn it to find the strongest needle."
 
 ## How far from this target the receiver first acquired it, saved for the approach deed.
 var acquired_from := 0.0

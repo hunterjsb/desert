@@ -25,13 +25,11 @@ const HELP := [
 const DEV_HELP := [["{console}", "console"], ["{creative}", "creative"], ["{toggle_dev_overlay}", "numbers"]]
 ## The first lie-down teaches crawling and the sleep interaction.
 const REST_HOW_TO := "ground_rest"
-const REST_HOW_TO_SAYS := "Move to crawl. Empty hands and a clear view: {interact} offers sleep." \
-	+ "\n{lie_down} or {jump} rises when there is room."
+const REST_HOW_TO_SAYS := "Move to crawl; {interact} to sleep; {lie_down} to rise."
 ## Riding takes more than its key says, so it's taught the first time you ride.
 const RIDE_HOW_TO := "ride"
-const RIDE_HOW_TO_SAYS := "The move keys push and carve where they point; {move_back} digs an edge in, to bite into a carve" \
-	+ " or, alone, to stop.\n" \
-	+ "{sprint} kicks off the sand, {jump} hops, {crouch} tucks; crouched into a hard carve, you drift."
+const RIDE_HOW_TO_SAYS := "Move to push and carve; {move_back} digs in to stop.\n" \
+	+ "{sprint} kicks, {jump} hops, {crouch} tucks."
 ## A heading in the Controls reader sits back in the theme's dim text.
 static var DIM: Color:
 	get:

@@ -48,6 +48,8 @@ const TABLE := {
 		"after": [&"sail_waist"], "icon": &"sail"},
 	&"telltale": {"name": "Telltale", "asks": "Trim a sail with a streamer flying on its rig", "family": &"wind",
 		"after": [&"hand_me_down"], "icon": &"streamer"},
+	&"lookout": {"name": "Lookout", "asks": "Climb into a crow's nest on a standing mast", "family": &"wind",
+		"after": [&"hand_me_down"], "icon": &"helm"},
 	&"close_hauled": {"name": "Close-Hauled", "asks": "Make %s m upwind under sail", "family": &"wind",
 		"after": [&"sail_waist"], "icon": &"sail", "goal": "deed_upwind_m", "unit": "m", "step": 50.0},
 	&"land_yacht": {"name": "Land Yacht", "asks": "Sail a keeled camp %s m from its helm", "family": &"wind",

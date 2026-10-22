@@ -13,8 +13,7 @@ const NEST_MIDDLE := Vector3(0.0, 0.45, 0.0)
 ## Its ladder hangs this far below its floor, m, short of the deck.
 const LADDER := 3.4
 const NEST_HOW_TO := "crows_nest"
-const NEST_HOW_TO_SAYS := "Up in the crow's nest you ride the camp and see over the dunes round it.\n" \
-	+ "Its weight and yours are high up the mast: a hard gust heels it further. {ride} climbs you down."
+const NEST_HOW_TO_SAYS := "{ride} climbs down."
 
 var _ladder: MeshInstance3D
 var _rungs: CollisionShape3D
@@ -63,7 +62,10 @@ func interact(by: Player) -> bool:
 		return true
 	if not host() is Mast or carrier() == null:
 		return by.hands.refuse("put it on a mast's head")
-	return by.sit(self)
+	if not by.sit(self):
+		return false
+	Deeds.done(world, &"lookout")
+	return true
 
 
 func feet() -> Vector3:

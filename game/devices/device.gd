@@ -243,6 +243,22 @@ func mounted() -> Array[Device]:
 	return found
 
 
+## A sticky face of this host as Stick sets things on it, in its own frame:
+## only decks and standing masts have them (Chassis, Mast).
+func sticking_frame(_piece: Device, _face: StringName) -> Transform3D:
+	return Transform3D.IDENTITY
+
+
+## Where on such a face a thing may sit, [min, max] in the face's frame.
+func sticking_room(_face: StringName) -> Rect2:
+	return Rect2(-Vector2.ONE * Stick.WIDE_HALF, Vector2.ONE * Stick.WIDE_HALF * 2.0)
+
+
+## The piece of this host a socket on it is on.
+func sticking_piece(_socket: Socket) -> Device:
+	return self
+
+
 ## The device it's seated on, or null.
 func host() -> Device:
 	return get_parent() as Device
@@ -796,7 +812,8 @@ func shape_bounds() -> AABB:
 	return _bounds
 
 
-## A separately simulated fitted assembly carries its own mass.
+## What a fitted part adds to its host's weight; a mast's sail, simulated
+## apart, adds none (Mast).
 func _fitted_mass(socket: Socket) -> float:
 	return socket.part.mass
 

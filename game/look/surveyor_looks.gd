@@ -22,21 +22,17 @@ const HIP := Vector3(0.11, 0.93, 0.0)
 const KNEE := Vector3(0.12, 0.51, -0.02)
 const ANKLE := Vector3(0.12, 0.1, 0.02)
 
-const SUIT := Color(0.8, 0.76, 0.66)
-const SUIT_SHADE := Color(0.7, 0.66, 0.57)
-const PACK := Paint.TEAL
-const VISOR := Color(0.12, 0.16, 0.2)
 
 static var _made := {}
 
 
 static func _coats() -> Dictionary:
-	return {"suit": Paint.coat(SUIT, 0.5, 0.0, 0.75), "shade": Paint.coat(SUIT_SHADE, 0.5, 0.0, 0.8),
+	return {"suit": Paint.coat(Paint.BONE, 0.5, 0.0, 0.75), "shade": Paint.coat(Paint.SUIT_SHADE, 0.5, 0.0, 0.8),
 		"joint": Paint.coat(Paint.GUNMETAL, 0.7, 0.5, 0.5), "black": Paint.coat(Paint.BLACK, 0.4, 0.0, 0.8),
-		"pack": Paint.coat(PACK, 0.9, 0.0, 0.55), "band": Paint.coat(Paint.YELLOW, 0.8, 0.0, 0.5),
-		"steel": Paint.coat(Paint.STEEL, 0.4, 0.6, 0.35), "glove": Paint.coat(Color(0.3, 0.29, 0.27), 0.4, 0.0, 0.85),
-		"visor": Paint.coat(VISOR, 0.0, 0.6, 0.08, 0.0, 0.15), "lamp": Paint.coat(Color(1.0, 0.88, 0.7), 0.0, 0.0, 0.3, 0.0, 1.0),
-		"readout": Paint.coat(Color(1.0, 0.62, 0.2), 0.0, 0.0, 0.3, 0.0, 1.6)}
+		"pack": Paint.coat(Paint.TEAL, 0.9, 0.0, 0.55), "band": Paint.coat(Paint.YELLOW, 0.8, 0.0, 0.5),
+		"steel": Paint.coat(Paint.STEEL, 0.4, 0.6, 0.35), "glove": Paint.coat(Paint.GLOVE, 0.4, 0.0, 0.85),
+		"visor": Paint.coat(Paint.VISOR, 0.0, 0.6, 0.08, 0.0, 0.15), "lamp": Paint.coat(Paint.LAMP, 0.0, 0.0, 0.3, 0.0, 1.0),
+		"readout": Paint.coat(Paint.READOUT, 0.0, 0.0, 0.3, 0.0, 1.6)}
 
 
 ## A part's mesh, by name: &"hips", &"trunk", &"collar", &"head", and per side (&"r" or
@@ -113,6 +109,8 @@ static func _trunk(b: Paint.Pieces, c: Dictionary) -> void:
 static func _collar(b: Paint.Pieces, c: Dictionary) -> void:
 	for x in [-1, 1]:
 		b.box(Vector3(0.12, 0.07, 0.24), Vector3(x * 0.17, 0.39, 0.0), c.joint, 0.02)
+		# The shoulder joints ride here, out of your own view, not on the arms.
+		b.ball(0.07, Vector3(SHOULDER.x * x, SHOULDER.y - WAIST.y, SHOULDER.z - WAIST.z), c.joint)
 	b.ring(0.1, 0.13, Vector3(0.0, 0.42, -0.01), c.joint, Basis.IDENTITY, 16)
 	b.drum(0.03, 0.12, Vector3(0.13, 0.42, 0.22), c.joint, Basis.IDENTITY, 10)
 	b.drum(0.012, 0.08, Vector3(-0.12, 0.47, 0.24), c.steel, Basis.IDENTITY, 6)
@@ -142,7 +140,6 @@ static func _head(b: Paint.Pieces, c: Dictionary) -> void:
 ## About the shoulder, down the arm: a sleeve, a gunmetal ring at the joint.
 static func _upper_arm(b: Paint.Pieces, c: Dictionary, side: float) -> void:
 	var down := (ELBOW - SHOULDER)
-	b.ball(0.07, Vector3.ZERO, c.joint)
 	b.box(Vector3(0.12, down.length() - 0.04, 0.12), Vector3(0.0, -down.length() * 0.5, 0.0), c.suit, 0.035)
 	b.box(Vector3(0.125, 0.03, 0.125), Vector3(0.0, -0.06, 0.0), c.band if side > 0.0 else c.shade, 0.008)
 
@@ -202,7 +199,7 @@ static func _shin(b: Paint.Pieces, c: Dictionary, side: float) -> void:
 static func _foot(b: Paint.Pieces, c: Dictionary, side: float) -> void:
 	b.box(Vector3(0.14, 0.09, 0.15), Vector3(0.0, -0.01, 0.0), c.black, 0.025)
 	b.box(Vector3(0.13, 0.08, 0.17), Vector3(0.0, -0.05, -0.1), c.black, 0.03)
-	b.box(Vector3(0.14, 0.03, 0.3), Vector3(0.0, -0.09, -0.05), Paint.coat(Color(0.05, 0.05, 0.05), 0.3, 0.0, 0.9), 0.01)
+	b.box(Vector3(0.14, 0.03, 0.3), Vector3(0.0, -0.09, -0.05), Paint.coat(Paint.BLACK, 0.3, 0.0, 0.9), 0.01)
 	b.box(Vector3(0.12, 0.05, 0.05), Vector3(0.0, -0.05, -0.18), c.joint, 0.015)
 	b.box(Vector3(0.145, 0.025, 0.14), Vector3(0.0, 0.045, 0.0), c.joint, 0.008)
 

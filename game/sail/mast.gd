@@ -578,6 +578,14 @@ func face_frame(face: StringName) -> Transform3D:
 
 ## Where on a face a thing may sit, in the face's frame: up and down the
 ## pole's middle, or on the head's middle.
+func sticking_frame(_piece: Device, face: StringName) -> Transform3D:
+	return face_frame(face)
+
+
+func sticking_room(face: StringName) -> Rect2:
+	return face_room(face)
+
+
 func face_room(face: StringName) -> Rect2:
 	if face == MASTHEAD:
 		return Rect2()

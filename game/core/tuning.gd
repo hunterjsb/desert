@@ -1431,7 +1431,42 @@ static func current() -> Tuning:
 @export var posture_prone_height: float = 0.7
 @export var posture_sit_eye: float = 1.0
 @export var posture_prone_eye: float = 0.5
+## Lying down you reach this far behind your eyes to your boots, m.
+@export var posture_prone_length: float = 1.5
 @export var posture_crawl_speed: float = 0.55
 @export var posture_camera_seconds: float = 0.22
 @export var posture_sit_catch: float = 0.6
 @export var posture_prone_catch: float = 0.25
+
+@export_group("Suit pose")
+## Only looks: the suit's limbs ease toward a new pose in about this long, s.
+@export var suit_ease_seconds: float = 0.12
+## A stride lifts the swinging boot this far, m, at a walk and more at a run;
+## the arms swing this far against it, rad, at a walk and at a run.
+@export var suit_step_lift: float = 0.09
+@export var suit_arm_swing: Vector2 = Vector2(0.25, 0.6)
+## Looking down or up, the trunk leans with your head this share of it.
+@export var suit_lean: float = 0.1
+## A small thing in your hands is held this near your eyes, m, so your arms
+## reach its sides (Hands keeps it outside your own shape).
+@export var suit_hold_small: float = 0.5
+
+@export_group("Wind streamer")
+## It hangs under the first air, m/s, stands out level from the second, and
+## flaps a full swing at the third.
+@export var streamer_air: Vector3 = Vector3(0.6, 4.0, 18.0)
+## Its flapping: how often in still air, Hz, and how much more each m/s.
+@export var streamer_flap_hz: Vector2 = Vector2(0.6, 0.45)
+
+@export_group("Care package")
+## The container keeps the craft's motion this long, s, before turning down;
+## this share of its fall is even, the rest gathering speed.
+@export var airdrop_carry_seconds: float = 1.2
+@export var airdrop_even_share: float = 0.35
+## It tumbles this fast falling, rad/s, and keeps this share of it rolling on.
+@export var airdrop_spin: float = 2.6
+@export var airdrop_roll_share: float = 0.5
+## Its speed at the ground, along the way it came and down, m/s.
+@export var airdrop_skid: Vector2 = Vector2(7.0, 3.0)
+## It lingers this long after the hit, s, for its sand to settle.
+@export var airdrop_settle_seconds: float = 7.0
