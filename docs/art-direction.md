@@ -1179,7 +1179,7 @@ physical roles and idempotent appearance helpers. Flight, recovery and skin
 restoration have focused checks; combined CI and unassisted play acceptance
 remain pending.
 
-## The Surveyor's suit (2026-10-21; on review, `codex/player-body`)
+## The Surveyor's suit (2026-10-21; integration candidate)
 
 gonkhub, 2026-10-21: "start work on polishing, upgrading and implementing the
 player model you previously made. Need to see it in first person POV." The
@@ -1204,3 +1204,27 @@ person the helmet, the collar and the shoulder yokes are drawn only for
 their shadow and for others (`Body.OWN_LAYER`). What you see is your arms
 reaching to what you hold, your knees crouched or sat, and your boots
 looking down. Look-test: `look/player_body`.
+
+
+### Comfortable own-camera suit view (2026-10-21; urgent correction)
+
+Keep gonkhub's complete rigid suit in external views and its shadow. Exclude
+hips and trunk, alongside head/collar, from the player's own camera so the
+near plane never slices through the torso while riding. Arms and boots remain
+visible. The body's drawn origin follows the same between-tick translation as
+the board and camera; it does not move the physical player. Posture comes from
+the steady eye rather than camera shake/interpolation. This is a view comfort
+fix, not an anatomical scale change or new body animation.
+
+
+### Held grip surfaces (2026-10-21; bounded suit polish)
+
+Keep gonkhub's rigid Surveyor meshes and their original arm proportions. The
+cutter's right glove targets the existing rear handle, rather than the barrel's
+side; a carried chassis takes both gloves to actual near frame surfaces, not
+its distant center. Item-local anchors follow the real object orientation.
+The fixed-length arms still stop short when an item is physically beyond reach:
+the standard radio and battery carry poses remain a documented limitation in
+Movement. Neither the physics object nor the shoulders move to disguise it.
+The cutter's low rear grip can sit partly below the first-person viewport;
+external views show that actual grasp. This does not add finger articulation.

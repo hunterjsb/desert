@@ -64,6 +64,13 @@ func _process(delta: float) -> void:
 	if not visible:
 		_settled = false
 		return
+	# Camera and board already draw between ticks; the suit shares that same visual root.
+	var step := Vector3.ZERO
+	if player.ride != null:
+		step = player.ride.last_step
+	elif player.vault.active:
+		step = player.vault.last_step
+	position = player.global_basis.inverse() * -step * (1.0 - Engine.get_physics_interpolation_fraction())
 	pose(delta)
 
 
@@ -80,7 +87,7 @@ func pose(delta: float) -> void:
 	var pace := clampf((speed - tuning.walk_speed) / maxf(tuning.sprint_speed - tuning.walk_speed, 0.1), 0.0, 1.0)
 	var pitch := player.camera.rotation.x
 	var rest_eye: float = player.posture.standing_eye
-	var drop := clampf(rest_eye - player.camera.position.y, 0.0, rest_eye - 0.2)
+	var drop := clampf(rest_eye - player.feel.steady_eye().y, 0.0, rest_eye - 0.2)
 	var prone := player.ground_pose == &"prone"
 	var sat := player.ground_pose == &"sit" or (player.helm != null and player.helm.sits)
 	# The trunk: from the hips, leaning with your look, set back of your eyes.
@@ -134,11 +141,11 @@ func pose(delta: float) -> void:
 		_put(StringName("foot_" + s), flat, bones[3])
 	# The arms: to what you hold, or swinging against your stride.
 	var held := player.hands.held if player.hands != null else null
-	var grip_at := _grips(held)
 	for i in 2:
 		var side := 1.0 if i == 0 else -1.0
 		var shoulder := waist + turn * (Vector3(SurveyorLooks.SHOULDER.x * side, SurveyorLooks.SHOULDER.y,
 			SurveyorLooks.SHOULDER.z) - SurveyorLooks.WAIST)
+		var grip_at := _grips(held, shoulder)
 		var hand: Vector3
 		if grip_at.size() > i:
 			hand = grip_at[i]
@@ -163,11 +170,40 @@ func pose(delta: float) -> void:
 
 ## Where your hands grip what you hold, in this node's space: either side
 ## of it, as wide as it is (its drawn pieces' bounds); a small thing in your
-## right hand alone.
-func _grips(held: Node3D) -> Array[Vector3]:
+## right hand alone. Tools use their handle; chassis use this shoulder's
+## nearest physical frame surface.
+func _grips(held: Node3D, shoulder := Vector3.ZERO) -> Array[Vector3]:
 	var out: Array[Vector3] = []
 	if held == null or not is_instance_valid(held):
 		return out
+	if held is Cutter:
+		# Dress puts the handle under the rear of the lance, not beside its barrel.
+		out.append(to_local(held.to_global(Vector3(0.0, -0.04, 0.16))))
+		return out
+	if held is Chassis:
+		# Each real frame is a surface; the empty space between joined frames isn't.
+		var nearest := Vector3.ZERO
+		var distance := INF
+		var from := to_global(shoulder)
+		for child in held.get_children():
+			var shape := child as CollisionShape3D
+			if shape == null or shape.disabled or shape.has_meta(&"socket") or not (shape.shape is BoxShape3D):
+				continue
+			var half: Vector3 = (shape.shape as BoxShape3D).size * 0.5
+			var local := shape.to_local(from)
+			var surface := local.clamp(-half, half)
+			if surface == local:
+				# A large carried frame can surround the shoulder; still choose its skin.
+				var axis := (half - local.abs()).min_axis_index()
+				surface[axis] = half[axis] if local[axis] >= 0.0 else -half[axis]
+			var at := shape.to_global(surface)
+			var far := from.distance_squared_to(at)
+			if far < distance:
+				distance = far
+				nearest = to_local(at)
+		if distance < INF:
+			# The caller supplies this arm's shoulder, so both entries are its own grip.
+			return [nearest, nearest]
 	var wide := 0.0
 	for child in held.get_children():
 		var view := child as VisualInstance3D

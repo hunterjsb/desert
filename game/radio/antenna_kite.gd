@@ -1,63 +1,69 @@
 class_name AntennaKite
 extends Device
-## The antenna kite (the radio-equipment lab's, look/radio_kit): a delta
-## with a copper dipole sewn across its shoulder, flown on its own conductor
-## line from an antenna reel's wire, so a shortwave set clipped to the reel
-## hears from 60 to 90 m up instead of off a wire a few metres high. Used on a
-## reel it goes up into the wind: below kite_lift it won't fly, it stands
-## highest in a fair breeze and is pressed back in a gale. Reeling the reel in
-## brings it down beside it, as does the wind failing.
+## An antenna kite on its own reel of flying line (gonkhub, 2026-10-21: "The
+## kite needs to be able to be connected to the top of the radio with a rope
+## hook as its connection point"). Use it and it flies up on the wind, paying
+## out its line, kite_line_m of it; use it again and it reels in. Placed by the
+## wind, not flown by physics: its line stands at an angle that rises with the
+## wind (kite_angle_deg), so it flies 50 to 90 m up on its full line, and
+## comes down below kite_lift_ms.
 ##
-## Height is signal, and charge. The air's field grows with height and the
-## dust a front's outflow drives charges the line far faster (the same dust
-## that raises a radio's static: WeatherField.outflow_at), so its charge
-## climbs toward where gathering and leaking off balance. Past kite_arc_from
-## an arc can jump somewhere in the rig, likelier the further past: most
-## burn the piece out (the kite's dipole, the reel, the set's shortwave
-## converter or the set), the rest only spend the charge. An earth stake set
-## down near the reel or the set dumps what's past its spark gap to earth;
-## the set's bleed resistor leaks it off steadily, enough in a breeze, not in
-## a front. Flying wears it a little, a gale more, and a sandstorm tears it
-## to pieces in about a minute.
+## A cable, plain or strong, from the rope hook on a radio's top to the reel's
+## lead terminal makes the kite that set's shortwave aerial: the higher, the
+## more it hears (Radio.antenna_gain). The cable can run through a driven
+## stake on the way, one cable through all three points, and that earths it.
+##
+## Flown high it gathers charge, the more so in the dust a front drives, and
+## past a point an arc jumps somewhere in the rig and burns out what it hits:
+## the kite's dipole, the lead, the hook, the shortwave converter or the set
+## itself. Its lead through a driven stake, the stake's ring dumps the charge to
+## earth; a bleed resistor in the set's misc bay leaks it off. It wears as a
+## sail does, a little flying at all, fast past a harm wind, and a sandstorm
+## shreds it in about a minute. (From the radio kit lab: look/radio_kit, and its
+## numbers from charge_model.gd.)
 
 const GROUP := &"antenna_kites"
-## It finds a reel to fly from this near where you use it, m.
-const FLIES_FROM := 2.5
-## The line's share that stands straight; the rest sags.
-const STRAIGHT := 0.85
-## The line's angle, degrees: just flying, in its best wind, and the least
-## it's pressed down to; and how much flatter a m/s past its best, degrees.
-const ANGLE := Vector3(25.0, 60.0, 10.0)
-const PRESSED := 2.0
-## Its line, as drawn: thickness, m, and its braid's colour.
-const THICK := 0.003
-const BRAID := Color(0.42, 0.3, 0.2)
-## Its height and the wind it reads follow the air this fast, /s.
-const FOLLOW := 0.6
-## The wind must fail for this long, s, before it comes down.
-const BECALMED := 4.0
-## Where a piece of the rig an arc burns out lies: [piece, how exposed].
-const EXPOSED := {&"kite": 3.0, &"reel": 1.0, &"converter": 3.0, &"radio": 1.5}
-## An arc shows this long, s.
-const FLASH := 0.15
+## Where its line leaves the reel, in its own frame.
+const LINE_FROM := Vector3(0.0, 0.0, 0.0)
+## Carried in the suit, its line runs from about this high on you, m.
+const ON_YOU := Vector3(0.0, 1.0, 0.0)
+## It settles to where the wind puts it over about this long, s.
+const SETTLE_S := 1.5
+## Its sway on the wind: degrees round and up, and how fast, rad/s.
+const SWAY_DEG := Vector2(6.0, 3.0)
+const SWAY_RATE := Vector2(0.31, 0.47)
+## How exposed each piece of the rig is to an arc: [piece, weight].
+const PIECES := [[&"kite", 3.0], [&"lead", 1.0], [&"hook", 2.0], [&"converter", 3.0], [&"radio", 1.5]]
+## A scorch takes this much of a device's soundness.
+const SCORCH := 0.15
+## Flying lower than this over the ground, m, it's on the sand, not up.
+const LOW := 1.0
+## Charge past which it crackles, and its corona shows.
+const CRACKLE := 0.12
+const LINE_THICK := 0.003
 
-## The reel it flies from, or null on the ground.
-var reel: AntennaReel
-## How high it stands over its reel, m, and which way the wind carries it
-## (unit, on the ground).
-var height := 0.0
-var downwind := Vector2(0.0, 1.0)
+## Whether it's flying (or being sent up), and how much line is out, m.
+var flying := false
+var line_out := 0.0
 ## Its charge, 0 to 1 of what arcs for certain.
 var charge := 0.0
-var _calm_for := 0.0
-var _rng := RandomNumberGenerator.new()
-var _sky: MeshInstance3D
-var _sail: ShaderMaterial
+## Where the kite is, in the world's engine frame.
+var kite_at := Vector3.ZERO
+## How many arcs the stake took and the rig took, for probes and the lamps.
+var grounded := 0
+var arcs := 0
+## What the last arc burnt out, or &"".
+var burnt := &""
+
+var _kite: MeshInstance3D
 var _line: MeshInstance3D
 var _crackle: AudioStreamPlayer3D
-var _arc: MeshInstance3D
-var _arc_left := 0.0
-var _tuning := Tuning.current()
+var _flash: OmniLight3D
+var _flash_left := 0.0
+var _placed := false
+var _seed := 0.0
+## Its rig as last found: {radio, cable, hook}, read each tick.
+var rig := {}
 
 
 func _init() -> void:
@@ -67,298 +73,368 @@ func _init() -> void:
 
 func _ready() -> void:
 	super()
-	_rng.seed = get_instance_id()
-	_sky = MeshInstance3D.new()
-	_sky.mesh = RadioKitLooks.kite()
-	_sky.top_level = true
-	_sky.visible = false
-	# Its sail tears and glows on its own, so it has a cloth of its own.
-	_sail = (_sky.mesh.surface_get_material(_sky.mesh.get_surface_count() - 1) as ShaderMaterial).duplicate()
-	_sky.set_surface_override_material(_sky.mesh.get_surface_count() - 1, _sail)
-	add_child(_sky)
-	_line = _strand(BRAID)
-	_arc = MeshInstance3D.new()
-	_arc.top_level = true
-	_arc.visible = false
-	add_child(_arc)
-	# Its corona's crackle, looping while it's charged.
-	var loop := Sounds.ARC_LOOP.duplicate() as AudioStreamWAV
-	loop.loop_mode = AudioStreamWAV.LOOP_FORWARD
-	loop.loop_end = loop.data.size() / (2 * (2 if loop.stereo else 1))
-	_crackle = Sounds.world_voice(loop, -80.0, 30.0)
+	_seed = float(hash(get_instance_id()) % 1000) * 0.01
+
+
+## Its kite, line, crackle and flash, made the first time it flies: a kite
+## found packed in a ruin costs nothing till then.
+func _dress() -> void:
+	if _kite != null:
+		return
+	_kite = MeshInstance3D.new()
+	_kite.mesh = KiteLooks.kite()
+	_kite.top_level = true
+	_kite.visible = false
+	add_child(_kite)
+	_line = MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = Vector3(LINE_THICK, LINE_THICK, 1.0)
+	var paint := StandardMaterial3D.new()
+	paint.albedo_color = Color(0.85, 0.82, 0.74)
+	paint.roughness = 0.8
+	box.material = paint
+	_line.mesh = box
+	_line.top_level = true
+	_line.visible = false
+	add_child(_line)
+	_crackle = Sounds.world_voice(Sounds.looping(Sounds.ARC_LOOP), -80.0)
 	add_child(_crackle)
+	_flash = OmniLight3D.new()
+	_flash.light_color = Color(0.75, 0.6, 1.0)
+	_flash.omni_range = 4.0
+	_flash.light_energy = 0.0
+	_flash.top_level = true
+	add_child(_flash)
 
 
-## Whether it's up.
-func flying() -> bool:
-	return reel != null
+## Looked at with empty hands: flies it or reels it in; else as any device.
+func interact(by: Player) -> bool:
+	if by.hands.held == null:
+		return _toggle(by)
+	return super(by)
 
 
-## In your hands, aimed at a reel: up it goes from it, if there's wind.
-func use(by: Player, at: Vector3) -> bool:
-	if flying() or wrecked() or world == null:
-		return false
-	var near := _reel_near(at)
-	if near == null:
-		return false
-	if _wind_at(near.end()) < _tuning.kite_lift:
-		return by.hands.refuse("not wind enough to fly it")
-	by.hands.drop()
-	launch(near)
+## In your hands: flies it or reels it in.
+func use(by: Player, _at: Vector3) -> bool:
+	return _toggle(by)
+
+
+func _toggle(by: Player) -> bool:
+	if flying or line_out > 0.0:
+		reel_in()
+		return true
+	if wrecked():
+		return by.hands.refuse("torn to rags")
+	if wind() < Tuning.current().kite_lift_ms:
+		return by.hands.refuse("too little wind to fly it")
+	fly()
 	return true
 
 
-## Up from a reel, into the wind.
-func launch(from: AntennaReel) -> void:
-	reel = from
-	height = 0.0
-	_calm_for = 0.0
-	# Its arcs fall the same way for the same flight.
-	_rng.seed = hash([world.run_seed, roundi(world.time)])
-	world.salvage.claim(self)
-	# Out of the way while it flies: its folded body waits by the reel.
-	freeze = true
-	visible = true
-	collision_layer = 0
-	collision_mask = 0
-	_frame_shown(false)
+## Sent up on the wind, its line paying out.
+func fly() -> void:
+	flying = true
+	if line_out <= 0.0:
+		kite_at = anchor() + Vector3.UP * 1.5
 	Sounds.play_at(self, Sounds.REEL)
 
 
-## Down beside its reel, folded, its charge gone to ground.
-func land() -> void:
-	if reel == null:
-		return
-	var at := reel.end() + Vector3(0.6, 0.4, 0.0)
-	reel = null
-	charge = 0.0
-	_sky.visible = false
-	_line.visible = false
-	_crackle.stop()
-	collision_layer = 1
-	collision_mask = 1
-	_frame_shown(true)
-	global_position = at
-	freeze = false
-	Sounds.play_at(self, Sounds.UNSEAT)
+## Wound back in: its line comes in and the kite comes down to the reel.
+func reel_in() -> void:
+	flying = false
+	Sounds.play_at(self, Sounds.REEL)
 
 
-## The line out from the reel to it: how far, m.
-func line_m() -> float:
-	return _tuning.kite_line_m if flying() else 0.0
+## Where its line leaves from: the reel, or you while it's carried.
+func anchor() -> Vector3:
+	if has_meta(&"carried") and world != null:
+		return world.player.global_position + ON_YOU
+	return global_transform * LINE_FROM
 
 
-## How much it adds to a shortwave set's wire, of signal: about 10 dB a
-## tenfold of height over the wire's own best, to a ceiling; nothing with
-## its dipole burnt.
-func gain() -> float:
-	if not flying() or wrecked() or height <= _tuning.sw_wire_high_m:
-		return 1.0
-	return db_to_linear(minf(10.0 * log(height / _tuning.sw_wire_high_m) / log(10.0), _tuning.kite_most_db))
+## The wind where it flies, m/s: the open wind over its reel.
+func wind() -> float:
+	return _wind_at().length()
 
 
-## Where it flies now, in the engine's space.
-func aloft() -> Vector3:
-	var from := reel.end()
-	var out := sqrt(maxf(pow(_tuning.kite_line_m * STRAIGHT, 2.0) - height * height, 0.0))
-	return from + Vector3(downwind.x, 0.0, downwind.y) * out + Vector3.UP * height
+func _wind_at() -> Vector2:
+	if world == null:
+		return Vector2.ZERO
+	var at := anchor()
+	return world.weather.field.wind_at(world.world_x(at.x), world.world_z(at.z), world.time)
+
+
+## How high the kite flies over the ground under it, m; none packed.
+func height() -> float:
+	if world == null or line_out <= 0.0:
+		return 0.0
+	return maxf(kite_at.y - world.height_under(kite_at), 0.0)
+
+
+## Whether it's up in the air, and sound.
+func up() -> bool:
+	return line_out > 0.0 and not wrecked() and height() > LOW
+
+
+## The line's angle over the ground, degrees, in a wind of `w` m/s: none
+## below kite_lift_ms, rising to its best, pressed back past it.
+static func angle(w: float, tuning: Tuning) -> float:
+	if w < tuning.kite_lift_ms:
+		return 0.0
+	var rise := clampf((w - tuning.kite_lift_ms) / (tuning.kite_best_ms.x - tuning.kite_lift_ms), 0.0, 1.0)
+	var a := lerpf(tuning.kite_angle_deg.x, tuning.kite_angle_deg.y, rise) \
+		- maxf(w - tuning.kite_best_ms.y, 0.0) * tuning.kite_pressed_deg
+	return clampf(a, 10.0, tuning.kite_angle_deg.y)
+
+
+## How high it flies on `line` m in a wind of `w`, m (charge_model's height).
+static func height_in(w: float, line: float, tuning: Tuning) -> float:
+	var a := angle(w, tuning)
+	return 0.0 if a <= 0.0 else line * tuning.kite_sag * sin(deg_to_rad(a))
+
+
+## What it adds to a shortwave set's aerial, as a share of a full long wire:
+## about 10 dB a tenfold of height over the whip's, from the bare terminals.
+static func gain(h: float, tuning: Tuning) -> float:
+	var db := minf(10.0 * log(maxf(h, tuning.kite_whip_m) / tuning.kite_whip_m) / log(10.0), tuning.kite_gain_db)
+	return minf(tuning.sw_bare * pow(10.0, db / 20.0), tuning.kite_gain_most)
+
+
+## The radio, cable and hook its lead runs to: the cable with a plug in its
+## lead terminal and the other on a rope hook's stem on a radio's top. {} if
+## its lead goes nowhere.
+func find_rig() -> Dictionary:
+	if world == null:
+		return {}
+	var mine: Socket = null
+	for socket in sockets():
+		if socket.kind == &"lead":
+			mine = socket
+	if mine == null or mine.part == null:
+		return {}
+	var cable := Cable.of(mine.part, world)
+	if cable == null:
+		return {}
+	for plug in cable.plugs:
+		if plug == mine.part or not is_instance_valid(plug) or plug.socket == null or plug.socket.kind != &"lead":
+			continue
+		var radio := plug.socket.get_parent() as Radio
+		if radio != null and not radio is SurveyReceiver:
+			return {"radio": radio, "cable": cable, "hook": _hook_of(radio, plug.socket)}
+	return {}
+
+
+## The mount of the rope hook a lead socket came with, on the radio (fitted,
+## the hook's pieces carry the socket they sit in), or null.
+static func _hook_of(_radio: Radio, lead: Socket) -> Socket:
+	var ring: Socket = lead.get_meta(&"socket", null)
+	return ring if ring != null and ring.part is RopeHook else null
+
+
+## Whether its lead runs through a driven stake: earthed.
+func earthed() -> bool:
+	return not rig.is_empty() and (rig.cable as Cable).staked()
+
+
+func stats() -> Dictionary:
+	var now := super()
+	if line_out > 0.0:
+		now["rope_m"] = line_out
+		now["height_m"] = height()
+	return now
 
 
 func _physics_process(delta: float) -> void:
 	super(delta)
-	if not flying():
+	if world == null:
 		return
-	if not is_instance_valid(reel) or not reel.is_inside_tree() or reel.wrecked() or wrecked():
-		land()
+	var tuning := Tuning.current()
+	rig = find_rig()
+	var w := _wind_at()
+	var speed := w.length()
+	# Its line: paid out while it flies on enough wind, wound in when not.
+	if flying and speed >= tuning.kite_lift_ms and not wrecked():
+		line_out = minf(line_out + tuning.kite_payout_ms * delta, tuning.kite_line_m)
+	elif not flying:
+		line_out = maxf(line_out - tuning.kite_reel_ms * delta, 0.0)
+	if line_out <= 0.0:
+		line_out = 0.0
+		flying = flying and not wrecked()
+		charge = 0.0
+		_placed = false
 		return
-	var at := reel.end()
-	var x := world.world_x(at.x)
-	var z := world.world_z(at.z)
+	_place(w, delta, tuning)
+	if up():
+		_weather(speed, delta, tuning)
+	else:
+		charge = maxf(charge - charge * delta / tuning.kite_air_tau * 10.0, 0.0)
+	if wrecked():
+		flying = false
+
+
+## Where the wind puts it at the end of its line, swaying, settling there.
+func _place(w: Vector2, delta: float, tuning: Tuning) -> void:
+	var from := anchor()
+	var along := w.normalized() if w.length() > 0.01 else Vector2(0.0, 1.0)
 	var t := world.time
-	var blow := world.weather.field.wind_at(x, z, t)
-	var wind := blow.length()
-	if blow.length() > 0.1:
-		downwind = downwind.lerp(blow.normalized(), minf(FOLLOW * delta, 1.0)).normalized()
-	_calm_for = _calm_for + delta if wind < _tuning.kite_lift else 0.0
-	if _calm_for >= BECALMED:
-		land()
-		return
-	height = lerpf(height, flies_at(wind, _tuning.kite_line_m), minf(FOLLOW * delta, 1.0))
-	global_position = at + Vector3.UP * 0.3
-	_wear(delta, wind, world.weather.field.storm_at(x, z, t))
-	_gather(delta, world.weather.field.outflow_at(x, z, t))
-	_sail.set_shader_parameter(&"torn", 1.0 - durability)
-	_sail.set_shader_parameter(&"charge", charge)
-	_crackle.volume_db = linear_to_db(smoothstep(0.1, 0.6, charge) + 0.0001) - 6.0
-	if charge > 0.1 and not _crackle.playing:
-		_crackle.play()
+	var round := deg_to_rad(SWAY_DEG.x) * sin(t * SWAY_RATE.x + _seed)
+	along = along.rotated(round)
+	var a := 0.0 if wrecked() else deg_to_rad(angle(w.length(), tuning))
+	a += deg_to_rad(SWAY_DEG.y) * sin(t * SWAY_RATE.y + _seed * 2.0) * (1.0 if a > 0.0 else 0.0)
+	var reach := line_out * tuning.kite_sag
+	var target := from + Vector3(along.x, 0.0, along.y) * reach * cos(a) + Vector3.UP * reach * sin(a)
+	target.y = maxf(target.y, world.height_under(target) + 0.3)
+	if not _placed or kite_at == Vector3.ZERO:
+		kite_at = target if line_out > 2.0 else from + Vector3.UP * 0.5
+		_placed = true
+	kite_at = kite_at.lerp(target, 1.0 - exp(-delta / SETTLE_S))
 
 
-## How high it stands on `line` m of line in a wind of `wind` m/s, m: none
-## below kite_lift; its line's angle rising to its best wind and pressed down
-## past it.
-func flies_at(wind: float, line: float) -> float:
-	if wind < _tuning.kite_lift:
-		return 0.0
-	var best: Vector2 = _tuning.kite_best_wind
-	var angle := lerpf(ANGLE.x, ANGLE.y, clampf((wind - _tuning.kite_lift) / (best.x - _tuning.kite_lift), 0.0, 1.0))
-	angle -= maxf(wind - best.y, 0.0) * PRESSED
-	return line * STRAIGHT * sin(deg_to_rad(clampf(angle, ANGLE.z, ANGLE.y)))
-
-
-## Flying wears it a little, a gale more, a sandstorm most.
-func _wear(delta: float, wind: float, storm: float) -> void:
-	wear((1.0 / _tuning.kite_life_s + maxf(wind - _tuning.kite_harm_wind, 0.0) / _tuning.kite_wind_s
-		+ storm / _tuning.kite_storm_s) * delta)
-
-
-## Its charge this tick: gathered by height and dust, leaked to the air, to
-## earth by a stake or a bleed resistor, and arcing past its threshold.
-func _gather(delta: float, outflow: float) -> void:
-	charge += (_tuning.kite_fair_rate + _tuning.kite_dust_rate * outflow) * height / 100.0 * delta
-	charge -= charge * delta / _tuning.kite_air_s
-	var radio := reel.radio
+## Its wear and charge aloft, a tick of `real` s (by world time, so time
+## warped they go as fast): and the arcs its charge may throw.
+func _weather(speed: float, real: float, tuning: Tuning) -> void:
+	var delta := real * world.time_warp
+	var field := world.weather.field
+	var x := world.world_x(kite_at.x)
+	var z := world.world_z(kite_at.z)
+	var t := world.time
+	var storm := field.raw_storm_at(x, z, t)
+	var dust := maxf(field.outflow_at(x, z, t), storm)
+	wear((1.0 / tuning.kite_wear_s + tuning.kite_wear_wind * maxf(speed - tuning.kite_harm_ms, 0.0)
+		+ (1.0 / tuning.kite_storm_ruin_s if storm > 0.0 else 0.0)) * delta)
+	var h := height()
+	charge += (tuning.kite_charge_fair + tuning.kite_charge_dust * dust) * (h / 100.0) * delta
+	charge -= charge * delta / tuning.kite_air_tau
+	var radio: Radio = rig.get("radio")
 	if radio != null and radio.bleeds():
-		charge -= charge * delta / _tuning.kite_bleed_s
-	var stake := earth()
-	if stake != null and charge > _tuning.kite_gap_at:
-		var dumped := (charge - _tuning.kite_gap_at) * minf(_tuning.kite_gap_rate * delta, 1.0)
-		charge -= dumped
-		if dumped > 0.002:
-			# The charge leaps the stake's spark gap: a small bright crack.
-			stake.spark()
+		charge -= charge * delta / tuning.kite_bleed_tau
+	if earthed() and charge > tuning.kite_gap_at:
+		var was := charge
+		charge -= (charge - tuning.kite_gap_at) * minf(tuning.kite_gap_rate * delta, 1.0)
+		# The stake takes what would have arced: a crack at its ring.
+		if was > tuning.kite_arc.x and randf() < 2.0 * delta:
+			_spark_at((rig.cable as Cable).through.global_transform * Stake.RING, 8, false)
+			grounded += 1
 			Deeds.done(world, &"grounded")
 	charge = clampf(charge, 0.0, 1.0)
-	if charge > _tuning.kite_arc_from:
-		var past := (charge - _tuning.kite_arc_from) / (1.0 - _tuning.kite_arc_from)
-		if _rng.randf() < _tuning.kite_arc_most * past * past * delta:
-			charge *= 1.0 - _tuning.kite_arc_spends
-			_arc_out(_rng.randf() < _tuning.kite_burns)
-	if _arc_left > 0.0:
-		_arc_left -= delta
-		_arc.visible = _arc_left > 0.0
+	if charge > tuning.kite_arc.x:
+		var past := (charge - tuning.kite_arc.x) / (1.0 - tuning.kite_arc.x)
+		if randf() < tuning.kite_arc.y * past * past * delta:
+			arc(randf() < tuning.kite_burns)
 
 
-## The earth stake set down near its reel or the set, or null.
-func earth() -> EarthStake:
-	for node in get_tree().get_nodes_in_group(EarthStake.GROUP):
-		var stake := node as EarthStake
-		if stake == null or not stake.earthed():
-			continue
-		var near := stake.global_position.distance_to(reel.end()) <= _tuning.kite_earth_m
-		if reel.radio != null:
-			near = near or stake.global_position.distance_to(reel.radio.global_position) <= _tuning.kite_earth_m
-		if near:
-			return stake
-	return null
-
-
-## An arc down the rig: a bolt from the line's foot into a piece by how
-## exposed it is, a crack and sparks; `burns`, the piece burnt out.
-func _arc_out(burns: bool) -> void:
-	var radio := reel.radio
-	var pieces := {&"kite": EXPOSED.kite, &"reel": EXPOSED.reel}
-	if radio != null and not radio.wrecked():
-		pieces[&"radio"] = EXPOSED.radio
-		if radio.converter(&"sw") != null:
-			pieces[&"converter"] = EXPOSED.converter
-	var total := 0.0
-	for each: StringName in pieces:
-		total += pieces[each]
-	var roll := _rng.randf() * total
-	var hit := &"kite"
-	for each: StringName in pieces:
-		roll -= pieces[each]
-		if roll <= 0.0:
-			hit = each
-			break
-	var where: Vector3 = aloft() if hit == &"kite" else (reel.global_position if hit == &"reel" else radio.global_position)
-	var b := Paint.Pieces.new()
-	RadioKitLooks.arc(b, reel.end(), where if hit != &"kite" else reel.end() + (aloft() - reel.end()) * 0.2,
-		_rng.randi(), 0.01)
-	_arc.mesh = b.commit()
-	_arc.global_transform = Transform3D.IDENTITY
-	_arc.visible = true
-	_arc_left = FLASH
-	ScrapFx.burst(world.content, where, 30, 4.0)
-	Sounds.play_at(reel, Sounds.ZAP)
-	if not burns:
-		return
-	match hit:
-		&"kite":
-			wear(INF)
-		&"reel":
-			reel.wear(INF)
+## An arc down the rig: it spends most of the charge and burns out, or only
+## scorches, the piece it picks by how exposed each is.
+func arc(burns: bool) -> void:
+	var tuning := Tuning.current()
+	charge *= 1.0 - tuning.kite_arc_spends
+	arcs += 1
+	var piece := _pick()
+	var at := kite_at
+	var radio: Radio = rig.get("radio")
+	match piece:
+		&"lead":
+			var cable: Cable = rig.cable
+			at = (cable.end_of(cable.plugs[0]) + cable.end_of(cable.plugs[1])) * 0.5
+			if burns:
+				for plug in cable.plugs:
+					if is_instance_valid(plug):
+						if plug.socket != null:
+							(plug.socket.get_parent() as Device).take(plug.socket)
+						plug.queue_free()
+		&"hook":
+			var hook: Socket = rig.hook
+			at = hook.global_position
+			if burns:
+				_burn_part(radio, hook)
 		&"converter":
-			radio.burn(radio.converter(&"sw"))
+			var socket := radio.converter_socket(&"sw")
+			at = socket.global_position
+			if burns:
+				_burn_part(radio, socket)
 		&"radio":
-			radio.wear(INF)
+			at = radio.global_position
+			radio.wear(INF if burns else SCORCH)
+		_:
+			wear(INF if burns else SCORCH)
+	burnt = piece if burns else &""
+	_spark_at(at, 40 if burns else 16, true)
 
 
-## Its line and the kite where they fly, every frame.
-func _process(_delta: float) -> void:
-	if _sky == null:
+## The piece an arc hits, by exposure, among those the rig has.
+func _pick() -> StringName:
+	var radio: Radio = rig.get("radio")
+	var have := {&"kite": true, &"lead": rig.has("cable"), &"hook": rig.get("hook") != null,
+		&"converter": radio != null and radio.converter_socket(&"sw") != null, &"radio": radio != null}
+	var total := 0.0
+	for each: Array in PIECES:
+		if have[each[0]]:
+			total += each[1]
+	var r := randf() * total
+	for each: Array in PIECES:
+		if have[each[0]]:
+			r -= each[1]
+			if r <= 0.0:
+				return each[0]
+	return &"kite"
+
+
+## A part burnt out in its socket: gone, smoke and all.
+static func _burn_part(device: Device, socket: Socket) -> void:
+	var part := device.take(socket)
+	if part != null:
+		part.queue_free()
+
+
+## A crack of sparks and a violet flash at a place; loud for an arc.
+func _spark_at(at: Vector3, count: int, loud: bool) -> void:
+	_dress()
+	ScrapFx.burst(world.content, at, count, 3.0 if loud else 1.5)
+	var voice := Sounds.world_voice(Sounds.ZAP, 0.0 if loud else -10.0, 4.0 if loud else 2.0)
+	voice.autoplay = true
+	voice.finished.connect(voice.queue_free)
+	world.content.add_child(voice)
+	voice.global_position = at
+	_flash.global_position = at
+	_flash_left = 0.15 if loud else 0.06
+
+
+## The kite, its line and its corona drawn, every frame.
+func _process(delta: float) -> void:
+	var out := line_out > 0.0 and world != null
+	if _kite == null:
+		if not out:
+			return
+		_dress()
+	_kite.visible = out
+	_line.visible = out
+	_flash_left = maxf(_flash_left - delta, 0.0)
+	_flash.light_energy = 6.0 * _flash_left / 0.15 if _flash_left > 0.0 else 0.0
+	_crackle.volume_db = linear_to_db(smoothstep(CRACKLE, 1.0, charge) + 0.0001) - 6.0 if out else -80.0
+	if out and not _crackle.playing:
+		_crackle.play()
+	elif not out and _crackle.playing:
+		_crackle.stop()
+	if not out:
 		return
-	_sky.visible = flying() and is_instance_valid(reel)
-	_line.visible = _sky.visible
-	if not _sky.visible:
+	var from := anchor()
+	var to_anchor := from - kite_at
+	var facing := to_anchor.normalized() if to_anchor.length() > 0.01 else Vector3.BACK
+	var side := Vector3.UP.cross(facing)
+	# Straight over its reel, as it goes up, any way round will do.
+	var up_way := facing.cross(side).normalized() if side.length() > 0.01 else Vector3.BACK
+	# Its face toward its line, nose up.
+	_kite.global_transform = Transform3D(Basis.looking_at(-facing, up_way), kite_at)
+	_kite.set_instance_shader_parameter(&"torn", clampf((1.0 - durability) * 0.9, 0.0, 0.9))
+	_kite.set_instance_shader_parameter(&"age", 1.0 - durability)
+	_kite.set_instance_shader_parameter(&"weathered", 1.0 - durability)
+	_kite.set_instance_shader_parameter(&"charge", smoothstep(CRACKLE, 0.6, charge))
+	_crackle.global_position = kite_at
+	var ring := _kite.global_transform * KiteLooks.RING
+	var span := from.distance_to(ring)
+	if span < 0.02:
+		_line.visible = false
 		return
-	var from := reel.end()
-	var to := aloft()
-	# Its keel to its line, its nose up: the face it flies on toward the reel.
-	var back := (from - to).normalized()
-	var up := (Vector3.UP - back * Vector3.UP.dot(back)).normalized()
-	_sky.global_transform = Transform3D(Basis(up.cross(back), up, back), to)
-	_stretch(_line, from, to)
-
-
-## A thin box drawn from one point to another.
-static func _stretch(view: MeshInstance3D, from: Vector3, to: Vector3) -> void:
-	var span := from.distance_to(to)
-	if span < 0.01:
-		view.visible = false
-		return
-	var up := Vector3.UP if absf((to - from).normalized().dot(Vector3.UP)) < 0.99 else Vector3.BACK
-	view.global_transform = Transform3D(Basis.looking_at(to - from, up).scaled(Vector3(1.0, 1.0, span)),
-		(from + to) * 0.5)
-
-
-func _strand(color: Color) -> MeshInstance3D:
-	var view := MeshInstance3D.new()
-	var box := BoxMesh.new()
-	box.size = Vector3(THICK, THICK, 1.0)
-	var paint := StandardMaterial3D.new()
-	paint.albedo_color = color
-	paint.roughness = 0.7
-	box.material = paint
-	view.mesh = box
-	view.top_level = true
-	view.visible = false
-	add_child(view)
-	return view
-
-
-## Its folded body shown, or hidden while it flies.
-func _frame_shown(shown: bool) -> void:
-	for view: MeshInstance3D in painted():
-		if view != null:
-			view.visible = shown
-
-
-func _wind_at(at: Vector3) -> float:
-	return world.weather.field.wind_at(world.world_x(at.x), world.world_z(at.z), world.time).length()
-
-
-## The reel nearest a place, within FLIES_FROM, with nothing flying from it, or null.
-func _reel_near(at: Vector3) -> AntennaReel:
-	var best: AntennaReel = null
-	var nearest := FLIES_FROM
-	for node in get_tree().get_nodes_in_group(AntennaReel.GROUP):
-		var each := node as AntennaReel
-		if each == null or not each.is_inside_tree() or each.wrecked() or each.kite() != null:
-			continue
-		var d := each.global_position.distance_to(at)
-		if d < nearest:
-			nearest = d
-			best = each
-	return best
+	var way := Vector3.UP if absf((ring - from).normalized().dot(Vector3.UP)) < 0.99 else Vector3.BACK
+	_line.global_transform = Transform3D(Basis.looking_at(ring - from, way).scaled(Vector3(1.0, 1.0, span)),
+		(from + ring) * 0.5)

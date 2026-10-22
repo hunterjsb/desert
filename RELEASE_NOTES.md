@@ -5,6 +5,11 @@ This release is unpublished. Integrated source through the crop-survey radio
 flight plan passed all 21 Linux, native platform and build jobs. Human playtest
 acceptance remains.
 
+- Publish a GitHub Pages performance observatory with probe retries, build costs,
+  artifact sizes and headless streaming, rope and memory measurements.
+- Speed up probe iteration with accelerated ruin traversal, native scheduling for
+  expensive terrain checks, and fresh CI duration history. Package desktop builds
+  faster with light ZIP compression.
 - Begin new Surveyor runs in orbit, descend in a recoverable chassis pod and
   collect seeded surviving physical equipment. Other origins, developer scenarios
   and legacy saves retain their existing starts. During a fully eclipsed landing,
@@ -16,11 +21,16 @@ acceptance remains.
   Returning from a scouting trip records Home Again.
 - Save and resume distant camps without discarding their excavation or exceeding
   the support budget. Overstretched camps keep their objects and report unsupported ground.
+- See the Surveyor suit in first person: boots, posed legs and arms, with a full
+  external model and shadow. Held-item hand reach remains preliminary.
 - Sit on supported ground or lie down and crawl with physical low clearance.
   Getting up checks headroom; wind, ropes, slopes and moving decks still move you.
 - Offer the existing safe sleep choices while lying still with empty hands.
   Posture survives saves, and the first ground rest earns A Moment's Rest.
 
+- Continue holding Use to untie successive waist lines into a knot in hand, then
+  anchor, retrieve or drop it normally. Select each original member in the carry
+  view; lengths and routes survive saves. Securing multiple lines earns Make Fast.
 - Continuously unwind and gather the rope coil while preserving its gauge and
   held-end attachment.
 - Resolve capsized mast contacts against the mass response of the hull and hinged
@@ -37,10 +47,16 @@ acceptance remains.
 - Fit FM and shortwave converters to the radio and switch bands. FM brings Port
   Morgan's station by line of sight and the relay's music; shortwave carries the
   satellites and Tu's roar, clearer on an antenna reel's strung wire.
-- Find a station's direction by the ferrite rod's null, and hear natural radio's
-  sferics and whistlers at the bottom of the AM dial on a long wire.
+- Find a station's direction by the ferrite rod's null.
+- Fly an antenna kite from a rope hook on the radio's top, its lead a cable run
+  straight or through a driven stake to earth it; unearthed, its static burns
+  out pieces of the rig, and a sandstorm shreds it. The radio's misc bay takes a
+  bleed resistor, valve preamp, direction loop, static choke, wire logger,
+  frequency counter, headset jack or solar lid. New deeds: High Wire, Grounded.
+- The AM dial is a real set's longwave and mediumwave, 150–280 and 530–1700 kHz,
+  the gap between skipped; the gods, the beacon and the Eye moved inside it.
 - Fewer satellites, each on its own orbit: about two cross the sky at once.
-  New deeds: Line of Sight, Storm on Tu, Long Wire, Null and Whistler.
+  New deeds: Line of Sight, Storm on Tu, Long Wire and Null.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 

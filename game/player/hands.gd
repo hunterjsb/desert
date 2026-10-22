@@ -95,7 +95,8 @@ const TOUCHES := 64
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"face": "frame face",
-	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
+	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount",
+	&"radio_mod": "converter mount", &"radio_bay": "misc bay", &"lead": "lead clip", &"radio_top": "hook mount"}
 const RIDING := "not from the board"
 const STUNNED := "your hands won't close"
 ## What a piece of a wreck needs before it gives, said when you try it without.
@@ -415,6 +416,14 @@ func interact() -> bool:
 		return true
 	if look_device != null and _player.world.salvage.held_fast(look_device) != "":
 		return refuse(_player.world.salvage.held_fast(look_device))
+	# A cable's plug held at a driven stake: the cable passes through its ring, or off it.
+	var through := _cable_at_stake()
+	if not through.is_empty():
+		var why := (through.cable as Cable).route(through.stake)
+		if why != "":
+			return refuse(why)
+		_play(Sounds.TIE)
+		return true
 	if look_device != null and look_device.interact(_player):
 		# Marking Home requires ownership; a refusal must not claim its host.
 		if not look_device is HomeBeacon:
@@ -443,6 +452,25 @@ func interact() -> bool:
 	if used or _player.waist.take_from_hands():
 		return true
 	return refuse("no use for it there") if look_device != null else false
+
+
+## Holding a cable's plug, looking at a driven stake: {cable, stake}, else {}.
+func _cable_at_stake() -> Dictionary:
+	if phase != Phase.HELD or not held is Part or (held as Part).kind != &"port":
+		return {}
+	var stake := look_device as Stake
+	if stake == null or not stake.driven:
+		return {}
+	var cable := Cable.of(held as Part, _player.world)
+	return {"cable": cable, "stake": stake} if cable != null else {}
+
+
+## Continuing a waist return never takes a device's or ground work's Use.
+func gathering_clear() -> bool:
+	_look()
+	return Controls.playing() and held is RopeTip and phase == Phase.HELD and grasp.body == null \
+		and look_device == null and look_part == null and look_work == null \
+		and look_wreck == null and look_scrap == null and not look_bed
 
 
 func _look_hook() -> RopeHook:
@@ -1105,7 +1133,7 @@ func _no_fit() -> String:
 		if piece != null:
 			if each.kind != &"ring" or not target is Chassis or each.has_meta(&"socket"):
 				continue
-		elif each.kind != kind and not (held is Device and (held as Device).fits_in(each)):
+		elif not Catalog.fits(kind, each.kind) and not (held is Device and (held as Device).fits_in(each)):
 			continue
 		any = true
 		named = each.kind
@@ -1123,6 +1151,8 @@ func _no_fit() -> String:
 ## end you take, and the hook once it's bare.
 static func _outermost(socket: Socket) -> Socket:
 	if socket == null or socket.part == null:
+		return socket
+	if socket.part is RopeTip and RopeBundle.members(socket.part).size() > 1:
 		return socket
 	for node in socket.fitted:
 		var added := node as Socket
@@ -1497,7 +1527,8 @@ func punch() -> bool:
 ## way, or off the face it was stuck on, then the part comes to your hand.
 func _take_out(device: Device, from: Socket) -> void:
 	_begin_slide(device, from.transform, from.outward())
-	var part := device.take(from)
+	var grouped := from.part is RopeTip and RopeBundle.members(from.part).size() > 1
+	var part := device.pop(from) if grouped else device.take(from)
 	_grip(part)
 	_slide = part.depth()
 	_slide_from = from.part.depth() if from.part != null else 0.0
@@ -1519,6 +1550,20 @@ func _grip(part: RigidBody3D) -> void:
 	part.collision_layer = 0
 	part.collision_mask = 0
 	_unblock(part)
+	refresh_held_shape()
+	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
+	_away = _tuning.hold_distance
+	_held_at = _away
+	pull = 0.0
+	socket = null
+	gap = INF
+
+
+## New nested ends change the carried body's real bounds and preview together.
+func refresh_held_shape() -> void:
+	if not is_instance_valid(held):
+		return
+	var part := held
 	_shapes.clear()
 	_skins.clear()
 	var first := true
@@ -1532,12 +1577,6 @@ func _grip(part: RigidBody3D) -> void:
 		_bounds = box if first else _bounds.merge(box)
 		first = false
 	_middle = _bounds.get_center()
-	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
-	_away = _tuning.hold_distance
-	_held_at = _away
-	pull = 0.0
-	socket = null
-	gap = INF
 	_build_ghost(part)
 
 
@@ -1724,7 +1763,7 @@ func _takes(each: Socket) -> bool:
 		return false
 	if held is Device:
 		return (held as Device).fits_in(each)
-	return each.kind == held.get(&"kind") or each.kind == &"face" and Frame.takes(held)
+	return Catalog.fits(held.get(&"kind"), each.kind) or each.kind == &"face" and Frame.takes(held)
 
 
 ## Whether a hit is the sand's own surface, which a deck lifts itself clear
@@ -1817,6 +1856,11 @@ func _fit(into: Socket) -> void:
 	var part := held as Part
 	_let_go()
 	device.fit(part, into)
+	if part is RopeTip:
+		var anchored := RopeBundle.live_lines(part, _player.world).filter(func(line: Line) -> bool:
+			return line.rope.a.holder != line.rope.b.holder)
+		if anchored.size() >= 2:
+			Deeds.done(_player.world, &"make_fast")
 	if part.has_meta(&"line"):
 		_play(Sounds.TIE)
 	else:
@@ -2190,6 +2234,9 @@ func line() -> String:
 		var laid: Line = held.get_meta(&"line")
 		return Controls.key_for(&"interact") + " · " + ("remove line from hook" if laid.rope != null \
 			and laid.rope.through == _look_hook().guide else "pass line through hook")
+	var through := _cable_at_stake()
+	if not through.is_empty():
+		return Controls.key_for(&"interact") + " · " + ("take cable off stake" if (through.cable as Cable).through 			== through.stake else "pass cable through stake")
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
 	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \
@@ -2224,7 +2271,7 @@ func _show(delta: float) -> void:
 	var said := line()
 	var waisted := _player.waist.release_readout()
 	if waisted == "" and _player.waist.untying >= 0.0:
-		waisted = "Untying line · %.1f s" % _player.waist.untying
+		waisted = ("Gathering line · %.1f s" if _player.waist.gathering() else "Untying line · %.1f s") % _player.waist.untying
 	if waisted != "":
 		said += ("\n" if said != "" else "") + waisted
 	if said != "" and said != _readout.text:

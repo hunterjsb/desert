@@ -1,6 +1,6 @@
 extends WeatherProbe
-## Radio probe 58: each band holds its own. The AM dial carries only the far
-## gods and the beacon, and the wrecks calling SOS near 500 kHz; FM carries
+## Radio probe 68: each band holds its own. The AM dial carries only the far
+## gods and the beacon, and the wrecks calling SOS near 240 kHz; FM carries
 ## Port Morgan Tower, the port's music, the living city's chatter and music
 ## and the near gods, each on its own frequency; on shortwave the relay
 ## repeats the tower, so the clear scenario's radio, far from the port, hears
@@ -35,7 +35,7 @@ func run() -> void:
 	print("a call: %s" % [call])
 	check(not call.is_empty() and absf(call.khz - Distress.KHZ) <= Tuning.current().distress_spread_khz
 		and Distress.strength(call.khz, 300.0, Tuning.current()) > Tuning.current().signal_floor
-		and Distress.words(call.p).begins_with("S O S"), "a wreck calls SOS near 500 kHz, its fix after")
+		and Distress.words(call.p).begins_with("S O S"), "a wreck calls SOS near 240 kHz, its fix after")
 
 	# The clear scenario's radio hears the tower through the relay on its wire.
 	await Scenarios.apply(world, Scenarios.by_key("clear"))

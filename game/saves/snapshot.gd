@@ -22,6 +22,7 @@ static var _kept := [
 	# A save from before the dial kept "channel": setting it places the dial.
 	[Radio, ["on", "frequency", "band", "fm_mhz", "am_khz", "sw_khz", "volume", "target"]],
 	[SurveyReceiver, ["acquired_from", "scan_pending"]],
+	[AntennaKite, ["flying", "line_out", "charge"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
@@ -265,6 +266,10 @@ func finish(data: Dictionary) -> void:
 			strands[rec.rope.strand] = _rope_in(lines[i].rope, rec.rope)
 	for i in cables.size():
 		var rec: Dictionary = data.cables[i]
+		# Run through a stake: a kite's lead earthed on its way (AntennaKite).
+		if rec.get("through") != null and _made.get(rec.through) is Stake:
+			cables[i].through = _made[rec.through]
+			cables[i]._rope_through()
 		var strong := cables[i] as StrongCable
 		if strong == null:
 			continue
@@ -313,6 +318,7 @@ func finish(data: Dictionary) -> void:
 		hands._carry = data.hands.carry
 		hands.phase = Hands.Phase.HELD
 		hands._ticked = body.global_transform
+	hands.reel.choose(_made.get(data.hands.get("chosen")))
 	var grasped: Variant = data.grasp.get("body")
 	if grasped != null and _made.has(grasped):
 		hands.grasp.recall(_made[grasped], data.grasp)
@@ -432,6 +438,7 @@ func _take() -> Dictionary:
 		"rope": _rope_out(line.rope, strands) if line.rope != null and ropes.ropes.has(line.rope) else null})
 	data.cables = cables.map(func(cable: Cable) -> Dictionary: return {"strong": cable is StrongCable,
 		"hose": cable is Hose, "length": cable.length, "plugs": cable.plugs.map(_ref),
+		"through": _ref(cable.through) if is_instance_valid(cable.through) else null,
 		"rope": _rope_out(cable.rope, strands) if cable is StrongCable and cable.rope != null else null})
 	data.strands = strands.map(_strand_out)
 	data.solver = {"tick": ropes._tick, "drag": ropes._drag, "bodies": []}
@@ -449,9 +456,10 @@ func _take() -> Dictionary:
 				ref = {"boom": _refs[mast]}
 		if ref != null:
 			data.solver.bodies.append([ref, body.tick, body.left, body.left_spin])
-	data.waist = {"tied": player.waist.tied.filter(_known).map(_ref), "untying": player.waist.untying,
-		"to_hand": player.waist._to_hand,
-		"taking": _ref(player.waist._taking) if _known(player.waist._taking) else null}
+	var gathering := player.waist.gathering()
+	data.waist = {"tied": player.waist.tied.filter(_known).map(_ref), "untying": -1.0 if gathering else player.waist.untying,
+		"to_hand": player.waist._to_hand and not gathering,
+		"taking": _ref(player.waist._taking) if not gathering and _known(player.waist._taking) else null}
 	data.hands = {}
 	if hands.held != null and _known(hands.held):
 		data.hands = {"held": _ref(hands.held), "carry": hands._carry}
@@ -460,6 +468,9 @@ func _take() -> Dictionary:
 				# Where the tick has it, not where this frame drew it.
 				rec.at = _transform_out(hands._ticked if hands.phase == Hands.Phase.HELD else hands.held.global_transform)
 	var grasp := hands.grasp
+	var chosen := hands.reel.chosen_body()
+	if _known(chosen):
+		data.hands.chosen = _ref(chosen)
 	data.grasp = {}
 	if is_instance_valid(grasp.body) and _known(grasp.body):
 		data.grasp = grasp.memory()
@@ -537,6 +548,8 @@ func _body(body: RigidBody3D, loose: bool) -> Dictionary:
 		out.lineage = body.get_meta(&"lineage")
 	# Found or stowed, it unrolls into a line or a cable once taken out, a
 	# stowed line as long as it was.
+	if body is RopeTip and not RopeBundle.slots(body).is_empty():
+		out.bundle_slots = RopeBundle.slots(body).size()
 	if body.has_meta(&"rolled"):
 		out.rolled = body.get_meta(&"rolled")
 	if body.has_meta(&"rolled_m"):
@@ -702,6 +715,8 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		var id := Catalog.current(rec.id)
 		body = Catalog.stake() if id == &"stake" else (Catalog.part(id) if Catalog.PARTS.has(id) else Catalog.device(id))
 		_made[rec.ref] = body
+	if body is RopeTip:
+		RopeBundle.prepare(body, rec.get("bundle_slots", 0))
 	_states.append([body, rec])
 	for key: StringName in [&"arrival_uid", &"pod_skin"]:
 		if rec.has(key):
@@ -741,6 +756,8 @@ func _make(rec: Dictionary) -> RigidBody3D:
 		var added := _added(part)
 		for entry: Array in rec.get("added", []):
 			Device.seat_part(_make(entry[1]) as Part, added[entry[0]])
+		if part is RopeTip:
+			RopeBundle.refresh_mass(part)
 	return body
 
 
@@ -905,6 +922,7 @@ func _order(order: Array, lines: Array[Line], cables: Array[Cable]) -> void:
 func _clear() -> void:
 	var world := _world
 	var player := world.player
+	player.waist.cancel_gather()
 	if player.hands.held != null:
 		player.hands.stow()
 	player.hands.grasp.let_go()

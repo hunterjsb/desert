@@ -381,7 +381,7 @@ static func module(b: Paint.Pieces, id: StringName, at: Transform3D, burnt := fa
 			for i in 6:
 				b.drum(0.02, 0.004, p.call(Vector3(out + 0.012, -0.045 + i * 0.018, -0.005)), coat(Paint.CERAMIC, 0.3), t, 12)
 			b.ball(0.007, p.call(Vector3(out + 0.002, 0.065, 0.04)), glow(Color(1.0, 0.45, 0.2), 1.2))
-			# The strap: braid off its foot, out to a clip you put on the earth stake.
+			# The strap: braid off its foot, out to a clip you put on a stake.
 			for i in 6:
 				b.box(Vector3(0.012, 0.004, 0.03), p.call(Vector3(out + 0.006 + i * 0.012, -c.y * 0.5 + 0.004, 0.02 + i * 0.026)),
 					coat(COPPER, 0.4, 0.7), 0.0, t * Basis(Vector3.UP, -0.4))
@@ -613,9 +613,6 @@ const KITE_TALL := 0.95
 ## Where the field radio's hook eye and shortwave port stand, for leads.
 const HOOK_EYE := Vector3(0.06, FIELD.y * 0.5 + 0.078, -0.045)
 const SW_PORT := Vector3(FIELD.x * 0.5 + CART.x * 0.5, CART.y * 0.5 + 0.036, 0.03)
-## Where the earth stake's ring and spark gap are, from its middle.
-const STAKE_RING := Vector3(0.0, 0.53, 0.04)
-const STAKE_GAP := Vector3(0.015, 0.512, 0.026)
 
 ## Where its towing ring is, at the keel's tip.
 const KITE_RING := Vector3(0.0, 0.0, 0.32)
@@ -706,31 +703,6 @@ static func reel() -> ArrayMesh:
 		b.box(Vector3(0.01, 0.06, 0.016), Vector3(s * 0.065, 0.11, 0.0), steel, 0.003)
 	b.box(Vector3(0.14, 0.012, 0.02), Vector3(0.0, 0.14, 0.0), coat(Paint.BLACK, 0.6), 0.004)
 	b.drum(0.008, 0.02, Vector3(-0.08, 0.0, 0.0), coat(Paint.BRASS, 0.3, 0.7), across, 8)
-	return b.commit()
-
-
-## The earthing stake: a copper rod driven into the sand, a clamp for the
-## earth strap, and up top a ring the kite line runs through, with a spark
-## gap beside it: the charge the line gathers leaps the gap to earth
-## instead of riding down to the radio.
-static func earth_stake(spark := false) -> ArrayMesh:
-	var b := Paint.Pieces.new()
-	var copper := coat(COPPER, 0.35, 0.7)
-	var steel := coat(Paint.STEEL, 0.3, 0.6)
-	b.drum(0.012, 0.9, Vector3(0.0, 0.0, 0.0), copper, Basis.IDENTITY, 10)
-	b.drum(0.006, 0.08, Vector3(0.0, -0.49, 0.0), copper, Basis.IDENTITY, 6, 0.0)
-	# The clamp, its screw, the earth strap's braid off it.
-	b.box(Vector3(0.04, 0.03, 0.03), Vector3(0.0, 0.1, 0.0), steel, 0.004)
-	b.drum(0.005, 0.04, Vector3(0.03, 0.1, 0.0), steel, Basis(Vector3.BACK, PI / 2.0), 8)
-	# Its head: an insulated ring for the line, a gap from ring to rod.
-	b.drum(0.02, 0.05, Vector3(0.0, 0.47, 0.0), coat(Paint.CERAMIC, 0.25), Basis.IDENTITY, 12)
-	b.ring(0.022, 0.03, Vector3(0.0, 0.53, 0.04), steel, Basis(Vector3.RIGHT, PI / 2.0), 10)
-	b.drum(0.003, 0.05, Vector3(0.015, 0.5, 0.02), steel, Basis(Vector3.RIGHT, 0.8), 6)
-	b.ball(0.005, Vector3(0.015, 0.52, 0.04), steel)
-	b.ball(0.005, Vector3(0.015, 0.505, 0.012), copper)
-	b.box(Vector3(0.05, 0.016, 0.004), Vector3(0.0, 0.3, 0.013), coat(Paint.YELLOW, 0.5), 0.0)
-	if spark:
-		b.ball(0.009, Vector3(0.015, 0.512, 0.026), glow(Color(0.75, 0.7, 1.0), 4.0), Vector3(0.6, 1.4, 0.6))
 	return b.commit()
 
 

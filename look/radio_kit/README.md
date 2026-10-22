@@ -1,9 +1,9 @@
 # Radio equipment: tiers, upgrades, shortwave
 
-*A design proposal and a modelling lab, 2026-10-21. Nothing here is in the
-game yet. The models use the game's own kit (`Paint.Pieces` and the worn
-shader). If they're agreed, they move into `game/look/dress.gd` and the
-catalog more or less as they are. Sheets are in `out/`.*
+*A design proposal and a modelling lab, 2026-10-21. Some field-radio ideas
+have since reached the runtime; see Integration status below. The models use
+the game's own kit (`Paint.Pieces` and the worn shader). Proposed equipment
+remains in this lab until selected for gameplay. Sheets are in `out/`.*
 
 *Since moved into the game (2026-10-21; the as-built account is in
 `docs/prd/radio-sound-and-atmosphere.md`): the crystal set, the makers' looks
@@ -18,9 +18,23 @@ colour so you can see which one you're scrubbing. Specifically:
 - a crystal set;
 - the current radio, with slots;
 - shortwave through a converter, a hook and an antenna kite, with
-  electrostatic burnouts unless you use an earth stake or a bleed resistor;
+  electrostatic burnouts unless you earth its lead through a stake or use a bleed resistor;
 - a kite that wears like the sails and is ruined fast in a sandstorm;
 - several modular upgrades.
+
+## Integration status (2026-10-21)
+
+This folder preserves the modelling proposal and its experiments. Current runtime
+behavior is documented in [Radio, sound and atmosphere](../../docs/prd/radio-sound-and-atmosphere.md).
+The field radio already has functional FM and shortwave converters, band switching,
+ferrite-rod direction finding and an antenna reel. Port Morgan Control Tower reads
+the crop survey's schedule on FM; satellites remain limited by their horizon.
+Since 2026-10-21 the antenna kite, its static and burnouts, and the misc bay's
+modules are in the game too (`AntennaKite`, `KiteLooks`, `Dress._module`): the kite
+on a cable from a rope hook on the radio's top, earthed through the game's own stake
+(gonkhub: the lab's earth stake is gone), and every module with an effect. The
+crystal and survey set tiers below remain proposals. Older band/content tables
+below describe this lab's initial proposal and do not override the runtime PRD.
 
 The design follows below.
 
@@ -127,10 +141,9 @@ tile of the modules sheet).
    port) up to the hook.
 3. Fly the antenna kite on its line. The line is braided with a conductor
    and clipped to the lead at the hook.
-4. To earth it, run the line through the earth stake's ring first. The
-   stake is a copper rod with a clamp, an insulated ring for the line and a
-   spark gap from ring to rod. Or fit the bleed resistor and clip its strap
-   to anything in the sand.
+4. To earth it, run the lead through a driven stake's ring first (the
+   game's own stake; the lab's copper earth stake was dropped, gonkhub,
+   2026-10-21). Or fit the bleed resistor.
 
 **The kite:**
 
@@ -165,7 +178,7 @@ risk escalates.
 `charge_model.gd` (the full table is in `charge_model.txt`) gives, for 20
 minutes on 120 m of line:
 
-| Weather | Unearthed | Bleed resistor | Earth stake | Kite left (staked) |
+| Weather | Unearthed | Bleed resistor | Stake | Kite left (staked) |
 |---|---|---|---|---|
 | Calm, 4 m/s | 28% chance of a burnout, the first at ~16 min | Safe | Safe | 94% |
 | Breezy, 9 m/s | Certain, at ~3 min | Safe | Safe | 94% |
@@ -228,8 +241,8 @@ from afar. That's a reason to fly one.
 1. Catalog: `crystal_set` (and `survey_set`, since scrapped) as devices (the radio flag; a
    `bands` stat). Modules as parts of a new socket kind `&"radio_bay"`,
    whose stats say what they add. `kite_hook` as a `&"radio_top"` part.
-   `antenna_kite` as a device on a `Line`. `earth_stake` as a Stake with a
-   `guide`, so `Line.route` runs through it.
+   `antenna_kite` as a device on a `Line`. The lead routed through the
+   game's own Stake (built as `Cable.route`).
 2. `Dial`: a `band` and per-band ranges. Carriers get a band. `Dial.strength`
    gets FM (line of sight, no sky wave) and SW (sky wave, plus kite gain).
 3. Static: a `Charge` on the rig (`charge_model.gd`'s numbers moved to

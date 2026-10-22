@@ -1,4 +1,5 @@
 extends SalvageProbe
+## Exclusive
 ## Salvage & ruins probe 7: nothing leaks. On world probe 3's 20 km walk, half
 ## straight and half wandering, taking a find where any lies, one a
 ## kilometre at most, and leaving it behind: every find in memory lies on solid ground, the sand's or its ruin's, there
@@ -76,6 +77,8 @@ func run() -> void:
 	var memory := Performance.get_monitor(Performance.MEMORY_STATIC)
 	print("finds in memory <= %d (of %d allowed), chunks remembered <= %d, %d taken, objects %d -> %d, memory %.1f -> %.1f MB"
 		% [biggest, most_finds, lots, taken, baseline_objects, objects, baseline_memory / 1048576.0, memory / 1048576.0])
+	metric("Salvage memory growth after 20 km", (memory - baseline_memory) / 1048576.0, "MiB", 64.0)
+	metric("Salvage object growth after 20 km", (objects - baseline_objects) * 100.0 / baseline_objects, "%", 10.0)
 	check(biggest > 0 and over == 0, "finds in memory stay bounded (most at once %d)" % biggest)
 	check(adrift == 0, "every find in memory lies on solid ground (%d didn't)" % adrift)
 	check(lots <= most_lots, "chunks remembered are never more than are loaded (%d)" % lots)

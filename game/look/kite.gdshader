@@ -1,7 +1,8 @@
 shader_type spatial;
 render_mode cull_disabled;
 
-// The antenna kite's sail: UV.x across it (0 to 1), UV.y from its nose (0)
+// The antenna kite's sail (AntennaKite; from the radio kit lab, look/radio_kit):
+// UV.x across it (0 to 1), UV.y from its nose (0)
 // to its trailing edge (1). Shortwave violet with survey-orange chevrons, a
 // copper dipole sewn across its shoulder. Torn, cells of it go, the edges
 // first (as the game's sail does); charged, its dipole and edges glow the
@@ -11,9 +12,9 @@ uniform vec3 cloth : source_color = vec3(0.5, 0.36, 0.78);
 uniform vec3 chevron : source_color = vec3(0.9, 0.42, 0.1);
 uniform vec3 copper : source_color = vec3(0.72, 0.38, 0.2);
 
-uniform float torn = 0.0;
-uniform float age = 0.0;
-uniform float charge = 0.0;
+instance uniform float torn = 0.0;
+instance uniform float weathered = 0.0;
+instance uniform float charge = 0.0;
 uniform float billow = 1.0;
 
 varying vec2 at;
@@ -44,8 +45,9 @@ void fragment() {
 	// The dipole, sewn across its shoulder.
 	float wire = 1.0 - smoothstep(0.004, 0.009, abs(at.y - 0.42));
 	base = mix(base, copper, wire);
-	// Sun-bleached and sand-scoured with age.
-	base = mix(base, base * vec3(0.85, 0.78, 0.66) + vec3(0.08, 0.06, 0.04), age * 0.7);
+	// Sun-bleached and sand-scoured with age (`weathered`: the worn shader on
+	// its spars has its own `age`).
+	base = mix(base, base * vec3(0.85, 0.78, 0.66) + vec3(0.08, 0.06, 0.04), weathered * 0.7);
 	// Torn: cells go, the edges' sooner (the wind works at an edge).
 	ivec2 cell = ivec2(floor(at * vec2(11.0, 9.0)));
 	float edge = max(smoothstep(0.7, 1.0, at.y), smoothstep(0.75, 1.0, across));

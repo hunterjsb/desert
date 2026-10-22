@@ -7,6 +7,11 @@ extends HandsProbe
 ## dB, as ears hear loudness, so a tenth is barely audible.
 
 
+class SteadySignal extends Glitch:
+	func tick(_delta: float, _dirt: float) -> Vector2:
+		return Vector2.ONE
+
+
 func run() -> void:
 	# Clear skies everywhere and FM carrying everywhere, so the port's music comes in steady.
 	Tuning.current().storm_threshold = 2.0
@@ -15,6 +20,8 @@ func run() -> void:
 	var radio := device(&"radio", spot(0.0, -1.2), 0.0, true) as Radio
 	Scenarios.fill(world, radio, [&"fm_converter"])
 	await physics_frames(30)
+	# Isolate knob gain from unrelated random interference, as the weather-gain fixture does.
+	radio._glitch = SteadySignal.new(radio.music)
 	radio.freeze = true
 	radio.channel = Radio.MUSIC
 	await physics_frames(5)

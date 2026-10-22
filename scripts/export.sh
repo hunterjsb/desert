@@ -64,12 +64,13 @@ for each in "Linux:Desert.x86_64:linux-x86_64" "Windows:Desert.exe:windows-x86_6
 	fi
 	cp "$stage/LICENSES.txt" "$dir/"
 	rm -f "$out/$name.zip"
+	# Fast deflate trades a small download increase for shorter build waits.
 	# The game's folder as the zip's top, but an app at the top of its own,
 	# as a Mac unzips it.
 	if [[ $os == macos-* ]]; then
-		(cd "$dir" && zip -qry "$out/$name.zip" .)
+		(cd "$dir" && zip -1qry "$out/$name.zip" .)
 	else
-		(cd "$stage" && zip -qry "$out/$name.zip" "$name")
+		(cd "$stage" && zip -1qry "$out/$name.zip" "$name")
 	fi
 	echo "$out/$name.zip $(du -h "$out/$name.zip" | cut -f1)"
 done

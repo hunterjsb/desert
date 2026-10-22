@@ -18,12 +18,12 @@ func run() -> void:
 	check(Profile.marks().is_empty(), "no marks to begin with")
 
 	radio.on = true
-	radio.frequency = 300.0
+	radio.frequency = 600.0
 	hands.interact()
 	print("no marks, use: %s at %d kHz" % ["on" if radio.on else "off", roundi(radio.frequency)])
-	check(not radio.on and radio.frequency == 300.0, "use switches it off, its dial where it stood")
+	check(not radio.on and radio.frequency == 600.0, "use switches it off, its dial where it stood")
 	hands.interact()
-	check(radio.on and radio.frequency == 300.0, "and on again")
+	check(radio.on and radio.frequency == 600.0, "and on again")
 
 	radio.frequency = 650.0
 	press(&"mark_frequency")
@@ -37,7 +37,7 @@ func run() -> void:
 		first), "a tick on the band in its colour")
 
 	var colours := {first.to_html(): true}
-	for khz: float in [1200.0, 1500.0, 1800.0]:
+	for khz: float in [1200.0, 1500.0, 1650.0]:
 		radio.frequency = khz
 		press(&"mark_frequency")
 		await physics_frames(1)

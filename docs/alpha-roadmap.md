@@ -7,10 +7,16 @@ game loop with progression and conclusions; final art and final balance can foll
 
 ## Version policy
 
-- Fix releases increment the patch: **0.2.1-alpha “Sailboat”** is published.
-- Named alpha sub-releases increment the minor and reset the patch. Reserve
-  **0.3 “Sanddune”** for the next such release, followed by **0.4 “Spaceport”**.
-- **1.0.0-alpha** marks the full Alpha gate below. It is still a pre-release.
+The canonical [version policy](version-policy.md) uses milestone numbering:
+
+- A new named playable milestone increments the middle number and resets the
+  patch. Current development targets **0.3 “Sanddune”**, then **0.4 “Spaceport”**.
+- Fixes, tuning, polish and bounded improvements within a milestone increment
+  the patch. Patches retain the base name; an adjective is optional.
+- Alpha, Beta and full release describe earned maturity gates. **1.0.0-alpha**
+  marks the full playable Alpha gate below; it is not the public full release.
+- Numbers describe release sequence and scope, not percentage complete or save
+  compatibility. State run/profile compatibility and migrations in release notes.
 - Each release needs accurate notes and Linux, Windows and macOS builds from the
   same verified commit. A version change alone does not publish a release.
 
@@ -174,6 +180,7 @@ fixes may ship as patches on the way to this named minor release.
 | Placeable rope hook and player routing | **Built**: removable physical hook fits suitable solid faces and redirects an ordinary line through one guide, preserving line identity, total length, bend load, visible route and save state. | Sanddune control clarity. Real-hand routing and restore checks pass; players still need to learn the interaction in ordinary sailing. Multiple guides per line remain outside this first implementation. |
 | Short visual sailing notes and UI consistency | **Built**: four actual gameplay screenshot pages, brief sailing-only captions and shared UI fonts. All pages were inspected at 1280×720: 533×300 px images, two-line 20 px captions and visible navigation. | Sanddune teaching. The separate Surveyor Guide retains its prose pages. Unassisted comprehension and handling acceptance remain; refresh images if the illustrated geometry changes. |
 | Deck boarding and exposed wreck traversal | **Built**: sprint/jump ledge vault, exposed wreck panel collision, board-on-roof support and the Hopper ramp repair are integrated and pass all 19 platform/build checks. | Sanddune movement polish. Physical contact, walkable tops and cut openings are covered. Near-level mixed-deck baselines reach 108 pieces; one 16-piece powered boarding and one 27-piece offset-mount battery transition passed. Steep terrain and boarding large mast/rope-loaded craft still need combined coverage and playtesting. |
+| First-person player body | **In progress, focused checks passed**: gonk's Surveyor suit is merged into the integration candidate; actual body/rest/headroom checks and unseen first-person/exterior captures pass. | Sanddune visual work. Physical movement/collision remains owned by Player. Hands reaching held items are preliminary; functional suit equipment, body storage and spatial inventory are separate future work. Combined CI and human acceptance remain pending. |
 | Ground sitting, prone crawling and sleep | **Built**: supported rest changes physical clearance and eye height; prone use offers existing safe sleep. Focused headroom, wind/rope/slip, moving-support, save/legacy and initial-eye-fit checks pass; all three eye heights were inspected on the real GPU. | Sanddune movement and rest. All 19 platform/build checks passed at `2fe581a7`; ordinary-player comfort remains a gate. |
 | Continuous rope coil | **Built**: one shared winding deforms continuously at the actual paying end, preserving fibre gauge, line identity and endpoint motion. Actual payout/gather captures were inspected. | Sanddune rope presentation. All 19 platform/build checks passed at `2fe581a7`; ordinary-player acceptance remains pending; GPU timing is not established by these captures. |
 | Pause-menu Controls | **Built**: one readable, scrollable current-bindings page reached directly from the system menu or Options; the separate overlay and persistent footer are removed. | Sanddune usability. Keyboard, wheel, bar, gamepad, live bindings, console coverage and 720p captures pass; full platform/build verification passed. |
@@ -181,7 +188,7 @@ fixes may ship as patches on the way to this named minor release.
 | Shared terrain residency policy | **Built, foundation only**: terrain construction, collision retirement and object lifetime share the existing player-area rules. Radii, retirement margins, carried/ridden exceptions and freeze/thaw behavior are unchanged. | Sanddune preparation for a second supported area. Full Linux verification and focused origin, seam and camp warning/deletion checks pass. This does not retain a distant camp. |
 | Marked camp residency | **Built, native checks passed**: one claimed Home now retains bounded terrain, collision and history on master; a 2.1 km trip and distant save/restore pass. | Sanddune expedition priority. Real retained-ruin excavation and duplicate-sheet restoration checks pass. Combined Linux, native platform and build checks passed. Small live-powered and loaded nine-piece expeditions pass; unassisted play and broader simulation/budget acceptance remain gates. At 512 work items graph refresh alone measured 5.6 ms p95 with frozen fixture bodies; this is not full physics/render acceptance. No unlimited moon-wide retention promise. |
 | Homing beacon and basic camp return | **Built, native checks passed**: physical chassis beacon, Surveyor/salvage acquisition and requested carry-view bearing/distance with live or last-known fix. | Sanddune navigation priority leading toward Spaceport. One Home, 1 W, 2 km initial reception; combined Linux, native platform and build checks passed; unassisted playtest acceptance remains. No permanent minimap or automatic terrain survey. |
-| Continued-release line gathering and batch mooring | **In progress** on an isolated development branch: hold the existing untie action to collect separate ends in hand, then tie or drop them through ordinary interactions. | Sanddune control work. Preserve each line's identity, length, route and load, one timed untie per end, cancellation and save/restore. No dedicated binding; not yet integrated or accepted. |
+| Continued-release line gathering and batch mooring | **In progress, focused checks passed** in the integration candidate: hold the existing untie action to collect separate original ends in hand, then tie, retrieve or drop the knot through ordinary interactions. | Sanddune control work. Preserve each line's identity, length, route and load, one timed untie per end, cancellation and save/restore. No dedicated binding. Actual input, ordinary anchoring/retrieval, mass, drop momentum and held/anchored/loose save checks pass; combined CI and visual acceptance remain pending. |
 
 The integrated sailing and wreck state at `2bcba651` passed all 19 jobs in
 [combined verification](https://github.com/hunterjsb/desert/actions/runs/39480273621),
@@ -214,6 +221,13 @@ navigation remain the stretch candidates listed above. They can move to Spacepor
 the full crop roster is not a Sanddune gate.
 
 ### 0.4 “Spaceport”: one-line kite and the next exploration layer
+
+Gonk's [radio-equipment modelling lab](../look/radio_kit/README.md) preserves
+receiver tiers, band/window/module studies and an experimental antenna-kite/static
+rig. These are references for future equipment, not proof that the kite, receiver
+tiers or electrostatic hazards are implemented. Existing FM/shortwave converters
+and antenna reels are part of the current runtime radio progression.
+
 
 | Feature | Status as of 2026-10-21 | Scope and remaining evidence |
 | --- | --- | --- |

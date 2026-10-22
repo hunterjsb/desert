@@ -269,15 +269,14 @@ the frame is a part stuck on the deck.
 | Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Line of Sight** | Hear an FM station come through quiet | First Light | `Radio`'s tick on the FM band: a station over its threshold enough to be quiet, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **Whistler** | Hear a whistler on an antenna reel's wire, away from your camp's hum | First Light | `Radio`'s tick at the AM dial's bottom: a whistler falling while natural radio comes through whole on a long wire, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Foxhole Radio** | Hear a god inside its window on a crystal set | First Light | `Radio`'s tick on a god with a crystal set: its words useful, coming through and not cut, you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Close Listening** | Hear a god inside its window on a crystal set, through a headset | Foxhole Radio | the same tick as Foxhole Radio, with a headset in the set's bay and the set carried or in your hands (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Null** | Turn a radio until a god you hear falls silent | First Light | `Radio`'s tick on a god: one that would come through whole broadside to the set's ferrite rod, silent end-on to it, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Long Wire** | Hear a satellite clear on an antenna reel's wire strung from the radio | First Light | `Radio`'s tick on shortwave: an antenna reel's wire strung `sw_wire_m` or more from it and a satellite coming through whole, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **Sky Wave** | Hear a satellite clear on an antenna kite flown from a reel | Long Wire | the same tick as Long Wire, with an antenna kite flying from the reel and adding gain (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **Grounded** | Have an earth stake take a kite's charge to ground | Long Wire | `AntennaKite`'s tick: an earth stake set down by its reel or set dumping charge past its spark gap (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **High Wire** | Hear a satellite clear on a kite flown 50 m up on a radio's lead | Long Wire | `Radio`'s tick on shortwave: an antenna kite on its top hook's lead 50 m or more up and a satellite coming through whole, the volume up and you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Grounded** | Let a staked kite lead take an arc to earth | First Light | `AntennaKite`'s tick: its lead through a driven stake, the stake's ring dumping charge that had climbed past an arc's (built 2026-10-21) |
 | Signals | **Storm on Tu** | Hear Tu roar on shortwave | First Light | `Radio`'s tick on the shortwave band: Tu's roar coming in as loud as an anomaly's crackle is a tell, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **Mayday** | Hear a wreck's distress call come through whole | First Light | `Radio`'s tick on the AM dial: a wreck calling SOS near 500 kHz coming through whole, the volume up and you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Mayday** | Hear a wreck's distress call come through whole | First Light | `Radio`'s tick on the AM dial: a wreck calling SOS near 240 kHz coming through whole, the volume up and you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Pantheon** | Hear all seven gods | First Light | the same, each god counted once a profile |
 | Signals | **Triangulated** | Fix the living city with three crossing bearings | Pantheon | the Console noting the Walker's contact log (`Chart`): three of its noted bearings crossing within 3 km, 8° apart or more (built 2026-10-19) |
 | Signals | **The Living City** | See the living city's lights | Triangulated | `CityLights`: its lights shown for your eye at night within its chatter's range, in view, over the dunes and past the storms (built 2026-10-19) |
@@ -305,7 +304,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 69 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire, Null and Whistler since 2026-10-20; Flight Plan, Foxhole Radio, Close Listening, Sky Wave, Grounded and Mayday 2026-10-21), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21, 69 now), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -829,13 +828,13 @@ families.
 
 ### Radio upgrades' deeds (2026-10-21; implemented development)
 
-Close Listening (`close_listening`, after Foxhole Radio), Sky Wave and Grounded
-(`sky_wave`, `grounded`, both after Long Wire), signals family, radio icon, bring
-the roster to 68 deeds in eleven families (`Deeds.TABLE`; 16 of them signals).
-Close Listening and Sky Wave are recorded by `Radio`'s tick, Grounded by the
-antenna kite's as an earth stake takes its charge (Radio probe 56). Mayday
-(`mayday`, after First Light), with the bands rebuilt, is hearing a wreck's
-distress call whole on the AM dial: 69 deeds, 17 of them signals.
+Close Listening (`close_listening`, after Foxhole Radio), signals family, radio
+icon, is recorded by `Radio`'s tick. Mayday (`mayday`, after First Light), with
+the bands rebuilt, is hearing a wreck's distress call whole on the AM dial.
+*Merged 2026-10-21:* the kite from the radio broadcasts work replaced this
+branch's reel-flown one, so its High Wire and Grounded (radio probes 55-58)
+stand in for Sky Wave and the earth stake's Grounded, and Whistler went with
+natural radio: 69 deeds in eleven families (`Deeds.TABLE`).
 
 
 **Combined development resume check (2026-10-20).** The preparatory Sanddune
@@ -845,3 +844,29 @@ and legacy-start compatibility passes (24 s), and posture/legacy/initial-eye
 restoration passes (13 s). Arrival restore guards, resolved survivor references
 and ground-pose restoration coexist in Snapshot. This is focused development
 evidence; combined CI and ordinary-player acceptance remain pending.
+
+## Gathered lines and Make Fast (selected 2026-10-21; implementation)
+
+Gathering keeps every original Line and end. The primary end carries the others
+through ordinary nested fittings; the run records enough ordered member sockets
+to rebuild that physical group before reconnecting rope endpoints and routes.
+Restore a carried member selection only after hands and waist are restored. A
+missing group/selection field means the legacy single-end behavior. Continued
+untie timing is transient; taking a snapshot does not mutate a live interaction.
+
+**Make Fast** belongs to Wind after Set Sail. Record it when an ordinary player
+placement finishes securing a gathered group with at least two distinct live
+lines to one anchor. Gathering, dropping, failed placement and restore do not
+record it. Its card uses the existing stake image. This adds one candidate deed,
+bringing the development roster from 64 to 65 in the same eleven families;
+the real placement check passes (Rope 30, 7 s) and real save/resume passes
+(Save 46, 19 s). Gathering alone does not award it; ordinary anchoring does.
+Combined candidate verification remains pending.
+
+**Whistler cut (2026-10-21).** Natural radio went when the AM dial became a real
+set's longwave and mediumwave (Radio, sound & atmosphere), and its deed with it:
+the roster is 64 in the same eleven families. A profile that earned it keeps
+its record, unshown: the deeds grid lists only `Deeds.TABLE`.
+
+**High Wire and Grounded (2026-10-21).** The antenna kite brings two signals
+deeds (Radio, sound & atmosphere): the roster is 66 in the same eleven families.

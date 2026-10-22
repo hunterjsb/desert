@@ -885,7 +885,7 @@ carving out from camp fired it again, chime and all, and the line dropped and ca
 back; past the edge it said "lost in 0 s" until streaming let the camp's chunk go,
 seconds later on a busy machine.
 
-## Your body (2026-10-21; on review, `codex/player-body`)
+## Your body (2026-10-21; integration candidate)
 
 You have a body: the Surveyor's suit (`SurveyorLooks`, art direction), posed
 each frame by `Body` from how you move, with no shapes of its own.
@@ -906,8 +906,96 @@ each frame by `Body` from how you move, with no shapes of its own.
   middle, so looking down you see your boots and not the inside of your
   chest.
 
-Movement probe 39. Open: bring held things nearer, about 0.6 m, so your
-hands close on them?
+Body probe 39 passes on current master plus this candidate (9 s), alongside
+existing ground-rest/crawl and headroom probes 36/37 (6 s each). Actual unseen
+1280×720 captures cover standing, walking, held radio, crouching, sitting and
+prone, through the player's eyes and from outside. Looking down shows the boots;
+helmet/collar do not obscure the first-person view. Held-radio hands still stop
+short of the item at the existing hold distance. Combined CI and human acceptance
+remain pending.
+
+**Holding reach audit (2026-10-21; measured limitation, no runtime change).**
+The existing arm and grip measure 0.28 + 0.25 + 0.08 = 0.61 m. With the real
+radio held at its unchanged distance, a level view puts the current grip target
+1.156 m from the shoulder; even the nearest point anywhere on the radio's
+collision bounds is 1.064 m away. Looking down 25 degrees gives 1.053 m and
+0.959 m respectively. The battery's nearest bounds are 1.090 m / 0.986 m away.
+These nearest-bound distances are optimistic lower bounds, not authored grips.
+A local wrist rotation or ordinary shoulder protraction cannot bridge this gap.
+Do not silently stretch the arms, detach the shoulders, or move held physics
+objects to hide it. Preserve gonkhub's suit and its current interaction poses
+until a carrying-pose decision is made.
+
+For a future coordinated interaction pass, near-side radio grips at a level
+view would require an eye-to-item-center distance of roughly 0.44 m with the
+current shoulder, or roughly 0.52 m with an illustrative 0.08 m forward shoulder
+shift. The current side-at-origin targets require roughly 0.34 m. These are
+geometric options, not adopted tuning; 0.6 m alone does not establish a grip.
+The cutter's separate low-right carry already has reachable bounds (0.512 m
+level, 0.383 m looking down 25 degrees), and the chassis's near edge is 0.550 m
+away looking down 25 degrees. Item-local grip anchors could improve these
+cases independently, but cannot solve the radio or battery at their present
+distance. Their actual handle geometry and wrist pose still need inspection.
+
+**Selected bounded correction (2026-10-21).** Keep the arm lengths and all held
+physics poses. A cutter targets its drawn rear handle in the cutter's own frame,
+not a point beside its barrel. A held chassis targets each hand's nearest point
+on an actual enabled frame box, not the aggregate bounds or its distant middle;
+joined pieces remain separate surfaces. Transform these anchors through the
+actual held item pose so turning it preserves the contact target. The existing
+fixed-length arm solve still refuses targets beyond reach. This improves
+reachable carrying poses without claiming to solve small items held too far
+away. No new interaction, suit system or deed is introduced.
+
+An isolated real-Hands measurement checked radio, battery, cutter and chassis
+at level, 25-degree and 60-degree downward views; actual unseen 1280×720 held-
+radio captures from the player's eyes and outside confirm the visible gap.
+This audit changes documentation only; no new gameplay or physics acceptance
+is claimed.
+
+**Bounded correction as built.** Body now uses the cutter's drawn rear handle
+and the nearest enabled, non-fitting chassis frame box surface for each hand.
+The target follows the object's actual transform; no object, shoulder or bone
+length moves to obtain contact. Movement 41 fails on the exact pre-fix body:
+the cutter misses its handle by 0.10549 m and each chassis hand misses the
+physical frame by 0.02002 m. The corrected real-Hands carry at 25 degrees down
+has less than 0.00001 m contact error for all three gloves. The check also
+retains the original joint lengths and unit bone scales, and repeated posing
+leaves player/item transforms, velocities and collision shapes unchanged.
+It passes in 7 s; existing body probe 39 passes in 10 s. Actual unseen 1280×720
+before/after first-person and exterior captures cover radio, cutter and chassis.
+The chassis gloves meet the near plate; the cutter grasps its rear handle,
+mostly below the first-person viewport. Radio/battery reach remains unresolved
+as measured above. No finger animation or full carrying redesign is claimed.
+Combined CI and human acceptance remain required.
+
+
+### Riding view comfort correction (selected 2026-10-21)
+
+A playtest reports the chest clipping the first-person view and severe body
+jitter on the hoverboard. Keep the rigid suit and its shadows/external views,
+but put hips and trunk on the existing own-camera exclusion layer alongside
+head/collar. Body's visual root must use the same between-tick ride translation
+that Feel's camera and Ride's rendered board already use. A 20 m/s ride at
+60 Hz otherwise leaves up to 0.333 m relative displacement each tick. Read
+posture from the steady eye, not the render camera's interpolation, bob or
+shake. This is a drawing correction only: no player, board, held-object or rope
+physics changes. Keep boots and arms visible while checking actual riding
+frames at low render rate with unchanged 60 Hz physics.
+*Superseded in part 2026-10-21 (gonkhub: the slimmed suit instead of "the
+no-torso version"): the slimmer suit keeps the chest out of the view, so hips
+and trunk are drawn for your own eyes again; head and collar stay excluded, and
+the between-tick ride translation stays.*
+
+Movement 42 passes in 12 s: 29 actual post-process frames at 15 FPS/60 Hz,
+reaching 18.42 m/s, have zero measured suit/board rendered-origin error. Exact
+pre-fix master fails the torso-mask checks and has 0.09325 m relative origin
+error under the same fixture. Actual unseen 1280×720 before/after sequences at
+14 FPS/60 Hz cycle interpolation phases while looking 58 and 82 degrees down.
+Inspected six-frame contact sheets reproduce the old chest filling and flashing
+across the view; the corrected frames retain clear board, arms and boots.
+A 24-frame corrected riding clip is retained outside the repository. Existing
+movement physics remain unchanged; combined verification is still required.
 
 ## Rules
 
@@ -1527,6 +1615,42 @@ defect was demonstrated. Solver means were 0.16–0.28 ms/tick across these phas
 This covers one offset mixed assembly and battery transition, without mast, ropes,
 steep terrain or player loads; the helper emitted teardown warnings after passing.
 
+#### Authored placement in loaded boarding checks (built 2026-10-21)
+
+Use `World.teleport` when a boarding fixture places an already active player at
+its next approach. Directly assigning that CharacterBody's position creates a
+native kinematic impulse before the test's input begins. An external 27-piece
+uneven-craft case initially misidentified that setup impulse as powered-off
+boarding instability: the first no-input tick already spun the deck at 9.287
+rad/s. Keeping the original input cadence and 0.9 s / 0.08 m acceptance while
+using the existing teleport API removes the kick. No Player/vault force law,
+collision policy or acceptance threshold needs changing for this observation.
+
+Keep a focused real-input regression covering the loaded, offset mixed craft,
+ordinary battery exhaustion while aboard and powered-off reboarding. Retain
+live native support and the actual hinged mast, routed sheet and mooring lines;
+the fixture's setup teleport must not become a gameplay force workaround.
+
+Movement 40 now covers that single combined boarding/ordinary-touchdown failure
+mode. The notched 27-piece craft weighs 407 kg, carries eighteen offset hover
+trays, nine offset skates, a real hinged mast and three physical lines, and sits
+on actual sand with 0.514 m height spread. A 5 Wh battery drains through ordinary
+device demand; both boarding attempts use actual movement input and unchanged
+0.9 s / 0.08 m top/floor acceptance. No runtime boarding code changed.
+
+On the inspected Godot 4.7.2 unseen GPU run, powered boarding peaked at 0.1195
+rad/s and 0.790 degrees tilt; grounded reboarding peaked at 0.0892 rad/s and
+2.127 degrees, with feet 0.06076 m above the chassis origin and floor true.
+Natural power loss/touchdown briefly reached 0.6653 rad/s and 4.094 degrees,
+then settled. All sampled frames during depletion/touchdown and the eight
+seconds after reboarding retained floor contact, and no missing-ground rescue
+ran. Movement 32, 35, 39 and 40 pass. The four actual 1280x720 captures in
+`look/loaded_boarding` were inspected at powered boarding, touchdown, grounded
+boarding and settling. They establish the visible endpoints for this one
+moored moderate-wind assembly, not free-sailing/storm boarding or movement feel.
+The GPU run passed before reporting eleven ObjectDB instances and four resources
+still in use at teardown; these warnings remain unresolved.
+
 ## Solid wreck support (2026-10-20; built)
 
 The board's hover previously read sand alone, so even an existing solid roof
@@ -2023,3 +2147,57 @@ contacts, multiple booms, rough terrain, or larger camps. Upright runner support
 does not enter this added chassis path. Further optimization should investigate
 geometry/height-query reuse while preserving impulse order and fresh projected
 velocities; caching the full physics snapshot changes sequential contact response.
+
+### Cache the chassis's ordered frame geometry (2026-10-21; selected experiment)
+
+A preceding scoped last-chunk/sample-array experiment preserved the printed
+physics outcomes but offered no measured benefit: mean falling CPU rose from
+13.427 to 13.667 ms/tick and settled CPU from 12.208 to 12.479 ms/tick in its
+four-run comparison. That sampler was rejected and is not part of this change.
+
+For the tipped chassis's own frame only, retain the ordered collision-shape
+references and each shape's eight local AABB endpoints. Keep every contact and
+its original order. Read current enable/socket flags, shape identity, local and
+global transforms before use; continue refreshing native/projected velocity in
+each contact. Mounted devices retain the existing uncached traversal. This does
+not include terrain-read reuse or any change to the contact law.
+
+Rebuild after child order/assembly changes through `_shapes_changed`, including
+join, detach, reroot, fitting, mounting and removal. Shape resource changes
+invalidate cached endpoints; replacement resources must be recognized before
+their first contact. Disabled state and transforms are read live, so enabling a
+shape, changing its pose or shifting the origin cannot reuse stale world points.
+Measure the same 108-piece capsized fixture in candidate/baseline/baseline/
+candidate order and preserve its exact printed contact/motion outputs. Integrate
+only if the bounded measurement demonstrates a benefit.
+
+The 108-piece, 1,772 kg fixture compared verified source `59db765c` with the
+geometry-cache candidate, both with identical contact/model counters. In the
+four-run candidate/baseline/baseline/candidate order:
+
+| Whole-process CPU per physics tick | Baseline runs | Cached-geometry runs |
+| --- | ---: | ---: |
+| Falling | 13.708 / 14.000 ms | 13.521 / 13.854 ms |
+| Settled | 12.542 / 13.417 ms | 12.292 / 12.438 ms |
+
+The two-run falling medians are 13.854 → 13.688 ms (1.2% lower); settled medians
+are 12.979 → 12.365 ms (4.7% lower). Both paired comparisons improve, but the
+second baseline is noisier. This is a small bounded CPU benefit on a shared
+host, not recovery of the entire earlier correctness cost or a general frame
+budget. Cold-cache rebuilding, frequent geometry edits and other craft shapes
+have not been separately timed.
+
+Every printed non-timing field matches exactly across all four runs, including
+1,017 candidate corners per tick, 12.477 falling / 8 settled near contacts,
+2.223 / 3 impulses and the full final heel/speed/spin values. The native solver,
+terrain queries, transforms and ordered impulses are unchanged. Upright decks
+never enter this added frame-contact path; mounted-device frame traversal stays
+uncached.
+
+Focused Sail 4/24, World 4 and Devices 19/23 pass unchanged. World 13 compares
+the cached ordered geometry with the actual native-shape debug bounds after
+joins, legal reroot/detach, resource edits/replacement, pose/enable/order changes,
+mounting/removal and an origin shift; it passes in 5 s. This guard holds its
+fixture above sand to inspect geometry without applying impulses; the live
+108-piece A/B supplies the physical contact/motion evidence. Combined CI and
+native-platform acceptance remain the integration gate.

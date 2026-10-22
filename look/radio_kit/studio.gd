@@ -108,8 +108,6 @@ func _shots() -> Array:
 	list.append(["kite_storm_ruined", LOOKS.kite(0.4), Vector3(0.35, -0.25, 1.0), 0.9, 1.0, {"torn": 0.55}])
 	list.append(["kite_charged", kite, Vector3(0.35, -0.25, 1.0), 0.3, 1.0, {"charge": 1.0}])
 	list.append(["reel", LOOKS.reel(), Vector3(0.8, 0.4, 0.7), 0.2, 1.0])
-	list.append(["earth_stake", LOOKS.earth_stake(), Vector3(0.5, 0.2, 1.0), 0.2, 1.0])
-	list.append(["earth_stake_head", LOOKS.earth_stake(true), Vector3(0.6, 0.3, 1.0), 0.2, 4.0])
 	return list
 
 
@@ -139,8 +137,6 @@ func _shoot(shot: Array, out: String) -> void:
 	if zoom > 1.5:
 		# Close in on the face: its band window, upper middle.
 		look_at = view.position + Vector3(0.0, LOOKS.BAND_Y - 0.01, box.end.z)
-		if String(shot[0]).begins_with("earth_stake"):
-			look_at = view.position + Vector3(0.0, 0.5, 0.0)
 	camera.look_at_from_position(look_at + dir * distance, look_at, Vector3.UP)
 	for k in 4:
 		await RenderingServer.frame_post_draw

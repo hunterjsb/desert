@@ -72,9 +72,9 @@ const LIST: Array[Dictionary] = [
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"sail_tow"},
 	{"key": "yacht", "label": "a floating 3x2 deck with a keel, a mast and a helm seat, a breeze", "kind": "sail",
 		"day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"yacht"},
-	# A shortwave set, its reel clipped and set out, an earth stake by it and the
-	# antenna kite in your hands: use it on the reel to fly it.
-	{"key": "kite", "label": "a shortwave radio, its reel set out, an earth stake, a kite in hand, a breeze",
+	# A shortwave set, the antenna kite cabled to its top hook through a driven
+	# stake: use the kite to fly it.
+	{"key": "kite", "label": "a shortwave radio, a kite on its top hook's cable through a stake, a breeze",
 		"kind": "sail", "day": [0.35, 0.5], "breeze": [8.5, 11.5], "lays": &"kite"},
 	{"key": "wreck", "label": "every wreck in a fan ahead, dug out, and what strips them at your feet",
 		"kind": "clear", "day": [0.36, 0.5], "calm": 6.0, "lays": &"wrecks"},
@@ -1057,21 +1057,33 @@ static func radio(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## A radio with a shortwave converter, switched on to shortwave; an antenna
-## reel clipped to it and set out to its side, an earth stake beside that, and
-## the antenna kite in your hands.
+## A radio with a shortwave converter, switched on to shortwave, a rope hook
+## on its top; the antenna kite set down off it, and a cable from the hook's
+## stem to the kite reel's lead terminal through a stake driven between: use
+## the kite to fly it.
 static func kite(world: World) -> Array[Node3D]:
 	var shortwave := standing(world, &"radio", [&"battery", &"sw_converter"], RADIO_AT) as Radio
 	shortwave.on = true
 	shortwave.switch_band()
-	var reel := standing(world, &"antenna_reel", [], [RADIO_AT[0] + 3.0, RADIO_AT[1]]) as AntennaReel
-	reel.clip(shortwave)
-	var stake := standing(world, &"earth_stake", [], [RADIO_AT[0] + 3.5, RADIO_AT[1] + 0.8])
-	var flier := Catalog.device(&"antenna_kite")
-	world.content.add_child(flier)
-	flier.global_position = world.player.global_position + Vector3.UP
-	world.player.hands.hold(flier)
-	return [shortwave, reel, stake, flier]
+	shortwave.fit(Catalog.part(&"hook"), _open(shortwave, &"radio_top"))
+	var flier := standing(world, &"antenna_kite", [], [RADIO_AT[0] + 4.0, RADIO_AT[1]]) as AntennaKite
+	var stake := Catalog.stake()
+	world.content.add_child(stake)
+	var mid := shortwave.global_position.lerp(flier.global_position, 0.5) + Vector3(0.0, 0.0, 0.6)
+	stake.drive(mid, world.height_under(mid))
+	var cable := Catalog.cable(world, shortwave.global_position + Vector3.UP, false)
+	shortwave.fit(cable.plugs[0], _open(shortwave, &"lead"))
+	flier.fit(cable.plugs[1], _open(flier, &"lead"))
+	cable.route(stake)
+	return [shortwave, flier, stake]
+
+
+## A device's first open socket of a kind, or null.
+static func _open(device: Device, kind: StringName) -> Socket:
+	for socket in device.sockets():
+		if socket.kind == kind and socket.is_open():
+			return socket
+	return null
 
 
 ## The radio of "radio" on the weather station, beside its charged shield,

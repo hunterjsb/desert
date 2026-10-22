@@ -33,20 +33,31 @@ the existing nine Linux groups, with all failures still blocking landing. Run po
 is once a minute. Documentation-only changes skip CI as before.
 
 Master and tags always run Linux, native macOS/Windows probes and build smoke checks.
-Native probes split arrival, camp and movement into their own parallel group to
-keep the remaining families within the job budget. New folders still join “the rest”.
+Native probes balance survival with arrival/camp/movement, power/farming with
+saves/kits/sailing, and physical gear together to keep each group within budget. New folders still join “the rest”.
+Linux balances radio with foundation/world checks and menus with devices, leaving
+the catch-all group for unlisted folders.
+Probe durations have their own per-platform/group cache so long checks start first.
+`## Exclusive` runs a check alone on every platform.
+`## Exclusive on noisy runners` keeps measured contention-sensitive checks out of the
+native parallel pool; those checks still run, unlike real-frame timing checks.
+`scripts/probe-runner-test.sh` checks scheduling without starting Godot.
 Manual Probes dispatches default to `full_platforms=true`, retaining full preview
 coverage; only an explicit branch dispatch with `full_platforms=false` omits the native
 and build jobs. Master/tag coverage cannot be disabled by that input.
 
 ## Releasing
 
-Fix releases increment the patch version (for example `0.2.1-alpha`). Alpha
-sub-releases increment the minor version, reset the patch to zero, and always
-have a name. The current 0.2 line is **“Sailboat”**; the next minor release is
-**0.3 “Sanddune”**. Patch releases keep
-their minor release's identity; 0.2.4 is **“Creaky Sailboat”**. Versions change per release, not per commit.
-The [1.0 Alpha roadmap](docs/alpha-roadmap.md) tracks the proposed completion gate.
+Desert uses [milestone versioning](docs/version-policy.md), with compatibility
+stated separately in release notes. A new named playable milestone increments
+the middle number and resets the patch; fixes, tuning, polish and bounded
+improvements within it increment the patch. Patch names retain the milestone's
+base name, with an optional adjective. Versions change per release, not per commit.
+
+The latest published game release is **0.2.4-alpha “Creaky Sailboat”**. Current
+development targets **0.3 “Sanddune”**, followed by **0.4 “Spaceport”**.
+**1.0.0-alpha** earns the [full Alpha roadmap gate](docs/alpha-roadmap.md#full-alpha-acceptance-gate);
+Beta and the public **1.0.0** each have later quality gates in the version policy.
 
 The version lives in one place, `application/config/version` in `project.godot`, and
 shows in the main menu's corner alongside `application/config/release_name`.
@@ -81,3 +92,17 @@ The separate desktop launcher installs and runs published game releases or opens
 checked-out source worktree in Godot. See [launcher/README.md](launcher/README.md) and
 the [launcher PRD](docs/prd/launcher.md). Its cross-platform builds publish from
 `launcher-v*` tags independently of the game version.
+
+## Performance observatory
+
+[The GitHub Pages dashboard](https://hunterjsb.github.io/desert/) refreshes after
+completed master Probes and Release workflows, including failures. It shows
+probe/retry costs, job and build steps, artifact sizes and opt-in game measurements.
+It consumes existing evidence; it never reruns the suite or gates a game release.
+Real-frame metrics are Linux-only and headless, so they do not measure GPU cost.
+
+Refresh manually with `gh workflow run performance-pages.yml`. The site requires
+GitHub Pages configured to use GitHub Actions. Its bounded history cache retains
+40 runs; on cache loss it backfills eight recent runs per workflow. Source and
+checks live in `site/` and `scripts/ci_dashboard/`; requirements and measured results
+live in [Probes and builds](docs/prd/probes-and-builds.md).

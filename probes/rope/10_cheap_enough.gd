@@ -36,6 +36,9 @@ func run() -> void:
 	var loaded := ropes.ropes.filter(func(r: Rope) -> bool: return r.is_taut()).size()
 	print("%d lines (%d pulling) in a %d m/s gusting storm: %.3f ms a tick on average, %.3f ms at the 99th percentile, %.3f at worst"
 		% [ropes.ropes.size(), loaded, roundi(wind.storm_speed()), mean, costs[int(costs.size() * 0.99)], costs[-1]])
+	metric("Rope mean tick", mean, "ms", MEAN_MS)
+	metric("Rope p99 tick", costs[int(costs.size() * 0.99)], "ms", P99_MS)
+	metric("Rope worst tick", costs[-1], "ms")
 	check(ropes.ropes.size() == DEVICES * 2 and loaded == DEVICES * 2, "thirty lines, all of them pulling")
 	check(mean < MEAN_MS, "they cost under %.1f ms a tick on average" % MEAN_MS)
 	check(costs[int(costs.size() * 0.99)] < P99_MS, "and under %.1f ms in the worst hundredth" % P99_MS)

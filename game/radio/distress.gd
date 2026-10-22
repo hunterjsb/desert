@@ -4,15 +4,16 @@ extends RefCounted
 ## Signals, half the gods, and long distance beacons"). Some of the wrecks in
 ## the sand still run their emergency transmitter on what battery they have
 ## left: SOS in morse, then the wreck's own fix spoken, latitude and
-## longitude, over and over, each on its own carrier either side of 500 kHz,
-## the old maritime distress frequency. A ground wave that low carries far,
-## so a call is a way to salvage. Pure in the seed and the sites laid.
+## longitude, over and over, each on its own carrier either side of 240 kHz,
+## on longwave, since the old maritime 500 kHz falls in the dial's gap. A ground
+## wave that low carries far, so a call is a way to salvage. Pure in the seed
+## and the sites laid.
 
 ## The wrecks that might call: down from the colony's end on.
 const KINDS: Array[StringName] = [&"freight_pod", &"lifeboat", &"wreck_hull", &"tithe_hauler", &"hopper",
 	&"nomad_rig"]
 ## The distress frequency the calls spread about, kHz.
-const KHZ := 500.0
+const KHZ := 240.0
 ## A radio hears this many of the nearest calls at most, looked for again
 ## once it has moved this far, m.
 const MOST := 3
@@ -47,7 +48,7 @@ static func calling(run_seed: int, site: Site, tuning: Tuning) -> bool:
 	return rng.randf() < tuning.distress_share
 
 
-## A calling wreck's carrier, kHz, a whole one near 500.
+## A calling wreck's carrier, kHz, a whole one near 240.
 static func carrier(run_seed: int, site: Site, tuning: Tuning) -> float:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([run_seed, site.id, "distress_khz"])

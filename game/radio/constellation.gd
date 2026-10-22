@@ -56,6 +56,8 @@ enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
 ## orbit takes it, 1 the highest), facing (for one orbiting Tu, how far round
 ## to Zan's side it is) and drift (a slow wander of its own). Targets: pitch (scale), volume (dB), cutoff (Hz), drive (0 to 1),
 ## tremolo (Hz, 0 for none) and pulse (s between plays).
+## Every satellite went up in the colonial era (gonkhub, 2026-10-21); era names
+## it, and the comments its maker where it has one.
 const ROSTER := [
 	# Hung at L1, beside Tu in the near side's sky, looping slowly round it: it repeats
 	# Port Morgan Tower on shortwave (gonkhub, 2026-10-21: "You need Shortwave upgrade to
@@ -72,7 +74,7 @@ const ROSTER := [
 	# modelled and lit (Deliveryship), crawling up from the horizon and sweeping overhead
 	# (gonkhub, 2026-10-19; 6 km, 2026-10-20; "much much higher", 2026-10-21). A run
 	# begins with it passing over.
-	{"id": &"deliveryship", "era": "Frontier Ag", "band": Vector2(14200.0, 14300.0),
+	{"id": &"deliveryship", "era": "colonial", "band": Vector2(14200.0, 14300.0),
 		# Over Port Morgan every lap (gonkhub, 2026-10-21), its route swinging 37° a lap
 		# round the port, so the rest of its track sweeps over every place in time.
 		"orbit": {"altitude": 1.2566, "minutes": 7.95, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
@@ -82,24 +84,24 @@ const ROSTER := [
 		"lfo": [[&"temperature", &"pitch", 0.7, 1.4], [&"elevation", &"cutoff", 700.0, 7000.0]], "duty": []},
 	# StarCom's timing beacon, hung at L2 over the far side's middle, where the
 	# observatory stands: its tick quickens as the eclipse comes.
-	{"id": &"pendulum", "era": "StarCom", "band": Vector2(10000.0, 10000.0),
+	{"id": &"pendulum", "era": "colonial", "band": Vector2(10000.0, 10000.0),
 		"orbit": {"lagrange": 2},
 		"look": {"color": Color(0.4, 0.9, 1.0), "size": 1.1, "shape": Shape.CROSS, "light": 0.32},
 		"sound": {"track": Sounds.RADIO_PING, "db": 0.0, "pulse": 2.0},
 		"lfo": [[&"eclipse", &"pulse", 3.0, 0.25], [&"drift", &"pitch", 0.97, 1.03]], "duty": []},
 	# StarCom's navigation beacon, a quick double ping, higher the higher it stands: a
 	# lazy ellipse low over the equator, its perigee wandering round.
-	{"id": &"sextant", "era": "StarCom", "band": Vector2(29030.0, 29050.0),
+	{"id": &"sextant", "era": "colonial", "band": Vector2(29030.0, 29050.0),
 		"orbit": {"altitude": 1.8, "minutes": 26.6, "tilt": Vector2(10.0, 35.0), "backward": 0.4,
 			"eccentricity": 0.35, "precess": 20.0, "apsides": 60.0},
 		"look": {"color": Color(0.8, 0.92, 1.0), "size": 1.2, "shape": Shape.POINT, "light": 0.3},
 		"sound": {"track": Sounds.RADIO_PING, "db": -3.0, "pulse": 0.45},
 		"lfo": [[&"elevation", &"pitch", 1.35, 1.8], [&"drift", &"cutoff", 2500.0, 6000.0]], "duty": []},
 	# A weather satellite: it roars as the wind does where you are, and frays in a storm.
-	# Low and quick, a mid-latitude track creeping round.
-	{"id": &"windsock", "era": "StarCom", "band": Vector2(29060.0, 29080.0),
+	# Low and quick, a mid-latitude track creeping round. Drawn tiny: a big ring loomed.
+	{"id": &"windsock", "era": "colonial", "band": Vector2(29060.0, 29080.0),
 		"orbit": {"altitude": 0.9, "minutes": 14.9, "tilt": Vector2(30.0, 50.0), "backward": 0.3, "precess": 25.0},
-		"look": {"color": Color(0.6, 1.0, 0.6), "size": 1.3, "shape": Shape.RING, "light": 0.28},
+		"look": {"color": Color(0.6, 1.0, 0.6), "size": 0.35, "shape": Shape.RING, "light": 0.28},
 		"sound": {"track": Sounds.WIND, "db": 2.0, "pulse": 0.0},
 		"lfo": [[&"wind", &"volume", -18.0, 0.0], [&"wind", &"cutoff", 400.0, 8000.0], [&"storm", &"drive", 0.0, 0.6]],
 		"duty": []},
@@ -110,30 +112,32 @@ const ROSTER := [
 		"look": {"color": Color(0.8, 0.7, 1.0), "size": 1.0, "shape": Shape.PAIR, "light": 0.3},
 		"sound": {"track": Sounds.RADIO_EYE, "db": 0.0, "pulse": 0.0},
 		"lfo": [[&"sun", &"pitch", 0.85, 1.0], [&"drift", &"cutoff", 1200.0, 5000.0]], "duty": []},
-	# Wartime noise, still jamming: chirps that never mean anything, wilder near an anomaly,
-	# and static it sprays across the band round it while it's overhead. An uneven ellipse
-	# swinging fast round, so it's never where you left it.
-	{"id": &"babel", "era": "the war", "band": Vector2(29120.0, 29150.0),
+	# Port Morgan's spectrum guard, put up to jam unlicensed traffic off the port's
+	# channels, still jamming with nobody left to license: chirps that never mean
+	# anything, wilder near an anomaly, and static it sprays across the band round it
+	# while it's overhead. An uneven ellipse swinging fast round, so it's never where
+	# you left it.
+	{"id": &"babel", "era": "colonial", "band": Vector2(29120.0, 29150.0),
 		"orbit": {"altitude": 1.2, "minutes": 18.5, "tilt": Vector2(40.0, 60.0), "backward": 0.6,
 			"eccentricity": 0.2, "precess": 50.0, "apsides": 30.0},
 		"look": {"color": Color(1.0, 0.25, 0.2), "size": 1.1, "shape": Shape.DIAMOND, "light": 0.3, "blink": true},
 		"sound": {"track": Sounds.RADIO_TONES, "db": 0.0, "pulse": 0.6},
 		"lfo": [[&"drift", &"pulse", 0.3, 1.2], [&"anomaly", &"drive", 0.2, 0.9], [&"drift", &"pitch", 0.6, 1.8]],
 		"duty": [], "behave": {"jam": [0.7, 60.0]}},
-	# Nobody knows whose: a wild ellipse that dives to the dunes and hangs far out, its plane
+	# Colonial, and on no registry left, so nobody knows whose: a wild ellipse that dives to the dunes and hangs far out, its plane
 	# and perigee swinging round; dim, tumbling, on in fits, never long on one frequency,
 	# and loudest in a storm.
-	{"id": &"ghost", "era": "unknown", "band": Vector2(3200.0, 3500.0),
+	{"id": &"ghost", "era": "colonial", "band": Vector2(3200.0, 3500.0),
 		"orbit": {"altitude": 6.0, "minutes": 23.0, "tilt": Vector2(60.0, 85.0), "backward": 0.5,
 			"eccentricity": 0.75, "precess": 110.0, "apsides": 80.0},
 		"look": {"color": Color(0.45, 0.55, 1.0), "size": 0.7, "shape": Shape.RING, "light": 0.18},
 		"sound": {"track": Sounds.RADIO_EYE_TUNNEL, "db": 0.0, "pulse": 0.0},
 		"lfo": [[&"storm", &"volume", -20.0, 0.0], [&"height", &"pitch", 0.75, 0.5]], "duty": [],
 		"behave": {"bursts": 0.3, "hop": 17.0, "tumble": [0.37, 0.8]}},
-	# A spent tug, its orbit decaying: it sinks lap by lap, roaring brighter as it
+	# A spent colonial ore tug, Halloran's, its orbit decaying: it sinks lap by lap, roaring brighter as it
 	# skims the air, then a burn throws it back up; spinning, wildly swinging round.
 	# Its track is gonkhub's own, "Cinder".
-	{"id": &"cinder", "era": "the war", "band": Vector2(7100.0, 7175.0),
+	{"id": &"cinder", "era": "colonial", "band": Vector2(7100.0, 7175.0),
 		"orbit": {"altitude": 2.0, "minutes": 4.4, "tilt": Vector2(20.0, 80.0), "backward": 0.7,
 			"eccentricity": 0.15, "precess": 160.0, "apsides": 45.0, "decay": [1.6, 5.0]},
 		"look": {"color": Color(1.0, 0.45, 0.12), "size": 1.4, "shape": Shape.POINT, "light": 0.3},
@@ -143,7 +147,7 @@ const ROSTER := [
 	# StarCom's Tu survey probe, still circling the planet it was sent to map. It can't be
 	# seen from Zan; it's heard only from the near side, while it swings round Tu's face
 	# toward Zan, faint from so far, clearest straight between, gone behind Tu.
-	{"id": &"lantern", "era": "StarCom", "band": Vector2(21500.0, 21600.0),
+	{"id": &"lantern", "era": "colonial", "band": Vector2(21500.0, 21600.0),
 		"orbit": {"around_tu": {"distance": 60.0, "radii": 1.8}, "minutes": 11.0},
 		"look": {"color": Color(0.55, 0.45, 0.35), "size": 0.0, "shape": Shape.POINT, "light": 0.0, "hidden": true},
 		"sound": {"track": Sounds.RADIO_DAY, "db": -3.0, "pulse": 0.0},
@@ -151,7 +155,7 @@ const ROSTER := [
 			[&"drift", &"pitch", 0.55, 0.62]], "duty": [], "behave": {"facing_zan": true, "power": 0.6}},
 	# A survey drone's dead telemetry, a loop it still plays, rising a little with the
 	# sun. Its track is gonkhub's own, "satellite1". Low, near polar, over every latitude.
-	{"id": &"metronome", "era": "Frontier Ag", "band": Vector2(29220.0, 29240.0),
+	{"id": &"metronome", "era": "colonial", "band": Vector2(29220.0, 29240.0),
 		"orbit": {"altitude": 1.0, "minutes": 16.1, "tilt": Vector2(70.0, 88.0), "backward": 0.5, "precess": 33.0},
 		"look": {"color": Color(0.75, 1.0, 0.85), "size": 0.9, "shape": Shape.BAR, "light": 0.28},
 		"sound": {"track": Sounds.RADIO_SAT_METRONOME, "db": 0.0, "pulse": 0.0},

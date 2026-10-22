@@ -22,9 +22,9 @@ jobs:
       fail-fast: false
       matrix:
         group:
-          - probes/foundation probes/world probes/dev
+          - probes/foundation probes/world probes/dev probes/radio
           - probes/weather probes/salvage
-          - probes/devices
+          - probes/devices probes/menus
           - probes/power probes/farming
           - probes/rope
           - probes/movement
@@ -36,16 +36,26 @@ jobs:
     timeout-minutes: 30
     env:
       REST_EXCEPT: >-
-        probes/foundation probes/world probes/dev probes/weather probes/salvage probes/devices
+        probes/foundation probes/world probes/dev probes/radio probes/weather probes/salvage probes/devices probes/menus
         probes/power probes/farming probes/rope probes/movement probes/survival probes/sail
         probes/saves probes/kits
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
 
+      # Imported assets can stay unchanged for weeks; scheduling learns every run.
+      - name: Probe durations
+        uses: actions/cache@v4
+        with:
+          path: .godot/probe_times
+          key: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-
+
       - name: The runner can fail
-        if: matrix.group == 'probes/foundation probes/world probes/dev'
-        run: scripts/probe.sh selftest
+        if: matrix.group == 'probes/foundation probes/world probes/dev probes/radio'
+        run: |
+          scripts/probe-runner-test.sh
+          scripts/probe.sh selftest
 
       - name: Probes
         run: |
@@ -70,8 +80,8 @@ jobs:
         os: [macos-latest, windows-latest]
         group:
           - probes/rope probes/devices probes/weather probes/salvage probes/shield
-          - probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
-          - probes/arrival probes/camp probes/movement
+          - probes/saves probes/kits probes/sail probes/power probes/farming
+          - probes/arrival probes/camp probes/movement probes/survival
           - the rest
     name: ${{ startsWith(matrix.os, 'macos') && 'macOS' || 'Windows' }} ${{ matrix.group }}
     runs-on: ${{ matrix.os }}
@@ -82,17 +92,27 @@ jobs:
     env:
       REST_EXCEPT: >-
         probes/rope probes/devices probes/weather probes/salvage probes/shield
-        probes/saves probes/kits probes/survival probes/sail probes/power probes/farming
-        probes/arrival probes/camp probes/movement
+        probes/saves probes/kits probes/sail probes/power probes/farming
+        probes/arrival probes/camp probes/movement probes/survival
       BASH_FOR_PROBES: ${{ startsWith(matrix.os, 'macos') && '/bin/bash' || 'bash' }}
       PROBE_NOISY: 1
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
 
+      # Imported assets can stay unchanged for weeks; scheduling learns every run.
+      - name: Probe durations
+        uses: actions/cache@v4
+        with:
+          path: .godot/probe_times
+          key: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-
+
       - name: The runner can fail
         if: matrix.group == 'the rest'
-        run: $BASH_FOR_PROBES scripts/probe.sh selftest
+        run: |
+          $BASH_FOR_PROBES scripts/probe-runner-test.sh
+          $BASH_FOR_PROBES scripts/probe.sh selftest
 
       - name: Probes
         run: |
