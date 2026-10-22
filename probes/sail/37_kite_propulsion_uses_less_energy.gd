@@ -97,18 +97,28 @@ func _route(with_kite: bool) -> Dictionary:
 			break
 	Input.action_release("move_forward")
 	var label := "kite" if with_kite else "motor"
-	print("PROBE_METRIC %s: %.1f m actual, %.1f s, %.1f m sideways; Wh/km propulsion %.3f hover %.3f equipment %.3f total %.3f; board battery %.3f -> %.3f Wh; payload battery %.3f -> %.3f Wh; motor-off %.1f m/%.6f propulsion Wh/%.1f N kite load; payload %.1f kg" % [
-		label, result.km * 1000.0, result.seconds, result.cross_m,
-		result.propulsion / maxf(result.km, 0.000001), result.hover / maxf(result.km, 0.000001),
-		result.equipment / maxf(result.km, 0.000001), result.total / maxf(result.km, 0.000001),
-		initial_wh, board.battery().charge_wh, payload_wh, payload.battery().charge_wh,
-		result.off_m, result.off_propulsion, result.off_load, payload.mass])
+	for component: String in ["propulsion", "hover", "equipment", "total"]:
+		metric(label + " " + component, float(result[component]) / maxf(result.km, 0.000001), "Wh/km")
+	metric(label + " actual distance", result.km * 1000.0, "m")
+	metric(label + " travel time", result.seconds, "s", LIMIT_S)
+	metric(label + " cross-track distance", result.cross_m, "m", 15.0)
+	metric(label + " board initial charge", initial_wh, "Wh")
+	metric(label + " board final charge", board.battery().charge_wh, "Wh")
+	metric(label + " payload initial charge", payload_wh, "Wh")
+	metric(label + " payload final charge", payload.battery().charge_wh, "Wh")
+	metric(label + " motor-off distance", result.off_m, "m")
+	metric(label + " motor-off propulsion energy", result.off_propulsion, "Wh")
+	metric(label + " motor-off propulsion power",
+		result.off_propulsion * 3600.0 / maxf(minf(result.seconds, MOTOR_OFF_S), 0.000001), "W")
+	metric(label + " motor-off kite load", result.off_load, "N")
+	metric(label + " payload mass", payload.mass, "kg")
 	check(result.cross_m < 15.0, "%s stays in the same downwind route corridor" % label)
 	check(board.battery().charge_wh > 0.0 and board.battery().charge_wh < initial_wh,
 		"%s consumes real battery energy and finishes before flat" % label)
 	check(payload.battery().charge_wh > 0.0 and payload.battery().charge_wh < payload_wh,
 		"%s pays for its payload hover without exhausting its battery" % label)
 	var spent := initial_wh - board.battery().charge_wh + payload_wh - payload.battery().charge_wh
+	metric(label + " battery reconciliation error", absf(result.total - spent), "Wh", 0.05)
 	# The power tick may still owe a fraction of one interval at the finish.
 	check(absf(result.total - spent) < 0.05,
 		"%s integrated components agree with both real battery withdrawals" % label)

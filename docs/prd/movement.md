@@ -1905,9 +1905,9 @@ wind, towing a 19.8 kg chassis on powered hover through an ordinary waist line,
 the 5.5 m² kite used 0.000 propulsion Wh/km against the motor-only leg's 1.698.
 Both board and payload began with 100 Wh each and finished charged. The same
 4 m/s minimum cruise controller let the wind carry the kite leg faster; it
-finished in 48.7 s against 73.7 s. With motor input released for the first 25 s,
-the kite carried the loaded rider 96.3 m with zero propulsion draw. Combined
-board and payload hover used 4.261 Wh/km against 6.504; equipment used zero in
-both fixtures, and total draw was 4.261 against 8.203 Wh/km. These numbers cover
+finished in 51.9 s against 73.7 s. With motor input released for the first 25 s,
+the kite carried the loaded rider 92.7 m with zero propulsion draw. Combined
+board and payload hover used 4.564 Wh/km against 6.504; equipment used zero in
+both fixtures, and total draw was 4.564 against 8.203 Wh/km. These numbers cover
 this clear downwind fixture only. Probe 37 also reconciles integrated components
 against both actual battery withdrawals within 0.05 Wh.
