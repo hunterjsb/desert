@@ -1846,3 +1846,19 @@ keep functional checks without claiming equivalent CPU accounting. These are
 shared-host reference averages, not worst-tick, rendered-frame or arbitrary-load
 guarantees. The dense load exceeds Home's cap; its admitted variant is documented
 under [Marked Home](bubble-shield-and-camp.md#large-home-main-thread-budget-2026-10-22).
+
+## Kite propulsion energy gate (SANDGAME, 2026-10-22)
+
+The approved gate is at least 50% lower propulsion Wh/km than motor-only travel
+over the same route, with the same representative payload, initial charge and
+matched wind. The comparison must also demonstrate wind-driven movement with
+motor input released and finish both legs before the battery runs flat. Record
+propulsion, hover, equipment and total energy separately; total battery energy
+has no percentage target.
+
+The existing board law already meters motor input and work against a loaded
+line separately from hover. Coasting under wind supplies no motor input and
+receives no special electrical discount. `Hoverboard.propulsion_w` and `hover_w`
+expose those existing components for the comparison; equipment keeps its normal
+device demand. Sail probe 37 compares equal-distance travel with the same
+ordinary chassis tow and a common speed controller.
