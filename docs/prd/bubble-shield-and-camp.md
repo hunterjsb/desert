@@ -445,3 +445,38 @@ side is in [World & terrain](world-and-terrain.md#marked-camp-preparation-2026-1
 The Surveyor guide's scouting page teaches taking out and mounting the beacon, marking,
 waiting for ready support and opening Home; compass, landmarks, mooring and weather
 preparation still matter, and a saved fix gives no shield power or protection.
+
+### Large Home main-thread budget (2026-10-22)
+
+The representative Home fixture has 108 joined frames, 18 skates, nine trays,
+six batteries and eight mounted devices including a hinged mast: 1,178.8 kg and
+159 of the unchanged 160 work-item cap. The denser sailing/capsized load exceeds
+the cap and is not silently admitted. Camp 13 rides a real powered board more
+than 2.1 km out and back under ordinary controls, preserving the camp's ground,
+membership, geographic place and active shelter power through origin shifts.
+It samples nearby, during remote scouting and on return.
+
+| Phase | Main-thread CPU per physics tick | Enforced budget |
+| --- | ---: | ---: |
+| Near Home | 6.3–6.5 ms | 10 ms |
+| Riding remotely | 6.9–7.2 ms | 10 ms |
+| Returned | 5.9–6.3 ms | 10 ms |
+
+Each is a 480-tick Linux main-thread CPU window; engine elapsed and subsystem
+costs are reported separately. The probe runs alone, enforces the cap and checks
+that the same admitted fittings remain active on return. These figures include
+the live world's and rider's main-loop work, rather than isolating Home upkeep.
+They are reference averages, not tail-latency, GPU or larger-camp guarantees.
+The fixture and accounting method are shared with the
+[moving and capsized budgets](movement.md#representative-large-camp-budgets-2026-10-22).
+
+**Cap study, not a policy change.** The fully loaded fixture is 262 work items
+including its mounted gear, not 234; 17 physical members. With a private diagnostic
+admission override it completed the same trip at 7.88 / 9.04 / 8.25 ms per tick
+near/remote/returned. Rebuild p50/p95 was 0.509/0.781 ms, the ordinary one-second
+sweep 0.499/0.706 ms, and unchanged ticks 5/6 µs. A separate 272-item loose-member
+upkeep study measured 0.929/0.945 ms rebuild and 5 µs unchanged ticks, within the
+existing 1 ms / 50 µs upkeep limits but with little rebuild headroom. These numbers
+support considering a 272-item trial for this composite camp; loose-body physics
+at that cap is not validated. The production cap remains 160; its decision stays
+with the orchestrator. Diagnostic overrides were process-local and restored.

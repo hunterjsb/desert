@@ -346,8 +346,9 @@ static func _mass(inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> f
 ## dead there, pushed back out of the sand over a few ticks with no bounce,
 ## and drags along it `grip` of that push whichever way it slides. A camp
 ## going over comes to rest on its masthead so.
-static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float, clearance := 0.0) -> bool:
-	var gap := point.y - world.height_at(world.world_x(point.x), world.world_z(point.z)) - clearance
+static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float, clearance := 0.0, ground_height := NAN) -> bool:
+	var sand := world.height_at(world.world_x(point.x), world.world_z(point.z)) if is_nan(ground_height) else ground_height
+	var gap := point.y - sand - clearance
 	if gap > REACH:
 		return false
 	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())
@@ -398,14 +399,21 @@ static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, 
 static func rest_on(body: RigidBody3D, world: World, points: PackedVector3Array, clearances: PackedFloat32Array,
 		grip: float, h: float) -> void:
 	var near: Array[int] = []
+	# Coordinates and ground hold during the sweeps; each impulse still re-reads velocity.
+	var origin_x := world.world_x(0.0)
+	var origin_z := world.world_z(0.0)
+	var sand := PackedFloat64Array()
+	sand.resize(points.size())
 	for i in points.size():
 		var p := points[i]
-		if p.y - world.height_at(world.world_x(p.x), world.world_z(p.z)) - clearances[i] <= REACH:
+		var height := world.height_at(origin_x + p.x, origin_z + p.z)
+		sand[i] = height
+		if p.y - height - clearances[i] <= REACH:
 			near.append(i)
 	for sweep in REST_SWEEPS:
 		var pushing: Array[int] = []
 		for i in near:
-			if touch(body, world, points[i], grip, h, clearances[i]):
+			if touch(body, world, points[i], grip, h, clearances[i], sand[i]):
 				pushing.append(i)
 		near = pushing
 

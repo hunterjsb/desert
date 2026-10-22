@@ -1,5 +1,9 @@
 ## 0.3.1-alpha “Sanddune” — development, unreleased
 
+- Add main-thread CPU budgets for 108-frame sailing, capsized and remote Home
+  camps. Batch tipped-contact ground reads while preserving contact order and
+  live impulse response.
+
 - Make the survey receiver appearance replaceable independently of gameplay,
   retaining its current procedural model, wear, controls and saved identity.
 
