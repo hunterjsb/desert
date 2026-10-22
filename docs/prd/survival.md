@@ -967,103 +967,10 @@ the run contained all four intended objects. Extend that existing exact gear lis
 for the Guide; preserve its health, hunger, thirst, sealed-water and condenser checks.
 This changes the fixture only, with no scenario or supply behavior change.
 
-## Surveyor orbital arrival and surviving equipment (selected 2026-10-20; development implementation below)
+## Surveyor arrival
 
-The [interactive ship preparation extension](surveyor-preflight.md), selected
-2026-10-21, adds a walkable interior, limited scouting/site selection and physical
-pod loading. It is in progress; the automatic arrival below remains the built
-baseline and the legacy-save path.
-
-Hunter selected the pod as the Surveyor's eventual replacement for an abstract
-starter kit: begin above Zan, be ejected toward the surface, land/crash in a pod
-made from real chassis pieces, and recover the equipment that survived. Resolved
-survivors form a seeded starting loadout; they are physical mounted/stowed objects
-and recoverable structure, not an extra inventory grant after the landing. Other
-origins keep their own starts. Preserve a viable survival opening, meaningful
-tradeoffs and player agency while varying damage and usable gear. Exact survival
-guarantees and damage distributions need balance before replacing the current kit.
-
-Resolve the opening once from the run seed and persist arrival phase, landing
-location, survivors, damage and teardown state. Resume must not reroll or duplicate
-equipment. Use the existing hands, chassis joining/mounting and salvage actions.
-The first camp comes from dismantling or adapting the landed pod. The guide gives
-the arrival purpose and a small first survey. Deed-unlocked origin variants remain
-a later extension; descent decision menus remain on the back burner.
-
-An orbital visual mockup is requested before implementation. A real orbital scene
-and ejection are the preferred presentation direction; a general orbital flight
-simulator or freely traversable spherical world is not required by this request.
-Keep today's Surveyor start available until the replacement's landing, recovery,
-survival and save/restore work together. Release placement remains undecided.
-
-### First parallel arrival prototypes (2026-10-20; prototype design record)
-
-Build separate isolated prototypes for the physical shell, pure seeded survivor
-manifest and orbital rendering. None replaces the production Surveyor kit yet.
-The first shell layout explores a reclined one-person enclosure using ten real
-recoverable chassis panels and two frames. This count is a geometry experiment,
-not a final equipment budget. Give structural pieces stable roles for saved damage
-and recovery. Decorative trim must travel with its owning physical panel.
-
-For the manifest prototype, guarantee a usable board and Home beacon alongside
-basic shelter, water, food, power and anchoring so the first scout/return remains
-available. Vary condition, charge, equipment extras and eventual arrangement.
-Exact guarantees and distributions are provisional implementation defaults, not
-accepted balance. Put them in tuning. Resolve plain data once from a local seeded
-random stream; creating, handing out and recovering objects belongs to later
-integration. Match structural roles to the real shell. Test saved phase and
-recovery changes without rerolling. The first orbital view is a visual prototype,
-not an implemented arrival, flight model or starter replacement.
-
-### Integrated Surveyor opening (selected 2026-10-20; in progress)
-
-New normal Surveyor runs will use one saved arrival state: orbit, ejection,
-descent, entry, landing and recovery. Developer scenarios, direct World fixtures,
-other origins and old saves retain their existing starts. The production run
-manager selects the new opening explicitly before child nodes initialize, so
-its suit and deck kit are not also granted. Resume never starts a fresh opening.
-
-Render orbit through a separate view while normal terrain preloads the resolved
-landing location. Preserve the real world time, heading and geographic landing
-point. Hold player movement/vitals during the controlled flight; menus and saving
-remain available. Land only after collision is ready. Restore the normal camera,
-input and suit operation when the player can stand clear of the opened pod.
-This is a controlled arrival sequence, with no free-flight or targeting menu.
-
-Materialize each surviving role once as ordinary catalog gear and real shell
-pieces. Apply resolved condition/charge; fit the board's own cell. A landing spill
-may place cargo in clear nearby sand where it does not fit the pod; prevent
-intersections and buried essentials. Open the actual roof/hatch and preserve
-normal salvage/mounting actions. Taking a physical arrival object records its
-recovery at that action and earns a camp deed; merely resolving or loading a
-manifest earns nothing. Persist appearance roles, object references, recovered
-flags, arrival phase and elapsed phase time. Mid-flight and partially dismantled
-saves must resume without rerolling, replacing or duplicating gear.
-
-The integrated opening is developed for 0.3.0-alpha “Sanddune”; the existing
-0.2.4 “Creaky Sailboat” release candidate stays separate. Exact arrival timings and
-provisional equipment balance live in tuning. Acceptance includes new Surveyor,
-other-origin/scenario compatibility, mid-flight/landed/recovered save round trips,
-normal recovery and assembly, real GPU captures and combined CI before landing.
-
-#### Integrated development slice (landed 2026-10-21; native checks pending)
-
-Main/Runs now select the opening for new normal Surveyors before suit setup.
-The default controlled sequence lasts 16.2 seconds, plus any required terrain
-wait. World time, vitals and player movement resume beside the opened shell.
-Ordinary chassis and catalog survivors retain resolved damage, charge and
-individual recovery; the old inventory/deck grant is suppressed. Existing
-scenarios, other origins and legacy saves retain their starts.
-
-The actual Main opening and flight/recovery save round trips pass focused
-checks (4 and 8 seconds). Rerooted roles fail before metadata transfer and pass
-after it; flight, partial teardown and held-object restoration checks also pass.
-A real GPU run captured all six phases with 24 physical roles and no ground
-rescues for seed 1234. Existing World sounds provide transition cues; dummy
-audio verifies routing and lifetime, not listening balance. Orbital relief is
-illustrative, not exact local dune geometry. Equipment balance, broader opening
-viability and unassisted recovery remain acceptance work. Combined Linux verification
-passed at `49af744f`; native platform/build checks are running.
+The Surveyor starts in orbit and lands in a pod built from real chassis panels; its
+cabin, launch, fall and first camp are owned by [Surveyor opening](surveyor-opening.md).
 
 ## Ground rest (selected 2026-10-20; implemented development)
 

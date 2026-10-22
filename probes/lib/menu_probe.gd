@@ -13,8 +13,6 @@ var main: Main
 func open_main(on_menu := true) -> Main:
 	Tuning.current().run_seed = 1234
 	Tuning.current().salvage = false
-	# These menu fixtures need a surface run; Arrival 16 covers interactive preparation.
-	Tuning.current().surveyor_preflight["enabled"] = false
 	main = MAIN.instantiate()
 	main.opens_on_menu = on_menu
 	add_child(main)
@@ -25,12 +23,114 @@ func open_main(on_menu := true) -> Main:
 	return main
 
 
-## Waits for the run's starting moment, its kit down; what follows runs at
-## the start of a tick, whenever the ground finished building.
+## Waits for the run's starting moment, its kit down; a Surveyor first takes
+## the real opening. What follows runs at the start of a tick.
 func started() -> void:
 	await get_tree().physics_frame
-	while not world.has_meta(&"kit") or (world.arrival != null and world.arrival.active()):
+	if world.arrival != null and world.arrival.active():
+		await drop_in()
+		await crawl_out()
+	for i in 600:
+		if world.has_meta(&"kit"):
+			return
 		await get_tree().physics_frame
+	check(false, "the run's kit is down within 600 ticks")
+
+
+## The Surveyor opening as a player takes it: the shown pulse set at the
+## station, the pod boarded and launched, the fall flown to the ground.
+func drop_in() -> void:
+	var prep := await cabin()
+	if prep == null:
+		return
+	await set_pulse(prep)
+	await launch_pod(prep)
+	await fly_to(&"recovery")
+
+
+## Out of the landed pod and standing, by the ordinary moves: back through the hatch
+## first, as the pod lands you facing away from it, then any way a player would try.
+func crawl_out() -> void:
+	var from := world.player.global_position
+	for move: StringName in [&"move_back", &"move_left", &"move_right", &"move_forward"]:
+		Input.action_press(move)
+		for i in 300:
+			await get_tree().physics_frame
+			if _out(from):
+				break
+		Input.action_release(move)
+		if _out(from):
+			break
+	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands (%.2f m, %s)"
+		% [world.player.global_position.distance_to(from), world.player.ground_pose])
+	# Turned from the pod, ahead is open sand, as a run's first steps expect.
+	var pod := world.arrival_nodes.get(&"floor_a") as Node3D
+	if is_instance_valid(pod):
+		var away := world.player.global_position - pod.global_position
+		world.player.rotation.y = atan2(-away.x, -away.z)
+	await physics_frames(2)
+
+
+## Clear of the pod's own floor, with room to stand.
+func _out(from: Vector3) -> bool:
+	return world.player.global_position.distance_to(from) > 1.5 and world.player.posture.clear(&"stand")
+
+
+## The ready cabin, within ten simulated seconds.
+func cabin() -> SurveyorPreflight:
+	for i in 600:
+		if world.arrival != null and is_instance_valid(world.arrival.preflight):
+			return world.arrival.preflight
+		await get_tree().physics_frame
+	check(false, "the Surveyor cabin is ready")
+	return null
+
+
+## Stands somewhere and looks at something, as if walked there.
+func stand(at: Vector3, toward: Vector3) -> void:
+	world.teleport(world.player, Transform3D(Basis.IDENTITY, at))
+	world.player.velocity = Vector3.ZERO
+	world.player.camera.look_at(toward)
+
+
+func set_pulse(prep: SurveyorPreflight) -> void:
+	var screen := prep.ship.computer_at.global_position
+	stand(Vector3(screen.x, prep.ship.global_position.y + 0.02, screen.z + 0.9), screen)
+	await physics_frames(2)
+	press(&"interact")
+	var focus := ceili(world.tuning.arrival_computer_focus_s * Engine.physics_ticks_per_second) + 2
+	await physics_frames(focus)
+	prep.computer.ui.commit()
+	press(&"ui_cancel")
+	await physics_frames(focus)
+	check(world.arrival_state.preflight.plan_confirmed and not prep.computer_open(), "the station sets the shown pulse and lets go")
+
+
+func launch_pod(prep: SurveyorPreflight) -> void:
+	stand(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
+	await physics_frames(2)
+	press(&"interact")
+	await physics_frames(1)
+	press(&"interact")
+	await physics_frames(1)
+	check(world.arrival_state.phase == &"ejection", "the boarded pod launches: %s" % ", ".join(prep.readiness()) if is_instance_valid(prep) else "")
+
+
+## The fall flown at four times real speed until `phase`, bounded in simulated seconds.
+func fly_to(phase: StringName, most_s := 60.0) -> void:
+	var rate := Engine.physics_ticks_per_second
+	Engine.time_scale = 4.0
+	Engine.physics_ticks_per_second = rate * 4
+	Engine.max_physics_steps_per_frame = 32
+	var wanted := SurveyorArrival.PHASES.find(phase)
+	for i in roundi(most_s * rate):
+		if SurveyorArrival.PHASES.find(world.arrival_state.get("phase", &"")) >= wanted:
+			break
+		await get_tree().physics_frame
+	Engine.time_scale = 1.0
+	Engine.physics_ticks_per_second = rate
+	Engine.max_physics_steps_per_frame = 8
+	check(SurveyorArrival.PHASES.find(world.arrival_state.get("phase", &"")) >= wanted, "the fall reaches %s within %.0f s" % [phase, most_s])
 
 
 ## Every start open, as the dev console's unlockall leaves them.

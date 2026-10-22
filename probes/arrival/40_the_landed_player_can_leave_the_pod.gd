@@ -1,6 +1,6 @@
 extends MenuProbe
 ## Exclusive
-## Recovery must return a capsule that can actually crawl out of the original pod.
+## The landed Surveyor crawls out of the original pod and stands up.
 func run() -> void:
 	var tuning := Tuning.current()
 	tuning.run_seed = 1234
@@ -8,27 +8,14 @@ func run() -> void:
 	tuning.prevailing_speed = 0.0
 	tuning.prevailing_sway = 0.0
 	tuning.storm_outflow_speed = 0.0
-	tuning.surveyor_preflight.enabled = true
 	main = MAIN.instantiate()
 	main.opens_on_menu = false
 	add_child(main)
 	world = main.world()
-	var deadline := Time.get_ticks_msec() + 60000
-	while (world.arrival == null or not is_instance_valid(world.arrival.preflight)) and Time.get_ticks_msec() < deadline:
-		await get_tree().process_frame
-	var prep := world.arrival.preflight
-	check(is_instance_valid(prep), "the actual Surveyor preparation is ready")
-	if not is_instance_valid(prep):
+	await drop_in()
+	check(world.arrival_state.get("phase") == &"recovery", "the real opening lands")
+	if world.arrival_state.get("phase") != &"recovery":
 		return
-	await physics_frames(5)
-	world.arrival_state.preflight.plan_confirmed = true
-	world.arrival_state.preflight.seated = true
-	prep._seat()
-	check(prep.launch(), "the original pod launches")
-	deadline = Time.get_ticks_msec() + 60000
-	while world.arrival_state.phase != &"recovery" and Time.get_ticks_msec() < deadline:
-		await get_tree().process_frame
-	check(world.arrival_state.phase == &"recovery", "the flight reaches actual physical recovery")
 	await physics_frames(5)
 	var player := world.player
 	var floor := world.arrival_nodes[&"floor_a"] as Chassis

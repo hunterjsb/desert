@@ -71,7 +71,7 @@ func run() -> void:
 	blocker.queue_free()
 	deck.join(roof, Rig.face_of(deck, Vector2i.ZERO, &"top"))
 	check(PreflightCargo.readiness(world, ship).is_empty(), "the same original roof already closed on its correct face is valid")
-	var sealed := PreflightCargo.seal(world, ship, state, {"id": &"standard"})
+	var sealed := PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"standard"))
 	check(not sealed.is_empty() and sealed.preflight.launched and nodes[&"hatch"].deck == deck,
 		"the repaired original shell seals normally without replacement bodies")
 	if wind != null:
@@ -87,7 +87,7 @@ func _refuses(ship: SurveyorShip, state: Dictionary, why: String) -> void:
 	for role: StringName in bodies:
 		poses[role] = PreflightCargo.body_pose(bodies[role])
 	var count := world.content.get_child_count()
-	var result := PreflightCargo.seal(world, ship, state, {"id": &"standard"})
+	var result := PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"standard"))
 	check(not PreflightCargo.readiness(world, ship).is_empty() and result.is_empty() and state == before,
 		why + " refuses without changing arrival state")
 	check(world.content.get_child_count() == count and bodies.keys().all(func(role: StringName) -> bool:

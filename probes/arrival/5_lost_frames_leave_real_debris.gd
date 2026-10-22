@@ -1,12 +1,9 @@
-extends DeckProbe
-## A lost frame cannot support a surviving wall, which remains recoverable loose debris.
+extends PodProbe
+## A lost frame cannot support a surviving wall, which lands as recoverable loose debris.
 func run() -> void:
 	await load_lines()
-	var at := Vector2(world.player_world_x() + 6.0, world.player_world_z())
-	var state := SurveyorManifest.resolve(1234, world.start, {"frame_survival": 0.0, "outer_survival": 1.0, "extra_survival": 0.0})
-	state.landing_world = at
-	state.heading = 0.0
-	var made := SurveyorRecovery.materialize(world, state)
+	board_ship()
+	var made := drop({"frame_survival": 0.0, "outer_survival": 1.0})
 	check(state.get("materialized", false) and not made.has(&"frame_a") and not made.has(&"frame_b"), "lost frames are absent")
 	if made.is_empty():
 		return

@@ -5,15 +5,11 @@ var station: PhysicalLaunchStation
 func run() -> void:
 	Tuning.current().run_seed = 1234
 	Tuning.current().salvage = false
-	Tuning.current().surveyor_preflight["enabled"] = true
 	main = MAIN.instantiate()
 	main.opens_on_menu = false
 	add_child(main)
 	world = main.world()
-	var until := Time.get_ticks_msec() + 60000
-	while (world.arrival == null or not is_instance_valid(world.arrival.preflight)) and Time.get_ticks_msec() < until:
-		await get_tree().physics_frame
-	var prep := world.arrival.preflight
+	var prep := await cabin()
 	check(is_instance_valid(prep), "the preparation room opens")
 	if not is_instance_valid(prep): return
 	var screen := prep.ship.computer_at.global_position
@@ -23,14 +19,14 @@ func run() -> void:
 	await physics_frames(20)
 	var feel_was_processing := world.player.feel.is_processing()
 	press(&"interact")
-	await get_tree().create_timer(0.6).timeout
+	await physics_frames(36)
 	station = prep.computer
 	check(station.focused and not world.player.feel.is_processing(), "the station owns its focused camera")
 	await button(station.ui._confirm.get_global_rect().get_center(), true)
 	await button(station.ui._confirm.get_global_rect().get_center(), false)
 	check(world.arrival_state.preflight.plan_confirmed, "a projected button click confirms the initial pulse")
 	var before: Vector2 = world.arrival_state.landing_plan.departure_trajectory.pulse
-	var handle := station.ui._chart.position + station.ui._project(station.ui._sample.pulse_handle)
+	var handle := station.ui._chart.position + station.ui._project(station.ui._frame.pulse_handle)
 	check(station.ui._chart.get_rect().has_point(handle), "the actual pulse handle is reachable on the chart")
 	var moved := handle + Vector2(28, -18)
 	await button(handle, true)
@@ -65,7 +61,7 @@ func run() -> void:
 	check(world.arrival_state.landing_plan.departure_trajectory.pulse == covered,
 		"a drag released under the console does not resume on pointer movement")
 	press(&"ui_cancel")
-	await get_tree().create_timer(0.6).timeout
+	await physics_frames(36)
 	check(not prep.computer_open() and world.player.is_physics_processing()
 		and world.player.feel.is_processing() == feel_was_processing,
 		"stepping back returns movement and the original camera processing")

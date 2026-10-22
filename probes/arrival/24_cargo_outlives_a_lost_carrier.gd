@@ -30,12 +30,11 @@ func run() -> void:
 	var rope := line.rope
 	var length := rope.length
 	check(PreflightCargo.loaded(world, ship).has(&"rope"), "the fully attached original line is selected cargo")
-	state = PreflightCargo.seal(world, ship, state, {"id": &"steep", "extra_survival": 1.0,
-		"outer_survival": 0.0, "frame_survival": 0.0, "device_durability": Vector2.ONE, "chassis_durability": Vector2.ONE})
+	state = PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"steep").merged({"extra_survival": 1.0, "outer_survival": 0.0, "frame_survival": 0.0, "device_wear": Vector2.ONE, "chassis_wear": Vector2.ONE}, true))
 	check(not state.is_empty(), "ready cargo seals before the known carrier losses")
 	if state.is_empty():
 		return
-	var landed := PreflightCargo.land(world, state)
+	var landed := SurveyorRecovery.land(world, state)
 	await physics_frames(4)
 	check(state.get("materialized", false) and landed.get(&"board") == board and board.host() == null
 		and board.battery() == nodes[&"board_cell"], "the surviving actual board and cell detach from their lost carrier")

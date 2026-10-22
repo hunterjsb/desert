@@ -1,8 +1,6 @@
 extends MenuProbe
-## The legacy automatic controller, real terrain, survivors and recovery action.
+## The real opening from the set pulse to recovery: each seated phase of the fall, then the landing.
 func run() -> void:
-	# Capture automatic flight phases; the interactive ship has its own capture.
-	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 1234
 	Tuning.current().salvage = false
 	main = MAIN.instantiate()
@@ -12,9 +10,13 @@ func run() -> void:
 	Dev.hide_overlays()
 	var out := OS.get_cmdline_user_args()[-1]
 	DirAccess.make_dir_recursive_absolute(out)
+	var prep := await cabin()
+	if prep == null:
+		return
+	await set_pulse(prep)
+	await launch_pod(prep)
 	var captured := {}
-	var until := Time.get_ticks_msec() + 90000
-	while Time.get_ticks_msec() < until:
+	for i in 90 * Engine.physics_ticks_per_second:
 		await get_tree().physics_frame
 		var state := world.arrival_state
 		var phase: StringName = state.get("phase", &"")
