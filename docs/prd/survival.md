@@ -3,11 +3,38 @@
 *Draft, 2026-10-13. Answers to [the vision](../vision.md). The physical reasoning behind
 air, temperature and water is in [the moon](../world/the-moon.md).*
 
+## Rest, food and drink support exploration (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> It is not. Farming is not promised, atp in the game it is rare loot and a slight burden. It's hard in an almost tedious way. I am rethinking hunger and thirst - instead of surfacing them to the player, resting, eating, and drinking should provide valheim-style buffs to health (maybe) but definitely stamina, to aid in exploration. That would be conducive to our cozy camp style vibe--you *get* to rest and eat cuz youre stuck in a storm, youre not frantically searching for food and trying to get up ag asap before you die. this does significantly hinder our status as a hardcore game so i have some ideas for systems later, incorporating deep starvation if left at low levels for 2+ weeks and acute thirst after a few days, along with macronutrient systems as buff/debuff modifiers.
+>
+> so this raises what is the p&a? we will revisit it after the spaceport release.
+
+**Approved for 0.4, 2026-10-22.** Hunter, on the [rest and buffs concept](../briefs/rest-and-buffs-2026-10-22.md):
+
+> 1. 0.4 2. deliberate 3. stamina only 4. yes
+
+So the concept's three buffs (Rested, Fed, Hydrated) ship in 0.4. You eat and drink deliberately, with no auto-top-up. The buffs touch stamina only, and the three rewards, visible labels and rough durations fit. The numbers stay tuning.
+
+**Direction:** hunger and thirst are not surfaced
+as bars. Rest, food and drink give exploration buffs: definitely stamina, possibly
+health. Farming is not a promised prerequisite to surviving the early game; storm
+shelter should be time to enjoy rest and meals, not a race to establish agriculture.
+
+Deep starvation after 2+ weeks at low levels, acute thirst after a few days and
+macronutrients as buff/debuff modifiers are ideas for a later hardcore layer, not
+implemented timers or present acceptance criteria. Exact buff values remain open.
+Existing needs, depletion, auto-consumption and historical probe measurements below
+still describe the current implementation, not the selected replacement design.
+The rejected Saltbush gate and deferred promise are owned by the [roadmap](../alpha-roadmap.md#saltbush-promise-and-acceptance-deferred-2026-10-22).
+
+
 ## Why this system exists
 
-Survival is the pressure that a good camp turns into steady state. Out here you need
-air, water, food and protection from the elements. Early on, every one of them is a
-worry. A well-built camp handles them without you, until going AFK costs nothing.
+Survival gives shelter and preparation a purpose. The selected direction makes rest,
+food and drink support exploration through buffs; protection from the elements still
+matters. The implementation below retains the older depletion model until redesigned.
 
 ## Who you are
 
@@ -51,6 +78,9 @@ the default is a Tilg & Standard contractor. See [the vision](../vision.md#playe
   hard a gust drags you all depend on the suit.
 
 ## What you track
+
+**Current implementation, pending the selected buff redesign above.** This is not a
+promise to retain visible hunger/thirst meters or the current depletion deadlines.
 
 | Need | What drains it | What restores it |
 |---|---|---|
@@ -106,6 +136,9 @@ food is a ration, sealed or carried, and eaten by the suit. Whether it should is
 ([Farming](farming.md#open-questions)).
 
 ## AFK is something you build
+
+**Historical depletion-loop design and current auto-consumption behavior.** This is
+not a requirement to farm before an early food/water deadline under the new direction.
 
 There's no hard-coded "camp feeds you" rule. Instead:
 
@@ -372,10 +405,10 @@ broadcasts. [Wind & storms](wind-and-storms.md): the curve.
 
 ## On screen
 
-Health, hunger, thirst and stamina get **bars**. That's an exception to "almost no menus"
-at this early stage. They might show only when a need runs low, but they're always
-visible in dev mode. Better ways to express them come later: breathing, vision, sound
-and readouts on the suit.
+The selected direction has no surfaced hunger or thirst bars; rest, food and drink
+support exploration buffs as specified [above](#rest-food-and-drink-support-exploration-selected-2026-10-22).
+The current implementation still shows the older health/hunger/thirst/stamina bars.
+This documentation change does not remove them or choose a replacement HUD layout.
 
 ## Death
 
@@ -391,6 +424,9 @@ Death means a new run (see Runs in the vision).
 4. **Every number is visible in dev mode.**
 
 ## Skeleton version
+
+Historical implementation baseline; the 2026-10-22 buff direction supersedes its
+visible hunger/thirst requirement.
 
 - Health, hunger, thirst and stamina, shown as bars.
 - The three harms, through the felt weather.

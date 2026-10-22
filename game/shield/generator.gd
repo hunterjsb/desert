@@ -190,12 +190,13 @@ func settle() -> void:
 
 
 ## A sip in the clear, the most holding back a full storm, by its load; a
-## wider bubble costs more by its shell's area. Off, only what its parts draw.
+## wider bubble costs more by its shell's area, and a worn one more again. Off,
+## only what its parts draw.
 func demand_w(t := NAN) -> float:
 	var parts_w := super(t)
 	if not on or wrecked() or world == null:
 		return parts_w
-	return parts_w + lerpf(_clear_w, _storm_w, particle_load(t)) * pow(size / _radius, 2.0)
+	return parts_w + lerpf(_clear_w, _storm_w, particle_load(t)) * pow(size / _radius, 2.0) / efficiency()
 
 
 ## The particles it holds back where it stands, now or at world time t, as a
