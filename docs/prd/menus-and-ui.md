@@ -4,6 +4,19 @@
 main menu, the system menu and the look of every UI came the same day, written in
 another session; this PRD takes it on and fits it to the game as built.*
 
+## Inventory and suit modules (open design, 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> it does not need that, but we do want to star thinking about an inventory rework and suit module system.
+
+No wrist instrument is required for Spaceport. Begin thinking about an inventory
+rework and suit-module system; their interactions, layout and scope remain open,
+not 0.4 release dependencies or built features. Existing inventory behavior stays
+as built. [Survival](survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
+owns the selected food/drink buff direction and removal of surfaced hunger/thirst bars.
+
+
 ## Why this system exists
 
 The vision asks for almost no menus: things live in the world and in your hands, and a
@@ -15,7 +28,8 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 
 1. **State shows on things first.** A device's charge, a shield's strain and a crop's
    ripeness show on the device. The overlay carries only what has nowhere else to live:
-   the survival bars, the inventory view, key hints and warnings.
+   survival feedback, the inventory view, key hints and warnings. Hunger/thirst bars
+   belong to the older implementation, not the selected survival direction.
 2. **The game never pauses.** Opening a menu overlays the running world, storms
    included. Being able to leave the game running at steady state is something a camp
    earns, not something the menu grants.

@@ -2,6 +2,22 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md). Rebuilt round the chassis, 2026-10-18.*
 
+## Repairs and era mobility (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> sorry once again defered. we dont really have raw materials in this game.
+
+Repair actions and raw-material acquisition are deferred. Earlier repair-material
+names and crafting readings below are historical direction, not current build scope.
+Visible wear is a separate feature and is not reversed by this decision.
+
+The [kiln decision](#the-kiln-agreed-session-4-part-5-not-built) also changes era mobility:
+only colonial/skimmer items, from before Starcom's collapse, can be dragged. This is
+selected direction, not a claim that existing physics already enforces it. Socket
+interoperability does not grant portability to later-era fixed installations.
+
+
 ## Why this system exists
 
 Building your camp is the gameplay. The camp is chassis: sticky squares you tile into decks,
@@ -862,6 +878,8 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
 "trade-offs, not a ladder" crate table ([Salvage & ruins](salvage-and-ruins.md#gear-and-ruins-by-era)
 has the eras and the ruins). Today there is one crate frame, and none of this is built.*
 
+**Socket compatibility, not mobility:** the [2026-10-22 restriction](#repairs-and-era-mobility-selected-2026-10-22) supersedes older claims that any era can be dragged.
+
 **All eras interoperate** (Agreed): "any crate takes any module, and there are no per-era compatibility
 rules. Eras differ only in stats, along one axis: **efficiency vs repairability**." So a frame's era is
 data on the frame, and nothing in the join, the sockets or the deck asks what era a piece is.
@@ -891,8 +909,8 @@ Where this meets what's built, as readings and not in the session:
   "use never wears them." The column needs a repair act and a repair material per era (the kiln makes the
   second age's ceramic and glass, [below](#the-kiln-agreed-session-4-part-5-not-built)). Whether a worn frame
   is mended or only replaced is not said (open questions).
-- **"Still mountable" and "interoperate" agree.** The bottom mount keeps its tray socket in every era,
-  and the chassis joins pieces by their rings whatever their era.
+- **Historical mounting reading:** compatibility alone no longer implies a movable
+  device; later-era fixed kilns follow the selected mobility restriction.
 - **A mixed deck is the point.** The nomad city is "a huge tethered raft of salvaged chassis, shields
   and turbines," and part 5 says late camps should mix eras on purpose.
 - **Era and maker are two axes.** The maker table below says who built a crate and what for; the era says
@@ -1010,39 +1028,30 @@ questions. The humidifier remains open:
 
 ## The kiln (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 5. Nothing is built, and no number is
-set.* "The kiln is a new processing device that burns coalcane. It is what makes second-age repair
-possible." Four chains:
+### Four kiln forms (selected 2026-10-22)
 
-1. **Ceramics and glass:** fires salt-glazed ceramic and sand-glass, the repair materials for second-age
-   gear.
-2. **Water:** boils tainted stormcup water safe.
-3. **Food:** roasts the bitterness out of wild tubers; dries and salts food for keeping.
-4. **Salt:** reduces saltbush bladders to salt.
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
 
-"Era variants work like crate makers: same job, different efficiency and fuel draw."
+> you can get lucky and find kilns in uncovered ruins but you cant drag anything but skimmer/colonial (pre starcom collapse age). I think we are good with a col. electric kiln that fits on a chassis, a skimmer era modified version of the col kiln to draw less power but slower output, a mounted, large first era kiln made from a repurposed colonial item such as a mech repair cauldron or he3 reactor, a middle size clay feudal kiln in a feudal forge. we can have the second two burn coalcane.
 
-| Variant | Era | Notes |
-|---|---|---|
-| Electric furnace | Colonial | Most efficient; runs on power, not coalcane |
-| Brass-fitted forge | First Kingdoms | Middle efficiency |
-| Beehive clay kiln | Second age | Lossy, but buildable and repairable from gathered materials |
+This replaces the earlier three-variant table and the assumption that every kiln is
+portable. Kilns can be found in uncovered ruins; no raw-material crafting path is
+approved. Only pre-collapse colonial/skimmer items can be dragged.
 
-Readings, not in the session:
-- **One device, three catalog entries, four recipes.** The three variants are frames with different
-  numbers, as the crate's eras are; the four chains are recipes: items in and a fuel or power draw, items
-  out. No chain is a subsystem of its own (Farming's rule 3, "one shared system per area").
-- **It is a device that stands on a deck mount,** a crate-sized thing like the condenser and the charger,
-  with a place for its input and its output and a fuel input (coalcane is neither a battery nor a
-  canister, as the burner's case was). The electric furnace needs a power socket instead. Which sockets
-  is not said, and any new one is appended to a frame.
-- **The wild-water chain pairs with the water socket.** A canister of tainted stormcup water goes in and a
-  safe one comes out, through the same one-at-a-time socket as everywhere else.
-- **"Buildable and repairable from gathered materials" is the first thing the player makes.** Parts are
-  "found, never crafted," and crafting is out of scope. A clay kiln built from gathered stuff, and ceramic
-  fired in it, are the first crafting in the design; the session names no other (open questions).
-- **Era variants make coalcane's price an era choice.** The colonial furnace needs no fuel and a lot of
-  power, the others burn the same cane the burner and the Stoker want ([Power](power.md#the-kiln-and-its-fuel-agreed-session-4-part-5-not-built)).
+| Variant | Location and mobility | Energy and output |
+| --- | --- | --- |
+| Colonial electric kiln | Fits on a chassis; draggable | Electricity |
+| Skimmer modification of colonial kiln | Pre-collapse, draggable | Less electrical power, slower output than colonial |
+| First-era kiln | Large mounted installation made from repurposed colonial equipment; a mech-repair cauldron or He3 reactor are examples | Coalcane |
+| Feudal clay kiln | Middle-sized, in a feudal forge; not draggable | Coalcane |
+
+**Earlier agreed processing direction, unbuilt:** ceramic/glass, safe stormcup water,
+tuber treatment, salting/drying and salt processing remain directions, not a commitment
+to finish all recipes in the current release. Repairs/raw materials are
+[deferred](#repairs-and-era-mobility-selected-2026-10-22), and food preservation still
+needs a spoilage design. Recipe input quantities, fuel budgets, processing times and
+release acceptance are not settled here. The four forms are design direction, not built devices.
+
 
 ## The terminal output system (proposed, session 4, part 5; first piece built)
 
@@ -1569,7 +1578,8 @@ it as direction and says so on each line.
   and crafting is out of scope. The session: a kiln "fires salt-glazed ceramic and sand-glass," and the
   beehive kiln is "buildable and repairable from gathered materials." *Follows the session as
   direction.* Not said what goes in for ceramic and glass (clay and sand are the guess), or what building
-  a kiln is.
+  a kiln is. Repairs and raw-material acquisition were subsequently deferred on
+  2026-10-22; this historical crafting reading is not implementation scope.
 - **A god's module against a device whose abilities come from its parts.** Here (rule 4): abilities
   come from the device's own parts. The session: the Quartermaster "requisitions a cut of your camp power,"
   "won't light civilian lamps" and "locks your radio." Not said whether the module reaches the rest of the

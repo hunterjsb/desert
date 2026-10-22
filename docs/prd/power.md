@@ -156,16 +156,15 @@ Readings, not in the session:
 
 *[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 5; direction only, with no number set.
 [Devices & mods](devices-and-mods.md#the-kiln-agreed-session-4-part-5-not-built) has the kiln itself.*
-"The kiln is a new processing device that burns coalcane," in three era variants: the colonial **electric
-furnace** ("most efficient; runs on power, not coalcane"), the First Kingdoms' **brass-fitted forge**
-(middle efficiency) and the second age's **beehive clay kiln** (lossy). A variant's job is the same, and its
-"efficiency and fuel draw" differ.
+The [four kiln forms selected 2026-10-22](devices-and-mods.md#four-kiln-forms-selected-2026-10-22)
+supersede the old three-variant roster. Devices owns their mobility, location and
+energy-source specification; processing budgets remain unset.
 
 Readings, not in the session:
 - **Coalcane has more mouths.** The burner turns it to power, the kiln to heat, and the Stoker eats it
   ("feeding... calms it"; [the lore](../world/lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
   Cane is thirsty and rare, and the session sets no figure for a stalk's energy or its water, so whether
-  a farm can feed all three is a number to set (the burner's own loop is unset already).
+  a farm can feed all three is a number to set (the burner loop is now built; see its fuel-crop section).
 - **The kiln's heat is not power.** A stalk burned in the kiln gives ceramic, salt or safe water and no
   watts; the same stalk in the burner gives watts. They are two devices that want one crop, and the game
   has no heat model to join them.
