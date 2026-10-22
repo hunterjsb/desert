@@ -37,3 +37,12 @@ its pod attachment once, not its internal battery or modules. Check both physica
 ends of a laid rope and place any independently released secondary end through
 the existing loose-end path. Already materialized recovery saves are not replayed
 or rearranged; this clearance repair applies when an impact is materialized.
+
+Arrival44 exposes two assembly hazards against the initial clearance repair:
+releasing a board and its fitted cell independently split the assembly, while
+secondary rope ends were not considered cargo entries. Both fail before the
+attachment/endpoint correction; the corrected check passes in 7 s and preserves
+original identities, cell fitting/charge, rope/ends/length, nearby secondary-end
+placement and repeat-land idempotence. Arrival21–25 and 40 pass together (8/36/12/
+9/7/30 s). The connected real Forward+ launch-to-escape capture passes and was
+inspected inside the landed pod and after ordinary crawling/standing outside.

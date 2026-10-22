@@ -4,7 +4,8 @@ Selected 2026-10-21. Extends the Surveyor arrival in [Survival](survival.md) and
 answers to the [vision](../vision.md). The connected opening shipped in
 0.3.0-alpha Sanddune; human acceptance remains open. Current patch work is
 recorded in [roof placement](pod-roof-launch.md),
-[recovery clearance](pod-recovery-clearance.md) and the flight-feel account.
+[recovery clearance](pod-recovery-clearance.md) and
+[flight look and intensity](pod-flight-feel.md).
 
 ## Playable outcome
 
