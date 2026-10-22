@@ -26,6 +26,9 @@ func run() -> void:
 	check(world.player.camera.global_position.distance_to(before.origin) < 0.25, "camera focus begins with continuous travel")
 	await get_tree().create_timer(0.6).timeout
 	var station := prep.computer
+	var returned := []
+	station.closed.connect(func() -> void: returned.append(world.player.camera.global_transform))
+	check(not world.player.feel.is_processing(), "the scripted focus owns the camera while in use")
 	var rect := station.ui._confirm.get_global_rect()
 	var uv := rect.get_center() / Vector2(station.PIXELS)
 	var extent := prep.ship.computer_screen_size()
@@ -42,6 +45,6 @@ func run() -> void:
 	press(&"ui_cancel")
 	await get_tree().create_timer(0.6).timeout
 	check(not prep.computer_open() and world.player.is_physics_processing(), "leaving focus restores movement")
-	print("FOCUS_RETURN before=", before.origin, " after=", world.player.camera.global_position, " player=", world.player.global_position)
-	check(world.player.camera.global_position.distance_to(before.origin) < 0.01, "the camera returns to the same viewpoint")
+	check(returned.size() == 1 and returned[0].origin.distance_to(before.origin) < 0.001, "the focus returns to the same viewpoint before normal motion resumes")
+	check(world.player.feel.is_processing(), "normal camera motion resumes after stepping back")
 	check(is_instance_valid(station) and station.ui.visible, "the station stays visible after stepping back")

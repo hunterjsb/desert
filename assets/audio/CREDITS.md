@@ -55,7 +55,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_eye_tunnel.ogg | the Eye's other drone, played in place of the first when the seed picks it | gonkhub's `A-amb-tunnel.wav`, mono, levelled to `radio_eye.ogg` (its loud spells' RMS), 0.5 s fades | gonkhub's own | -28 at 3 m | -19 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
 | menu_theme.ogg | the main menu's theme, "Salt" | Hunter's `A-Mx-salt.wav`, stereo, levelled to about -20 dBFS, 20 ms fades for a seamless loop | Hunter's own | about -20 LUFS, on the UI bus | -5 |
-| boom.ogg | a vent's burst or a gas pocket's blowout, from far off | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, never over 0 dB, and low-passed | -6 |
+| boom.ogg | a vent's burst or a gas pocket's blowout, from far off; softly under the Surveyor's hull impact | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, never over 0 dB, and low-passed | -6 |
 | boom_roll.ogg | the low roll a boom rolls on with | made here (`make_rumble_sounds.py`): brown rumble under 140 Hz surging back nine times over a steady floor, a growl under it falling from 40 to 28 Hz, dying over 16 s | CC0 | -24.5 (its loudest 400 ms), 6 dB under the thump; played with it, 1.5 dB less spreading a doubling past a kilometre and lower and longer, low-passed alike | -12 |
 | vent_build.ogg | a live vent's deep build as a burst nears, looped | made here (`make_rumble_sounds.py`): a harmonic tremor at 31 Hz wandering in pitch over brown rumble, stones rattling faintly in it, softly saturated | CC0 | -21 at its loudest, a vent's greatest burst at its onset within 300 m; played by the root of distance past that | -8.5 |
 | vent_roar.ogg | a live vent's steady roar, near | made here: brown noise under 260 Hz breathing over its 7 s, a little hiss over it, looped | CC0 | -29 at 150 m seeping | -6 |
@@ -96,7 +96,7 @@ levelled the same way (a loop by its whole):
 | board_rush.wav | the wind's rush at speed, looped | made here: wide low noise gusting slowly, a thin whistle over it | CC0 | about -33 flat out | -20 |
 | board_pop.wav | a pop off a lip, or a hop | made here: a soft low thup and a fwip of air | CC0 | about -33 | -18 |
 | board_land.wav | a landing, by how hard | made here: a muffled whumph and a burst of sand | CC0 | about -31 at the jar | -17 |
-| board_slam.wav | a landing past the jar | made here: a deep thud, more sand and the deck's rattle | CC0 | about -27 | -14 |
+| board_slam.wav | a landing past the jar; also the Surveyor hull hitting sand | made here: a deep thud, more sand and the deck's rattle | CC0 | about -27 | -14 |
 | board_knock.wav | a crash into something solid | made here: a hollow body's short-ringing knock, again as it comes back, a thud under | CC0 | about -27 | -14 |
 | board_bite.wav | a skid taking hold again | made here: a short scuff and the field's chirp | CC0 | about -36 | -17 |
 | hum_racer.wav | the skimmer racer's hum, looped | made here: a thin whine at 330 Hz with a buzz in it, a little vibrato | CC0 | about -35 | -31 |

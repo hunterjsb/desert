@@ -12,6 +12,7 @@ var _seat_eye: Transform3D
 var _ground_camera_base: Transform3D
 var _ground_camera_active := false
 var _voice := AudioStreamPlayer.new()
+var _impact_roll := AudioStreamPlayer.new()
 var _heard_phase: StringName
 var _has_phase := false
 
@@ -19,6 +20,8 @@ func setup(world: World) -> void:
 	_world = world
 	_voice.bus = Sounds.WORLD
 	add_child(_voice)
+	_impact_roll.bus = Sounds.WORLD
+	add_child(_impact_roll)
 	# Cover the suit and HUD, while system menus and console remain above flight.
 	layer = 100
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -94,15 +97,14 @@ func present(state: Dictionary) -> void:
 		var body: Basis = turn * (flight.body_basis as Basis)
 		var local := body.inverse() * position
 		_orbit.camera.position = local * ArrivalOrbit.RADIUS
-		var north := Sphere.north(local.normalized())
-		var forward: Vector3 = flight.get("landing_forward", Sphere.north(point) * cos(heading) + Sphere.east(point) * sin(heading))
-		var approaching := (point * ArrivalOrbit.RADIUS - _orbit.camera.position).normalized()
-		var level := smoothstep(0.4, 1.0, progress) if phase == &"entry" else 0.0
 		var radial := local.normalized()
-		var level_aim := forward * cos(0.1) + radial * sin(0.1)
-		var aim := approaching.slerp(level_aim, level).normalized()
-		var up := north.slerp(radial, level).normalized()
-		_orbit.camera.look_at(_orbit.camera.position + aim, up if absf(aim.dot(up)) < 0.99 else Sphere.east(local.normalized()))
+		var forward: Vector3 = flight.get("landing_forward", Sphere.north(point) * cos(heading) + Sphere.east(point) * sin(heading))
+		forward = forward.slide(radial).normalized()
+		var limb := asin(clampf(1.0 / maxf(local.length(), 1.000001), 0.0, 1.0))
+		var level := smoothstep(0.0, 1.0, progress) if phase == &"entry" else 0.0
+		var angle := lerpf(limb - deg_to_rad(float(_world.tuning.surveyor_arrival.flight_limb_below_deg)), PI * 0.5 + 0.1, level)
+		var aim := -radial * cos(angle) + forward * sin(angle)
+		_orbit.camera.look_at(_orbit.camera.position + aim, radial)
 		_orbit.update_light(clock)
 	# Effects are pure saved-time samples; computing the window twice triggers no events.
 	_effects.present(state, Rect2())
@@ -113,7 +115,9 @@ func present(state: Dictionary) -> void:
 			_ground_camera_base = camera.transform
 			_ground_camera_active = true
 		camera.transform = _ground_camera_base * recoil
-		_effects.present(state, _aperture(camera, _ground_pod_pose()))
+		var tail := _world.arrival_nodes.get(&"tail") as Chassis
+		var intact := is_instance_valid(tail) and tail.deck != null
+		_effects.present(state, _aperture(camera, _ground_pod_pose()) if intact else Rect2(Vector2.ZERO, Vector2.ONE))
 	else:
 		var base := _orbit.camera.transform
 		_orbit.camera.transform = base * recoil
@@ -157,19 +161,29 @@ func _phase_audio(phase: StringName, progress: float) -> void:
 		match phase:
 			&"ejection": stream = Sounds.UNSEAT
 			&"entry": stream = Sounds.BOARD_RUSH
-			&"landing": stream = Sounds.LANDING
+			&"landing": stream = Sounds.BOARD_SLAM
 		if stream != null:
 			_voice.stream = stream
 			_voice.volume_db = float(settings.get(str(phase) + "_db", 0.0))
 			_voice.play()
+		if phase == &"landing":
+			_impact_roll.stream = Sounds.BOOM
+			_impact_roll.volume_db = float(settings.get("impact_roll_db", -16.0))
+			_impact_roll.play()
 	if phase == &"entry" and _voice.playing:
 		var envelope := smoothstep(0.0, 0.15, progress) * (1.0 - smoothstep(0.8, 1.0, progress))
 		_voice.volume_db = float(settings.get("entry_db", 0.0)) + linear_to_db(maxf(envelope, 0.001))
+
+	if phase == &"landing" and _impact_roll.playing:
+		var fade := 1.0 - smoothstep(0.35, 1.0, progress)
+		_impact_roll.volume_db = float(settings.get("impact_roll_db", -16.0)) + linear_to_db(maxf(fade, 0.00001))
 
 
 func dispose() -> void:
 	_voice.stop()
 	_voice.stream = null
+	_impact_roll.stop()
+	_impact_roll.stream = null
 	if _ground_camera_active and is_instance_valid(_world) and is_instance_valid(_world.player) \
 		and is_instance_valid(_world.player.camera):
 		_world.player.camera.transform = _ground_camera_base

@@ -49,7 +49,6 @@ func run() -> void:
 	stand_at(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
 	await physics_frames(2)
 	press(&"interact")
-	print("LAUNCH_READY ", prep.readiness(), " FORECAST ", prep.course_forecast().get("status"), " CLOCK ", world.arrival_state.preflight.departure_time)
 	press(&"interact")
 	check(not world.arrival.preparing() and world.arrival_state.phase == &"ejection", "use launches the prepared pod into the saved flight")
 	check(is_instance_valid(pod) and pod.get_parent() == world.content, "launch carries the original physical pod")

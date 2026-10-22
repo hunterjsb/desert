@@ -119,6 +119,8 @@ func refresh() -> void:
 			kinds.append(kind)
 	_result.text += "\n\n" + ("Coarse survey: " + ", ".join(kinds) if not kinds.is_empty() else "No structure reading nearby.")
 	_result.text += "\nContents unknown."
+	if not _forecast.is_empty() and not _forecast.get("safe", false):
+		_result.text = "Unsafe ground. Adjust the pulse to find a clear landing.\n\nCoarse survey only; contents unknown."
 	_update_readiness()
 
 func _update_readiness() -> void:
@@ -185,15 +187,21 @@ func _draw_overlay(canvas: Control) -> void:
 	canvas.draw_line(ship, handle, amber, 2.0, true)
 	canvas.draw_circle(handle, 12.0, amber, false, 3.0, true)
 	var font := get_theme_font(&"font", &"Label")
-	canvas.draw_string(font, ship + Vector2(10, -10), "SHIP", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, teal)
-	canvas.draw_string(font, handle + Vector2(15, 5), "PULSE", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, amber)
+	var ship_label := (ship + Vector2(24, -55)).clamp(Vector2(8, 28), _chart.size - Vector2(78, 12))
+	var pulse_label := (handle + Vector2(-108, -22)).clamp(Vector2(8, 28), _chart.size - Vector2(94, 12))
+	canvas.draw_line(ship, ship_label + Vector2(-3, 6), teal, 1.0, true)
+	canvas.draw_line(handle, pulse_label + Vector2(78, 6), amber, 1.0, true)
+	canvas.draw_string(font, ship_label, "SHIP", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, teal)
+	canvas.draw_string(font, pulse_label, "PULSE", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, amber)
 	var landing: Vector3 = (_sample.body_basis as Basis) * (_sample.landing_point as Vector3)
 	if _exposed(landing):
 		var at := _project(landing)
 		canvas.draw_arc(at, 9.0, 0.0, TAU, 32, amber, 2.0, true)
 		canvas.draw_line(at - Vector2(14, 0), at + Vector2(14, 0), amber, 2.0)
 		canvas.draw_line(at - Vector2(0, 14), at + Vector2(0, 14), amber, 2.0)
-		canvas.draw_string(font, at + Vector2(16, 24), "LANDING", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, amber)
+		var landing_label := (at + Vector2(-112, 64)).clamp(Vector2(8, 28), _chart.size - Vector2(104, 12))
+		canvas.draw_line(at, landing_label + Vector2(78, -10), amber, 1.0, true)
+		canvas.draw_string(font, landing_label, "LANDING", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, amber)
 
 func _chart_input(event: InputEvent) -> void:
 	if not _focused:
