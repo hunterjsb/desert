@@ -1083,6 +1083,12 @@ static var _current: Tuning
 @export var lagrange_radii: float = 8.0
 @export var halo_radii: float = 0.9
 @export var halo_minutes: float = 10.0
+## The relay sends the port's music down on the FM band from L1 by a dish aimed
+## at Zan: this many dB over Port Morgan's own station's margin at a kilometre,
+## so from so far it still clears the noise, until the ground near you hides it.
+## The ground toward a satellite is read this far out, m.
+@export var relay_fm_db: float = 55.0
+@export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
 ## Frontier Ag's deliveryship (Deliveryship) is drawn this many times the size
 ## DeliveryshipLooks builds it: 2.3 makes it about 940 m tip to tip, under 2
@@ -1335,10 +1341,8 @@ static var _current: Tuning
 @export var walker_speed: float = 1.5
 
 @export_group("The Walker and the living city")
-## The Walker's log goes out weaker than its forecast: whole within the first
-## distance, m, lost to noise past the second. It reads one entry this often,
-## s: its survey, then each contact it keeps, the last this many.
-@export var walker_log_m := Vector2(8000.0, 40000.0)
+## The Walker's log, heard only within its FM station's range, reads one entry
+## this often, s: its survey, then each contact it keeps, the last this many.
 @export var walker_log_every: float = 8.0
 @export var walker_contacts_kept: int = 6
 ## Taught, its feed flags an anomaly whose heart is this near the radio, m.

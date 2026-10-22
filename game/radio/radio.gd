@@ -1053,7 +1053,7 @@ func _reads() -> int:
 		match at:
 			Fm.TOWER:
 				return WEATHER
-			Fm.PORT_MUSIC, Fm.CITY_MUSIC:
+			Fm.PORT_MUSIC, Fm.RELAY, Fm.CITY_MUSIC:
 				return MUSIC
 			Fm.CITY_TALK:
 				return CITY
@@ -1447,7 +1447,8 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 		match reception.id:
 			Fm.TOWER:
 				song = _tower_air(t, reception.heard, dial)
-			Fm.PORT_MUSIC:
+			Fm.PORT_MUSIC, Fm.RELAY:
+				# The relay sends the port's own music.
 				song = Sounds.RADIO_DAY if world.weather.day.is_day(t, world.moon.longitude) else Sounds.RADIO_NIGHT
 			Fm.CITY_MUSIC:
 				_reed(t)
@@ -1467,7 +1468,7 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 					logged = reception.text if reception.clean > 0.0 else ""
 				if audible(reception) > 0.0:
 					_transmit(reception.words, reception.get("useful", true), t)
-		if reception.id in [Fm.PORT_MUSIC, Fm.CITY_MUSIC] and reception.quiet >= WHOLE and volume > 0.0 and heard():
+		if reception.id in [Fm.PORT_MUSIC, Fm.RELAY, Fm.CITY_MUSIC] and reception.quiet >= WHOLE and volume > 0.0 and heard():
 			Deeds.done(world, &"fm_heard")
 	if song != null:
 		_put_on(song, t, into)
@@ -1514,7 +1515,13 @@ func receive_fm(x: float, z: float, t: float) -> Dictionary:
 		var share := Dial.pull(fm_mhz - each.mhz, _tuning.fm_width_mhz)
 		if share < 0.01:
 			continue
-		if not _margins.has(each.id):
+		if not _margins.has(each.id) and each.has("sky"):
+			# From the sky: over the horizon, and clear of the ground near you.
+			var seen: Dictionary = constellation_of(world).orbits[each.sky].seen_from(point_at(x, z), t)
+			_margins[each.id] = Fm.sky_margin(x, z, global_position.y, seen.elevation,
+				ground_bearing(rad_to_deg(seen.bearing)), seen.metres, _tuning.relay_fm_db, each.mhz,
+				world.moon.radius, ground, _tuning)
+		elif not _margins.has(each.id):
 			var from := ground_of(each.at)
 			_margins[each.id] = Fm.margin(from, world.height_at(from.x, from.y) + each.mast_m, Vector2(x, z),
 				global_position.y, each.mhz, world.moon.radius, ground, _tuning)
@@ -2149,7 +2156,7 @@ func survey_words(t: float) -> String:
 	var speed := orbit.at(t + 0.5).distance_to(orbit.at(t - 0.5)) * orbit.radius
 	var altitude := orbit.height(t) * orbit.radius + SURVEY_WANDER.x * sin(t / SURVEY_WANDER_S.x) \
 		+ SURVEY_WANDER.y * sin(t / SURVEY_WANDER_S.y)
-	var words := "Drone · Altitude %d · Speed %d" % [roundi(altitude / 1000.0) * 1000, roundi(speed / 10.0) * 10]
+	var words := "Deliveryship · Altitude %d · Speed %d" % [roundi(altitude / 1000.0) * 1000, roundi(speed / 10.0) * 10]
 	var eta := orbit.until_through(t)
 	if eta == INF:
 		return words

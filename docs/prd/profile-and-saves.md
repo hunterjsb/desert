@@ -320,7 +320,7 @@ the frame is a part stuck on the deck.
      spotting from the crow's nest was weighed and left out: what it'd ask (a glint the crests hid
      from the deck) the Glint deed's sightline can't yet tell apart. Profile & saves probe 36.
   4. **Built 2026-10-19,** with the radio stations' second pass and the Walker's quest
-     ([Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+     ([Radio](radio-sound-and-atmosphere.md#the-walkers-quest-agreed-2026-10-19-hunter-perfect-built)):
      Triangulated, The Living City, and Taught, hidden; 43 deeds now. Their cards are marks drawn
      (DeedsGrid): three lines crossing, the city's decks dark against their glow, the Walker.
   5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
