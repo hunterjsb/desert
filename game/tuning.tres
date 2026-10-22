@@ -345,6 +345,13 @@ dial_close_up = false
 
 stoker_burn_s = 30.0
 stoker_stock = 3
+stoker_poll_s = 0.5
+stoker_light_energy = 2.8
+stoker_light_flicker = 0.2
+stoker_light_idle = 0.1
+stoker_light_range_m = 16.0
+stoker_sound_db = -17.0
+stoker_sound_m = 65.0
 winch_notch_m = 0.25
 winch_pace_mps = 0.9
 winch_pull_n = 500.0
@@ -367,13 +374,15 @@ horizon_drop_m = 8.0
 mountain_rock = Color(0.38, 0.34, 0.30, 1)
 mountain_rock_height = Vector2(60, 180)
 
-home_max_bodies = 512
+home_max_bodies = 160
 home_span_m = 128.0
 home_support_chunks = 49
 home_signal_m = 2000.0
 home_beacon_w = 1.0
 home_depart_m = 700.0
 home_return_m = 30.0
+home_sweep_s = 1.0
+home_beacon_blink_s = 1.0
 
 surveyor_arrival = {
 "flight_limb_below_deg": 5.0,

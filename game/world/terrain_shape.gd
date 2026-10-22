@@ -285,7 +285,7 @@ static func _rounded_max0(a: float, k: float) -> float:
 ## dunes() on the GPU, for the wind map's lee (WindMap), reading what
 ## pack_dunes() packs into its params block p: change one, change the other.
 ## No structures: their ground is pressed in on the CPU only.
-const DUNES_PARAMS := "vec4 dune_a; vec4 dune_b; vec4 dune_c; vec4 dune_d; Noise land; Noise sand; Noise meander; Noise fork_meander; Noise fork_patch; Noise saddle; vec4 hills[2]; vec4 mountain;"
+const DUNES_PARAMS := "vec4 dune_a; vec4 dune_b; vec4 dune_c; vec4 dune_d; Noise land; Noise sand; Noise meander; Noise fork_meander; Noise fork_patch; Noise saddle; vec4 hills[4]; vec4 mountain;"
 const DUNES_GLSL := """
 float dune_rounded_min(float a, float b, float k) {
 	float h = max(k - abs(a - b), 0.0) / k;
@@ -327,7 +327,7 @@ float dunes(vec2 at) {
 			p.dune_c.w * fork);
 	}
 	float mountain = -1e20;
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 4; i++) {
 		vec4 hill = p.hills[i];
 		if (hill.z > 0.0) {
 			vec2 off = at - hill.xy;

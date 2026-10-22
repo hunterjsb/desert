@@ -138,11 +138,16 @@ func recall(records: Array) -> void:
 	_lock.unlock()
 	revision += 1
 
+## The GPU wind map's ground: current and still-loaded retired mountains alike,
+## so it agrees with the CPU ground. Up to PACKED; DUNES_PARAMS holds as many.
+const PACKED := 4
+
 func pack(into: StreamPeerBuffer) -> void:
-	for i in 2:
+	var held := profiles()
+	for i in PACKED:
 		var v := Vector4.ZERO
-		if i < hills.size():
-			var hill := hills[i]
+		if i < held.size():
+			var hill := held[i]
 			v = Vector4(hill.at.x, hill.at.y, hill.radius, hill.height)
 		for f in [v.x, v.y, v.z, v.w]:
 			into.put_float(f)

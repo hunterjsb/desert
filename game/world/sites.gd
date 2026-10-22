@@ -101,6 +101,9 @@ class Support:
 	var anchor: Anchor
 	var keys := {}
 	var pending := {}
+	## Keys refused over another sheet's ground, by the laid-units count then:
+	## not tried again until some unit is laid or lifted.
+	var refused := {}
 
 
 var history: History
@@ -142,6 +145,11 @@ var _support_queue: Array[Array] = []
 var _support_making: Unit
 var _support_owner: Support
 var _support_turn := false
+## Bumped whenever a unit is laid or lifted, a survey starts or ends or the laid
+## reach moves: refused support retries, and readiness is asked afresh.
+var _turnover := 0
+var _ready_turn := -1
+var _ready_memo := {}
 var _sites := {}
 var _pieces := {}
 ## The next key for a unit laid by hand, below every landmark's; a dune's
@@ -374,6 +382,7 @@ func hold(coord: Vector2i) -> Array[Structure]:
 func release(where: Variant) -> void:
 	if where is StringName or where is String:
 		_retained.erase(StringName(where))
+		_turnover += 1
 		_retire()
 		return
 	var coord: Vector2i = where
@@ -445,7 +454,20 @@ func units() -> Array[Unit]:
 
 ## Whether everything that could touch a rectangle of world metres is laid,
 ## so ground there can be built.
+## Whether ground here can be built now, asked for every chunk waiting each frame:
+## answered once per change to what it depends on.
 func ready(rect: Rect2) -> bool:
+	if _ready_turn != _turnover:
+		_ready_turn = _turnover
+		_ready_memo.clear()
+	var known: Variant = _ready_memo.get(rect)
+	if known == null:
+		known = _ready_now(rect)
+		_ready_memo[rect] = known
+	return known
+
+
+func _ready_now(rect: Rect2) -> bool:
 	var covered := true
 	for corner in [rect.position, rect.end, Vector2(rect.position.x, rect.end.y), Vector2(rect.end.x, rect.position.y)]:
 		if corner.distance_to(_ready_at) > _ready_m:
@@ -479,6 +501,7 @@ func retain(id: StringName, rect: Rect2, from: Anchor) -> void:
 	if support == null:
 		support = Support.new()
 		_retained[id] = support
+		_turnover += 1
 	support.rect = aligned
 	support.anchor = from
 	support.keys.clear()
@@ -493,6 +516,7 @@ func retain(id: StringName, rect: Rect2, from: Anchor) -> void:
 		var at := from.place(mark.p)
 		if Rect2(at - Vector2.ONE * mark.radius, Vector2.ONE * mark.radius * 2).intersects(aligned, true):
 			support.keys[-1 - i] = true
+	_turnover += 1
 	_retire()
 	_schedule_support()
 
@@ -512,7 +536,8 @@ func _support_has(key: int, support: Support) -> bool:
 func _schedule_support() -> void:
 	for support: Support in _retained.values():
 		for key: int in support.keys:
-			if _support_has(key, support) or support.pending.has(key):
+			if _support_has(key, support) or support.pending.has(key) \
+					or support.refused.get(key, -1) == _turnover:
 				continue
 			var waiting: Variant = _queued.get(key)
 			if waiting is Array and _same_sheet(waiting[1], support.anchor):
@@ -553,6 +578,7 @@ func _lay_support() -> void:
 		_support_put(unit, support)
 		return
 	_surveying.append([unit, WorkerThreadPool.add_task(_survey.bind(unit.sites), true), support])
+	_turnover += 1
 
 
 func _support_put(unit: Unit, support: Support) -> void:
@@ -564,6 +590,7 @@ func _support_put(unit: Unit, support: Support) -> void:
 	# The old loaded sheet owns its ground until it retires.
 	for old in units():
 		if old.ground.intersects(unit.ground, true) and not _same_sheet(old.anchor, unit.anchor):
+			support.refused[unit.key] = _turnover
 			return
 	_index(unit, true)
 	var shape: TerrainShape = _ctx.shape.get_ref()
@@ -606,6 +633,7 @@ func follow(x: float, z: float, latitude: float, longitude: float, facing: float
 			_surveyed(each)
 	_ready_at = Vector2(x, z)
 	_ready_m = due
+	_turnover += 1
 	_schedule_support()
 
 
@@ -644,6 +672,7 @@ func finish() -> void:
 		if each.size() > 2:
 			_surveyed(each)
 	_surveying.clear()
+	_turnover += 1
 	dunes.finish()
 
 
@@ -833,6 +862,7 @@ func recall(memories: Array) -> void:
 	_making = null
 	_anchor = null
 	_ready_m = -1.0
+	_turnover += 1
 	_support_queue.clear()
 	_support_making = null
 	_support_owner = null
@@ -890,12 +920,14 @@ func _lay_next(now := false) -> void:
 		return
 	# Ahead of chunk builds: the ground waits on it.
 	_surveying.append([unit, WorkerThreadPool.add_task(_survey.bind(unit.sites), true)])
+	_turnover += 1
 
 
 ## A unit whose survey is done, laid; it waits for it if it isn't.
 func _surveyed(each: Array) -> void:
 	WorkerThreadPool.wait_for_task_completion(each[1])
 	_surveying.erase(each)
+	_turnover += 1
 	var unit: Unit = each[0]
 	if each.size() > 2:
 		_support_put(unit, each[2])
@@ -910,6 +942,7 @@ static func _survey(made: Array[Site]) -> void:
 	for site in made:
 		if site is Structure:
 			site.place()
+			site.warm()
 
 
 ## All of a unit at once.
@@ -979,6 +1012,7 @@ func _index(unit: Unit, orphan := false) -> void:
 	else:
 		_units[unit.key] = unit
 	laid += 1
+	_turnover += 1
 	for site in unit.sites:
 		if not _dug.is_empty() and site is Structure and _dug.has(site.id):
 			site.dug_m = _dug[site.id][0]
@@ -1075,6 +1109,7 @@ func _hash(unit: Unit, into: Dictionary, thing: Variant, rect: Rect2) -> void:
 
 
 func _take_up(unit: Unit) -> void:
+	_turnover += 1
 	var own := {}
 	for site in unit.sites:
 		own[site] = true
@@ -1114,6 +1149,7 @@ func _new_sheet() -> void:
 	_queued.clear()
 	_making = null
 	_ready_m = -1.0
+	_turnover += 1
 
 
 ## The moon point is where the ground walked from the last anchor should put it,

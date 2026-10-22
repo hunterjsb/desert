@@ -121,7 +121,9 @@ func setup(world: World) -> void:
 		_indices[step] = ChunkBuild.indices_for(_size / step)
 	_far = GeometryInstance3D.new()
 	add_child(_far)
-	_far.extra_cull_margin = pow((_tuning.far_radius + _size) * sqrt(2.0), 2.0) / (2.0 * SurfaceProjection.radius(_tuning))
+	# The ring's corners, seen from anywhere in its centre chunk.
+	var far_reach := (ceilf(_tuning.far_radius / _size) + 2.0) * _size * sqrt(2.0)
+	_far.extra_cull_margin = far_reach * far_reach / (2.0 * SurfaceProjection.radius(_tuning))
 	_apron = GeometryInstance3D.new()
 	_apron.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_apron.extra_cull_margin = Horizons.bounds_margin(_tuning)
@@ -429,22 +431,19 @@ func _stage_home(policy: TerrainResidency.Policy) -> void:
 	_home_next = policy.camp_keep
 	_home_blocked = false
 	if policy.camp_keep.get_area() > _tuning.home_support_chunks:
+		# A spread camp keeps its last admitted ground; Home refuses the growth itself.
 		policy.camp_keep = _home_kept
 		policy.camp_collision = _home_kept.grow(-1) if _home_kept.has_area() else Rect2i()
 		_home_blocked = true
-		_world.home.attention = "home is spread beyond its supported ground"
 		return
 	if not policy.camp_keep.has_area() or not _home_kept.has_area():
 		return
+	# Old collision lingers while bodies cross into the new. A camp that outruns it
+	# keeps only its new ground: every member is inside the new footprint.
 	var together := policy.camp_keep.merge(_home_kept.grow(-1))
 	if together.get_area() <= _tuning.home_support_chunks:
 		policy.camp_keep = together
 		policy.camp_collision = policy.camp_collision.merge(_home_kept.grow(-1))
-	else:
-		policy.camp_keep = _home_kept
-		policy.camp_collision = _home_kept.grow(-1)
-		_home_blocked = true
-		_world.home.attention = "home moved beyond its supported ground"
 
 
 func _update_home(policy: TerrainResidency.Policy) -> void:
@@ -482,14 +481,15 @@ func _out_of_time() -> bool:
 
 
 func _launch() -> void:
-	var waiting := _wanted.size()
-	while _tasks.size() < _tuning.builds_in_flight and not _wanted.is_empty() and waiting > 0 and not _out_of_time():
-		var key: Vector3i = _wanted.pop_front()
-		waiting -= 1
-		# Surveying one area cannot stall ready work in the other.
+	# A chunk still being surveyed keeps its place: the next ready one goes in its
+	# stead, and nearer ground and collision are never queued behind far decoration.
+	var i := 0
+	while _tasks.size() < _tuning.builds_in_flight and i < _wanted.size() and not _out_of_time():
+		var key: Vector3i = _wanted[i]
 		if not _world.shape.sites.ready(Rect2(Vector2(key.x, key.y) * _size, Vector2.ONE * _size)):
-			_wanted.append(key)
+			i += 1
 			continue
+		_wanted.remove_at(i)
 		if _tasks.has(key):
 			continue
 		var held := _world.shape.sites.hold(Vector2i(key.x, key.y))

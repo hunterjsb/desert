@@ -83,7 +83,7 @@ func run() -> void:
 	check(shield.running() and camp.hovering() and world.home.supported and world.rescued == 0,
 		"return reaches the same live shelter without a ground rescue")
 	print("MEDIUM HOME pieces=%d members=%d items=%d mass=%.1fkg spin=%.4frad/s speed=%.4fm/s tilt=%.3fdeg rescued=%d" % [camp.pieces().size(),
-		world.home.members.size(), world.home.item_count, camp.mass, worst_spin, worst_speed, worst_tilt, world.rescued])
+		world.home.members.size(), world.home.work_count(), camp.mass, worst_spin, worst_speed, worst_tilt, world.rescued])
 
 
 func _mount(id: StringName, p: Chassis, face := Chassis.TOP) -> RigidBody3D:

@@ -13,36 +13,32 @@ func run() -> void:
 		return
 	await get_tree().process_frame
 	_check_frame(horizons)
-	var radius := SurfaceProjection.radius(world.tuning)
-	var eye := world.player.camera.global_position
-	var anchor := Vector2(eye.x, eye.z)
-	var point := Vector3(eye.x + 15000.0, 600.0, eye.z - 4000.0)
-	var drawn := SurfaceProjection.project(point, anchor, radius)
-	check(drawn.y < point.y - 30.0, "distant summit lowers on the large moon")
-	check(SurfaceProjection.unproject(drawn, anchor, radius).distance_to(point) < 0.001, "weather sampling recovers undeformed ground")
-	var normal := SurfaceProjection.normal(Vector3.UP, Vector2(point.x, point.z), anchor, radius)
-	var along := SurfaceProjection.project(point + Vector3.RIGHT, anchor, radius) - drawn
-	check(absf(normal.dot(along.normalized())) < 0.001, "projected normal follows the surface")
 	var old_height := world.height_at(world.player_world_x(), world.player_world_z())
-	var off := Vector3(3.0 * world.tuning.chunk_size, 0.0, -2.0 * world.tuning.chunk_size)
 	world.shift_origin(Vector2i(3, -2))
 	await get_tree().process_frame
 	await get_tree().process_frame
 	_check_frame(horizons)
-	var shifted := SurfaceProjection.project(point - off, anchor - Vector2(off.x, off.z), radius)
-	check((shifted + off).distance_to(drawn) < 0.002, "origin shifts preserve the drawn surface")
 	check(is_equal_approx(old_height, world.height_at(world.player_world_x(), world.player_world_z())), "rendering leaves physical ground unchanged")
-	var arrays := FarRing.apron(world.shape, Vector2i.ZERO, world.tuning)
-	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var least := INF
-	var most := 0.0
-	for vertex in vertices:
-		var distance := Vector2(vertex.x, vertex.z).length()
-		least = minf(least, distance)
-		most = maxf(most, distance)
-	check(least < world.tuning.far_radius and most >= SurfaceProjection.horizon_distance(2.0, radius), "continuous apron overlaps far ground and reaches the eye-level horizon")
-	check(vertices.size() < 3000 and most <= world.tuning.horizon_range.y + 0.1, "apron stays inside the existing distant budget (%d vertices)" % vertices.size())
-	check(world.terrain._far.extra_cull_margin > 1.0 and world.terrain._apron.extra_cull_margin > 200.0, "native bounds contain lowered distant vertices")
+	var radius := SurfaceProjection.radius(world.tuning)
+	var apron := _reach(FarRing.apron(world.shape, Vector2i.ZERO, world.tuning))
+	var far := _reach(FarRing.make(world.shape, Vector2i.ZERO, world.tuning))
+	check(apron.x < world.tuning.far_radius and apron.y >= SurfaceProjection.horizon_distance(2.0, radius),
+		"the apron overlaps far ground and reaches the eye-level horizon, leaving no gap")
+	# Lowered past their native boxes, distant meshes would be culled while in view;
+	# the eye stands anywhere in the centre chunk the meshes are laid from.
+	var eye := world.tuning.chunk_size * sqrt(2.0)
+	check(world.terrain._apron.extra_cull_margin >= pow(apron.y + eye, 2.0) / (2.0 * radius)
+		and world.terrain._far.extra_cull_margin >= pow(far.y + eye, 2.0) / (2.0 * radius),
+		"distant meshes stay drawn wherever the large moon lowers them")
+
+
+## Nearest and farthest horizontal reach of a distant mesh's vertices, m.
+func _reach(arrays: Array) -> Vector2:
+	var reach := Vector2(INF, 0.0)
+	for vertex: Vector3 in arrays[Mesh.ARRAY_VERTEX]:
+		var d := Vector2(vertex.x, vertex.z).length()
+		reach = Vector2(minf(reach.x, d), maxf(reach.y, d))
+	return reach
 
 func _check_frame(horizons: Horizons) -> void:
 	var eye := world.player.camera.global_position

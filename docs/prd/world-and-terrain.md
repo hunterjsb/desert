@@ -4,83 +4,41 @@
 
 ## Reachable horizons (built, 2026-10-20)
 
-Starcom's relay mountain and the observatory's far-side volcano are real ground at their
-history positions. The observatory remains at the anti-Tu equatorial centre, not a pole.
-Their coarse distant silhouettes must become the same slopes underfoot, through the normal
-far ring and streamed collision. Dunes, ordinary sites, burial and wind shelter continue on
-them; a mountain must not suppress archaeology as an enormous building footprint would.
-The summit structures use the existing kit, salvage and discovery systems. Repairing Starcom
-and the young god's quest remain later work; this slice provides places to reach and explore.
+Starcom's relay mountain and the observatory's far-side volcano (at the anti-Tu
+equatorial centre, not a pole) are real ground at their history positions. Their distant
+silhouettes become the same slopes underfoot, through the normal far ring and streamed
+collision, with dunes, ordinary sites, burial and wind shelter continuing on them. The
+summit structures use the existing kit, salvage and discovery systems; repairing Starcom
+and the young god's quest stay later work.
 
-Keep early starts' ordinary salvage cues and their real distances. No beacon, objective arrow,
-visibility unlock or enlarged antenna points beginners at a journey they cannot sustain.
-Mountain and plume visibility follows distance, intervening dust and elevation. Occasional
-silhouettes offer bearings and long-term curiosity; clear nearby salvage stays the useful
-first destination. A mobile camp, provisions and weather reading make an expedition viable.
-The existing vents retain their geological sources, burst timing and atmospheric rendering;
-the far-side vent must rise from the actual mountain slope.
+Early starts keep their ordinary salvage cues and real distances. No beacon, objective
+arrow, visibility unlock or enlarged antenna points a beginner at a journey they cannot
+sustain: a mountain or plume shows by distance, dust and elevation, as a bearing and a
+long-term curiosity, while clear nearby salvage stays the first destination. A mobile
+camp, provisions and weather reading make an expedition viable.
 
-Mountain projections hold still while any nearby ground can be loaded, survive saves and
-origin shifts, and reproject when approached on another lap. The CPU ground and GPU wind
-map must agree. Verify slope access, collision, summit arrival, far/near continuity and
-initial views; inspect actual GPU captures for haze and scale. Audit first-hour exposure
-before adjusting archaeology: distinguish deep storm finds from nearby salvage and measure
-how long a visible post-storm opportunity lasts.
-
-**As built.** `Landforms` projects two immutable, saved terrain profiles: Starcom rises
-600 m over a 2.4 km foot radius, the observatory 950 m over 3.6 km. Bedrock meets the
-procedural dunes with a maximum rather than adding their slopes together. Dunes remain
-at the foot and in hollows; smaller structures still survey and carve normally. Dune
-archaeology excludes exposed bedrock crests: wind does not excavate the volcano itself. Projections
-are pinned within the terrain/far-ring reach, and old loaded sheets retain their ground.
-Taking a worker's profile-array reference is locked against save restoration and reprojection;
-chunk and far-ring jobs hold one snapshot for their entire build. Each job filters that
-snapshot to its sampled bounds, including the normal border: ordinary dune chunks must
-not repeat distant-mountain tests at every vertex. An explicitly empty snapshot stays
-empty rather than fetching live profiles partway through a build. The 20 km streaming
-probe passed locally in 99 s versus 108 s before this filtering, both at low priority
-while a game was running; chunk seams, dune shading and physical summit arrival passed. Moon-only relocation also
-defers any new mountain that would intersect loaded ground, preventing rises beneath bodies.
-
-`Horizons` draws 128 m samples beyond the ordinary 3 km far ring, lowered 8 m into its
-overlap. This is a finite approximation, not a second physical surface. Silhouettes fade
-between 24 and 42 km; the camera covers that range. The summit stand-ins reuse the actual
-colonial meshes and hand over across the existing 420–500 m range. Galleries provide roofs,
-beds and ordinary salvage sockets. Starcom's receiving array and the broken elevator rails
-are distinct silhouettes. These are first exterior slices, not completed quests or interiors.
-
-Checks cover radial upper approaches, chunk height agreement, saved projections and streamed
-arrival with cargo resting on physical gallery ground. Twelve loot draws per summit verify
-that surviving supplies are reachable on the actual foundation. GPU captures cover spawn, both summits
-at 15 km and 150 m, and the volcano at 4 km and 800 m. On this approach the broad
-volcanic shoulder hides the observatory from the foot; the rails emerge during the climb,
-visible at 800 m before the near mesh takes over. GPU wind-map heights agree with the CPU within
-7 mm in those captures. Mountain surfaces suppress the shading of dunes buried beneath them.
-The look harness is `look/horizons/horizons.tscn`; `--storm` exercises obscured views,
-and `--surveyor` captures the real new-run location, morning, facing and starting kit.
+**As built.** `Landforms` projects two immutable, saved profiles: Starcom rises 600 m over
+a 2.4 km foot, the observatory 950 m over 3.6 km. Bedrock meets the dunes with a maximum
+rather than a sum, and dune archaeology skips exposed bedrock crests. Terrain jobs take one
+filtered snapshot of the profiles, so ordinary chunks never test distant mountains per
+vertex, and a relocation never raises a mountain under loaded ground. `Horizons` draws
+128 m samples beyond the 3 km far ring, fading between 24 and 42 km; the summit stand-ins
+reuse the colonial meshes and hand over to the real ones across 420 to 500 m, with
+galleries (roofs, beds, salvage sockets), Starcom's receiving array and the observatory's
+broken elevator rails. These are exterior slices, not quests or interiors.
 
 ## Halloran's first playable ground (built, 2026-10-20)
 
-Aitch–Crossing–furnace is one connected Structure assembly laid with the Halloran landmark unit,
-anchored to the moon's seeded position and reprojected by Sites when revisited. One local grade
-holds the approach together while its surrounding apron returns to procedural dunes. The assembly
-uses the existing terrain mesh/collision carve and exposure holds; lower rooms collect sand relative
-to their own floors. Essential access stays above burial. Large-scale rift carving remains deferred.
-Persistent encounter state belongs to the run, keyed independently of transient site instances.
+Aitch, the Crossing and the furnace are one connected Structure assembly laid with the
+Halloran landmark unit, anchored to the moon's seeded position and reprojected by Sites
+when revisited. One local grade holds the approach together while its apron returns to
+dunes; lower rooms collect sand relative to their own floors, and essential access stays
+above burial. Large-scale rift carving stays deferred. Persistent encounter state belongs
+to the run, keyed independently of transient site instances.
 
-**As built and checked.** `HalloranSite` uses a local 36 m rise over 480 m, a 100 m blending
-apron, and floor-relative burial from 1.6 m to zero. The clear spine's sampled grade stays
-below 0.2 in all three exposure states and three rotations; lattice heights agree between
-CPU queries and chunk carving within 1 mm (kit probe 10, 2 s). The apron restores untouched
-dunes outside the footprint. Its sides can form steep escarpment; only the central approach
-is guaranteed walkable. This multi-level assembly has its own burial/grade probe rather than
-the ordinary single-floor building survey's slope requirement.
-
-Each chunk asks the assembly for only its own carve rectangle, avoiding a full landmark grid
-per exposure step. Ordinary building carves retain their cached grids. Landmark reach stays
-out of the ordinary-cell query margin. The seeded landmark appears exactly once on tested
-sheets for seeds 1234, 7 and 99, retaining its identity at remote world coordinates and reversed
-north (history probe 7, 3 s). The real streamed interaction check also leaves and revisits it.
+**As built.** `HalloranSite` uses a 36 m rise over 480 m, a 100 m blending apron and
+floor-relative burial from 1.6 m to zero. Only the central approach is guaranteed
+walkable (grade under 0.2 in every exposure state); its sides can form steep escarpment.
 
 ## Why this system exists
 
@@ -493,70 +451,22 @@ trail touching 30 to 60) if a resumed run should keep its trail.
   64 MB of its memory. Streaming stayed within its line in `look/stream` (1.54 ms
   against 2.0; under the same load master's own run went over it, at 3.6).
 
-### Trail relief follow-up (2026-10-19; candidate built)
+### Trail relief follow-up (2026-10-19; built)
 
 Hunter approved the current sand and asked for trails of the same quality. The
 [art brief](../art-direction.md#playtest-follow-up-hunter-2026-10-19-agreed-in-progress)
-calls for compressed floors, loose rims, nearby relief and stable marks in motion.
-The map, fill clock, world anchoring and authoritative ground remain the same.
+calls for compressed floors, loose rims, nearby relief and stable marks in motion; the
+map, fill clock, world anchoring and authoritative ground stay as they are.
 
-- **The floor and lip have a signed height for shading.** A full boot mark is drawn
-  8 cm deep; only pressure above a full step gets the board's extra depression,
-  reaching 24 cm at the deepest sideways skid. A loose lip rises up to 3 cm round
-  ordinary marks and 5 cm round deep skids. Soft stamp curvature reaches a full lip
-  at `track_rim_shape` (0.08). These values live in Tuning's Tracks group.
-- **Nearby relief is bounded.** One view-ray lookup shifts the sampled floor within
-  8 m, fading from 2 m, capped at one map texel so a grazing view stays beside objects
-  resting on the unchanged physical ground. It does not move the physical floor or
-  the rendered silhouette. A resting board crossing a deep skid is in `look/tracks`.
-- **The walls receive light as walls.** Central differences of the signed profile
-  shape both sides of a loose rim. Local wall horizons shade the floor from a low sun;
-  their hidden sky replaces a blanket darkening over a wide floor. Compacted sand loses
-  up to 16% of its colour, rather than 32%. Shallow hover wakes retain more ripples;
-  full footsteps and deep skids flatten them. Aged marks keep their trodden shading.
-- **Detail costs only near marks.** Eight extra cached map reads shape the rim, four
-  wider reads find a skid's walls, and one reads the shifted floor; these are gated
-  to nearby marked ground. Bare sand skips them. The map stays 64 MB, and stamping,
-  filling, residency and collision are unchanged.
-
-**Checks.** The focused tracks and origin-shift probes pass. Paired captures against
-accepted sand commit `5e67998` cover fresh and storm-aged walking, hover wakes, a
-cross-lit controlled board skid and dragging, in low sun, clear day and a storm-night
-lamp. The skid includes a resting board for contact checks. Bare sand in a 500×350 px
-foreground region matches exactly in the fully filled before/after frames at low sun
-and clear day. The helper supports `--before`, light/subject filters, scalar `--try`
-profiles and a quick `--skid-only` mode.
-
-**GPU cost against the accepted sand**, at 1920×1080 on an RTX 3070, from nine paired
-rounds of 60 measured frames after 30 settling frames, reversing the order each round:
-
-| View | Before, mean | Candidate, mean | Median paired difference |
-| --- | ---: | ---: | ---: |
-| Walking path, clear day | 5.319 ms | 5.629 ms | +0.195 ms |
-| Cross-lit skid, clear day | 5.382 ms | 5.687 ms | +0.159 ms |
-
-Individual round differences were noisy (-0.153 to +1.821 ms walking, -0.225 to
-+1.889 ms at the skid).
-
-**Combined sand/trail budget**, measured directly against shader `14cb3d0` in the
-same skid view rather than adding results from different cameras:
-
-| View | Before volume/trails, mean | Candidate, mean | Median paired difference | Round range |
-| --- | ---: | ---: | ---: | ---: |
-| Clear day, cross-lit skid | 5.264 ms | 5.625 ms | +0.204 ms | -0.136 to +1.596 ms |
-| Low sun, cross-lit skid | 5.342 ms | 5.801 ms | +0.365 ms | +0.033 to +0.934 ms |
-
-Both scene means and median additions stay within the approximate 0.8 ms additional
-rendering budget. The low-sun check used the same nine-round method and warmed both
-pipelines for 60 physics frames before measuring. Individual rounds still contain
-outliers; the process diagnostic also counted other Godot processes in the low run.
-These are representative view costs, not a bound on every frame. The low-sun lateral
-sequence keeps the resting board seated and the rim attached to the surrounding sand;
-no grid facets or edge jumps appeared. A final focused tracks probe on the combined
-candidate again passes ground/collision invariance and filling/lifetime checks.
-
-The quarter-metre map still limits boot detail; true contact silhouettes would require
-a finer mesh patch. No map expansion or separate patch is added here.
+**As built.** The sand shading reads a signed height: a full boot mark is 8 cm deep, the
+board's extra depression reaches 24 cm at the deepest skid, and a loose lip rises 3 cm
+round ordinary marks and 5 cm round deep skids (`track_rim_shape`, Tuning's Tracks group).
+One view-ray lookup shifts the sampled floor within 8 m, capped at a map texel, and never
+moves the physical floor or the silhouette. Wall shading and low-sun wall horizons light
+both sides of a rim; compacted sand loses up to 16% of its colour rather than 32%. The
+extra reads are gated to nearby marked ground and the map stays 64 MB. Headline cost: about
+0.2 to 0.4 ms of GPU on an RTX 3070 at 1080p, inside the 0.8 ms budget. The quarter-metre
+map still limits boot detail.
 
 ## Skeleton version
 
@@ -818,238 +728,86 @@ it as direction and says so on each line.
 ## Marked camp preparation (2026-10-20)
 
 Hunter's next Sanddune phase is the expedition loop: leave the camp to investigate
-signals, then return with finds. A marked camp needs a bounded second area of
-supporting ground, not just immunity from deletion. Its terrain scheduling, late
-worker uploads, collision retirement and world-body culling must agree about which
-areas remain present. Explicit camp membership, saved anchors and navigation follow
-this foundation; none is implemented by this preparation alone.
+signals, then return with finds. His words and the decisions on what a Home is are in
+[Bubble shield & camp](bubble-shield-and-camp.md#marked-home-a-camp-that-does-not-despawn-selected-2026-10-20);
+this is the ground side. A marked Home needs a bounded second area of supporting ground,
+not just immunity from deletion, and terrain scheduling, late worker uploads, collision
+retirement, history sites and body culling must all agree on which areas are present. The
+player-area rules (square chunk distances, detail and collision radii, one-chunk
+retirement margin, carried and ridden exceptions, streaming budget) stay as they were.
 
-First consolidate the current player-area rules into one terrain residency policy.
-Keep the existing square chunk distances, detail radius, collision radius and
-one-chunk retirement margin. Terrain uses its planned player centre; body culling
-continues to use the player's current grid position, including before the render
-planner catches up. Existing carried/ridden exceptions, freeze/thaw behavior and
-streaming budget stay in place. A later marked-camp area must extend the shared
-policy at all of these gates together. This preparation does not retain distant
-camps or introduce a beacon, navigation UI, new save state or new deed.
-
-### As built: shared policy foundation
-
-`TerrainResidency` now owns the square-distance, ground-retention and collision
-predicates used by terrain planning/retirement and world-body lifetime. The
-player-area policy and its one-chunk retirement margins are unchanged. No second
-area is scheduled and distant belongings still follow the existing warning,
-freeze/thaw and deletion behavior.
-
-The combined candidate `ca614c86` passed all nine Linux groups in
-[verification](https://github.com/hunterjsb/desert/actions/runs/39489022676).
-Focused origin-shift, seam and camp warning/deletion/turnback checks also passed
-(11 s, 6 s and 172 s). Native platform acceptance remains pending. These checks
-cover the existing player-area behavior; marked membership, distant terrain,
-saving anchors and homing remain unimplemented.
-
-
-### Marked camp implementation dependencies (reviewed 2026-10-20; not built)
-
-The next implementation must cover history and restoration alongside terrain.
-`Sites.follow()` currently retires history units by player distance, while
-`Sites.ready()` exposes one player-centered ready area. A retained camp therefore
-needs its own history support and readiness; keeping its terrain chunks alone
-would still remove structures. `Terrain._launch()` currently returns when its
-first queued rectangle is not ready, so pending camp work must not starve player
-terrain. `Saves._ready_at()` waits for saved bodies' ground; camp support must be
-requested before restoration waits for a distant body.
-
-Recommended sequence, pending detailed hardware and display decisions:
-
-1. Record one explicit marked chassis and bounded claimed membership, including
-   its mounted assembly, owned loose belongings and supporting lines/anchors.
-   Shield shutdown must not erase membership; untouched salvage is not adopted.
-2. Persist that identity and a geographic anchor. Admit the camp's supporting
-   history, terrain and collision as a second area using the shared policy at
-   every scheduling, upload, retirement and body-lifetime gate.
-3. Verify ordinary remote simulation and restoration before exposing safe camp
-   departure. Audit position-based daylight/temperature and origin/history-sheet
-   changes; a local scouting check does not establish moon-wide accuracy.
-4. Add a requested return cue using the same saved camp identity. Receiver tier,
-   transmitter power and the final presentation remain decisions to settle.
-
-First acceptance must include departure beyond the existing deletion boundary,
-shield brownout, outside stakes/guides, distant save/resume, history/origin changes,
-near/far simulation equivalence and bounded combined player/camp work. No second
-area, camp marker or return UI is implemented by this review. Numerical admission
-budgets and supported range require measurements rather than product promises.
-
-### Marked Home integration contract (2026-10-20; in progress)
-
-`World.home` owns explicit camp identity. Its world-metre footprint and geographic
-anchor request a second history area through `Sites.retain(id, rect, anchor)`;
-`Sites.release(id)` removes that request. Readiness accepts either supported area
-without changing the global player anchor. Retain intersecting units across sheet
-changes, including their excavation/exposure state. Unready camp survey work must
-not block ready player terrain at the front of the build queue.
-
-Terrain construction, collision, uploads, retirement and body lifetime consume the
-same immutable player/camp residency policy. Deduplicate overlap, share the current
-work budget and preserve collision under current and next moving-camp positions.
-A footprint revision replans terrain even if the player's centre does not change.
-Request saved Home support before `Saves._ready_at` waits. Body retention alone is
-not readiness. Audit positional sunlight/temperature and camp warnings alongside
-world-time equivalence, without adding a separate remote simulation clock.
-
-### First Home implementation evidence (2026-10-20; combined verification pending)
-
-The terrain policy copies the player radii and a separate camp footprint. Player
-collision builds first; ready camp collision precedes distant player decoration.
-Overlap builds once. An unready survey rotates behind ready work under the existing
-stream deadline. Moving support retains old and replacement collision together
-until ready, within the 49-cell keep budget. If physical movement exceeds that
-transition budget, preserve the admitted identity and previous support, report
-unsupported ground and use the ordinary missing-collision safety behavior; this
-is not a promise of unlimited moving support or an invisible physical constraint.
-
-Camp 5 passed a 2.1 km departure across an origin/history change, actual remote
-collision, unfrozen chassis, continued battery consumption, distant save/resume,
-and return/unmark (13 s on the shared desktop). The real GPU capture 1 km away
-reported 331 loaded chunks, 50 collision chunks, two active camp bodies/three work
-items and a 1.23 ms maximum measured terrain callback. This small fixture does not
-validate the 512-item/128 m worst case or establish a general frame-time guarantee.
-Weather 26 holds camp light and temperature fixed through a 2 km player trip and
-origin shift; player and legacy forecast queries retain local geographic behavior.
-
-Further focused acceptance: History 10–13 pass real Crossing exposure/excavation,
-retained dune-seed cache eviction, duplicate-cell saved placement restoration and
-stationary-player support retirement. Camp 7 passes a full 49-cell one-chunk handoff
-and replacement mark; the handoff keeps required old collision rather than its
-obsolete outer margin. Camp 8 passes a saved overstretched stake assembly without
-expanding the budget or hanging restore. Its unsupported outlier resumes at the
-actual saved pose using ordinary missing-ground safety; supported camps continue
-normal physics. Camp 5 also compares equal 10 s near/far power intervals. Existing
-origin-shift and unmarked camp warning/deletion checks pass (12 s and 129 s).
+**As built.** `TerrainResidency` owns the distance, ground-retention and collision
+predicates that terrain planning, retirement and body lifetime all read, for the player
+area and the Home area alike. `World.home` owns the identity; its footprint and
+geographic anchor request a second history area through `Sites.retain(id, rect, anchor)`
+and `Sites.release(id)`, and `Sites.ready` accepts either area. Overlap builds once under
+the existing work budget (player collision, then Home collision, then distant
+decoration). A chunk still being surveyed keeps its place in that order while the next
+ready one is built, so nearer ground and collision never queue behind far decoration;
+`Sites.ready` answers once per change to what it reads, and a structure's exposure is
+worked out on its survey's worker, so holding its ground is a lookup (the 3 km flight's
+slowest streaming frame went from 1.9 to 1.3 ms). Support refused over another sheet's
+ground waits for a unit to be laid or lifted rather than being laid again every frame. A footprint change replans terrain even when the player stands still, and
+saved Home support is requested before `Saves._ready_at` waits on a distant body. Moving
+support keeps old and replacement collision together within the 49-cell keep budget; a
+camp that moves faster than that keeps collision at its new place rather than pinning
+support at the old one. Home's light, temperature and power run on the one world clock.
 
 ### Orbital Surveyor arrival visual direction (2026-10-20; proposed implementation)
 
-The requested orbital opening needs a renderable spherical representation of Zan;
-current TerrainShape/FarRing are local flat ground. History/Sphere already supply
-seeded geography and landmark points, Geology supplies major scars/vents and
-DayCycle supplies sun/Tu directions. A bounded first implementation can render an
-orbital proxy sphere and actual pod, resolve a seeded landing point, preload its
-normal terrain patch and transition through entry dust to that local tangent
-scene. Preserve geographic heading and time; do not imply that a general seamless
-planet renderer or orbital physics simulator already exists. The bounded orbital material and automatic arrival controller are implemented;
-interactive ship preparation remains a separate in-progress feature. The generated mockup is an art target only.
+The requested orbital opening needs a renderable spherical Zan; TerrainShape and FarRing
+are local flat ground. History/Sphere supply seeded geography and landmark points,
+Geology the scars and vents, DayCycle the sun and Tu directions. The bounded first
+implementation renders an orbital proxy sphere and the actual pod, resolves a seeded
+landing point, preloads its terrain patch and transitions through entry dust to the local
+tangent scene, preserving geographic heading and time. It is not a general seamless planet
+renderer or orbital physics. The orbital material and automatic arrival controller are
+built; interactive ship preparation is a separate feature in progress. The generated
+mockup is an art target only.
 
 Render Zan as a large desert moon with thin dusty air. The 150 km gameplay lap is
-compressed distance, not a claim that the lore body is a tiny asteroid. Follow
-the moon document for the larger physical scale, and preserve Tu's established
-apparent size and illumination rather than enlarging it just for spectacle.
+compressed distance, not a claim that the lore body is a tiny asteroid
+([the moon](../world/the-moon.md)); keep Tu's established apparent size and illumination.
 
 ### Large moon, compressed travel and time (agreed 2026-10-21)
 
-Zan's fictional body and the game's travel map have separate scales. The lore has
-not fixed a final size: `world/the-moon.md` leans toward a 3,500–3,900 km radius,
-and `briefs/body-research.md` also compares a 5,800 km option. Use a provisional
-3,700 km visual radius, adjustable in Tuning, without declaring a new lore fact.
-The existing 150 km circumference remains the compressed navigation/history map.
-The existing 20-minute gameplay day represents a longer fictional day (the current
-Tu proposal gives about 77.7 hours); neither compression dictates gravity. Keep
-the existing 9.8 m/s² gameplay gravity and provisional lore gravity separate.
+Zan's fictional body and the game's travel map have separate scales. The lore has not
+fixed a final size: [the moon](../world/the-moon.md) leans toward a 3,500 to 3,900 km
+radius and [the body research](../briefs/body-research.md) also compares 5,800 km. Use a
+provisional 3,700 km visual radius, adjustable in Tuning, without declaring a new lore
+fact. The 150 km circumference stays the compressed navigation and history map, and the
+20-minute day stands for a longer fictional one (the current Tu proposal gives about 77.7
+hours). Neither compression dictates gravity: gameplay gravity stays 9.8 m/s² and the
+provisional lore gravity is separate. Local physics stays on the flat streamed sheet (the
+curvature at the roughly 500 m handover to real objects is under 3.4 cm). Far ground,
+summits and skyline use the large radius for falloff, never the 23.87 km navigation
+radius. Celestial ephemerides, compressed satellite routes and gameplay radio ranges are
+untouched, and orbital and inventory viewports do not inherit the ground warp.
 
-A shared SurfaceProjection supplies the large-moon presentation radius, tangent
-projection/inverse, normals and horizon quantities. Local physics stays on the
-flat streamed sheet. At the existing roughly 500 m real-object handover, curvature
-is under 3.4 cm: the local tangent remains a deliberate approximation. Far ground,
-landmark hills/summits and skyline must agree on the large-radius falloff, rather
-than use the 23.87 km navigation radius as visible curvature. Match CPU and GLSL
-projection, maintain undeformed coordinates for weather/track sampling, expand
-render bounds and anchor the projection to the main observer, including shadows.
+Local solar time already follows longitude: westward travel slows its advance and
+eastward quickens it. At latitude phi the westward speed that keeps pace with the sun is
+circumference / day_seconds * cos(phi), 125*cos(phi) m/s at the defaults. Keep this
+emergence rather than pinning day and night to the player's clock.
 
-The bounded surface projection drops a point by horizontal distance squared over
-twice the visual radius, with a matching inverse and normal transform. Over the
-current 42 km scenery budget its difference from the sphere's tangent sag is
-less than 1 cm. It is not a seamless spherical collision world. Supply a cheap
-continuous background apron through the eye-level horizon; high-altitude views
-remain bounded by haze/draw distance. Ground and sky atmospheric/horizon consumers
-use the same visual radius. Preserve celestial angular ephemerides, existing
-compressed satellite routes and gameplay radio ranges; this pass does not pretend
-all displayed orbital art dimensions and compressed travel are physical metres.
-Orbital and inventory viewports must not inherit the main ground warp.
+**As built.** `SurfaceProjection` is the one shared projection: it drops a point by
+horizontal distance squared over twice the visual radius, with a matching inverse and
+normal transform, in CPU and GLSL alike (within 1 cm of a true sphere's sag across the
+42 km scenery budget). Every ground consumer gets the main observer's frame each frame and
+widened bounds; no physical node or collider moves, and undeformed coordinates stay for
+weather and track sampling. The sky's horizon dip and storm sampling use the same radius.
+Solar travel emerges from the real `MoonPosition` and `DayCycle`; no movement cap,
+gravity, circumference or global clock changed.
 
-Local solar time already follows longitude. Westward travel slows its advance;
-eastward travel accelerates it. At latitude phi the westward speed matching the
-sun is circumference/day_seconds * cos(phi): 125*cos(phi) m/s at the defaults.
-Keep this emergence rather than pinning day/night to the player's clock. Near a
-pole the required speed falls, subject to actual craft speed, heading and terrain.
-Checks should exercise real MoonPosition and DayCycle movement, not duplicate a
-formula as its only evidence.
+### Distant ground (built, 2026-10-21)
 
-Acceptance: focused CPU projection/inverse/normal and moving-local-time checks;
-inspected GPU low/high-observer terrain, landmarks and skyline captures, including
-origin shifts and unaffected near interaction. Combined verification and native
-checks precede landing. Until measured, this presentation work is in progress.
+The streamed lattice and 32 m far ring keep their budgets with projected vertices, and
+the two distant hill meshes with their summit models stay the only mountain presentation.
+A coarse annular apron overlaps the outer far ring out to the haze and draw budget, so
+ground runs continuously to the eye-level horizon; it is presentation only, with no
+collision and no resident sites. Skyline boxes, bushes and glints use the same projection;
+ordinary distant camp props and weather volumes are not projected.
 
-### Distant ground implementation slice (2026-10-21; selected, in progress)
-
-Keep the ordinary streamed/collision lattice and 32 m far ring budgets. Project
-their rendered vertices with SurfaceProjection, retaining undeformed samples for
-tracks and weather. A separate coarse annular apron overlaps the outer far ring
-and extends to the existing haze/draw budget; it samples dunes without mountain
-profiles, leaving the two existing distant hill meshes and their summit models
-as the sole mountain presentation. Distant summit material opts into the shared
-worn shader through a compile flag; ordinary worn items remain unchanged.
-Skyline boxes, bushes and glints use the same projection and transformed normals.
-All selected materials receive the actual main observer frame explicitly each
-frame; shader defaults leave standalone icons/orbital views unprojected. Expand
-render bounds conservatively; do not move any physical node or collider.
-
-The apron uses a small fixed polar mesh with geometric ring spacing, built on
-the existing far worker and uploaded within its existing scheduling budget. Its
-coarse ground is presentation only, with the same distant fade as the hills.
-Local interactive objects stay in the tangent approximation documented above.
-This slice does not claim that ordinary distant camp props or weather-volume
-sampling have been projected; those remain integration review work.
-
-As built: World 14 passes (5 s): actual terrain/horizon/summit/skyline/glint
-materials share the main camera frame, including after origin rebasing; the
-projection/inverse and normal agree, physical height is unchanged, the apron
-overlaps the ordinary far ring and reaches beyond the 2 m observer horizon.
-Its 2,688 vertices stay inside the existing 42 km distant budget. Existing
-function/collision, origin-shift and shade-seam checks pass (6/11/3 s).
-
-The actual GPU low and 350 m observer views of Starcom at 15 km were inspected,
-along with the same high view after rebasing. Ground continues into haze and
-the mountain stays grounded; undeformed GPU/CPU ground sampling differs by at
-most 0.00073 m in all three. The current low skyline coverage is incidental to
-that seeded view; this is not an acceptance claim for every distant camp prop.
-
-Paired RTX 3070 measurements at 1920×1080 use the existing sandlight harness,
-nine alternating rounds of 60 measured frames each: exact prior sand shader
-and no apron versus the new shader plus apron. Noon averages 5.319/5.501 ms
-(median paired delta +0.142 ms); a near view filled by sand averages
-4.813/4.910 ms (median +0.092 ms). Individual paired deltas range from
-−0.396 to +1.022 ms and −0.630 to +1.336 ms respectively on the shared desktop.
-These small median costs are below the run's variability, not a precise isolated
-shader microbenchmark; distant hill/skyline shaders remain the new versions in
-both near-view arms. The cheap apron adds no collision or resident sites.
-
-### Combined surface, sky and atmosphere acceptance (2026-10-21)
-
-The candidate combines terrain/landmark/skyline projection with sky horizon dip
-and inverse-projected storm sampling. World14/15, Weather27 and Radio38/47 pass
-together (5/4/6/7/8 s in the recorded focused run). World15 drives actual
-MoonPosition and DayCycle: westward normal-board travel delays equatorial sunset,
-eastward brings it sooner, and the same westward speed at 81° returns the sun
-above the horizon while the stationary observer has sunset. No movement cap,
-gravity, navigation circumference or global clock was changed.
-
-Combined actual 1280×720 low/high/rebased terrain and 2 km storm-observer views were
-inspected, together with clear shield interior and obscured exterior. Camera
-frames and atmospheric fields remain separate from the unchanged local physical
-sheet. The new capture fixtures drain their worlds before renderer shutdown;
-three pre-existing orphan Shelter nodes remain, reproduced in the unmodified
-horizon fixture. That existing allocation issue is not attributed to this change.
-
-The finite-drone shader/gate also passes the foreground-ridge and above-drone
-GPU cases on Forward+ and Compatibility; ordinary worn shadows match the prior
-shader exactly. Combined CI/native builds and player
-acceptance are pending; this is not a new release or seamless spherical physics.
+**As built.** The apron is a fixed polar mesh of 2,688 vertices with geometric ring
+spacing, built on the existing far worker. Distant summit material opts into the shared
+worn shader by a compile flag, leaving ordinary worn items unchanged. Headline cost: about
+0.1 ms of GPU on an RTX 3070 at 1080p.

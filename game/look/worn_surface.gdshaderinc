@@ -88,7 +88,7 @@ void vertex() {
 #ifdef DISTANT_SURFACE
 	vec3 point = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	vec3 normal = surface_normal(normalize(MODEL_NORMAL_MATRIX * NORMAL), point);
-	VERTEX = (inverse(MODEL_MATRIX) * vec4(surface_project(point), 1.0)).xyz;
+	VERTEX += (surface_project(point) - point) * MODEL_NORMAL_MATRIX;
 	NORMAL = normalize(transpose(mat3(MODEL_MATRIX)) * normal);
 #endif
 }
