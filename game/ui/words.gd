@@ -206,6 +206,11 @@ func set_apart() -> void:
 	_list.add_child(_apart)
 
 
+## A book's leaves keep their picture and words closer together.
+func as_book() -> void:
+	_list.theme_type_variation = &"BookMenuList"
+
+
 ## Something to read above the words, such as the controls list.
 func add_body(body: Control) -> void:
 	body.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN if side else Control.SIZE_SHRINK_CENTER
@@ -373,6 +378,11 @@ func highlighted() -> int:
 		if (_items[i].button as Button).has_focus():
 			return i
 	return -1
+
+
+## The word last highlighted, still known while something covers the menu.
+func last_highlighted() -> int:
+	return _was
 
 
 ## Opens with the word at this place highlighted, if it can be.

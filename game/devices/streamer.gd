@@ -11,15 +11,7 @@ extends Device
 const PIECES := 7
 const PIECE := 0.09
 const WIDE := 0.05
-## It stands out level from about this much air, m/s; under the first it
-## hangs, and it flaps a full swing at the second.
-const LIMP := 0.6
-const LEVEL := 4.0
-const WILD := 18.0
-## Its flapping, a wave down the cloth: how often at no air and how much more
-## each m/s, Hz, and how far the wave lags a piece, rad.
-const FLAP_HZ := 0.6
-const FLAP_PER_MS := 0.45
+## How far its flap's wave lags from piece to piece down the cloth, rad.
 const LAG := 0.8
 
 ## The air it streams in now, flat, m/s, and how far through a flap it is.
@@ -45,7 +37,8 @@ func _process(delta: float) -> void:
 	air = world.weather.felt_wind(at) - _moving(at)
 	air.y = 0.0
 	var speed := air.length()
-	_phase = fmod(_phase + TAU * (FLAP_HZ + FLAP_PER_MS * speed) * delta, TAU)
+	var tuning := world.tuning
+	_phase = fmod(_phase + TAU * (tuning.streamer_flap_hz.x + tuning.streamer_flap_hz.y * speed) * delta, TAU)
 	pose(speed, air / speed if speed > 0.01 else Vector3.ZERO, _phase)
 
 
@@ -55,8 +48,9 @@ func pose(speed: float, way: Vector3, phase: float) -> void:
 	var back := global_basis.orthonormalized().inverse()
 	var down := back * Vector3.DOWN
 	var out := back * way if way != Vector3.ZERO else down
-	var stands := smoothstep(LIMP, LEVEL, speed)
-	var swing := clampf(speed / WILD, 0.0, 1.0)
+	var feels := Tuning.current().streamer_air
+	var stands := smoothstep(feels.x, feels.y, speed)
+	var swing := clampf(speed / feels.z, 0.0, 1.0)
 	var side := out.cross(back * Vector3.UP)
 	side = side.normalized() if side.length() > 1e-3 else back * Vector3.RIGHT
 	var at := tip()

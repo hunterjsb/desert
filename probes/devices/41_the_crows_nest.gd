@@ -43,7 +43,9 @@ func run() -> void:
 	var top := deck.global_position.y + Chassis.THICK * 0.5
 	look(Vector3(ladder.x, top + 1.6, ladder.z) + (ladder - mast.global_position).normalized().slide(Vector3.UP) * 1.2, ladder)
 	await physics_frames(2)
+	world.counts_deeds = true
 	check(hands.interact() and world.player.helm == nest, "use on its ladder climbs you in, seated")
+	check(Profile.did("lookout"), "climbing in records Lookout")
 	await physics_frames(30)
 	var up := eye().y - top
 	var raised := (deck.global_transform * deck.center_of_mass).y - weight.y

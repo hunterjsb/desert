@@ -867,144 +867,46 @@ carving out from camp fired it again, chime and all, and the line dropped and ca
 back; past the edge it said "lost in 0 s" until streaming let the camp's chunk go,
 seconds later on a busy machine.
 
-## Your body (2026-10-21; integration candidate)
+## Your body (2026-10-21)
 
-You have a body: the Surveyor's suit (`SurveyorLooks`, art direction), posed
-each frame by `Body` from how you move, with no shapes of its own.
+You have a body: the Surveyor's suit (`SurveyorLooks`, art direction), rigid
+pieces posed each frame by `Body` from how you move, with no shapes of its own
+(gonkhub asked for a first-person body; Hunter wants it to carry gear later).
 
-- **Walking:** your legs stride with a footfall each half stride, as Feel's
-  steps fall, and lift more at a run. Your arms swing against them.
-- **Crouched or sat:** your hips drop with your eye and your knees bend to
-  keep your boots on the sand. Sat, your hands rest on your knees.
-- **Lying down:** you're stretched out face down behind your eyes, arms
-  forward.
-- **Other states:** in the air your legs gather under you; on a board your
-  feet stand apart along it. Tumbling or flying, it isn't drawn.
-- **Holding something:** your hands go to either side of it, as wide as it
-  is; a small thing goes in your right hand alone. Held things float 0.9 m
-  ahead of your eyes (`hold_distance`), past a suited arm's reach, so your
-  arms reach toward them, straight.
-- **In first person:** your eyes stand 0.24 m in front of your trunk's
-  middle, so looking down you see your boots and not the inside of your
-  chest.
+- **Walking:** a footfall each half stride, as Feel's steps fall, lifting more
+  at a run; the arms swing against it.
+- **Crouched or sat:** the hips drop with your eye and the knees bend to keep
+  the boots on the sand; sat, the hands rest on the knees.
+- **Lying down:** stretched out face down behind your eyes, arms forward.
+- **Elsewhere:** in the air the legs gather; on a board the feet stand apart
+  along it; tumbling or flying, nothing is drawn.
+- **Holding something:** the gloves take its sides by its back edge (its real
+  collision bounds), a small thing in the right hand; a cutter by its rear
+  handle; a chassis by each shoulder's nearest real frame face. Arms keep their
+  0.61 m length and nothing moves to fake contact, so a radio or battery held
+  0.9 m ahead stays out of the gloves' reach: closing that needs either the
+  eyes nearer the trunk (bringing the chest into view) or small things held
+  about 0.35 m from the eyes. Neither is chosen yet.
+- **Vaulting:** empty hands reach for the ledge and the leading knee gathers
+  in proportion to its real rise, following `LedgeVault.progress`.
+- **In first person:** your eyes stand 0.24 m ahead of your trunk's middle.
+  Hunter found the old wide chest "in your face ... seizure inducing" while
+  boarding; gonkhub chose a slimmer suit over hiding the torso, so the chest
+  sits below and behind your view while helmet and collar are drawn only for
+  their shadow and other views.
+- **Between ticks:** the suit draws with the same between-tick offset as the
+  camera and the ridden board, so it never jitters against them.
 
-Body probe 39 passes on current master plus this candidate (9 s), alongside
-existing ground-rest/crawl and headroom probes 36/37 (6 s each). Actual unseen
-1280×720 captures cover standing, walking, held radio, crouching, sitting and
-prone, through the player's eyes and from outside. Looking down shows the boots;
-helmet/collar do not obscure the first-person view. Held-radio hands still stop
-short of the item at the existing hold distance. Combined CI and human acceptance
-remain pending.
+The limbs ease with time (`suit_ease_seconds`), the same at any frame rate.
+Probes: movement 39 (only looks, boots on the sand), 41 (a glove is on a held
+cutter or chassis looking a little down), 42 (the riding suit draws with the
+board at 15 FPS, helmet and collar out of view), 44 (the climb gesture).
 
-**Holding reach audit (2026-10-21; measured limitation, no runtime change).**
-The existing arm and grip measure 0.28 + 0.25 + 0.08 = 0.61 m. With the real
-radio held at its unchanged distance, a level view puts the current grip target
-1.156 m from the shoulder; even the nearest point anywhere on the radio's
-collision bounds is 1.064 m away. Looking down 25 degrees gives 1.053 m and
-0.959 m respectively. The battery's nearest bounds are 1.090 m / 0.986 m away.
-These nearest-bound distances are optimistic lower bounds, not authored grips.
-A local wrist rotation or ordinary shoulder protraction cannot bridge this gap.
-Do not silently stretch the arms, detach the shoulders, or move held physics
-objects to hide it. Preserve gonkhub's suit and its current interaction poses
-until a carrying-pose decision is made.
-
-For a future coordinated interaction pass, near-side radio grips at a level
-view would require an eye-to-item-center distance of roughly 0.44 m with the
-current shoulder, or roughly 0.52 m with an illustrative 0.08 m forward shoulder
-shift. The current side-at-origin targets require roughly 0.34 m. These are
-geometric options, not adopted tuning; 0.6 m alone does not establish a grip.
-The cutter's separate low-right carry already has reachable bounds (0.512 m
-level, 0.383 m looking down 25 degrees), and the chassis's near edge is 0.550 m
-away looking down 25 degrees. Item-local grip anchors could improve these
-cases independently, but cannot solve the radio or battery at their present
-distance. Their actual handle geometry and wrist pose still need inspection.
-
-**Selected bounded correction (2026-10-21).** Keep the arm lengths and all held
-physics poses. A cutter targets its drawn rear handle in the cutter's own frame,
-not a point beside its barrel. A held chassis targets each hand's nearest point
-on an actual enabled frame box, not the aggregate bounds or its distant middle;
-joined pieces remain separate surfaces. Transform these anchors through the
-actual held item pose so turning it preserves the contact target. The existing
-fixed-length arm solve still refuses targets beyond reach. This improves
-reachable carrying poses without claiming to solve small items held too far
-away. No new interaction, suit system or deed is introduced.
-
-An isolated real-Hands measurement checked radio, battery, cutter and chassis
-at level, 25-degree and 60-degree downward views; actual unseen 1280×720 held-
-radio captures from the player's eyes and outside confirm the visible gap.
-This audit changes documentation only; no new gameplay or physics acceptance
-is claimed.
-
-**Bounded correction as built.** Body now uses the cutter's drawn rear handle
-and the nearest enabled, non-fitting chassis frame box surface for each hand.
-The target follows the object's actual transform; no object, shoulder or bone
-length moves to obtain contact. Movement 41 fails on the exact pre-fix body:
-the cutter misses its handle by 0.10549 m and each chassis hand misses the
-physical frame by 0.02002 m. The corrected real-Hands carry at 25 degrees down
-has less than 0.00001 m contact error for all three gloves. The check also
-retains the original joint lengths and unit bone scales, and repeated posing
-leaves player/item transforms, velocities and collision shapes unchanged.
-It passes in 7 s; existing body probe 39 passes in 10 s. Actual unseen 1280×720
-before/after first-person and exterior captures cover radio, cutter and chassis.
-The chassis gloves meet the near plate; the cutter grasps its rear handle,
-mostly below the first-person viewport. Radio/battery reach remains unresolved
-as measured above. No finger animation or full carrying redesign is claimed.
-Combined CI and human acceptance remain required.
-
-
-### Riding view comfort correction (selected 2026-10-21)
-
-A playtest reports the chest clipping the first-person view and severe body
-jitter on the hoverboard. Keep the rigid suit and its shadows/external views,
-but put hips and trunk on the existing own-camera exclusion layer alongside
-head/collar. Body's visual root must use the same between-tick ride translation
-that Feel's camera and Ride's rendered board already use. A 20 m/s ride at
-60 Hz otherwise leaves up to 0.333 m relative displacement each tick. Read
-posture from the steady eye, not the render camera's interpolation, bob or
-shake. This is a drawing correction only: no player, board, held-object or rope
-physics changes. Keep boots and arms visible while checking actual riding
-frames at low render rate with unchanged 60 Hz physics.
-*Superseded in part 2026-10-21 (gonkhub: the slimmed suit instead of "the
-no-torso version"): the slimmer suit keeps the chest out of the view, so hips
-and trunk are drawn for your own eyes again; head and collar stay excluded, and
-the between-tick ride translation stays.*
-
-Movement 42 passes in 12 s: 29 actual post-process frames at 15 FPS/60 Hz,
-reaching 18.42 m/s, have zero measured suit/board rendered-origin error. Exact
-pre-fix master fails the torso-mask checks and has 0.09325 m relative origin
-error under the same fixture. Actual unseen 1280×720 before/after sequences at
-14 FPS/60 Hz cycle interpolation phases while looking 58 and 82 degrees down.
-Inspected six-frame contact sheets reproduce the old chest filling and flashing
-across the view; the corrected frames retain clear board, arms and boots.
-A 24-frame corrected riding clip is retained outside the repository. Existing
-movement physics remain unchanged; combined verification is still required.
-
-### Body follows the swept vault (selected 2026-10-21)
-
-Use the existing LedgeVault active state, normalized progress and measured ledge
-height for a bounded visual gesture. Empty hands reach forward during the climb;
-the leading knee gathers farther than the trailing one, in proportion to the
-actual rise, then boots settle back into the normal pose. Retain fixed limb
-lengths and the existing pose easing. Held-item grips take precedence, so this
-never moves a carried thing or pretends the hands are free. The gesture reaches
-toward the ledge; it does not claim a planted physical glove contact. No camera,
-capsule, climb trajectory, force, stamina or input changes belong to Body.
-
-As built: a free-hand reach holds through the middle of the swept climb, with
-an authored hand target still within the existing 0.61 m arm-and-grip reach.
-Knee gathering follows actual ledge rise; the trailing leg gathers half as far.
-Movement 44 fails the pre-animation Body and passes the correction: across 42
-render frames, the forward grip reaches -0.254 m in body space and a boot rises
-to 0.727 m, with zero measured arm-segment length error. Posing after the real course writes
-no player transform, velocity or collision shape. Both exact before/after
-30/60-FPS powered-deck courses retain identical physical results: 0.87368 m
-rise, 0.10620 m maximum swept tick, 0.04202 rad/s peak craft spin, standing on
-the still-hovering deck at completion. Actual unseen 1280×720 external and
-first-person captures inspect the reach, knee gather and hand release. A first
-render showed the reach below the own-camera frame; the adjusted authored pose
-now visibly enters it without stretching the arm. This is a gesture toward the
-ledge, not a simulated planted handhold. Combined verification and human feel
-acceptance remain required.
+**Cost.** Nine paired rounds of 60 frames at 1920×1080 on the RTX 3070, the
+slim suit drawn against hidden: from outside +0.003 ms median (-0.109 to
++0.510), within noise; in your own view looking down -0.405 ms (-0.866 to
++0.284), since the suit covers the sand's close relief there.
+`look/player_body/cost.tscn` repeats it.
 
 ## Rules
 
@@ -1431,102 +1333,35 @@ and the real guide foot seated on an interior panel clear of the case and deck e
 m/s its sheet carries 61.7 N. The field-note images use the actual higher boom and routed
 hook geometry.
 
-## Vaulting small ledges (agreed and source built 2026-10-20)
+## Vaulting ledges (Hunter, 2026-10-20/21)
 
-On foot, sprint into a small ledge or jump toward it to vault onto its walkable
-top, including a floating chassis. Use the existing sprint and jump actions; no
-boarding binding or requirement to lower the craft first. Walking into a wall
-should not unexpectedly climb it. Jumping adds only the height the ordinary jump
-has actually gained: the vault's reach is measured above the current feet, not
-an additional jump impulse or a resettable airborne climb. One vault per takeoff
-or grounded approach; no repeated wall climbing.
+Hunter: "the vaulting is way too low, you cant vault up a chassis, that was the
+goal. its still jumpy/choppy. we shouldnt vault tiny objects on the ground. we
+should animate it too."
 
-Sweep the player's full capsule up, across and down before starting, accepting
-only a walkable top with standing clearance. During the brief climb, sweep each
-movement again so newly obstructed paths cancel safely. Track the support's local
-frame on translating/rotating decks; do not teleport to a stale world point,
-apply a boarding impulse, freeze the craft, or override its angular velocity.
-Rope drag still acts during the climb; excessive displacement aborts it. Keep
-the view free, disallow riding/seated/stunned/crouched vaults, and cancel on menus,
-loss of support or external relocation. A save keeps the current safe physical
-position; a resumed run can settle naturally rather than restoring a stale climb.
+Sprint into a ledge, or jump toward it, to climb onto its walkable top,
+including a floating chassis. Walking into a wall never climbs it. The reach is
+measured above your current feet, so a jump adds only the height it really
+gained; one vault per takeoff. Ledges under the minimum rise stay ordinary
+clutter to step or jump over.
 
-Tune ledge reach, forward reach, duration, clearance and stamina in Tuning. Record
-Up and Over on completing a real vault. Acceptance: sprint boards a reachable
-ledge; plain walking, tall walls and low ceilings refuse; a jump reaches higher
-only by its actual rise; moving/rotating support does not leave the player behind
-or receive an artificial kick. Large irregular deck support and exposed wreck
-collision are related checks, not a reason to relax vault clearance.
+The climb sweeps the whole capsule up, across and down before it starts, and
+again each tick along a curved path in the support's own frame, so a moving or
+turning deck carries it and nothing is teleported, kicked or frozen. A new
+obstruction, a lost support, a menu or a relocation cancels it with the travel
+you had; rope drag still acts. A save keeps the safe position, not the climb.
+Up and Over is recorded on a completed vault.
 
-The initial `game/player/ledge_vault.gd` implementation reached 0.65 m above
-current feet, 0.9 m forward, with a 0.42 s nominal climb, 0.02 m clearance and four stamina. The view
-interpolates the real climb between physics ticks; looking remains free. A
-recreated player does not resume a stale climb. Origin shifts preserve the local
-support path. Focused movement 32 passes: ordinary walking refuses, sprint climbs
-0.5 m, a 0.95 m top needs actual jump rise, a 1.6 m wall and low ceiling refuse,
-a newly inserted obstacle cancels, and a translating/rotating 200 kg support stays
-underfoot across an origin shift. During the climb its velocity/spin stay within
-0.02 m/s and 0.01 rad/s of their imposed values. Ordinary physical contact after
-landing is allowed to push a craft; no separate boarding impulse is applied.
-Movement 10 and 11 pass unchanged (ordinary jump/gravity and on-foot frame-rate
-checks). Real unseen 1280×720 captures of approach, rise, crossing and landing
-were inspected in clear light on a simple collision fixture; this validates the
-visible path/clearance, not final craft art or a human judgment of movement feel.
-
-### Reachable chassis and a smooth climb (selected 2026-10-21)
-
-Player testing finds the vault too low for an ordinarily powered chassis, with
-choppy/jumpy motion and unwanted activation on tiny ground objects. Boarding a
-floating chassis is the primary target: raise measured mantle reach as required
-by that actual craft, while jumping contributes only its real gained height.
-Introduce a minimum ledge rise; small ground clutter remains ordinary collision
-and jumping rather than consuming stamina and entering a mantle. This revises
-the earlier 0.2 m automatic step-over expectation, not the physical boarding
-acceptance tolerance or observation time.
-
-Keep a continuously curved swept path with tangent continuity around the lift
-and crossing, enough top clearance for the whole capsule, and fresh support
-transforms each tick. Do not teleport, hide a force, change the craft's motion,
-extend the arms, or bypass tumble to make a check pass. Expose actual ledge
-`height` and normalized smooth `progress` on LedgeVault for a separate body
-animation; that visual must follow the movement rather than drive it. Retain
-interrupted-path, removed-top, moving-support and origin-shift safety. Measure
-actual powered chassis sprint/jump approaches at 30 and 60 physics ticks with
-unchanged 0.9 s / 0.08 m boarding acceptance, and inspect real unseen captures.
-
-As built: reach is now 1.1 m above current feet, minimum ledge rise 0.3 m,
-forward reach 0.9 m, top clearance margin 0.18 m and nominal full-height duration
-0.55 s. Find the real top first, then validate the capsule's actual required
-lift and path, rather than demanding clearance for the maximum possible lift.
-Quadratic segments join with continuous tangents above the top; sampled lengths
-map eased travel to an evaluated curve, not chord-to-chord corners. Each tick
-still sweeps real movement using the support's fresh global transform. The
-existing bounded floor seating and physical momentum handoff remain unchanged.
-LedgeVault exposes `active`, smooth normalized `progress` and measured `height`;
-this patch does not add the separate body animation.
-
-A freely supported two-chassis craft with two hover trays and a real battery
-(34 kg) demonstrates the old failure: its top is about 1.13 m above sand, beyond
-0.65 m mantle reach plus the measured 0.422 m jump rise. The identical external
-approach fails on verified 565e1855 and passes on the new source without changing
-its 0.9 s observation or 0.08 m deck-top/floor acceptance. Movement 43 guards that
-actual powered craft at 30/60 render caps with fixed 60 Hz native physics;
-a separate focused diagnostic also passes at 30/60 native ticks. Construction
-and authored repositioning stay clear of the active player's capsule.
-
-On the final clear-light unseen run, both render rates finish with floor true,
-feet 0.06263 m above the deck origin, deck height 1.05783 m, peak climb step
-0.10620 m/tick and peak craft spin 0.04202 rad/s. All eight 1280x720 climb/landing
-captures were inspected. Movement 32 retains blocked-path, removed-top, ceiling,
-saving and moving/rotating-origin-shift checks; its standing/jump boundary fixtures
-move to 1.4 m and the unreachable wall to 2.2 m to reflect the agreed new reach.
-Movement 35 confirms 0.2 m clutter never starts a mantle and an ordinary running
-jump still crosses it. Movement 10/11 pass unchanged; the earlier 27-piece
-mast/rope-loaded battery-depletion/reboarding acceptance also passes unchanged.
-The final clear GPU run exits without resource warnings; earlier diagnostic
-runs emitted teardown warnings. This covers a clear approach to a lightly loaded
-powered deck, not climbing through a frame/attached gear, arbitrary arrangements
-or final human judgment of movement feel and the pending body pose.
+As built (`game/player/ledge_vault.gd`, Tuning's Ledge vault group): 1.1 m reach
+above the feet, 0.3 m minimum rise, 0.9 m forward, 0.18 m over the top, 0.55 s
+for a full-height climb and less for a lower one, four stamina. The path is
+quadratic segments joined with continuous tangents, travelled by distance with
+eased progress; the camera and suit interpolate it between ticks. A powered
+two-chassis craft with its top 1.13 m above the sand is climbed at 30 and 60
+render rates with the deck still hovering (peak craft spin 0.042 rad/s).
+Probes: movement 32 (refusals, obstruction, moving support, origin shift,
+saving), 35 (0.2 m clutter never mantles), 43 (the powered chassis), 44 (the
+body follows).
 
 ### Large mixed-deck baseline (measured 2026-10-20)
 
@@ -1716,28 +1551,6 @@ a 0.36 m/s tick change, above that bound. That contact case is unresolved, and s
 every slope is not shown by this fixture.
 
 
-### Vault motion follow-up (2026-10-20; focused checks pass)
-
-Playtesting confirms reachable ledges work, but the climb feels artificial.
-The current path rises to maximum reach even at a low ledge, then stops at
-each of three equally timed phases. Keep the reach, obstruction sweeps and
-actual moving support. Shape the path around the measured top height with
-just enough clearance to round the upper corners; use distance along that
-path for continuous travel rather than a stop at every waypoint. A larger
-ledge should take longer than a small step. Tune timing and lift margin in
-Tuning. Inspect actual approach/climb/landing captures; these changes need
-a fresh human feel test and do not claim a full body/hand animation.
-
-As built for this follow-up: the crossing runs 0.06 m above the measured top,
-with rounded upper corners and distance-based progress. Full-height reference
-time is 0.42 s; shorter paths take proportionally less time. The focused
-Movement 32 obstruction/moving-deck/origin-shift checks pass (11 s), as does
-new Movement 35: a 0.2 m ledge is crossed with feet below 0.32 m peak instead
-of lifting to the full 0.65 m reach (6 s). Actual unseen 1280×720 approach,
-rise, crossing and landing frames were inspected on a solid fixture; the same
-Movement 32 checks pass on the GPU run. Human feel acceptance remains pending.
-
-
 ### Manual sail hoist (built 2026-10-20)
 
 Hunter: "We should raise it with a new wheel attachment for the chassis, a pulley". A
@@ -1805,48 +1618,23 @@ salvage can supply the same winch, so a player can assemble the mechanism outsid
 scenario. The illustrated sailing controls show hoisting at the wheel. Sail 11 (aboard
 motion and rate) and sail 13 (Varran handling) pass on the revised layouts.
 
-## Ground rest and crawling (2026-10-20)
+## Ground rest and crawling (Hunter, 2026-10-20)
 
-Sit and lie down toggle on supported ground. Directional movement rises from
-sitting; lying down instead permits a slow crawl. Jump first restores standing
-clearance. A blocked rise keeps the low posture and does not jump through the
-ceiling. Boarding or taking a helm also requires room to stand. Airborne,
-flying, riding, tumbling and seated helm states cannot enter ground rest.
+Hunter: "allow x to sit down on the ground and z to lie down, which could allow
+for sleeping and crawling." Sit and lie down toggle on supported ground.
+Moving rises from sitting; lying down you crawl. Jump or lie down again rises
+when there is room; a blocked rise keeps you low rather than jumping through a
+ceiling. Lying down also needs the length of you clear behind (1.5 m from your
+eyes to your boots), so the suit never lies through a wall. Boarding or taking a
+helm needs room to stand. Airborne, riding, tumbling or seated, you can't rest.
 
-The collision capsule keeps its existing width and feet position, shortening
-to the seated or prone clearance; this is a movement proxy, not an authored
-player body. The camera eases to the corresponding eye height. Wind, slope,
-rope forces and moving supports continue through ordinary character movement:
-resting never anchors the player. Bare-ground sleep is offered from prone by
-ordinary use only after more specific interactions, with all existing sleep
-safety checks. Lying down alone never starts sleep. Saves retain the posture
-without earning the ground-rest deed on restore.
-
-As built, the seated capsule is 1.15 m tall with 1.0 m eyes; prone is the
-standing capsule's 0.7 m minimum diameter with 0.5 m eyes and 0.55 m/s crawl.
-Voluntary eye movement eases over 0.22 s; a physical ceiling clips its path
-before the eye can cross it. Restored eyes fit immediately without replaying
-the transition or claiming the deed. One first-time prone hint teaches crawl,
-rising and the ordinary sleep interaction; no permanent posture panel is added.
-
-Focused movement checks 36–38 pass (7/6/11 s): directional rise, sprint-limited
-crawl, unsupported entry refusal, low-roof stand/jump/boarding refusal,
-immediate restored eye fit, camera transition containment, a moving rigid
-support, wind, rope-solver motion input and passive slipping on a real dune.
-The rope check exercises the solver's existing player-motion input, rather
-than constructing a second rope solver. The real-GPU ground-rest view compares
-standing, sitting and prone at the same camp and was inspected at all three
-heights. These checks establish collision and movement behavior; there is no
-new visible player body or posture animation.
-
-Ground-rest ties follow the shortened body: the belt attachment lowers in
-proportion to supported body height, while standing retains its existing
-attachment. Resting must not leave waist lines floating above the low body.
-
-The combined rest/coil branch passes the actual low-belt attachment check
-(8 s), retaining the standing attachment on rising. Its seven combined
-posture, save, ground-sleep and continuous-coil checks pass (4–13 s each).
-
+The capsule keeps its width and feet, shortening to 1.15 m sat and 0.7 m prone;
+the eye eases to 1.0 m or 0.5 m over 0.22 s, never past a ceiling. Prone you
+crawl at 0.55 m/s. Wind, slope, ropes and moving supports still move you:
+resting never anchors. From prone, use offers bare-ground sleep under the usual
+sleep checks. Saves keep the posture without earning Ground Rest again; one
+first-time hint teaches crawl, sleep and rising. Probes: movement 36 (rise and
+crawl), 37 (headroom, room behind, eye containment), 38 (external motion).
 
 ### Runner clearance and native hull contacts (agreed 2026-10-20)
 
@@ -1983,23 +1771,6 @@ frequent geometry edits are not timed. World 13 compares the cached geometry wit
 native-shape debug bounds across joins, reroot and detach, resource edits and replacement,
 pose, enable and order changes, mounting and removal, and an origin shift. Sail 4 and 24 are
 unchanged.
-
-
-### Body and boarding integration (2026-10-21; verified locally)
-
-The selected vault traversal, rigid-suit gesture and waist-wrap presentation now
-combine with the urgent riding view and existing bounded held-object grips.
-Focused Movement 32/35/39/41/42/43/44 and Rope 25/26/31 pass together (ten checks;
-8–18 s each). Thresholds and ordinary collision/rope/held-item behavior remain
-unchanged. In actual 14 FPS/60 Hz GPU riding with a real waist line towing a
-loose stake, 72 drawn frames reach 7.54 m/s under load: body/board origin error
-is below 0.000001 m and the drawn waist lead matches the rope endpoint exactly.
-Inspected looking-down frames retain boots, belt cord and a clear torso-free
-view. The ordinary unloaded riding check separately retains its existing speed
-and comfort assertions; the loaded capture is not a top-speed measurement.
-Actual 30/60 FPS powered-deck captures retain the free-hand reach and knee
-gather; existing vault checks retain their momentum and clearance assertions.
-Combined CI/native verification and human movement acceptance remain required.
 
 ### Representative large-camp budgets (2026-10-22)
 

@@ -188,13 +188,13 @@ func _land() -> bool:
 	return true
 
 
-## Prone in the landed pod's seat, facing its burst exit.
+## Prone over the landed pod's seat, facing its burst exit.
 func seat_in_pod() -> void:
 	var floor := world.arrival_nodes.get(&"floor_a") as Chassis
 	if not is_instance_valid(floor):
 		return
 	var deck := floor.deck if floor.deck != null else floor
-	world.teleport(world.player, deck.global_transform * floor.pose() * PodShell.seat_pose())
+	world.teleport(world.player, deck.global_transform * floor.pose() * PodShell.landed_pose(world.tuning))
 	world.player.restore_ground_pose(&"prone")
 	world.player.camera.position = Vector3(0, world.tuning.arrival_seat_eye_m, 0)
 	world.player.camera.rotation = Vector3(0.1, 0, 0)

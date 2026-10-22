@@ -168,7 +168,7 @@ func close_dev_console() -> void:
 		if top().has_meta(&"origins"):
 			# Profile commands can unlock starts while their list is covered.
 			var old := _menus.pop_back() as Words
-			var at := old._was
+			var at := old.last_highlighted()
 			remove_child(old)
 			old.queue_free()
 			var menu := origins()

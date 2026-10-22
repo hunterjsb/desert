@@ -188,6 +188,14 @@ func piece_at(point: Vector3) -> Chassis:
 
 
 ## The piece a socket of this deck is its own, through what it's fitted in.
+func sticking_frame(piece: Device, face: StringName) -> Transform3D:
+	return face_frame(piece as Chassis, face)
+
+
+func sticking_piece(socket: Socket) -> Device:
+	return own_piece(socket)
+
+
 func own_piece(socket: Socket) -> Chassis:
 	var piece := _piece_of(socket)
 	return piece if piece != null else self

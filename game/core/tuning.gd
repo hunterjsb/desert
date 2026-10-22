@@ -1560,7 +1560,7 @@ static func current() -> Tuning:
 @export var arrival_exit_offset_m: float = 3.2
 @export var arrival_landing_clearance_m: float = 0.04
 @export var arrival_spill_gap_m: float = 0.18
-@export var arrival_spill_columns: int = 5
+@export var arrival_spill_columns: int = 2
 @export var arrival_spill_attempts: int = 80
 ## Per approach as (shallow, standard, steep): a steeper drop is quicker and harder.
 @export var arrival_entry_s: Vector3 = Vector3(5.0, 3.0, 2.0)
@@ -1573,7 +1573,6 @@ static func current() -> Tuning:
 @export var arrival_device_wear_high: Vector3 = Vector3(1.0, 0.95, 0.8)
 @export var arrival_usable_min: float = 0.25
 ## The seated fall: view, turbulence and sound.
-@export var arrival_limb_below_deg: float = 5.0
 @export var arrival_head_yaw_deg: float = 110.0
 @export var arrival_head_pitch_deg: float = 75.0
 @export var arrival_sway_m: float = 0.012
@@ -1596,7 +1595,7 @@ static func current() -> Tuning:
 @export var arrival_impact_jolt_s: float = 0.42
 @export var arrival_impact_offset_m: float = 0.035
 @export var arrival_impact_tilt_deg: float = 1.3
-@export var arrival_impact_dust_s: float = 1.15
+@export var arrival_impact_dust_s: float = 0.9
 
 
 @export_group("Ground posture")
@@ -1604,6 +1603,8 @@ static func current() -> Tuning:
 @export var posture_prone_height: float = 0.7
 @export var posture_sit_eye: float = 1.0
 @export var posture_prone_eye: float = 0.5
+## Lying down you reach this far behind your eyes to your boots, m.
+@export var posture_prone_length: float = 1.5
 @export var posture_crawl_speed: float = 0.55
 @export var posture_camera_seconds: float = 0.22
 @export var posture_sit_catch: float = 0.6
@@ -1616,3 +1617,35 @@ static func current() -> Tuning:
 @export var burner_w: float = 45.0
 @export var burner_stalk_seconds: float = 120.0
 @export var coalcane_bundle_stalks: int = 6
+
+@export_group("Suit pose")
+## Only looks: the suit's limbs ease toward a new pose in about this long, s.
+@export var suit_ease_seconds: float = 0.12
+## A stride lifts the swinging boot this far, m, at a walk and more at a run;
+## the arms swing this far against it, rad, at a walk and at a run.
+@export var suit_step_lift: float = 0.09
+@export var suit_arm_swing: Vector2 = Vector2(0.25, 0.6)
+## Looking down or up, the trunk leans with your head this share of it.
+@export var suit_lean: float = 0.1
+
+@export_group("Wind streamer")
+## It hangs under the first air, m/s, stands out level from the second, and
+## flaps a full swing at the third.
+@export var streamer_air: Vector3 = Vector3(0.6, 4.0, 18.0)
+## Its flapping: how often in still air, Hz, and how much more each m/s.
+@export var streamer_flap_hz: Vector2 = Vector2(0.6, 0.45)
+
+@export_group("Care package")
+## The container keeps the craft's motion this long, s, before turning down;
+## this share of its fall is even, the rest gathering speed.
+@export var airdrop_carry_seconds: float = 1.2
+@export var airdrop_even_share: float = 0.35
+## It tumbles this fast falling, rad/s, and keeps this share of it rolling on.
+@export var airdrop_spin: float = 2.6
+@export var airdrop_roll_share: float = 0.5
+## Its speed at the ground, along the way it came and down, m/s.
+@export var airdrop_skid: Vector2 = Vector2(7.0, 3.0)
+## It lingers this long after the hit, s, for its sand to settle.
+@export var airdrop_settle_seconds: float = 7.0
+## Each of its sockets holds something this often (salvage's loot fills it).
+@export var airdrop_packed_share: float = 0.75

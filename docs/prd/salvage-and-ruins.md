@@ -777,7 +777,16 @@ docs or commands/code to call it deliveryship," and "needs to be much much highe
 - **The hit.** A cloud of sand thrown up and swelling, 420 lit puffs 3 to 9 m across, and a ring of it
   thrown out along the ground, 220 more; the impact's boom, a clang and a thud. The container is a body
   again (catalog `cargo`, 80 kg, an orange shell banded in black), its beacon still blinking; after 7 s the
-  drop lets it go into the world. Nothing's inside it yet.
+  drop lets it go into the world.
+- **What's inside** (Hunter, 2026-10-22: "might add random loot"). Random loot from salvage's own
+  tables: each socket along its flank (water, food, medicine, battery) takes, by weight, what fits it
+  from every era's shelves and caches (`SiteLoot`), at least two of them filled. The pull is seeded by
+  the run and the moment the cannon fired, as the landing spot is, so the same drop always holds the
+  same and nothing more is saved. Company stock: sealed, lately charged. It is laid in the sockets and
+  taken out by hand, never granted. Flares stay in salvage's loot.
+- **Where it lands.** Never inside something: the spot first picked is passed over for the first clear
+  one round the flare if anything stands there when the cannon fires, and if a camp moves under the
+  fall it lands on top of it, felt for by a shape cast of its own box.
 - **Dev console:** `deliveryship [s]` forces the deliveryship's pass (gonkhub, 2026-10-20: "make a command to force
   the surveyor's low pass. add a scenario for it"; the command was `surveyor`, then `drone`, and is
   `deliveryship` since 2026-10-21, with no old aliases): its orbit turned to bring it straight over you in s
@@ -788,11 +797,12 @@ docs or commands/code to call it deliveryship," and "needs to be much much highe
   your hands, and the deliveryship forced straight over you in a minute (`Scenarios.DELIVERYSHIP_LEAD`, 60 s
   since it flies 30 km up; 30 s before): light the flare as it comes over. `deliveryship` and `clear_skies`
   still reach it.
-- **Probes:** salvage 9 (the deliveryship's care package) and 10 (the deliveryship forced over). **Look-test:** `look/airdrop`, by day: the trail, the
+- **Probes:** salvage 9 (the deliveryship's care package), 10 (the deliveryship forced over) and 11 (it lands
+  clear, and the same drop holds the same loot). **Look-test:** `look/airdrop`, by day: the trail, the
   fall, the hit, the cloud and its settling.
 - **Fixed in passing:** a billboard particle drops its scale unless told to keep it, so puffs sized in
   metres came out all the same small size (`billboard_keep_scale`).
-- **Not yet:** what's inside. Active-drop saves are handled by the repair below.
+- **Saves:** an active drop saves mid-fall and after the hit (saves 38), its loot included.
 
 ## Exposed wreck surfaces (Hunter, 2026-10-20; built)
 

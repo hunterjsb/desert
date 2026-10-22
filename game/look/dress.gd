@@ -298,6 +298,15 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	if PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
 		return b.commit()
 	match id:
+		&"cargo":
+			# A drop container: a safety-orange shell banded in black, its ends
+			# capped, a rail along its flank where the supplies are strapped.
+			b.box(Vector3(size.x, size.y, size.z - 0.12), Vector3.ZERO, Paint.coat(Paint.DROP_ORANGE, 0.45, 0.2), 0.04)
+			for z in [-h.z + 0.03, h.z - 0.03]:
+				b.box(Vector3(size.x + 0.02, size.y + 0.02, 0.06), Vector3(0.0, 0.0, z), Paint.coat(Paint.BLACK, 0.4, 0.3), 0.02)
+			for z in [-size.z * 0.15, size.z * 0.15]:
+				b.box(Vector3(size.x + 0.01, size.y + 0.01, 0.05), Vector3(0.0, 0.0, z), Paint.coat(Paint.BLACK, 0.4, 0.3), 0.01)
+			b.box(Vector3(0.03, size.y * 0.75, 0.9), Vector3(h.x + 0.015, 0.0, -0.1), gun, 0.01)
 		&"home_beacon":
 			var bone := Paint.coat(Paint.BONE)
 			var brass := Paint.coat(Paint.BRASS, 0.5, 0.65)
@@ -533,7 +542,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			# A drum of copper aerial wire between two gunmetal cheeks, a crank on
 			# one, and the wire's clip on its lead.
 			var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
-			var copper := Paint.coat(Color(0.55, 0.36, 0.2), 0.8, 0.6, 0.4)
+			var copper := Paint.coat(Paint.COPPER, 0.8, 0.6, 0.4)
 			var turned := Basis(Vector3.FORWARD, PI / 2.0)
 			b.drum(0.035, size.x - 0.03, Vector3.ZERO, copper, turned, 14)
 			for x in [-h.x + 0.008, h.x - 0.008]:
@@ -579,7 +588,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for z in [-0.105, 0.105]:
 				b.drum(0.11, 0.018, Vector3(0, 0.035, z), gun, axle, 20)
 			for z in [-0.07, -0.035, 0.0, 0.035, 0.07]:
-				b.ring(0.083, 0.092, Vector3(0, 0.035, z), Paint.coat(Color(0.42, 0.31, 0.2)), axle, 16)
+				b.ring(0.083, 0.092, Vector3(0, 0.035, z), Paint.coat(Paint.ROPE), axle, 16)
 			for x in [-0.12, 0.12]:
 				for z in [-0.1, 0.1]:
 					b.drum(0.014, 0.012, Vector3(x, -0.115, z), gun, Basis.IDENTITY, 6)
@@ -760,15 +769,8 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.drum(0.045, 0.01, Vector3(0.0, 0.0, size.z - 0.003), Paint.coat(Color(1.0, 0.85, 0.6), 0.0, 0.0, 0.2, 0.2, 3.0), along, 16)
 		&"flare":
 			# A red tube with a black striker cap at its tip, where it burns.
-			b.drum(h.x, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Color(0.75, 0.12, 0.08), 0.5), along, 10)
-			b.drum(h.x * 1.05, 0.04, Vector3(0.0, 0.0, size.z - 0.02), Paint.coat(Color(0.08, 0.08, 0.08), 0.3), along, 10)
-		&"cargo":
-			# A drop container: an orange shell banded in black, its ends capped.
-			b.box(Vector3(size.x, size.y, size.z - 0.12), Vector3(0.0, 0.0, size.z * 0.5), Paint.coat(Color(0.85, 0.45, 0.12), 0.45, 0.2), 0.04)
-			for z in [0.03, size.z - 0.03]:
-				b.box(Vector3(size.x + 0.02, size.y + 0.02, 0.06), Vector3(0.0, 0.0, z), Paint.coat(Color(0.08, 0.08, 0.08), 0.4, 0.3), 0.02)
-			for z in [size.z * 0.35, size.z * 0.65]:
-				b.box(Vector3(size.x + 0.01, size.y + 0.01, 0.05), Vector3(0.0, 0.0, z), Paint.coat(Color(0.1, 0.1, 0.1), 0.4, 0.3), 0.01)
+			b.drum(h.x, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Paint.FLARE_RED, 0.5), along, 10)
+			b.drum(h.x * 1.05, 0.04, Vector3(0.0, 0.0, size.z - 0.02), Paint.coat(Paint.BLACK, 0.3), along, 10)
 		&"plug", &"strong_plug":
 			var collar := Paint.coat(Color(1.0, 0.5, 0.1) if id == &"plug" else Color(0.7, 0.15, 0.1), 0.5)
 			b.drum(h.x * 0.95, 0.025, Vector3(0.0, 0.0, 0.0125), collar, along, 12)

@@ -56,7 +56,8 @@ void fragment() {
 	vec2 ray = (q - vec2(0.5, 0.85)) * vec2(1.3, 1.0);
 	vec2 flow = ray * (8.0 / (1.0 + passage * 2.0)) - vec2(0.0, passage * 1.7);
 	float grain = cloud(flow) * 0.7 + cloud(flow * 2.7 + vec2(7.0, 3.0)) * 0.3;
-	float grit = dust * (0.82 + 0.18 * grain);
+	// The burst is a wall at first, then thins through its own billows as it settles.
+	float grit = clamp(dust * 1.6 - (1.0 - grain) * 0.8, 0.0, 1.0);
 	float glow = heat * rim * (0.65 + 0.35 * grain);
 	vec3 dust_color = sand.rgb * mix(0.75, 1.45, grain);
 	vec3 hot = mix(vec3(1.0, 0.16, 0.025), vec3(1.0, 0.63, 0.16), grain);

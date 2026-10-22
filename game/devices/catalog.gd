@@ -21,6 +21,7 @@ const KINDS := {
 	&"water": Color(0.3, 0.6, 1.0),
 	&"mod": Color(0.75, 0.35, 0.7),
 	&"food": Color(0.8, 0.7, 0.35),
+	&"medicine": Color(0.85, 0.25, 0.22),
 	&"face": Color(0.55, 0.45, 0.95),
 	&"sail": Color(0.92, 0.86, 0.7),
 	&"computer_mod": Color(0.25, 0.9, 0.9),
@@ -163,9 +164,6 @@ static var PARTS := {
 	# A signal flare: lit, it calls the deliveryship's cannon down on itself as it passes (Flare).
 	&"flare": {"kind": &"flare", "label": "Signal flare", "mass": 0.3, "size": Vector3(0.05, 0.05, 0.3),
 		"color": Color(0.75, 0.12, 0.08), "stats": {}},
-	# What the deliveryship's cannon fires down (Airdrop): a container, its contents to come.
-	&"cargo": {"kind": &"cargo", "label": "Cargo container", "mass": 80.0, "size": Vector3(0.8, 0.8, 1.3),
-		"color": Color(0.85, 0.45, 0.12), "stats": {}},
 	# A Console's screen and its computer mods: each instrument adds its own
 	# readings to the screen (Console), and draws a little while it runs. The
 	# radar sweeps the field this far out, m.
@@ -525,6 +523,17 @@ const DEVICES := {
 	&"antenna_reel": {"label": "Antenna reel", "size": Vector3(0.14, 0.12, 0.08), "mass": 0.8, "antenna_reel": true,
 		"carryable": true, "sticks": true, "sockets": []},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
+	# What the deliveryship's cannon fires down (Airdrop): a drop container, what
+	# it brings strapped in a row along its flank, to take as from any kit.
+	&"cargo": {"label": "Cargo container", "size": Vector3(0.8, 0.8, 1.3), "mass": 80.0,
+		"sockets": [
+			[&"water", Vector3(0.4, 0.18, -0.42), Vector3.RIGHT],
+			[&"water", Vector3(0.4, -0.18, -0.42), Vector3.RIGHT],
+			[&"food", Vector3(0.4, 0.18, -0.1), Vector3.RIGHT],
+			[&"food", Vector3(0.4, -0.18, -0.1), Vector3.RIGHT],
+			[&"medicine", Vector3(0.4, 0.18, 0.22), Vector3.RIGHT],
+			[&"battery", Vector3(0.4, -0.18, 0.22), Vector3.RIGHT],
+		]},
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,
 		"sticks": true,
 		"sockets": [
@@ -846,26 +855,23 @@ static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
 	body.add_child(ring)
 
 
+## Which script makes a device: the first flag its spec has, so a nest is a
+## nest before a helm, a receiver before a radio and the Guide before notes.
+static func _maker(spec: Dictionary) -> Device:
+	for each: Array in [["burner", Burner], ["home_beacon", HomeBeacon], ["shield", ShieldGenerator], ["condenser", Condenser],
+			["planter", Planter], ["board", Hoverboard], ["receiver", SurveyReceiver], ["radio", Radio],
+			["winch", ManualWinch], ["rig", Mast], ["streamer", Streamer], ["nest", CrowsNest], ["helm", Helm],
+			["chassis", Chassis], ["bedroll", Bedroll], ["console", Console], ["power_box", PowerBox],
+			["cutter", Cutter], ["antenna_reel", AntennaReel], ["kite", AntennaKite], ["surveyor_guide", SurveyorGuide],
+			["notes", SailingNotes]]:
+		if spec.get(each[0], false):
+			return each[1].new()
+	return Device.new()
+
+
 static func device(id: StringName) -> Device:
 	var spec: Dictionary = DEVICES[id]
-	var made: Device = Burner.new() if spec.get("burner", false) else HomeBeacon.new() if spec.get("home_beacon", false) else ShieldGenerator.new() if spec.get("shield", false) \
-		else (Condenser.new() if spec.get("condenser", false) \
-		else (Planter.new() if spec.get("planter", false) \
-		else (Hoverboard.new() if spec.get("board", false) \
-		else ((SurveyReceiver.new() if spec.get("receiver", false) else Radio.new()) if spec.get("radio", false) \
-		else (ManualWinch.new() if spec.get("winch", false) \
-		else (Mast.new() if spec.get("rig", false) \
-		else (Streamer.new() if spec.get("streamer", false) \
-		else (CrowsNest.new() if spec.get("nest", false) \
-		else (Helm.new() if spec.get("helm", false) \
-		else (Chassis.new() if spec.get("chassis", false) \
-		else (Bedroll.new() if spec.get("bedroll", false) \
-		else (Console.new() if spec.get("console", false) \
-		else (PowerBox.new() if spec.get("power_box", false) \
-		else (Cutter.new() if spec.get("cutter", false) \
-		else (AntennaReel.new() if spec.get("antenna_reel", false) \
-		else (AntennaKite.new() if spec.get("kite", false) \
-		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new())))))))))))))))))
+	var made := _maker(spec)
 	made.set_meta(&"catalog", id)
 	if made is Radio:
 		(made as Radio).style = spec.get("style", &"")
