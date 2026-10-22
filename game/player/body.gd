@@ -29,6 +29,8 @@ var _parts := {}
 var _phase := 0.0
 var _feet := [Vector3.ZERO, Vector3.ZERO]
 var _hands := [Vector3.ZERO, Vector3.ZERO]
+## Whether each hand held on last frame: a grip moves with what it holds.
+var _gripped := [false, false]
 var _settled := false
 
 
@@ -171,7 +173,11 @@ func pose(delta: float) -> void:
 				SurveyorLooks.CLIMB_HAND.z) - Vector3(SurveyorLooks.SHOULDER.x * side,
 				SurveyorLooks.SHOULDER.y, SurveyorLooks.SHOULDER.z)
 			hand = hand.lerp(shoulder + turn * reach, climb)
-		_hands[i] = hand if delta <= 0.0 or not _settled else _hands[i].lerp(hand, settle)
+		# A hand already on something stays on it as it moves; reaching for it, or
+		# letting go, eases.
+		var holding := grip_at.size() > i
+		_hands[i] = hand if delta <= 0.0 or not _settled or (holding and _gripped[i]) else _hands[i].lerp(hand, settle)
+		_gripped[i] = holding and (_gripped[i] or _hands[i].distance_to(hand) < GRIP)
 		var elbow_way := (turn * Vector3(0.4 * side, -0.3, 1.0)).normalized()
 		var arm := _reach(shoulder, _hands[i], UPPER_ARM, FOREARM + GRIP, elbow_way)
 		var s := "r" if i == 0 else "l"
