@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # CI on what's checked out, before it reaches master: pushes HEAD to
 # verify-<name>, waits for its run, and prints each job and what failed. With
-# --land, a green run moves master to it and drops the branch.
+# --land, a green run moves master to it and drops the branch, unless master's
+# latest macOS/Windows run is red: then only its fix lands (FIXES_PLATFORMS=1).
 #   scripts/verify.sh <name> [--land]
 set -euo pipefail
 name=${1:?a name for the verify branch}
@@ -67,12 +68,35 @@ done
 conclusion=$(gh run view "$id" --json conclusion -q .conclusion)
 echo "$conclusion: run $id at ${sha:0:7}"
 gh run view "$id" --json jobs -q '.jobs[] | "  \(.conclusion)  \(.name)"'
-if [[ $conclusion != success ]]; then
-	for job in $(gh run view "$id" --json jobs -q '.jobs[] | select(.conclusion == "failure") | .databaseId'); do
+# Prints the failing lines of each job id read from stdin.
+failures() {
+	while read -r job; do
 		# Log lines open with a 29-character timestamp.
 		gh api --allow-escape-sequences "repos/{owner}/{repo}/actions/jobs/$job/logs" | sed 's/\x1b\[[0-9;]*m//g' |
 			grep -E ' (FAIL|ERROR|TIMEOUT) |CHECK FAILED|SCRIPT ERROR|PROBE FAIL' | cut -c30- | head -20 || true
 	done
+}
+if [[ $conclusion != success ]]; then
+	gh run view "$id" --json jobs -q '.jobs[] | select(.conclusion == "failure") | .databaseId' | failures
+	exit 1
+fi
+# Platforms run only on master, so a red one stops the line until it's fixed.
+platforms_red() {
+	local run jobs
+	for run in $(gh run list -w probes.yml -b master -e push -s completed --limit 10 \
+		--json databaseId -q '.[].databaseId'); do
+		jobs=$(gh run view "$run" --json jobs -q '.jobs[] | select(.name | test("^(macOS|Windows) |smoke \\((macos|windows)"))
+			| select(.conclusion == "success" or .conclusion == "failure") | "\(.conclusion) \(.databaseId) \(.name)"')
+		[[ -n $jobs ]] || continue
+		grep '^failure ' <<<"$jobs" | cut -d' ' -f3- | sed "s/^/  red on master (run $run): /" || true
+		grep '^failure ' <<<"$jobs" | cut -d' ' -f2 | failures || true
+		grep -q '^failure ' <<<"$jobs"
+		return
+	done
+	return 1
+}
+if [[ $land == --land && $workflow == probes.yml && -z ${FIXES_PLATFORMS:-} ]] && platforms_red; then
+	echo "master's platform run is red: land its fix first, with FIXES_PLATFORMS=1" >&2
 	exit 1
 fi
 if [[ $land == --land ]]; then
