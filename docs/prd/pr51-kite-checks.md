@@ -41,3 +41,11 @@ capture camera did not follow the world's subsequent automatic recenter. Those
 images do not establish before/after visual acceptance; the exact mesh-transform
 check supplies the bounded recentering evidence. A camera-fixture correction is
 not a new gameplay blocker. Temporary images were inspected and removed.
+
+Actual Forward+ captures of the production kite fixture were inspected for the
+radio–stake–reel assembly, whole flight, intact canopy, charged canopy and torn
+cloth. The rig uses the real catalog radio, aerial, grounded cable and mounted
+parts. Canopy/frame/tail silhouettes, charge edges, wear holes and the physical
+stake route render. Temporary images were removed after inspection. These views
+check feature presentation; origin-shift correctness is established by the
+focused geometry checks above, not by a before/after camera comparison.

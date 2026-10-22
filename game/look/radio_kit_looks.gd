@@ -10,10 +10,10 @@ extends RefCounted
 ## earth stake are catalog devices and parts.
 ##
 ## The tiers:
-##   - crystal_set: no power, no slots, weak AM only; scrap and spare parts,
+##   - crystal_set: passive AM with an accessory bay; scrap and spare parts,
 ##     held in the hand with its earpiece.
 ##   - field_radio: the set the game has, with its sockets made real: a
-##     converter bay on its right cheek (FM or shortwave), a battery at its
+##     converter bays on its right cheek (FM and shortwave), a battery at its
 ##     back, a hook boss on top, a miscellaneous bay on its left cheek.
 ## Its band window glows the band it's scrubbing (bands.gd).
 
@@ -273,15 +273,13 @@ static func band_face(b: Paint.Pieces, at: Vector3, wide: float, high: float, ba
 	var foot := -high * 0.3
 	var span := wide * 0.89
 	b.box(Vector3(span + 0.0014, 0.001, 0.001), Vector3(at.x, at.y + foot, face), ink, 0.0)
-	var numbers: Array = band.numbers
-	var steps := (numbers.size() - 1) * 4
-	for i in steps + 1:
-		var x := at.x - span * 0.5 + span * i / steps
-		var long := i % 4 == 0
+	for mark: Dictionary in BANDS.ticks(band):
+		var x: float = at.x - span * 0.5 + span * mark.fraction
+		var long: bool = not str(mark.label).is_empty()
 		var tall := high * (0.21 if long else 0.11)
 		b.box(Vector3(0.0014 if long else 0.001, tall, 0.001), Vector3(x, at.y + foot + tall * 0.5, face), ink, 0.0)
 		if long:
-			numeral(b, numbers[i / 4], Vector3(x, at.y + high * 0.15, face), high * 0.21, ink)
+			numeral(b, mark.label, Vector3(x, at.y + high * 0.15, face), high * 0.21, ink)
 	# The band's name in the corner, so a glance says which.
 	_letters(b, band.label, Vector3(at.x + wide * 0.5 - 0.016, at.y + high * 0.36, face), high * 0.13, ink)
 	if needle < 0.0:

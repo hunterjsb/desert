@@ -81,5 +81,6 @@ locking and capture rules.
 and powered module actions. `Snapshot` tags the survey receiver beacon carrier
 and restores legacy detuning. `AntennaKite` follows origin displacement and checks
 its live cable before granting gain or grounding. Radio69–73 cover those bounded
-corrections; existing radio55–68, Power7 and saves13 retain the feature checks.
+corrections; Radio74 compares printed frequencies with the live band needle.
+Existing radio55–68, Power7 and saves13 retain the feature checks.
 See [the integration account](prd/radio-integration-review.md).

@@ -18,6 +18,7 @@
 - Add the passive crystal set, new field-radio looks, coloured band windows and
   powered receiver modules. Reorganize AM/FM/shortwave broadcasts around their
   updated carriers, including wreck distress and the tower weather/schedule.
+- Align the printed AM/FM/shortwave dial marks with actual tuning and needle travel.
 - Fly a radio antenna aerial from its reel and route its lead through a stake
   for grounding. Static charge, wear and damaged leads affect reception. The
   traction kite remains a separate Spaceport feature.

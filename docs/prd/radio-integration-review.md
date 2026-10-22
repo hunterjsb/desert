@@ -79,3 +79,9 @@ fraction of the same needle travel. Keep meaningful legible labels, placing
 nonuniform label intervals at their actual frequencies. This changes the face
 markings, not tuning, reception or needle response. Check all three production
 bands, and inspect the corrected shortwave maximum in the renderer.
+
+The original Radio74 endpoint check failed (3 s). Corrected Radio74,42,67 passed
+(6 s each), comparing every printed frequency with the actual needle after real
+band switching. Forward+ inspection at 1280×720 confirmed the corrected 30 MHz
+endpoint and legible intermediate labels. The powered set draws 3 W; the passive
+crystal set draws 0 W. Temporary capture output was removed after inspection.
