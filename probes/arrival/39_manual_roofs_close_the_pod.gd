@@ -20,7 +20,7 @@ func run() -> void:
 	var blocker := Catalog.device(&"chassis") as Chassis
 	deck.join(blocker, front_face)
 	check(not PreflightCargo.readiness(world, ship).is_empty()
-		and PreflightCargo.seal(world, ship, state, {"id": &"standard"}).is_empty(),
+		and PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"standard")).is_empty(),
 		"two loose roofs cannot both claim the one opening left by a foreign panel")
 	deck.detach(blocker)
 	blocker.queue_free()
@@ -33,7 +33,7 @@ func run() -> void:
 	check(rear.deck == deck and rear.joined_at == front_face, "ordinary hands close the remaining roof face with the other original panel")
 	check(PreflightCargo.readiness(world, ship).is_empty(), "both manually installed original roofs are launch-ready")
 	var before := [PreflightCargo.body_pose(front), PreflightCargo.body_pose(rear)]
-	var sealed := PreflightCargo.seal(world, ship, state, {"id": &"standard"})
+	var sealed := PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"standard"))
 	check(not sealed.is_empty() and sealed.preflight.launched, "the manually roofed original pod seals and launches")
 	check(front.joined_at == rear_face and rear.joined_at == front_face \
 		and before == [PreflightCargo.body_pose(front), PreflightCargo.body_pose(rear)] \
@@ -41,7 +41,7 @@ func run() -> void:
 		"sealing preserves original panel identities and manually fitted poses")
 	deck.detach(rear)
 	world.teleport(rear, ship.global_transform * Transform3D(Basis.IDENTITY, Vector3(-0.65, 0.66, 2.7)))
-	var partial := PreflightCargo.seal(world, ship, state, {"id": &"standard"})
+	var partial := PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"standard"))
 	check(not partial.is_empty() and rear.joined_at == front_face and front.joined_at == rear_face,
 		"automatic closing uses the remaining free face without moving a fitted roof")
 	deck.detach(front)
@@ -51,17 +51,18 @@ func run() -> void:
 	deck.join(front, hatch_face)
 	var wrong_pose := PreflightCargo.body_pose(front)
 	var missing := PreflightCargo.readiness(world, ship)
-	check(not missing.is_empty() and missing[0].contains("front frame") and missing[0].contains("left") \
-		and missing[0].contains("top"), "a roof on the hatch names its actual frame/face and the required roof location")
-	check(PreflightCargo.seal(world, ship, state, {"id": &"standard"}).is_empty() \
+	check(not missing.is_empty() and missing[0].contains(PreflightCargo.label_of(&"roof_a"))
+		and missing[0].contains(PreflightCargo.label_of(&"frame_a")), "a roof on the hatch names the roof and the frame it actually sits on")
+	var on_hatch := missing[0] if not missing.is_empty() else ""
+	check(PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"standard")).is_empty() \
 		and front.joined_at == hatch_face and PreflightCargo.body_pose(front) == wrong_pose,
 		"wrong-location refusal never moves the roof")
 	deck.detach(front)
 	var other := Rig.build(world.content, [[&"frame", Vector2i.ZERO]])
 	other.deck.join(front, Rig.face_of(other.deck, Vector2i.ZERO, &"top"))
 	missing = PreflightCargo.readiness(world, ship)
-	check(not missing.is_empty() and missing[0].contains("another chassis") and missing[0].contains("top"),
-		"a roof on another craft names the actual host and where to refit it")
+	check(not missing.is_empty() and missing[0].contains(PreflightCargo.label_of(&"roof_a")) and missing[0] != on_hatch,
+		"a roof on another craft names that other host instead")
 	if wind != null:
 		wind.override = Callable()
 	remove_child(world)

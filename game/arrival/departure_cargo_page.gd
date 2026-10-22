@@ -22,12 +22,11 @@ func _init() -> void:
 	add_child(bar)
 	resized.connect(_fit)
 
-func show_report(report: Array[Dictionary], missing: Array[String]) -> void:
-	var rows := PackedStringArray()
-	rows.append("Ready to board and launch" if missing.is_empty() else "Before launch\n• " + "\n• ".join(missing))
+func show_report(report: Array[Dictionary], missing: PackedStringArray) -> void:
+	var rows := PackedStringArray(["Ready to launch" if missing.is_empty() else missing[0], ""])
 	for item: Dictionary in report:
-		rows.append(item.label + (" · required" if item.required else "") + "\n" + item.reason)
-	var content := "\n\n".join(rows)
+		rows.append("%s · %s" % [item.label.capitalize(), item.state])
+	var content := "\n".join(rows)
 	if text.text != content:
 		text.text = content
 	_fit()

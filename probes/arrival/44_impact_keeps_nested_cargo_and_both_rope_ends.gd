@@ -54,8 +54,7 @@ func run() -> void:
 	var selected := PreflightCargo.loaded(world, ship)
 	check(selected.has(&"board") and selected.has(&"board_cell") and selected.has(&"rope"),
 		"the real bounded board/cell assembly and both fitted ends qualify as selected cargo")
-	state = PreflightCargo.seal(world, ship, state, {"id": &"shallow", "extra_survival": 1.0,
-		"outer_survival": 1.0, "frame_survival": 1.0, "device_durability": Vector2.ONE, "chassis_durability": Vector2.ONE})
+	state = PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"shallow").merged({"extra_survival": 1.0, "outer_survival": 1.0, "frame_survival": 1.0, "device_wear": Vector2.ONE, "chassis_wear": Vector2.ONE}, true))
 	check(not state.is_empty(), "the packed original pod seals through ordinary readiness")
 	if state.is_empty():
 		return
@@ -63,7 +62,7 @@ func run() -> void:
 	var original := {}
 	for entry: Dictionary in state.structure + state.equipment:
 		original[entry.uid] = nodes[entry.uid].get_instance_id()
-	var landed := PreflightCargo.land(world, state)
+	var landed := SurveyorRecovery.land(world, state)
 	check(state.get("materialized", false) and not landed.is_empty(), "the actual selected load reaches physical recovery")
 	if landed.is_empty():
 		return
@@ -82,7 +81,7 @@ func run() -> void:
 			"recovery preserves original cargo and structure identity: %s" % uid)
 	var placements: Dictionary = state.placements.duplicate(true)
 	var count := world.content.get_child_count()
-	check(PreflightCargo.land(world, state).size() == landed.size() and state.placements == placements
+	check(SurveyorRecovery.land(world, state).size() == landed.size() and state.placements == placements
 		and world.content.get_child_count() == count, "repeated recovery does not release or duplicate the equipment again")
 	wind.override = Callable()
 	remove_child(world)

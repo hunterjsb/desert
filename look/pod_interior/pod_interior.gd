@@ -30,10 +30,10 @@ func _ready() -> void:
 	var pose := ship.global_transform * ship.pod_pose
 	var camera := world.player.camera
 	world.player.feel.set_process(false)
-	var eye := PodShell.seat_pose() * Transform3D(Basis(Vector3.RIGHT, 0.1), Vector3(0, tuning.surveyor_preflight.seat_eye_m, 0))
+	var eye := PodShell.seat_pose() * Transform3D(Basis(Vector3.RIGHT, 0.1), Vector3(0, tuning.arrival_seat_eye_m, 0))
 	world.player.restore_ground_pose(&"prone")
 	world.player.global_transform = pose * PodShell.seat_pose()
-	camera.position = Vector3(0, tuning.surveyor_preflight.seat_eye_m, 0)
+	camera.position = Vector3(0, tuning.arrival_seat_eye_m, 0)
 	camera.rotation = Vector3(0.1, 0, 0)
 	camera.make_current()
 	await _save("actual_seated")

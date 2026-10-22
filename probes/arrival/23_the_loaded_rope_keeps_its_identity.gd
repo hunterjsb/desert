@@ -44,11 +44,10 @@ func run() -> void:
 	var full := line.full
 	var through := rope.through
 	var ends := line.ends.duplicate()
-	state = PreflightCargo.seal(world, ship, state, {"id": &"shallow", "extra_survival": 1.0,
-		"outer_survival": 1.0, "frame_survival": 1.0, "device_durability": Vector2.ONE, "chassis_durability": Vector2.ONE})
+	state = PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"shallow").merged({"extra_survival": 1.0, "outer_survival": 1.0, "frame_survival": 1.0, "device_wear": Vector2.ONE, "chassis_wear": Vector2.ONE}, true))
 	check(not state.is_empty(), "the actual line and emergency stores seal")
 	if not state.is_empty():
-		var landed := PreflightCargo.land(world, state)
+		var landed := SurveyorRecovery.land(world, state)
 		check(state.get("materialized", false) and landed.get(&"rope") == first and line.rope == rope
 			and line.ends == ends and rope.length == length and line.full == full and rope.through == through,
 			"landing preserves both original endpoints, line length and fairlead without a replacement")

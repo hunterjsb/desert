@@ -1,13 +1,11 @@
 extends MenuProbe
-## Arrival selection must not take over old saves, developer scenarios or other origins.
+## The opening must not take over old saves, developer scenarios or other origins, and an
+## unlanded opening saved before the cabin existed starts again in the cabin.
 
 func run() -> void:
 	var tuning := Tuning.current()
-	# Exercise the saved automatic opening; preparation has separate acceptance.
-	tuning.surveyor_preflight["enabled"] = false
 	tuning.run_seed = 1234
 	tuning.salvage = false
-	_short_flight()
 	await open_main()
 	print("COMPAT homesteader")
 	await main.new_game(false, false, Kit.named(&"homesteader"))
@@ -37,12 +35,19 @@ func run() -> void:
 	check(_carried() == carried and Snapshot.take(world).things.size() == data.things.size() and _inputs_live(),
 		"legacy resume preserves actual gear and normal input without a second grant")
 
+	print("COMPAT cabin-less")
+	data.arrival = {"version": 1, "seed": data.seed, "phase": &"descent", "elapsed": 1.0, "materialized": false}
+	check(SaveFile.write(store.path(), store.KIND, store.VERSION, data), "an unlanded cabin-less opening is on disk")
+	await main.resume()
+	world = main.world()
+	await _wait(func() -> bool: return world.arrival != null and world.arrival.preparing() and is_instance_valid(world.arrival.preflight),
+		"an unlanded cabin-less opening resumes in the cabin")
+
 	print("COMPAT scenario-cancel")
-	# Catch the actual opening in orbit, then use Main's scenario transition.
-	tuning.surveyor_arrival["orbit_s"] = 60.0
+	# Catch the actual opening in the cabin, then use Main's scenario transition.
 	var was_id := world.get_instance_id()
 	main.new_game(false, false, Kit.standard())
-	await _wait(func() -> bool: return main.world() != null and main.world().get_instance_id() != was_id and main.world().arrival != null and main.world().arrival.active(), "the real new Surveyor enters orbit")
+	await _wait(func() -> bool: return main.world() != null and main.world().get_instance_id() != was_id and main.world().arrival != null and main.world().arrival.active(), "the real new Surveyor enters the cabin")
 	world = main.world()
 	main.start_scenario(Scenarios.by_key("survive"))
 	await faded_in()
@@ -62,10 +67,10 @@ func run() -> void:
 	check(not world.arrival_enabled and world.run_seed != seed_was and _inputs_live(), "scenario restart preserves its no-arrival flow on a new seed")
 
 	print("COMPAT surveyor-death")
-	_short_flight()
 	await main.new_game(true, false, Kit.standard())
 	world = main.world()
-	check(world.arrival_enabled and world.arrival_state.get("phase", &"") == &"recovery", "the automatic Surveyor fixture still reaches physical recovery")
+	await started()
+	check(world.arrival_enabled and world.arrival_state.get("phase", &"") == &"recovery", "the real Surveyor opening reaches physical recovery")
 	seed_was = world.run_seed
 	was_id = world.get_instance_id()
 	world.player.vitals.hurt(1000.0)
@@ -73,12 +78,8 @@ func run() -> void:
 	world = main.world()
 	check(world.arrival_enabled and world.run_seed != seed_was and world.arrival != null and world.arrival.active(),
 		"Surveyor death propagates arrival selection to the new run")
-	check(world.player.suit.carried.is_empty() and not world.player.is_physics_processing(),
-		"the restarted flight holds movement without granting the legacy inventory")
-
-func _short_flight() -> void:
-	for phase in [&"orbit", &"ejection", &"descent", &"entry", &"landing"]:
-		Tuning.current().surveyor_arrival[String(phase) + "_s"] = 0.12
+	check(world.player.suit.carried.is_empty() and world.arrival.preparing(),
+		"the restarted Surveyor starts in the cabin without the old inventory")
 
 func _kit_ready(tag: StringName = &"kit") -> void:
 	await _wait(func() -> bool: return world.has_meta(tag), "the ordinary physical kit is ready")
@@ -102,7 +103,8 @@ func _kit_carried(kit: Kit) -> Array[StringName]:
 	return ids
 
 func _wait(ready: Callable, reason: String) -> void:
-	var until := Time.get_ticks_msec() + 60000
-	while not ready.call() and Time.get_ticks_msec() < until:
+	for i in 3600:
+		if ready.call():
+			break
 		await get_tree().physics_frame
 	check(ready.call(), reason)

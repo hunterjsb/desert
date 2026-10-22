@@ -38,7 +38,6 @@ func _ready() -> void:
 	for crop in ["root_tuber", "saltbush"]:
 		profile.toward("crops", crop)
 	# This surface capture retains the automatic-arrival baseline.
-	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 1234
 	var main: Main = MAIN.instantiate()
 	add_child(main)

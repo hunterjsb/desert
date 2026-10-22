@@ -6,7 +6,6 @@ func run() -> void:
 	var tuning := Tuning.current()
 	tuning.run_seed = 9876
 	tuning.salvage = false
-	tuning.surveyor_preflight.enabled = true
 	tuning.storm_threshold = 2.0
 	tuning.prevailing_speed = 0.0
 	tuning.prevailing_sway = 0.0
@@ -15,14 +14,10 @@ func run() -> void:
 	main.opens_on_menu = false
 	add_child(main)
 	world = main.world()
-	var deadline := Time.get_ticks_msec() + 60000
-	while (world.arrival == null or not is_instance_valid(world.arrival.preflight)) and Time.get_ticks_msec() < deadline:
-		await get_tree().process_frame
-	check(world.arrival != null and is_instance_valid(world.arrival.preflight), "the actual preparation opens")
-	if world.arrival == null or not is_instance_valid(world.arrival.preflight):
+	var prep := await cabin()
+	if prep == null:
 		return
 	await physics_frames(5)
-	var prep := world.arrival.preflight
 	var original := SurveyorRecovery.named(world)
 	# Script original cargo placement to isolate downstream continuity, not packing discovery.
 	Stick.put(prep.ship.pod.deck, prep.ship.pod_parts[&"floor_b"], Chassis.TOP, Vector2(0.34, -0.04), 0.0, original[&"beacon"])
@@ -36,27 +31,9 @@ func run() -> void:
 	var ids := {}
 	for role in [&"floor_a", &"shield", &"camp_cell", &"beacon", &"panel", &"food"]:
 		ids[role] = original[role].get_instance_id()
-	_stand(Vector3(prep.ship.computer_at.global_position.x, prep.ship.global_position.y + 0.02,
-		prep.ship.computer_at.global_position.z + 0.9), prep.ship.computer_at.global_position)
-	await physics_frames(2)
-	press(&"interact")
-	await get_tree().create_timer(0.6).timeout
-	check(prep.computer_open(), "the physical planning screen opens")
-	if not prep.computer_open():
-		return
-	prep.computer.ui._confirm.pressed.emit()
-	press(&"ui_cancel")
-	await get_tree().create_timer(0.6).timeout
-	_stand(prep.ship.pod_entry_at.global_position + Vector3(0, 0, 0.6), prep.ship.pod_entry_at.global_position + Vector3.UP * 0.5)
-	await physics_frames(2)
-	press(&"interact")
-	press(&"interact")
-	check(world.arrival_state.phase == &"ejection", "the real selected pod launches")
-	if world.arrival_state.phase != &"ejection":
-		return
-	deadline = Time.get_ticks_msec() + 60000
-	while world.arrival_state.phase != &"recovery" and Time.get_ticks_msec() < deadline:
-		await get_tree().process_frame
+	await set_pulse(prep)
+	await launch_pod(prep)
+	await fly_to(&"recovery")
 	check(world.arrival_state.phase == &"recovery", "the actual opening reaches recovery")
 	var nodes := SurveyorRecovery.named(world)
 	for role in ids:
@@ -65,26 +42,27 @@ func run() -> void:
 			return
 	var floor := nodes[&"floor_a"] as Chassis
 	var deck := floor.deck if floor.deck != null else floor
-	_stand(deck.global_position + Vector3(0, 0.5, 3), deck.global_position)
+	stand(deck.global_position + Vector3(0, 0.5, 3), deck.global_position)
 	var marker := nodes[&"beacon"] as HomeBeacon
 	for pair: Array in [[&"camp_cell", Vector2(-0.2, -0.2)], [&"shield", Vector2(-0.2, 0.2)], [&"beacon", Vector2(0.28, -0.25)]]:
 		_remount(nodes[pair[0]], deck, floor, pair[1])
 	_remount(nodes[&"panel"], deck, nodes[&"floor_b"], Vector2.ZERO)
 	var shield := nodes[&"shield"] as ShieldGenerator
-	_stand(shield.global_position + Vector3(0, 0.65, 0.7), shield.global_position)
+	stand(shield.global_position + Vector3(0, 0.65, 0.7), shield.global_position)
 	await physics_frames(5)
 	press(&"interact")
 	await physics_frames(90)
 	check(shield.running(), "the original pod cell powers its actual recovered shield")
-	_stand(marker.global_position + Vector3(0.1, 0.9, 0.1), marker.global_position)
+	stand(marker.global_position + Vector3(0.1, 0.9, 0.1), marker.global_position)
 	await physics_frames(5)
 	press(&"interact")
 	check(world.home.beacon == marker, "ordinary use selects the actual original beacon")
 	if world.home.beacon != marker:
 		return
-	deadline = Time.get_ticks_msec() + 60000
-	while not world.home.supported and Time.get_ticks_msec() < deadline:
-		await get_tree().process_frame
+	for i in 3600:
+		if world.home.supported:
+			break
+		await get_tree().physics_frame
 	check(world.home.beacon == marker and world.home.supported, "ordinary beacon use marks and supports the original pod")
 	if not world.home.supported:
 		return
@@ -148,11 +126,6 @@ func run() -> void:
 	check(world.home.nav().live and shield.running() and world.home.contains(food) and world.rescued == 0,
 		"return reaches the same live protected Home without a ground rescue")
 	print("EXPEDITION COMPLETE roles=", nodes.size(), " members=", world.home.members.size(), " remote_used_wh=", remote_used, " cell_draw_wh=", remote_draw, " charge=", cell.charge_wh, " food=", food.amount)
-
-func _stand(at: Vector3, toward: Vector3) -> void:
-	world.teleport(world.player, Transform3D(Basis.IDENTITY, at))
-	world.player.velocity = Vector3.ZERO
-	world.player.camera.look_at(toward)
 
 func _remount(body: RigidBody3D, deck: Chassis, piece: Chassis, at: Vector2) -> void:
 	if body is Part and body.socket != null:

@@ -23,6 +23,8 @@ var orbit: ArrivalOrbit
 var _orbital_origin := Vector3.ZERO
 var _orbital_basis := Basis.IDENTITY
 var _departure_clock := -1.0
+var _lamp := StandardMaterial3D.new()
+var _lamp_ready := -1
 
 
 func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
@@ -176,7 +178,7 @@ func computer_screen_size() -> Vector2:
 
 func computer_focus_pose() -> Transform3D:
 	var screen := computer_screen_pose()
-	return Transform3D(Basis.looking_at(-screen.basis.z, Vector3.UP), screen.origin + screen.basis.z * float(world.tuning.surveyor_preflight.computer_focus_m))
+	return Transform3D(Basis.looking_at(-screen.basis.z, Vector3.UP), screen.origin + screen.basis.z * world.tuning.arrival_computer_focus_m)
 
 
 func _bay_sign() -> void:
@@ -191,3 +193,25 @@ func _bay_sign() -> void:
 	label.outline_size = 0
 	label.no_depth_test = false
 	add_child(label)
+	# The bay lamp reads the launch by sight: amber while anything is in the way.
+	var lamp := MeshInstance3D.new()
+	var bulb := SphereMesh.new()
+	bulb.radius = 0.05
+	bulb.height = 0.1
+	lamp.mesh = bulb
+	lamp.material_override = _lamp
+	lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	lamp.position = Vector3(2.95, 1.88, 0.15)
+	_lamp.emission_enabled = true
+	_lamp.emission_energy_multiplier = 2.0
+	add_child(lamp)
+	show_ready(false)
+
+
+func show_ready(ready: bool) -> void:
+	if int(ready) == _lamp_ready:
+		return
+	_lamp_ready = int(ready)
+	var colour := Color(0.55, 0.85, 0.82) if ready else Color(0.95, 0.73, 0.36)
+	_lamp.albedo_color = colour
+	_lamp.emission = colour
