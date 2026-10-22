@@ -815,6 +815,14 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
   felt weather. Use never wears them. A part sheltered from a harm doesn't wear from
   it, so the shield protects your parts as well as you. (Session 4, part 5 gives each era a repair
   material, which nothing here mends yet: [frames by era](#frames-by-era-agreed-session-4-part-5-not-built).)
+- **Storms leave visible damage (Hunter, 2026-10-22; agreed, not built).** "We can start with the storm
+  causing visible damage to items to wear in our wear system, keeping in mind we will use it to create
+  tiered gear later just like youre suggesting, with kind of the same model across eras of the same
+  piece of gear but yeah different conditions and wear levels and modifications and repair needs and
+  capabilities but theres a throughline, a theme if you will." First step: a storm's wear on a part
+  shows on it, through the one wear shader, and what it costs the part is real. Later, one piece of
+  gear keeps one model across eras, its era and state carried by condition, wear, modifications and
+  repair needs, so the throughline reads at a glance.
 
 ## Frames by era (Agreed, session 4, part 5; not built)
 
