@@ -467,5 +467,3 @@ posture_crawl_speed = 0.55
 posture_camera_seconds = 0.22
 posture_sit_catch = 0.6
 posture_prone_catch = 0.25
-
-}
