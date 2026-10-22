@@ -431,7 +431,7 @@ From Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-
 - **The hook** for the map and the Walker's feed: `WeatherField.anomalies_near(x, z, t, reach)`
   lists every heart within reach at a moment, where it is, its reach, when it peaks, how strong it
   stands and its share at the place. The compass reads it, and once the Walker's taught, every
-  Console's radar map and chart and the Walker's feed (built 2026-10-19,
+  Console's Map (its weather filter) and the Walker's feed (built 2026-10-19,
   [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-agreed-2026-10-19-hunter-perfect-built)).
 - **Teaching the Walker** (built 2026-10-19, the Walker's quest in Radio): a Console keeps evidence of
   each tell its system witnesses, by the sensor that sees it: a compass stuck on its deck for the lean,
