@@ -21,14 +21,14 @@ const TELLS := [&"compass", &"crackle", &"load"]
 const SETUP := [&"ground_radar", &"sand_scoop", &"sieve"]
 ## Each deed in the order the grid lays them out, a family a branch or two:
 ##   name; asks, what it asks, its goal in place of %s; family; after, the
-##   deeds it waits on; after_any, the families it waits on a deed of; icon, its card's thing (ItemIcons), or a mark drawn
-##   (DeedsGrid), a landmark's for none;
+##   deeds it waits on; after_any, the families it waits on a deed of; icon,
+##   its card's thing (ItemIcons), or a mark drawn (DeedsGrid), a landmark's
+##   for none;
 ##   goal, a number to reach (measure) or of different things to count
 ##   (`parts`): a tuning field, or every landmark, every age that built,
 ##   the home's three, the tells, every god, every wreck kind or every
-##   board make; unit, what
-##   its progress counts; step, how much better a best must be before the
-##   profile keeps it;
+##   board make; unit, what its progress counts; step, how much better a
+##   best must be before the profile keeps it;
 ##   landmark, where it's reached, or every landmark for ALL; hidden, ????
 ##   and no picture until it's done, so the grid never says what it is.
 const TABLE := {
