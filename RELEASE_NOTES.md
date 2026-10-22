@@ -65,6 +65,9 @@
 - Add Quiver for riding every board make, On Reserve for powering camp from a
   battery, and Nomad after earning a deed in each of Wind, Weather, Ruins, Signals
   and Far.
+- Carry small things low and close, out of your face, with the gloves gripping
+  them; push one out ahead or bring it back in as before. A radio comes up to
+  read while you tune it.
 - Import a source checkout before the launcher starts it, so Godot refreshes its
   script cache; published game builds launch directly.
 
