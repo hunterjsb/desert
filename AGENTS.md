@@ -12,7 +12,8 @@
 
 - Keep the main checkout on master. Work in one sibling worktree per active task, on its own branch; reuse an idle one before making another.
 - Import a new worktree, and again after merging master: `godot --headless --path . --import`.
-- Merge current `origin/master`, then verify with a copy of `scripts/verify.sh` kept outside the checkout: `<copy> <name>` verifies on `verify-<name>`, and `<copy> <name> --land` lands after green CI. Land one change at a time.
+- Merge current `origin/master`, then verify with a copy of `scripts/verify.sh` kept outside the checkout: `<copy> <name>` verifies on `verify-<name>`, and `<copy> <name> --land` lands after green CI. Land one change at a time: `--land` holds the shared lock `../.desert-land.lock` for its whole run, so another driver's landing waits.
+- Several drivers (Claude and Codex sessions) work here. Before starting, read `../desert-agents.md` beside the checkouts and add your claim: driver, task, branch, and the folders or files you'll change. Don't start on a claimed area; remove your claim when your work lands.
 - `--land` refuses game changes while master's latest macOS/Windows run is red; land that fix with `FIXES_PLATFORMS=1`.
 - After landing, remove the task's worktree, local branch and `verify-*` branch. Before removing one, check it has no uncommitted work and nothing running in it; archive abandoned work outside the repository.
 - Documentation-only changes skip CI.
