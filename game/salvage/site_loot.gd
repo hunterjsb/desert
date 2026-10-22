@@ -46,7 +46,7 @@ const ERAS := {
 			[&"big_battery", 2], [&"hover_tray", 2], [&"solar_panel", 2], [&"strong_plug", 2], [&"board", 1]],
 		SHELF: [[&"battery", 3], [&"big_battery", 1], [&"lamp", 2], [&"strong_plug", 2], [&"plug", 1],
 			[&"barometer", 1], [&"hygrometer", 1], [&"compass", 1], [&"med_kit", 1], [&"fm_converter", 1],
-			[&"frequency_counter", 1], [&"direction_loop", 1], [&"solar_lid", 1]],
+			[&"frequency_counter", 1], [&"solar_lid", 1]],
 		CACHE: [[&"big_battery", 2], [&"strong_plug", 2], [&"hover_tray", 1], [&"screen", 1]],
 		BED: [[&"root_tuber", 3], [&"vat_fungus", 2]],
 		BEST: [[&"console", 2], [&"shield", 2], [&"turbine", 2], [&"condenser", 1], [&"big_battery", 3],
@@ -121,7 +121,7 @@ const KINDS := {
 	# The mast's cabinet: its instruments and its power.
 	&"relay_mast": {SHELF: [[&"battery", 2], [&"big_battery", 1], [&"barometer", 1], [&"anemometer", 1],
 		[&"compass", 1], [&"strong_plug", 1], [&"ground_radar", 1], [&"fm_converter", 1],
-		[&"bleed_resistor", 1], [&"static_choke", 1], [&"direction_loop", 1], [&"headset_jack", 1]]},
+		[&"bleed_resistor", 1], [&"static_choke", 1], [&"headset_jack", 1]]},
 	# The inspection hatch: the line's own hose, valves and water.
 	&"pipeline_segment": {BEST: [[&"hose_end", 3], [&"canister", 2], [&"condenser", 1], [&"strong_plug", 1],
 		[&"big_battery", 1]]},

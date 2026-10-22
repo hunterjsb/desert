@@ -250,7 +250,7 @@ a real FM set the second.
 
 **Built so far:** the crystal set and the field radio in makers' looks; the realistic AM dial; the FM
 converter and band, playing FM clear; the shortwave converter and band; the kite; the misc bay's modules;
-the ferrite rod's null and the direction loop; the survey receiver. **Still direction:** the dish, decoder and digital, the uplink.
+the ferrite rod's null; the survey receiver. **Still direction:** the dish, decoder and digital, the uplink.
 
 ### The bands rebuilt (gonkhub, 2026-10-21; built)
 
@@ -409,8 +409,6 @@ now in `tuning.tres` (`kite_*`).
   - **Bleed resistor:** leaks a kite's charge off (`kite_bleed_tau`), so a breeze never arcs it unearthed; a
     dust front outruns it.
   - **Valve preamp:** lifts everything heard `preamp_gain` times, so a far god lost in the hiss comes through.
-  - **Direction loop:** takes the ferrite rod's place, its null deeper and narrower (`loop_width`), and as
-    deep by night's sky wave.
   - **Static choke:** a storm's static at half, the garbling at 0.6, the signal at 0.8.
   - **Wire logger:** a report or a god's words read through a signal dirtier than `logger_dirty` it plays
     back once they're done, from the set's own speaker, clean of the storm.
@@ -466,6 +464,8 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
 - **Consolidating with the salvage kite** (Spaceport): open; Hunter's prototype isn't in the repository.
 - **The bleed resistor stays as it is:** "a stake is stationary," so the bleed is the kite's protection on
   the move, as the stake is at camp.
+- **The direction loop is scrapped** ("scrap this one"): the ferrite rod is the set's only direction
+  finder. Saves holding one wake with a static choke (`Catalog.RENAMED`). Radio probe 61 went with it.
 - **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
   one misc bay stops forcing a choice between modules.
 
@@ -476,8 +476,7 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   end-on (`rod_width`) it falls into the null (`rod_null`). Turning finds a station's line by its silence;
   the line runs both ways.
 - **The night effect** (`Dial.by_sky`): a sky-wave station comes down from above and wanders, so its null is
-  only `rod_night_null` deep: night bearings can't be trusted, as real direction finders found. The direction
-  loop module keeps its null deep.
+  only `rod_night_null` deep: night bearings can't be trusted, as real direction finders found.
 - **The deed** Null: turn a radio until a god you hear falls silent. **Not yet:** a sense antenna for which
   way along the line; no rod on shortwave or FM.
 
@@ -889,7 +888,7 @@ One real failure each, in `probes/radio/`:
   the tower's drone schedule (47); a new FM station clears the old one's words (72).
 - **The set in your hands:** volume (10), tuning and the close view (20, 21), carried in your ears (30),
   marks and lamps (33, 36), the survey receiver's controls (41), the printed dial (74).
-- **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59–66); powered modules
+- **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59, 60, 62–66); powered modules
   need power (73).
 - **The kite:** it flies on the wind (55); one cable through the stake (56); unearthed it burns out (57); a
   sandstorm shreds it (58); it follows the world's origin (69); a broken lead can't earth it (70); it's the

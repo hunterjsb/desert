@@ -217,9 +217,6 @@ const PARTS := {
 	# Lifts what it hears out of the hiss.
 	&"valve_preamp": {"kind": &"radio_bay", "label": "Valve preamp", "mass": 0.7,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.42, 0.1), "stats": {"preamp": 1}},
-	# A loop in place of the ferrite rod's: its null sharp and deep, by night too.
-	&"direction_loop": {"kind": &"radio_bay", "label": "Direction loop", "mass": 0.5,
-		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.6, 0.62, 0.64), "stats": {"loop": 1}},
 	# Takes the edge off a storm's hash, and a little of the signal.
 	&"static_choke": {"kind": &"radio_bay", "label": "Static choke", "mass": 0.5,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.3, 0.55, 0.85), "stats": {"choke": 1}},
@@ -246,7 +243,10 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 	&"survey_set": &"radio_colonial",
 	# The antenna reel was scrapped (gonkhub, 2026-10-22): its saves wake with
 	# the antenna kite, shortwave's aerial now.
-	&"antenna_reel": &"antenna_kite"}
+	&"antenna_reel": &"antenna_kite",
+	# So was the direction loop (2026-10-22): its saves wake with a static choke,
+	# another bay module.
+	&"direction_loop": &"static_choke"}
 ## Part kinds that go only in a slot of their own, never stuck loose on a
 ## chassis: hooks on rings, plugs in ports, a line's end, a hose's end, crops
 ## in beds, mods in their mounts, a sail on its mast.

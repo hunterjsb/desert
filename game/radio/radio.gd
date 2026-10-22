@@ -1367,16 +1367,12 @@ func rod(bearing: float, sky: bool) -> float:
 	if aerial_am() > 1.0:
 		return 1.0
 	var axis := world.player.camera.global_basis.x if carried() else global_basis.x
-	# A direction loop in its bay: its null sharp and deep, by night too.
-	var loop := _has(&"loop")
 	var flat := Vector2(axis.x, axis.z)
 	# Stood on its end the rod's upright, and every way's the same to it.
 	if flat.length() < 0.2:
 		return 1.0
 	var to := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
 	var across := absf(flat.normalized().cross(to))
-	if loop:
-		return lerpf(_tuning.loop_null, 1.0, smoothstep(0.0, _tuning.loop_width, across))
 	return lerpf(_tuning.rod_night_null if sky else _tuning.rod_null, 1.0, smoothstep(0.0, _tuning.rod_width, across))
 
 

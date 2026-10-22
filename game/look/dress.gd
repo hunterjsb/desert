@@ -867,7 +867,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				b.drum(0.0055, 0.003, at + Vector3(0.0, 0.0015, 0.0), Paint.coat(post[1], 0.3, 0.0, 0.35), Basis.IDENTITY, 10)
 				b.drum(0.0022, 0.006, at + Vector3(0.0, 0.005, 0.0), brass, Basis.IDENTITY, 8)
 				b.drum(0.0042, 0.0028, at + Vector3(0.0, 0.0068, 0.0), brass, Basis.IDENTITY, 8)
-		&"bleed_resistor", &"valve_preamp", &"direction_loop", &"static_choke", &"wire_logger", &"frequency_counter", &"headset_jack", &"solar_lid":
+		&"bleed_resistor", &"valve_preamp", &"static_choke", &"wire_logger", &"frequency_counter", &"headset_jack", &"solar_lid":
 			_module(b, size, id)
 		&"radar":
 			# A dish on a post, up from the Console's top.
@@ -1163,11 +1163,6 @@ static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 				var a := TAU * i / 6.0
 				b.box(Vector3(0.0018, 0.0018, 0.046), Vector3(cos(a) * 0.012, 0.006 + sin(a) * 0.012, on + 0.024), steel, 0.0)
 			b.drum(0.015, 0.0025, Vector3(0.0, 0.006, on + 0.047), steel, along, 12)
-		&"direction_loop":
-			# A copper loop up off its top on a turning post, a bearing ring under it.
-			b.drum(0.016, 0.004, Vector3(0.0, h.y + 0.002, size.z * 0.5), Paint.coat(Paint.BONE, 0.4), Basis.IDENTITY, 16)
-			b.drum(0.003, 0.03, Vector3(0.0, h.y + 0.017, size.z * 0.5), steel, Basis.IDENTITY, 8)
-			b.ring(0.03, 0.035, Vector3(0.0, h.y + 0.065, size.z * 0.5), copper, Basis(Vector3.UP, 0.4) * Basis(Vector3.RIGHT, PI / 2.0) * Basis(Vector3.RIGHT, PI / 2.0), 14)
 		&"static_choke":
 			# A choke's can, its windings showing through a slot.
 			b.drum(0.017, 0.03, Vector3(0.0, 0.006, on + 0.015), Paint.coat(Color(0.2, 0.38, 0.6), 0.5, 0.5, 0.3), along, 14)
