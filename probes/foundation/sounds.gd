@@ -14,8 +14,11 @@ func run() -> void:
 		# A path with a blank names a bank, which its own probe checks (radio 23, the voice's).
 		if sound.contains("%"):
 			continue
-		var stream := load(sound) as AudioStream if ResourceLoader.exists(sound) else null
-		check(stream != null and stream.get_length() > 0.0, "%s, named in %s, loads" % [sound, named[sound]])
+		# A resource of clips names a bank too (the voice's words): it loads with clips in it.
+		var found: Resource = load(sound) if ResourceLoader.exists(sound) else null
+		var stream := found as AudioStream
+		var plays: bool = stream.get_length() > 0.0 if stream != null else found != null and not found.get("clips").is_empty()
+		check(plays, "%s, named in %s, loads" % [sound, named[sound]])
 	for bus in [Sounds.WORLD, Sounds.WEATHER, Sounds.UI]:
 		check(AudioServer.get_bus_index(bus) != -1, "the %s bus exists" % bus)
 	check(AudioServer.get_bus_send(AudioServer.get_bus_index(Sounds.WEATHER)) == Sounds.WORLD,
