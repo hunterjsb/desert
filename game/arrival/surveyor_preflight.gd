@@ -17,6 +17,8 @@ var _camera_turn := Vector3.ZERO
 var _forecast_at := -INF
 var _ready := PackedStringArray()
 var _ready_fresh := false
+## Seated, the one line sits low, clear of the window view.
+var _prompt := Label.new()
 
 
 func setup(controller: SurveyorArrival) -> void:
@@ -77,6 +79,19 @@ func setup(controller: SurveyorArrival) -> void:
 	if saved.seated:
 		_sit()
 	world.set_meta(&"kit", world.arrival_nodes.values())
+	var layer := CanvasLayer.new()
+	add_child(layer)
+	_prompt.theme = preload("res://game/ui/theme.tres")
+	_prompt.theme_type_variation = &"AsideValue"
+	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(_prompt)
+	_prompt.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	_prompt.offset_left = -500.0
+	_prompt.offset_right = 500.0
+	_prompt.offset_top = -96.0
+	_prompt.offset_bottom = -56.0
+	_prompt.hide()
 	refresh_forecast()
 
 
@@ -113,6 +128,8 @@ func refresh_forecast() -> void:
 	forecast = DepartureTrajectory.resolve(world.shape, world.arrival_state.landing_plan, model(), clock(), world.tuning)
 	_forecast_at = clock()
 	_ready_fresh = false
+	# Refitted panels make new surfaces; everything aboard stays as clean as space.
+	PodShell.seal_weather(world.arrival_nodes.values(), true)
 
 
 ## A dragged pulse is pending until set; the next tick forecasts it.
@@ -165,19 +182,30 @@ func take() -> bool:
 	return true
 
 
-## One line: the action, or the first thing actually in the way.
+## One line: the action, or the first thing actually in the way. Seated, it shows low.
 func hint() -> String:
-	if not is_instance_valid(ship) or computer_open() or world.player.hands.held != null:
+	if not is_instance_valid(ship) or computer_open() or world.player.hands.held != null \
+			or world.arrival_state.preflight.seated:
 		return ""
 	var missing := readiness()
-	if world.arrival_state.preflight.seated:
-		var first := Controls.key_for(&"interact") + " · launch pod" if missing.is_empty() else missing[0]
-		return "%s   %s · leave seat" % [first, Controls.key_for(&"hands_grab")]
 	if _computer_aim():
 		return Controls.key_for(&"interact") + " · launch computer"
 	if _pod_aim():
 		return Controls.key_for(&"interact") + " · enter pod" + ("" if missing.is_empty() else "   " + missing[0])
 	return ""
+
+
+func seated_line() -> String:
+	var missing := readiness()
+	var first := Controls.key_for(&"interact") + " · launch pod" if missing.is_empty() else missing[0]
+	return "%s   %s · leave seat" % [first, Controls.key_for(&"hands_grab")]
+
+
+func _process(_delta: float) -> void:
+	var seated: bool = is_instance_valid(ship) and world.arrival_state.get("preflight", {}).get("seated", false)
+	_prompt.visible = seated and Controls.playing() and not computer_open()
+	if _prompt.visible:
+		_prompt.text = seated_line()
 
 
 func _computer_aim() -> bool:
@@ -247,7 +275,7 @@ func launch() -> bool:
 	world.arrival_state = sealed
 	sealed.landing_world = selected.landing_world
 	sealed.heading = plan.heading
-	sealed.exit_world = selected.landing_world + Vector2(-world.tuning.arrival_exit_offset_m, 0).rotated(-plan.heading)
+	sealed.exit_world = selected.landing_world + Vector2(world.tuning.arrival_exit_offset_m, 0).rotated(-plan.heading)
 	sealed.phase = &"ejection"
 	sealed.elapsed = 0.0
 	sealed.progress = 0.0
@@ -293,7 +321,8 @@ func _sit() -> void:
 	world.teleport(world.player, ship.pod_seat_at.global_transform)
 	world.player.camera.position.y = world.tuning.arrival_seat_eye_m
 	world.player.camera.rotation = Vector3(0.1, 0, 0)
-	_seat.take(PlayerHold.WALK | PlayerHold.SUIT | PlayerHold.EYE | PlayerHold.BODY)
+	# The look line and its dot stand aside; the seat's own line sits low.
+	_seat.take(PlayerHold.WALK | PlayerHold.SUIT | PlayerHold.EYE | PlayerHold.BODY | PlayerHold.FOCUS)
 
 
 func dispose() -> void:

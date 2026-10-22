@@ -107,6 +107,8 @@ class Piece:
 	## Solid details not aligned to the plan: [BoxShape3D, local Transform3D].
 	## Kept separate so existing box indices, sockets and openings stay stable.
 	var fitted_boxes: Array[Array] = []
+	## Long landmarks keep each solid with the chunk containing its centre.
+	var distributed_collision := false
 	## The boxes you can sleep on, by their place in boxes: a bunk, a bench.
 	var beds := PackedInt32Array()
 	var sockets: Array[SiteSocket] = []

@@ -1,5 +1,13 @@
 ## 0.3.1-alpha “Sanddune” — development, unreleased
 
+- Add main-thread CPU budgets for 108-frame sailing, capsized and remote Home
+  camps. Batch tipped-contact ground reads while preserving contact order and
+  live impulse response. Admit the measured heavy Home camp with a 272-item cap,
+  guarded by the existing one-millisecond upkeep budget.
+
+- Make the survey receiver appearance replaceable independently of gameplay,
+  retaining its current procedural model, wear, controls and saved identity.
+
 - Fit either original roof panel to either pod roof bay and launch with it in
   place. Loose roofs close into the remaining free roof faces. Invalid placements
   identify their actual host/face and explain the intended destination.

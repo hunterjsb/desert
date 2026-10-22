@@ -47,7 +47,7 @@ elif args[:2]==['run','view']:
     if field=='status': print('completed')
     elif field=='conclusion': print(os.environ.get('VERIFY_RESULT','success'))
     elif field=='jobs' and os.environ.get('VERIFY_PLATFORM_RED'): print('failure 456 macOS probes/rope')
-elif args[:1]==['api']: print('2026-10-22T00:00:00.0000000Z FAIL     probes/rope/1_knot.gd (3s)')
+elif args[:1]==['api']: print(os.environ.get('VERIFY_PLATFORM_LOG','2026-10-22T00:00:00.0000000Z FAIL     probes/rope/1_knot.gd (3s)'))
 ''')
         self.copy = self.root / 'verify.sh'
         shutil.copyfile(VERIFY, self.copy)
@@ -139,6 +139,44 @@ elif args[:1]==['api']: print('2026-10-22T00:00:00.0000000Z FAIL     probes/rope
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('probes/rope/1_knot.gd', result.stdout)
         self.assertEqual(self.git('rev-parse', 'origin/master').strip(), self.base)
+
+    def test_platform_timeout_only_warns(self):
+        self.write('game/main.gd')
+        self.commit()
+        self.env['VERIFY_PLATFORM_RED'] = '1'
+        self.env['VERIFY_PLATFORM_LOG'] = '2026-10-22T00:00:00.0000000Z TIMEOUT  probes/kits/3_slow.gd (400s)'
+        result = self.verify('--land')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('probes/kits/3_slow.gd', result.stdout)
+        self.assertEqual(self.git('rev-parse', 'origin/master').strip(), self.git('rev-parse', 'HEAD').strip())
+
+    def master_gains(self, name):
+        mine = self.git('rev-parse', 'HEAD').strip()
+        self.git('checkout', '-q', '-b', 'other', self.base)
+        self.write(name)
+        self.git('add', '.')
+        self.git('commit', '-qm', 'meanwhile')
+        self.git('push', '-q', 'origin', 'other:master')
+        self.git('checkout', '-q', mine)
+        return mine
+
+    def test_docs_on_master_are_merged_in(self):
+        self.write('game/main.gd')
+        self.commit()
+        mine = self.master_gains('docs/meanwhile.md')
+        self.assertEqual(self.verify('--land').returncode, 0)
+        self.git('fetch', '-q', 'origin')
+        self.assertEqual(self.git('merge-base', '--is-ancestor', mine, 'origin/master'), '')
+        self.assertIn('docs/meanwhile.md', self.git('ls-tree', '-r', '--name-only', 'origin/master'))
+
+    def test_code_on_master_needs_another_run(self):
+        self.write('game/main.gd')
+        self.commit()
+        self.master_gains('game/other.gd')
+        meanwhile = self.git('rev-parse', 'origin/master').strip()
+        self.assertNotEqual(self.verify('--land').returncode, 0)
+        self.git('fetch', '-q', 'origin')
+        self.assertEqual(self.git('rev-parse', 'origin/master').strip(), meanwhile)
 
     def test_docs_skip_ci(self):
         self.write('docs/report.md')

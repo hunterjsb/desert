@@ -1,6 +1,6 @@
 extends DeckProbe
 ## Runs alone
-## Home's upkeep at its largest admitted camp fits the main thread: a rebuild,
+## Home's upkeep at its 272-work-item production cap fits the main thread: a rebuild,
 ## which waits for a change or the slow sweep, stays inside its budget, and the
 ## ticks between rebuilds cost next to nothing.
 const REBUILD_MS := 1.0

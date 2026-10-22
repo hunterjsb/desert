@@ -226,7 +226,7 @@ How each X was chosen, from the probes' numbers:
   <id>` grants one, `deeds` lists what's done and what isn't, and `deeds clear` forgets them all.
 - **Probes** 17 to 22, and Menus & UI probe 11.
 
-### Round two: the trees that tie it together (agreed 2026-10-18; steps 1 and 3 built 2026-10-19)
+### Round two: the trees that tie it together (agreed 2026-10-18; steps 1 and 3 built 2026-10-19, step 5 2026-10-22)
 
 Hunter, 2026-10-18: "what are the big deeds and deed trees we're missing to tie everything
 together?", then "lets do it, and do it right, in the right order." Sailing, ruins, storms, wrecks,
@@ -243,6 +243,8 @@ the frame is a part stuck on the deck.
 
 | Tree | Deed | Asks | After | Recorded |
 |---|---|---|---|---|
+| Board | **Quiver** | Ride every make of board | Frequent Flyer | `Ride`'s tick: a ride on one make past `deed_make_m` (100 m, seven or eight seconds pushing from a stand on the slowest make) counts that make, once a profile ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-22 |
+| Camp | **On Reserve** | Run your camp on a power box's batteries | All Mod Cons | `Power`'s tick: a pool drawing more than it makes, carried through, a power box in it with a charged bay supplying. Built 2026-10-22 |
 | Board | **Yard Sale** (hidden) | Tumble 12 m in one wipeout | Big Air | `Tumble`'s tick: how far you've tumbled since you were thrown off ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-19 |
 | Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
 | Wind | **Fairlead** | Redirect a loaded rope through a fitted hook | | `Line`: a player-routed guide carries at least 10 N sustained load for one second; saved routing retains the real guide reference |
@@ -290,7 +292,7 @@ the frame is a part stuck on the deck.
 | Nomad | **Ten Days** | Live 10 days in one run | | the world's clock, each whole day since `World.began`, which a death's respawn sets afresh |
 | Nomad | **Moved House** | Move your camp 5,000 m in one day | Ten Days | `Chassis`' tick: a deck's distance from where it stood as the day began where you are; not while it's in your hands. Kept in the save |
 | Nomad | **Slept It Off** | Sleep through a storm with nothing lost from your camp | Ten Days | `Sleep.overnight`: a storm over where you lie at some time in the night, none as you wake, and every deck near you still there with all of its camp on it, nothing wrecked that wasn't |
-| Nomad | **Nomad** | A deed from each of Wind, Weather, Ruins, Signals and Far | each of those trees | the hook, once the last of them is done |
+| Nomad | **Nomad** | A deed from each of Wind, Weather, Ruins, Signals and Far | any deed of each of those trees | the hook, as the last of the five comes to show a deed done: one done early counts once its branch opens. Built 2026-10-22 |
 
 - **Your camp** is a deck as the chassis rework made it (`Chassis.camp`): its pieces
   (`Chassis.pieces()`), every part fitted to them, a frame on a piece among them, and every device
@@ -303,8 +305,10 @@ the frame is a part stuck on the deck.
   `Deeds.revealed`.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
-  table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): every deed in `Deeds.TABLE` in eleven families, the round-two trees with the deeds added since (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21; Plot a Course and Drop In 2026-10-21, 71 now), each a
+  table's `after` gains "any of a family". Built 2026-10-22: the table's `after_any`; its card stands
+  alone under the middle of the grid, each tree's line marking its branches top to foot down the
+  right and running into the card's side, the top tree outermost so none cross.
+- **The grid holds every tree** (built for step 1, Menus & UI): every deed in `Deeds.TABLE` in eleven families, the round-two trees with the deeds added since (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21; Plot a Course and Drop In 2026-10-21; Quiver, On Reserve and Nomad 2026-10-22), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -320,11 +324,15 @@ the frame is a part stuck on the deck.
      spotting from the crow's nest was weighed and left out: what it'd ask (a glint the crests hid
      from the deck) the Glint deed's sightline can't yet tell apart. Profile & saves probe 36.
   4. **Built 2026-10-19,** with the radio stations' second pass and the Walker's quest
-     ([Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
-     Triangulated, The Living City, and Taught, hidden; 43 deeds now. Their cards are marks drawn
+     ([Radio](radio-sound-and-atmosphere.md#the-walkers-quest-agreed-2026-10-19-hunter-perfect-built)):
+     Triangulated, The Living City, and Taught, hidden. Their cards are marks drawn
      (DeedsGrid): three lines crossing, the city's decks dark against their glow, the Walker.
-  5. Last, once every tree it reads has landed: Nomad and its "any of a family", so that what it
-     asks never changes after someone has earned it.
+  5. **Built 2026-10-22,** last, once every tree it reads had landed: Nomad and its "any of a
+     family", so that what it asks never changes after someone has earned it. With it, the shipped
+     features still without a deed (3b's rule): Quiver for the board makes and On Reserve for the
+     power box. Home Again already covers a marked Home. A wall's lee in a storm was weighed and left
+     out: behind a wall you still take two-thirds of a storm's harm, so sitting one out there asks
+     you to get hurt.
 
 How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
 - **500 m upwind,** not 1 km. The "yacht", its sheet tended, settles about 64° off a steady 10 m/s
@@ -381,7 +389,9 @@ How each X was chosen, from the probes' numbers (the probes' seed, 2026-10-19):
   stepped onto, dug out by hand and not before half its sand is yours, and the setup not done until its
   ground radar is fitted), and 34, the Archaeologist locked until both of hers; 35, the Walker's deeds
   through play (Taught as the plug goes in its port, Triangulated as its noted contacts fix the city,
-  The Living City from a kilometre off on a clear night).
+  The Living City from a kilometre off on a clear night). Step 5: 47, Nomad not before a deed shows in
+  each of the five trees, in any order; 48, Quiver ridden; 49, On Reserve on a power box; Menus & UI
+  probe 51, Nomad's card apart and its lines.
 
 **Cast Off (Sanddune, agreed 2026-10-19):** in Wind after Set Sail, release two
 or more waist lines together. `Waist._undone` records it when live line ends
@@ -477,7 +487,7 @@ round her as there are anywhere the sand runs deep.
   each one says it opens her, and she's marked new only once the last is done.
 - **The archaeology setup on a rig** (`Rig`), beside you to your right, resting on the sand: a deck
   of three pieces in a line, a Console on the first with its screen and a ground radar fitted, its
-  survey page in reach, two batteries in front of it; the light shield and solar panel on the
+  Map's survey in reach, two batteries in front of it; the light shield and solar panel on the
   second. The third is a clear work surface. Its mass is about 58.3 kg, removing the 1.5 kg scoop
   and 1.2 kg sieve from the earlier measured 61 kg; it draws 11 W (the Console, screen and radar),
   so its two batteries, starting at 80%, keep the survey running about fourteen and a half hours

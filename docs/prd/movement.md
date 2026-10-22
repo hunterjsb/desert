@@ -1607,7 +1607,7 @@ rest: probe 4 found it 0.54 m in the sand once its halyard end had a collider th
 measures the masthead directly. One hinged assembly is configured per carrier a tick and only
 its velocities are re-read per contact. Probe 25 bounds the tipped contact work of the
 2x2 sailing rig lying over at 1 ms a tick; on the loaded shared host it measured 0.72 to 0.83 ms
-(nine near points of 41). The 108-piece camp was not re-timed. The overloaded motor's
+(nine near points of 41). The later [108-frame budgets](#representative-large-camp-budgets-2026-10-22) cover the larger case. The overloaded motor's
 sputter is its pulse's share of each tick, the same at any tick rate. A taut line still governs
 the motor whichever way it pulls: keyed to the opposing pull alone, a throttled rider overran
 the Varran rig and was snatched off the board mid-tack (probe 13).
@@ -1780,3 +1780,32 @@ frequent geometry edits are not timed. World 13 compares the cached geometry wit
 native-shape debug bounds across joins, reroot and detach, resource edits and replacement,
 pose, enable and order changes, mounting and removal, and an origin shift. Sail 4 and 24 are
 unchanged.
+
+### Representative large-camp budgets (2026-10-22)
+
+Hunter approved "representative large-camp budgets" for Sanddune. Sail 26 and
+27 now budget a 108-frame notched L-deck: 54 skates, 54 trays, 18 batteries,
+16 mounted devices including a hinged mast, and fitted panels; 1,711 kg.
+
+| Case | Main-thread CPU per physics tick | Budget |
+| --- | ---: | ---: |
+| Raised, loaded sail on powered hover | 9.1–9.6 ms | 12 ms |
+| Capsized, settled at 158.2° | 9.4–9.9 ms | 12 ms |
+
+The capsized profile spent about 1.55 ms querying 993 candidate heights versus
+0.24 ms resolving near contacts. `Runners.rest_on` now reads the origin once and
+reuses initial heights through its sweeps, retaining every candidate, impulse
+order and fresh velocities. Scalar origins preserve world-coordinate precision;
+nothing survives the call. Two alternating comparisons measured 10.19–11.15 ms
+main-thread CPU before versus 9.40–9.94 ms after; the contact pass fell from
+2.56–2.75 to 2.12–2.19 ms with matching displacement and heel. The large camp stays
+supported after an origin shift. A slower exact-position dictionary was rejected.
+
+Both probes run alone. Linux user+system CPU for the calling main thread is read
+over 480 ordinary 60 Hz ticks and divided by the count, including main-loop work
+between ticks. Engine physics elapsed p50/p95 and subsystem times are separate
+diagnostics. Worker CPU, scheduler waits and GPU cost are excluded; other hosts
+keep functional checks without claiming equivalent CPU accounting. These are
+shared-host reference averages, not worst-tick, rendered-frame or arbitrary-load
+guarantees. The dense load exceeds Home's cap; its admitted variant is documented
+under [Marked Home](bubble-shield-and-camp.md#large-home-main-thread-budget-2026-10-22).

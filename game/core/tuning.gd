@@ -71,6 +71,9 @@ static var _current: Tuning
 @export var deed_board_height_m: float = 8.0
 ## One ride without stepping off, m: more than a scout round camp.
 @export var deed_board_m: float = 5000.0
+## One ride on a make before Quiver counts it, m: seven or eight seconds
+## pushing from a stand on the slowest make, past stepping on and off.
+@export var deed_make_m: float = 100.0
 ## Tumbled in one wipeout, m: thrown off near flat out, past what an edge
 ## caught in a stop throws you.
 @export var deed_tumble_m: float = 12.0
@@ -1083,6 +1086,12 @@ static var _current: Tuning
 @export var lagrange_radii: float = 8.0
 @export var halo_radii: float = 0.9
 @export var halo_minutes: float = 10.0
+## The relay sends the port's music down on the FM band from L1 by a dish aimed
+## at Zan: this many dB over Port Morgan's own station's margin at a kilometre,
+## so from so far it still clears the noise, until the ground near you hides it.
+## The ground toward a satellite is read this far out, m.
+@export var relay_fm_db: float = 55.0
+@export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
 ## Frontier Ag's deliveryship (Deliveryship) is drawn this many times the size
 ## DeliveryshipLooks builds it: 2.3 makes it about 940 m tip to tip, under 2
@@ -1335,10 +1344,8 @@ static var _current: Tuning
 @export var walker_speed: float = 1.5
 
 @export_group("The Walker and the living city")
-## The Walker's log goes out weaker than its forecast: whole within the first
-## distance, m, lost to noise past the second. It reads one entry this often,
-## s: its survey, then each contact it keeps, the last this many.
-@export var walker_log_m := Vector2(8000.0, 40000.0)
+## The Walker's log, heard only within its FM station's range, reads one entry
+## this often, s: its survey, then each contact it keeps, the last this many.
 @export var walker_log_every: float = 8.0
 @export var walker_contacts_kept: int = 6
 ## Taught, its feed flags an anomaly whose heart is this near the radio, m.
@@ -1553,7 +1560,7 @@ static func current() -> Tuning:
 @export var arrival_exit_offset_m: float = 3.2
 @export var arrival_landing_clearance_m: float = 0.04
 @export var arrival_spill_gap_m: float = 0.18
-@export var arrival_spill_columns: int = 5
+@export var arrival_spill_columns: int = 2
 @export var arrival_spill_attempts: int = 80
 ## Per approach as (shallow, standard, steep): a steeper drop is quicker and harder.
 @export var arrival_entry_s: Vector3 = Vector3(5.0, 3.0, 2.0)
@@ -1566,7 +1573,6 @@ static func current() -> Tuning:
 @export var arrival_device_wear_high: Vector3 = Vector3(1.0, 0.95, 0.8)
 @export var arrival_usable_min: float = 0.25
 ## The seated fall: view, turbulence and sound.
-@export var arrival_limb_below_deg: float = 5.0
 @export var arrival_head_yaw_deg: float = 110.0
 @export var arrival_head_pitch_deg: float = 75.0
 @export var arrival_sway_m: float = 0.012
@@ -1589,7 +1595,7 @@ static func current() -> Tuning:
 @export var arrival_impact_jolt_s: float = 0.42
 @export var arrival_impact_offset_m: float = 0.035
 @export var arrival_impact_tilt_deg: float = 1.3
-@export var arrival_impact_dust_s: float = 1.15
+@export var arrival_impact_dust_s: float = 0.9
 
 
 @export_group("Ground posture")
@@ -1603,6 +1609,14 @@ static func current() -> Tuning:
 @export var posture_camera_seconds: float = 0.22
 @export var posture_sit_catch: float = 0.6
 @export var posture_prone_catch: float = 0.25
+
+
+@export_group("Coalcane")
+## One shared crop row, read by Plant, the feral layer and crop advisories.
+@export var coalcane_crop: Dictionary = {}
+@export var burner_w: float = 45.0
+@export var burner_stalk_seconds: float = 120.0
+@export var coalcane_bundle_stalks: int = 6
 
 @export_group("Suit pose")
 ## Only looks: the suit's limbs ease toward a new pose in about this long, s.

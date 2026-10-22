@@ -21,8 +21,9 @@ func run() -> void:
 	var apart := true
 	for i in range(1, fm.size()):
 		apart = apart and fm[i].mhz - fm[i - 1].mhz >= Fm.APART - 0.01
-	check(ids.size() == 7 and ids.has(Fm.TOWER) and ids.has(Fm.CITY_MUSIC) and Fm.GODS.all(func(id: StringName) -> bool:
-		return ids.has(id)) and apart, "FM has the tower, the port, the city's two and the near gods, apart")
+	check(ids.size() == 8 and ids.has(Fm.TOWER) and ids.has(Fm.CITY_MUSIC) and ids.has(Fm.RELAY)
+		and Fm.GODS.all(func(id: StringName) -> bool: return ids.has(id)) and apart,
+		"FM has the tower, the port, the city's two, the near gods and the relay, apart")
 
 	# A wreck that calls: heard near it, SOS and its fix.
 	var call := {}

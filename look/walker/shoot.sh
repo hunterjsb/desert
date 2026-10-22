@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Shoots the Walker's look-test and builds the sheet ~/Desktop/walker.png: the
 # Walker on the Rim beside you, its front quarter and its port, far off at
-# its own size and that far off closer up, the Console's chart with the
-# bearings it noted and their fix, the map and chart after teaching, and the
+# its own size and that far off closer up, the Console's Map with the
+# bearings it noted and their fix, the Map after teaching, and the
 # living city's lights at night from two km and one.
 #   look/walker/shoot.sh <out dir>            shoot, then build the sheet
 #   look/walker/shoot.sh <out dir> --sheet    build the sheet from what's there
@@ -23,9 +23,9 @@ for shot in near:"the Walker on the Rim, passing you" \
 	port:"its data port, where a Console plugs in" \
 	far:"1.2 km off, its stand-in at its own size" \
 	far_close:"the same, through a 4° lens" \
-	chart:"the Console's chart: six bearings noted, their fix" \
-	taught_map:"taught: the radar's map shows the anomaly" \
-	taught_chart:"taught: the chart shows it too" \
+	chart:"the Console's Map, navigation: six bearings noted, their fix" \
+	taught_map:"taught: the Map's weather shows the anomaly" \
+	taught_chart:"taught: weather and navigation together" \
 	city_far:"the living city at night, 2 km off" \
 	city:"its lights from 1 km"; do
 	file="$out/${shot%%:*}.png"

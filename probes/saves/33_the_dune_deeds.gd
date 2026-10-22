@@ -4,7 +4,7 @@ extends HandsProbe
 ## onto it is Dune Reader. A scoop held on its sand digs it; half its sand
 ## and more off by hand, dug out, is Spadework, and not before. On a deck, a
 ## Console, a scoop and a sieve are no Field Kit until a ground radar is
-## fitted to the Console, and then its page finds the ruin.
+## fitted to the Console, and then its map's survey finds the ruin.
 
 ## Seconds of digging a stroke stands for, so the probe needn't hold use for minutes.
 const STROKE := 1.0
@@ -104,7 +104,7 @@ func run() -> void:
 	for i in 300:
 		world.time += 0.5
 		await get_tree().physics_frame
-		if "DUNE RUIN" in console.screen_text(Console.Page.SURVEY):
+		if "DUNE RUIN" in console.screen_text(Console.Page.MAP):
 			lists = true
 			break
-	check(lists, "its page finds the ruin")
+	check(lists, "its map finds the ruin")

@@ -52,12 +52,13 @@ func _ready() -> void:
 	main.ui.close_top()
 	await _opened(main, &"crops", 0.0)
 	_shoot(out.path_join("deeds_menu_top.png"))
-	await _opened(main, &"slept_it_off", 1.0, false)
+	await _opened(main, &"nomad", 1.0, false)
 	_shoot(out.path_join("deeds_menu_foot.png"))
 	main.ui.close_top()
 	main.new_game()
 	while main.world() == null or main.ui._fading:
 		await get_tree().process_frame
+	await SurfaceStart.begin(main)
 	await _idle(main.world())
 	await _ticks(60)
 	# Two at once: the second waits its turn.

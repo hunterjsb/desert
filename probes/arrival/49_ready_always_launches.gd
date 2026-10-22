@@ -13,6 +13,8 @@ func run() -> void:
 	if prep == null:
 		return
 	await physics_frames(5)
+	check(_ages(world.arrival_nodes.values()).all(func(age: float) -> bool: return age == 0.0),
+		"nothing aboard wears sand or grime in orbit")
 	_at_pod(prep)
 	await physics_frames(2)
 	check(not prep.readiness().is_empty() and _one_line(prep), "an unset pulse is named before boarding")
@@ -49,6 +51,16 @@ func run() -> void:
 	press(&"interact")
 	await physics_frames(1)
 	check(world.arrival_state.phase == &"ejection", "ready launches")
+
+
+func _ages(bodies: Array) -> Array:
+	var ages := []
+	for body: Node in bodies:
+		for view in body.find_children("*", "GeometryInstance3D", true, false):
+			var age: Variant = (view as GeometryInstance3D).get_instance_shader_parameter(&"age")
+			if age != null:
+				ages.append(float(age))
+	return ages
 
 
 ## Readiness is judged with each forecast.

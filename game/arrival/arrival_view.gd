@@ -99,10 +99,10 @@ func present(state: Dictionary, lead := 0.0) -> void:
 	_orbit.camera.position = local * ArrivalOrbit.RADIUS
 	var radial := local.normalized()
 	var forward: Vector3 = (flight.landing_forward as Vector3).slide(radial).normalized()
-	var limb := asin(clampf(1.0 / maxf(local.length(), 1.000001), 0.0, 1.0))
-	var level := smoothstep(0.0, 1.0, progress) if phase == &"entry" else 0.0
-	var angle := lerpf(limb - deg_to_rad(_world.tuning.arrival_limb_below_deg), PI * 0.5 + 0.1, level)
-	var aim := -radial * cos(angle) + forward * sin(angle)
+	# The fall faces Tu's side of the sky, as the window did; entry turns it to the landing.
+	var toward_tu := -ArrivalOrbit.toward_tu(local, _world.weather.day.sub_tu(clock)).z
+	var level := smoothstep(0.0, 1.0, progress) if phase == &"entry" else (1.0 if phase == &"landing" else 0.0)
+	var aim := toward_tu.slerp(forward * cos(0.1) + radial * sin(0.1), level)
 	_orbit.camera.look_at(_orbit.camera.position + aim, radial)
 	_orbit.update_light(clock)
 	# Effects are pure saved-time samples; computing the window twice triggers no events.

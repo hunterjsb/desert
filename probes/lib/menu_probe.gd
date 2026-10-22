@@ -48,26 +48,18 @@ func drop_in() -> void:
 	await fly_to(&"recovery")
 
 
-## Out of the landed pod and standing, by the ordinary moves: back through the hatch
-## first, as the pod lands you facing away from it, then any way a player would try.
+## Out of the landed pod the one way a player would: straight ahead through the burst
+## exit, then standing. Fails if anything closes that way.
 func crawl_out() -> void:
 	var from := world.player.global_position
-	for move: StringName in [&"move_back", &"move_left", &"move_right", &"move_forward"]:
-		Input.action_press(move)
-		for i in 300:
-			await get_tree().physics_frame
-			if _out(from):
-				break
-		Input.action_release(move)
+	Input.action_press(&"move_forward")
+	for i in 600:
+		await get_tree().physics_frame
 		if _out(from):
 			break
-	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands (%.2f m, %s)"
-		% [world.player.global_position.distance_to(from), world.player.ground_pose])
-	# Turned from the pod, ahead is open sand, as a run's first steps expect.
-	var pod := world.arrival_nodes.get(&"floor_a") as Node3D
-	if is_instance_valid(pod):
-		var away := world.player.global_position - pod.global_position
-		world.player.rotation.y = atan2(-away.x, -away.z)
+	Input.action_release(&"move_forward")
+	check(_out(from) and world.player.posture.change(&"stand"), "the landed Surveyor crawls straight out and stands (%.2f m)"
+		% world.player.global_position.distance_to(from))
 	await physics_frames(2)
 
 

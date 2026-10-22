@@ -9,6 +9,7 @@ extends RefCounted
 
 ## Socket kinds, with the colour of the tell that marks a free one.
 const KINDS := {
+	&"fuel": Color(0.8, 0.35, 0.08),
 	&"battery": Color(0.95, 0.75, 0.2),
 	&"ring": Color(0.85, 0.85, 0.85),
 	&"bottom": Color(0.3, 0.7, 0.95),
@@ -36,9 +37,9 @@ const KINDS := {
 ## from their socket, or from the face they're stuck on), colour and what they
 ## give a device. A "tie" is the ring a part adds while it's fitted, where a
 ## line's end snaps on. A part sticks on a chassis unless its kind is one
-## SLOT_ONLY names.
-const PARTS := {
-	&"coalcane_bundle": {"kind": &"fuel", "label": "Preserved coalcane", "mass": 3.0, "size": Vector3(0.4, 0.3, 0.65),
+## SLOT_ONLY names. Coalcane reads its crop row from the tuning resource.
+static var PARTS := {
+	&"coalcane_bundle": {"kind": &"fuel", "label": "Coalcane bundle", "mass": 3.0, "size": Vector3(0.4, 0.3, 0.65),
 		"color": Color(0.25, 0.17, 0.08), "stats": {}},
 	&"battery": {"kind": &"battery", "label": "Battery", "mass": 4.0, "size": Vector3(0.22, 0.14, 0.12),
 		"color": Color(0.2, 0.2, 0.22), "stats": {"capacity_wh": 100.0}},
@@ -103,6 +104,8 @@ const PARTS := {
 	#   folds, minutes ahead of a storm its leaves close; never_dies, past its
 	#   limits it holds instead of wilting. eats_scraps, keeps_growing, cycles,
 	#   stump and awaits_rain are said of a crop but do nothing yet.
+	&"coalcane": {"kind": &"plant_deep", "label": "Coalcane", "mass": 1.0, "size": Vector3(0.45, 0.45, 0.7),
+		"color": Color(0.35, 0.4, 0.15), "stats": {"plants": 1}, "crop": Tuning.current().coalcane_crop},
 	&"root_tuber": {"kind": &"plant_standard", "label": "Root-tuber", "mass": 0.5, "size": Vector3(0.16, 0.16, 0.22),
 		"color": Color(0.3, 0.55, 0.22), "stats": {"plants": 1},
 		"crop": {"family": &"day", "light": &"sun", "lit": Vector2(0.25, 0.6), "minutes": 3.0, "litres": 0.25,
@@ -325,6 +328,20 @@ const _SHRINE_BAYS := [
 ## "spots" are where a find of one has things stuck: [face, place on it,
 ## turn in degrees, the fills it draws from].
 const DEVICES := {
+	&"deep_planter": {"label": "Deep planter", "size": Vector3(0.9, 0.65, 0.8), "mass": 16.0, "planter": true,
+		"sticks": true, "stands": true, "tall": true,
+		"sockets": [
+			[&"plant_deep", Vector3(0.0, 0.325, 0.0), Vector3.UP],
+			[&"water", Vector3(-0.45, 0.0, 0.0), Vector3.LEFT],
+			[&"mod", Vector3(0.0, 0.0, 0.4), Vector3.BACK],
+			[&"port", Vector3(0.45, 0.0, 0.0), Vector3.RIGHT],
+		]},
+	&"burner": {"label": "Coalcane burner", "size": Vector3(0.65, 0.7, 0.65), "mass": 18.0, "burner": true,
+		"sticks": true, "stands": true, "tall": true,
+		"sockets": [
+			[&"fuel", Vector3(0.0, 0.22, 0.325), Vector3.BACK],
+			[&"port", Vector3(0.325, -0.15, 0.0), Vector3.RIGHT],
+		]},
 	# Its own water tank, fed from its water socket, and a mod mount on its
 	# back for a harvester; it floats on its own tray and stands as it always
 	# has, beside a camp rather than on one.
@@ -590,7 +607,7 @@ const DEVICES := {
 		"spots": [[&"bottom", Vector2.ZERO, 0.0, &"bottom"], [&"top", Vector2(-0.22, -0.24), 0.0, &"battery"],
 			[&"top", Vector2(0.16, 0.22), 0.0, &"top"]]},
 	# The camp's computer, a rack standing tall and narrow so its whole front
-	# is a big screen, as tall as the radar page wants and its middle at your
+	# is a big screen, as tall as the Map wants and its middle at your
 	# eyes on a floating deck. Its frame is heaviest at its foot, so it stands
 	# steady. Its ports are its own: the screen the whole front, each side
 	# three computer-mod ports down it, a computer-mod top for a radar, and a
@@ -841,7 +858,7 @@ static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
 ## Which script makes a device: the first flag its spec has, so a nest is a
 ## nest before a helm, a receiver before a radio and the Guide before notes.
 static func _maker(spec: Dictionary) -> Device:
-	for each: Array in [["home_beacon", HomeBeacon], ["shield", ShieldGenerator], ["condenser", Condenser],
+	for each: Array in [["burner", Burner], ["home_beacon", HomeBeacon], ["shield", ShieldGenerator], ["condenser", Condenser],
 			["planter", Planter], ["board", Hoverboard], ["receiver", SurveyReceiver], ["radio", Radio],
 			["winch", ManualWinch], ["rig", Mast], ["streamer", Streamer], ["nest", CrowsNest], ["helm", Helm],
 			["chassis", Chassis], ["bedroll", Bedroll], ["console", Console], ["power_box", PowerBox],
@@ -955,7 +972,10 @@ static func inherit(body: Node, line: Array) -> void:
 	var view := _look_of(body)
 	var look := Dress.lineage(id, line)
 	if view != null and look != null:
-		view.mesh = look
+		if device != null:
+			device.apply_frame_look(look)
+		else:
+			view.mesh = look
 	if device != null:
 		device.show_wear()
 		# Its frame's weight changed, which its middle is worked out from.

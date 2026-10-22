@@ -9,21 +9,23 @@ extends Device
 ## gear, the finer it is, and with less it coarsens, never going. Then every
 ## reading in detail as a table, the deck's electrics as a panel with each
 ## device's switches, and its log. A shield in the system is smart: with a
-## radar it switches itself on as a front nears. A ground radar adds a survey
-## page of what lies under the sand round it. Its messages go out through
+## radar it switches itself on as a front nears. Its one map lays over it
+## what its gear can feed, each a filter switched on and off: the weather,
+## the ground radar's survey and navigation. Its messages go out through
 ## its Terminal, a radio in its system sounding them and saying its battery
 ## running out, and its screen draws only when what it shows has changed.
 ## Use on the screen presses the key you aim at, a tab along its foot or a
 ## switch; use at the frame works its deck's trays.
 
 ## Its pages, numbered as older saves knew them: the Shield page's number is
-## Power's now, so a save on it opens there.
-enum Page { RADAR, POWER, LOG, STATS, SURVEY, CHART }
-## The tabs along its foot, in order; the ground radar's survey joins them
-## while its system has one, and the chart once it has noted a bearing or
-## the Walker's taught.
-const TABS: Array[Page] = [Page.RADAR, Page.STATS, Page.POWER, Page.LOG]
-const PAGE_NAMES := ["RADAR", "POWER", "LOG", "STATS", "SURVEY", "CHART"]
+## Power's now, so a save on it opens there; one on the Survey or Chart page,
+## both on the Map now, opens on the Map.
+enum Page { MAP, POWER, LOG, STATS }
+## The tabs along its foot, in order.
+const TABS: Array[Page] = [Page.MAP, Page.STATS, Page.POWER, Page.LOG]
+const PAGE_NAMES := ["MAP", "POWER", "LOG", "STATS"]
+## The Map's filters in their switches' order, each its switch's word.
+const FILTERS := {"weather": "WEATHER", "survey": "SURVEY", "nav": "NAV"}
 ## The sender its own lines go out under.
 const SENDER := "CON"
 ## What each computer mod is called in its own lines, by the stat it adds.
@@ -59,7 +61,11 @@ const STILL := 0.5
 ## The highest rank the power page sets a device to.
 const MOST_RANK := 5
 
-var page := Page.RADAR
+var page := Page.MAP:
+	set(to):
+		page = to if to in TABS else Page.MAP
+## The Map's filters switched off; each other one its gear feeds shows.
+var filters_off: Array = []
 var terminal := Terminal.new()
 ## What the save keeps of its terminal.
 var log_lines: Array:
@@ -772,22 +778,17 @@ func _draw_screen() -> void:
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 
 
-## What a page shows, its tabs and its keys laid out on it. The radar's: its
-## map and what's drawn on it, each reading's text as it reads there. The
+## What a page shows, its tabs and its keys laid out on it. The Map's: what
+## each filter on draws and each reading's text as it reads there. The
 ## power page's: the deck's electrics. The others': rows as its terminal
 ## prints them, a table's cells apart by tabs.
 func _model(on: Page, all: Dictionary) -> Dictionary:
-	var tabs: Array[Page] = TABS.duplicate()
-	if all.has("ground"):
-		tabs.append(Page.SURVEY)
-	if not bearings.is_empty() or world.taught:
-		tabs.append(Page.CHART)
 	var shown := {"page": PAGE_NAMES[on], "clock": _clock(world.time, true), "aim": _aim,
-		"flip": world.moon.north().z > 0.0, "tabs": tabs.map(func(p: Page) -> Dictionary:
+		"flip": world.moon.north().z > 0.0, "tabs": TABS.map(func(p: Page) -> Dictionary:
 			return {"text": PAGE_NAMES[p], "lit": p == on, "act": _go.bind(p), "device": null, "to": p})}
 	match on:
-		Page.RADAR:
-			_radar(shown, all)
+		Page.MAP:
+			_map_page(shown, all)
 		Page.STATS:
 			terminal.readout(SENDER, _readout(all))
 			var rows := PackedStringArray()
@@ -800,10 +801,6 @@ func _model(on: Page, all: Dictionary) -> Dictionary:
 				shown["history"] = [all.pressure.history, _tuning.air_pressure_hpa]
 		Page.POWER:
 			_panel(shown, all)
-		Page.SURVEY:
-			_survey_page(shown, all)
-		Page.CHART:
-			Chart.model(self, shown)
 		Page.LOG:
 			var rows := PackedStringArray()
 			for line: Dictionary in Terminal.merged(linked().map(func(c: Console) -> Terminal: return c.terminal), 18):
@@ -815,6 +812,58 @@ func _model(on: Page, all: Dictionary) -> Dictionary:
 
 func _go(to: Page) -> void:
 	page = to
+
+
+## The Map's filters its system can feed: the weather from any instrument
+## that reads it, the survey from a ground radar, and navigation once there's
+## something to steer by, a noted bearing or a Home fix.
+func filters(all: Dictionary) -> Array:
+	var can := []
+	if map_cells() > 0:
+		can.append("weather")
+	if all.has("ground"):
+		can.append("survey")
+	if not bearings.is_empty() or (world.home != null and not is_nan(world.home.nav().metres)):
+		can.append("nav")
+	return can
+
+
+func _filter(name: String) -> void:
+	if name in filters_off:
+		filters_off.erase(name)
+	else:
+		filters_off.append(name)
+
+
+## The Map: a switch for each filter its system can feed, and each one on laid
+## over it, the map reaching as far as the nearest of them so each stays
+## readable; what lies past its edge is pinned there.
+func _map_page(shown: Dictionary, all: Dictionary) -> void:
+	var can := filters(all)
+	shown["filters"] = can.map(func(f: String) -> Dictionary:
+		return {"text": FILTERS[f], "lit": not f in filters_off, "act": _filter.bind(f), "device": null, "to": f})
+	if can.is_empty():
+		shown["here"] = "NO INSTRUMENTS"
+		return
+	var on := can.filter(func(f: String) -> bool: return not f in filters_off)
+	var reach := INF
+	var rows := PackedStringArray()
+	if "weather" in on:
+		_radar(shown, all)
+		reach = minf(reach, shown.get("map", {}).get("reach", INF))
+	if "survey" in on:
+		shown["survey"] = all.ground
+		rows.append_array(_survey_rows(all.ground))
+		reach = minf(reach, all.ground.reach)
+	if "nav" in on:
+		var chart := Chart.layer(self)
+		shown["chart"] = chart
+		rows.append_array(chart.rows)
+		reach = minf(reach, chart.reach)
+	shown["rows"] = rows
+	if reach < INF:
+		shown["reach"] = reach
+		shown["span"] = "%s across" % _distance(reach * 2.0)
 
 
 ## The gyro as a compass: the wind as the deck feels it, which way and how
@@ -852,9 +901,10 @@ static func _side(off: float) -> String:
 	return "" if roundi(absf(off)) in [0, 180] else ("STBD" if off > 0.0 else "PORT")
 
 
-## The radar page: its storm map at the system's resolution, humidity laid
-## over its clear air, the front's numbers where the front is, and round it
-## the wind's gyro, the pressure's bar, and the forecast along its foot.
+## The Map's weather: its storm map at the system's resolution, humidity laid
+## over its clear air, the front's numbers where the front is, the anomalies
+## once the Walker's taught, and round it the wind's gyro, the pressure's bar
+## and the forecast along its foot.
 func _radar(shown: Dictionary, all: Dictionary) -> void:
 	var n := map_cells()
 	shown["cells"] = "" if n == 0 else "%d × %d" % [n, n]
@@ -952,16 +1002,9 @@ static func _site_name(site: Structure) -> String:
 	return "DUNE RUIN" if site.source == &"dune" else String(site.kind).replace("_", " ").to_upper()
 
 
-## The survey page: what the ground radar finds, on a map round it to its
-## reach, the old lines under the sand and each structure a mark by how far
-## out of the sand it is, and the nearest listed under it with how far,
-## which way and how much sand is over it.
-func _survey_page(shown: Dictionary, all: Dictionary) -> void:
-	if not all.has("ground"):
-		shown["rows"] = PackedStringArray(["NO GROUND RADAR", " fit one to a side port"])
-		return
-	var ground: Dictionary = all.ground
-	shown["survey"] = ground
+## The ground radar's nearest under the Map: each one's name, how far and
+## which way, and under it the sand over it, "bared" or "dug out".
+func _survey_rows(ground: Dictionary) -> PackedStringArray:
 	var rows := PackedStringArray()
 	for each: Dictionary in ground.sites.slice(0, SURVEY_ROWS):
 		var at: Vector2 = each.at
@@ -975,8 +1018,7 @@ func _survey_page(shown: Dictionary, all: Dictionary) -> void:
 			rows.append(_row(" sand over", "%.1f" % each.under, "m"))
 	if rows.is_empty():
 		rows.append("nothing within %s" % _distance(ground.reach))
-	shown["rows"] = rows
-	shown["cells"] = "%d found · %s" % [ground.sites.size(), _distance(ground.reach)]
+	return rows
 
 
 ## With no radar, the map as its other instruments estimate it: here as it

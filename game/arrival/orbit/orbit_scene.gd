@@ -45,6 +45,13 @@ func setup(history: History, day: DayCycle) -> void:
 	add_child(_sun)
 	update_light(0.0)
 
+## Facing Tu from orbit, horizon level; behind Zan on the far side, facing where it hides.
+## Moon-frame `at`, in planet radii, and Tu's way.
+static func toward_tu(at: Vector3, tu: Vector3) -> Basis:
+	var up := at.normalized()
+	return Basis.looking_at(tu, up if absf(tu.dot(up)) < 0.999 else Sphere.north(up))
+
+
 func update_light(time: float) -> void:
 	var sun := _day.sun_toward(time)
 	_surface.set_shader_parameter(&"sun_direction", sun)

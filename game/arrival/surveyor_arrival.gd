@@ -47,7 +47,7 @@ func restore() -> void:
 	if active():
 		_take()
 		if state.get("phase") == &"landing" and state.get("materialized", false):
-			_ground_seat()
+			seat_in_pod()
 		_show(0.0)
 		_run(true)
 	else:
@@ -131,7 +131,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var state := world.arrival_state
 	if state.phase == &"landing":
-		_ground_seat()
+		seat_in_pod()
 	state.flight_elapsed = minf(float(state.get("flight_elapsed", 0.0)) + delta, float(state.preflight.flight_s))
 	world.time = float(state.preflight.departure_time) + float(state.flight_elapsed)
 	state.elapsed = float(state.get("elapsed", 0.0)) + delta
@@ -151,7 +151,7 @@ func _physics_process(delta: float) -> void:
 	if state.phase == &"recovery":
 		_release()
 		_run(false)
-		var line := "Crawl out through the open hatch"
+		var line := Controls.key_for(&"move_forward") + " · crawl out"
 		if is_zero_approx(world.weather.day.sun_shown(world.time)):
 			line = Controls.key_for(&"headlamp") + " · headlamp"
 		world.player.hands.say(line)
@@ -183,17 +183,18 @@ func _land() -> bool:
 		world.counts_deeds = counting
 		if not state.get("materialized", false):
 			return false
-	_ground_seat()
+	seat_in_pod()
 	world.set_meta(&"kit", world.arrival_nodes.values().filter(func(node: Node) -> bool: return is_instance_valid(node)))
 	return true
 
 
-func _ground_seat() -> void:
+## Prone over the landed pod's seat, facing its burst exit.
+func seat_in_pod() -> void:
 	var floor := world.arrival_nodes.get(&"floor_a") as Chassis
 	if not is_instance_valid(floor):
 		return
 	var deck := floor.deck if floor.deck != null else floor
-	world.teleport(world.player, deck.global_transform * floor.pose() * PodShell.seat_pose())
+	world.teleport(world.player, deck.global_transform * floor.pose() * PodShell.landed_pose(world.tuning))
 	world.player.restore_ground_pose(&"prone")
 	world.player.camera.position = Vector3(0, world.tuning.arrival_seat_eye_m, 0)
 	world.player.camera.rotation = Vector3(0.1, 0, 0)

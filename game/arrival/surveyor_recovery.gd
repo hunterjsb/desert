@@ -2,6 +2,11 @@ class_name SurveyorRecovery
 extends RefCounted
 ## Lands the sealed pod's surviving bodies once. Taking them remains the normal hands action.
 
+## The impact bursts the front frame off with the tail you watched the fall through.
+## The seat faces that open floor, so the way out is straight ahead, under open sky,
+## and nothing the impact places may close it. The frame lands as recoverable debris.
+const BURST := &"frame_b"
+
 ## Parts seated off-tree, joined panels and carried cargo still retain their roles.
 static func named(world: World) -> Dictionary:
 	var out := {}
@@ -38,8 +43,12 @@ static func _spill(world: World, body: RigidBody3D, facing: Basis, origin: Vecto
 	var local := Transform3D(facing, Vector3.ZERO) * bounds_of(body)
 	var pitch := maxf(local.size.x, local.size.z) + gap
 	var columns := maxi(1, rules.arrival_spill_columns)
+	var ahead := PodShell.landed_pose(rules).origin.x + Chassis.WIDTH * 0.6
+	# Thrown clear on both sides of the way out and ahead of where you lie, so you see them crawling out.
 	for i in rules.arrival_spill_attempts:
-		var offset := Vector3((i % columns - columns / 2) * pitch, 0, (i / columns + 1) * pitch + Chassis.WIDTH * 0.5 + gap)
+		var side := 1.0 if i % 2 == 0 else -1.0
+		var k := i / 2
+		var offset := Vector3(ahead + (k / columns) * pitch, 0, side * (Chassis.WIDTH * 0.5 + gap + pitch * (0.5 + k % columns)))
 		var at := origin + facing * offset
 		var high := -INF
 		for x in [local.position.x, local.end.x]:
@@ -65,7 +74,7 @@ static func _put(world: World, body: RigidBody3D, pose: Transform3D, reserved: A
 	return true
 
 
-## Crowded ground still gets its gear: dropped above the way out, the world settles it.
+## Crowded ground still gets its gear: dropped beside the pod, away from the way out.
 static func _drop(world: World, body: RigidBody3D, at: Vector3) -> void:
 	world.teleport(body, Transform3D(Basis.IDENTITY, at + Vector3.UP * (1.0 + bounds_of(body).size.y)))
 
@@ -112,7 +121,7 @@ static func land(world: World, state: Dictionary) -> Dictionary:
 		world.arrival_nodes = objects
 		return objects
 	var deck := floor.deck if floor.deck != null else floor
-	# The opened roof and hatch are the same real panels, also if a frame is lost.
+	# Panels come off whole, also when their frame is lost or burst.
 	for role: StringName in PodShell.PANELS:
 		var panel := objects.get(role) as Chassis
 		if is_instance_valid(panel) and panel.deck != null:
@@ -142,9 +151,12 @@ static func land(world: World, state: Dictionary) -> Dictionary:
 	deck.freeze = false
 	deck.linear_velocity = Vector3.ZERO
 	deck.angular_velocity = Vector3.ZERO
-	# Keep surviving enclosure panels joined, except the actual exit roof and hatch.
+	var burst := objects.get(BURST) as Frame
+	if is_instance_valid(burst) and burst.socket != null:
+		_unseat(burst)
+	# Surviving panels rejoin whatever frame still stands.
 	for role: StringName in PodShell.PANELS:
-		if role in [&"roof_a", &"hatch"] or not objects.has(role):
+		if not objects.has(role):
 			continue
 		var panel := objects[role] as Chassis
 		var frame := Rig.face_of(deck, PodShell.PANELS[role][0], PodShell.PANELS[role][1])
@@ -178,9 +190,10 @@ static func land(world: World, state: Dictionary) -> Dictionary:
 	var clearance := rules.arrival_landing_clearance_m
 	var reserved: Array[AABB] = []
 	reserved.append(pose * route)
-	var exit_world: Vector2 = state.get("exit_world", at + Vector2(-rules.arrival_exit_offset_m, 0).rotated(-float(state.get("heading", 0.0))))
+	var exit_world: Vector2 = state.get("exit_world", at + Vector2(rules.arrival_exit_offset_m, 0).rotated(-float(state.get("heading", 0.0))))
 	var exit_at := Vector3(world.engine_x(exit_world.x), world.height_at(exit_world.x, exit_world.y), world.engine_z(exit_world.y))
 	reserved.append((Transform3D(Basis.IDENTITY, exit_at) * Hands._shapes_box(world.player.get_children())).grow(gap))
+	var aside := origin + facing * Vector3(0.5, 0.0, -(Chassis.WIDTH + 1.0))
 	for shape in deck.get_children():
 		if shape is CollisionShape3D and shape.shape != null:
 			reserved.append(shape.global_transform * Catalog.bounds(shape.shape))
@@ -199,7 +212,7 @@ static func land(world: World, state: Dictionary) -> Dictionary:
 		if state.preflight.loaded_uids.has(uid):
 			inside = _put(world, body, desired, reserved, gap)
 		if not inside and not _spill(world, body, facing, origin, reserved, gap, clearance, rules):
-			_drop(world, body, exit_at)
+			_drop(world, body, aside)
 		body.freeze = false
 		body.linear_velocity = Vector3.ZERO
 		body.angular_velocity = Vector3.ZERO
@@ -208,10 +221,11 @@ static func land(world: World, state: Dictionary) -> Dictionary:
 		var end := loose_ends[key] as RigidBody3D
 		var desired: Transform3D = pose * poses[key]
 		if not _put(world, end, desired, reserved, gap) and not _spill(world, end, facing, origin, reserved, gap, clearance, rules):
-			_drop(world, end, exit_at)
+			_drop(world, end, aside)
 		end.freeze = false
 		end.linear_velocity = Vector3.ZERO
 		end.angular_velocity = Vector3.ZERO
+	PodShell.seal_weather(objects.values(), false)
 	for panel in deck.pieces():
 		PodShell.restore_skin(panel)
 	state.placements = placements
@@ -236,15 +250,14 @@ static func _unseat(body: RigidBody3D) -> void:
 		host.dismount(host.seat_of(body))
 
 
-## Cargo cannot settle in the occupant's crawl route through the opened hatch.
+## Cargo cannot settle where the occupant lies, feet to head, or in their crawl out over the burst end.
 static func _recovery_route(world: World) -> AABB:
-	var capsule := world.player.posture.standing
-	var seat := PodShell.seat_pose().origin
-	var margin := world.player.safe_margin
-	var radius := capsule.radius + margin
-	var hatch := -Chassis.WIDTH * 0.5 - Chassis.THICK - radius
-	return AABB(Vector3(hatch, seat.y, seat.z - radius),
-		Vector3(seat.x + radius - hatch, world.player.posture.height(&"prone") + margin, radius * 2.0))
+	var lie := PodShell.landed_pose(world.tuning).origin
+	var radius := world.player.posture.standing.radius + world.player.safe_margin
+	var back := PodShell.FEET_X
+	var out := 1.5 * Chassis.WIDTH + Chassis.THICK + radius * 2.0
+	return AABB(Vector3(back, lie.y, lie.z - radius),
+		Vector3(out - back, world.player.posture.height(&"prone") + world.player.safe_margin, radius * 2.0))
 
 
 ## Break the assembly's pod fitting, retaining its own batteries and other internals.

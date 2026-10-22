@@ -16,6 +16,7 @@ extends RefCounted
 
 ## What each kind of thing keeps besides where it is, by property.
 static var _kept := [
+	[Burner, ["on", "fuel_seconds"]],
 	[Flare, ["lit", "called"]],
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
 	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
@@ -26,7 +27,7 @@ static var _kept := [
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
-	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
+	[Console, ["page", "filters_off", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
 	[Mast, ["raised", "raise", "head_speed", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],

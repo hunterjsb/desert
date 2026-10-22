@@ -327,7 +327,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for y in [0.10, 0.115, 0.13, 0.145]:
 				b.drum(0.019, 0.006, Vector3(0, y, 0), gun, Basis.IDENTITY, 10)
 			b.ball(0.018, Vector3(0, 0.161, 0), bone)
-		&"planter":
+		&"planter", &"deep_planter":
 			# Another maker's growing tub, bone white on gunmetal skids.
 			# Its top sits under the rim, and the rim's rails meet rather than cross.
 			b.box(Vector3(size.x - 0.02, size.y - 0.054, size.z - 0.02), Vector3(0.0, 0.023, 0.0), Paint.coat(Paint.BONE), 0.03)
@@ -337,6 +337,24 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				b.box(Vector3(0.05, 0.05, size.z - 0.1), Vector3(s * (h.x - 0.025), h.y - 0.025, 0.0), teal)
 				b.box(Vector3(0.12, 0.06, size.z - 0.06), Vector3(s * (h.x - 0.16), -h.y + 0.03, 0.0), gun)
 			b.box(Vector3(size.x - 0.12, 0.012, 0.004), Vector3(0.0, -0.03, h.z - 0.009), black, 0.001)
+		&"burner":
+			var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
+			# A squat insulated chamber, hopper above the fire door, generator on its back.
+			for x in [-0.22, 0.22]:
+				b.box(Vector3(0.025, 0.04, 0.64), Vector3(x, 0.06, 0.59), gun, 0.004)
+			b.box(Vector3(0.46, 0.04, 0.035), Vector3(0, 0.06, 0.89), gun, 0.004)
+			b.box(size - Vector3(0.04, 0.05, 0.04), Vector3.ZERO, gun, 0.04)
+			b.box(Vector3(size.x - 0.12, 0.4, 0.03), Vector3(0, -0.06, h.z), Paint.coat(Paint.BONE), 0.02)
+			b.box(Vector3(0.3, 0.16, 0.025), Vector3(0, -0.11, h.z + 0.02), black, 0.01)
+			for x in [-0.13, 0.13]:
+				b.box(Vector3(0.025, 0.18, 0.035), Vector3(x, -0.11, h.z + 0.03), steel, 0.004)
+			for x in [-0.23, 0.23]:
+				b.box(Vector3(0.08, 0.06, size.z), Vector3(x, -h.y + 0.01, 0), gun, 0.01)
+			b.drum(0.075, 0.38, Vector3(-0.2, h.y + 0.12, -0.2), gun, Basis.IDENTITY, 10)
+			b.drum(0.105, 0.035, Vector3(-0.2, h.y + 0.32, -0.2), steel, Basis.IDENTITY, 10)
+			for i in 5:
+				b.box(Vector3(0.4, 0.025, 0.07), Vector3(0.04, -0.2 + i * 0.08, -h.z), steel, 0.005)
+			_hazard(b, Vector3(0.46, 0.035, 0.012), Vector3(0, 0.08, h.z + 0.025), Basis.IDENTITY)
 		&"turbine":
 			b.box(Vector3(size.x, size.y - 0.04, size.z), Vector3(0.0, -0.02, 0.0), gun, 0.03)
 			b.box(Vector3(size.x - 0.06, 0.04, size.z - 0.06), Vector3(0.0, h.y - 0.02, 0.0), Paint.coat(Paint.YELLOW, 0.8), 0.01)
@@ -1271,6 +1289,19 @@ static func _crop(id: StringName, stage: StringName, fold: float) -> ArrayMesh:
 	rng.seed = hash(id)
 	var young := stage == Plant.SEEDLING
 	match id:
+		&"coalcane":
+			# Ringed woody stalks repeat the cut bundle's six stems, with long cane leaves.
+			var tall := 0.18 if young else (0.65 if stage == Plant.YOUNG else 1.2)
+			var wood := Paint.coat(Color(0.24, 0.15, 0.07), 0.7)
+			for i in 6:
+				var a := TAU * i / 6.0
+				var foot := Vector3(sin(a) * 0.14, 0, cos(a) * 0.14)
+				var height := tall * rng.randf_range(0.8, 1.0)
+				_stem(b, foot, foot + Vector3.UP * height, 0.025 if young else 0.045, wood)
+				for k in 4:
+					var at := foot + Vector3.UP * height * (k + 1) / 5.0
+					_up_drum(b, 0.029 if young else 0.05, 0.018, at, WOOD)
+					_leaf(b, at, a + k * 2.4, 0.3, tall * 0.45, 0.075, POTATO_LEAF)
 		&"root_tuber":
 			# A potato's leafy top over tubers swelling in the soil; ripe, the
 			# top yellows and flowers, and the tubers show at the mound.

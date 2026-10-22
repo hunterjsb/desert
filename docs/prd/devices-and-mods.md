@@ -410,7 +410,7 @@ device already stays a body of its own on the host's power pool.
   taller server rack like thing, so we can make the displays bigger"): the Console stands tall
   and narrow, like a server rack, its whole front a big screen.
 - **The frame** (as built, 2026-10-18) is a rack 0.7 m wide, 1.3 m tall and 0.6 m deep, and
-  10 kg. 1.3 m, not taller, because that's as tall as the radar page wants (the map the full
+  10 kg. 1.3 m, not taller, because that's as tall as the Map wants (the map the full
   width of the screen, its legend, the forecast and the keys under it), and at that height the
   screen's middle sits at your eyes once the Console floats on its tray or on a floating deck.
   Taller would put the screen over your head and tip more easily. It's painted in B as a rack:
@@ -439,8 +439,8 @@ device already stays a body of its own on the host's power pool.
 - **The radar first** (Hunter, 2026-10-18, after playing it: "the console is kind of
   information overload... we shouldnt directly drop any of it... i love the map"). Nothing is
   dropped; it's rearranged so the map leads, and readable from where you stand:
-  - **Pages:** the weather radar map first, the whole screen; then stats, every reading in
-    detail; then the deck's power; then the log.
+  - **Pages:** the Map first, the whole screen (its filters under One map, with filters, below);
+    then stats, every reading in detail; then the deck's power; then the log.
   - **The map loses resolution, not itself,** as instruments come off: the more gear, the finer
     it is; with less, it coarsens.
   - **On the map:** the wind as a gyro vector in its legend, a compass too (in detail on the
@@ -450,7 +450,7 @@ device already stays a body of its own on the host's power pool.
 - **The screen** (as built, 2026-10-18) is a part, 0.62 by 1.12 m and 3 kg, the whole front of
   the rack, drawn on a canvas of 580 by 1080. It's a terminal in the game's theme, monospaced,
   and its pages go in the order of its tabs:
-  - **Radar:** the storm map the full width of the screen, north up. Storms are amber, darker
+  - **Map, its weather:** the storm map the full width of the screen, north up. Storms are amber, darker
     where a particle sensor reads them denser. Clear air is laid over in blue as humid as the
     hygrometer makes it, which deepens just ahead of each front, and air the map can't see is
     dark. The front's distance and time are written at the front itself, with a line to it from
@@ -589,7 +589,8 @@ device already stays a body of its own on the host's power pool.
   arrives while you watch.
 - **What's under the sand gets its own page** when mods detect it (Hunter, 2026-10-18): old
   lines and buried structures, as the dev map draws them, on a Survey page among the tabs, not
-  over the weather radar. Built 2026-10-19 with the ground radar (below).
+  over the weather radar. Built 2026-10-19 with the ground radar (below), and folded into the one
+  Map as its survey filter on 2026-10-22, Hunter's later call (below).
 - **The navigation computer** (2026-10-19, `nav_computer`, a give id): a Console of the Varran
   empire's make, the Varran settler's, out of place and heavy on his minimal rig (Profile & saves). The
   Console's rack in an armoured case, imperial blue under ivory corners with chrome handles, 30 kg, its
@@ -614,19 +615,19 @@ a ground radar fitted to a Console, a sand scoop and a sieve, all on one deck.
   looked over whatever your pace while it runs. `GROUND RADAR ONLINE` goes to the log as it's fitted,
   and the stats page adds how many it finds and how many a storm is baring. It doesn't sharpen the
   storm map: it reads the sand, not the weather.
-- **The Survey page** joins the tabs while the system has a ground radar: a map round the Console out to
-  the radar's reach, north up, rings every 100 m, the old lines faint, a structure a square and a dune's
+- **The survey** shows on the Map (its survey filter) while the system has a ground radar: round the
+  Console out to the radar's reach, north up, rings every 100 m, the old lines faint, a structure a square and a dune's
   ruin a triangle, an outline while the sand is over it, amber while a storm lays it bare
   (`sites.newly_exposed`), solid once it's out. Under it the nearest five, each its name, how far and which
   way, and a row under that: the sand over it, "bared" or "dug out".
 - **The chart, and the Walker** (built 2026-10-19, the Walker's quest in
-  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-agreed-2026-10-19-hunter-perfect-built)):
   a Console with a radio in its system tuned to the Walker notes each contact its log reads whole, and
-  its **Chart** page joins the tabs once it has noted one or the Walker's taught: the moon round it north
+  its bearings show on the Map (its navigation filter) once it has noted one: the moon round it north
   up, each bearing a line, three crossing a fix. It keeps evidence of each anomaly tell its system
   witnesses (a compass stuck on its deck, a radio on it, a shield on it read against its particle
   sensor), and its port plugged into the Walker's by a cable uploads it, teaching the Walker with all
-  three. Taught, its radar map and chart show the anomalies near. A save keeps its evidence and its
+  three. Taught, its Map's weather shows the anomalies near. A save keeps its evidence and its
   bearings (`Chart`, `game/devices/chart.gd`).
 - **The sieve** (`sieve`), a saltwood hoop rimmed in steel with a worn steel mesh, half a metre across,
   1.2 kg. Nothing takes it; it sticks on a deck. Carried, or set down or stuck on a deck within 4 m of
@@ -682,11 +683,37 @@ what a Console's full-face screen shows, and a god module is a part of the compu
 modules](#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)). A Walker taken whole is
 still the Console with weather sensing built in, above.
 
-**One map, with filters (Hunter, 2026-10-19; agreed, not built).** "Instead of more tabs im
+**One map, with filters (Hunter, 2026-10-19; built 2026-10-22).** "Instead of more tabs im
 thinking one map tab with filters: weather, archeology, and navigation." The Console keeps one Map
 page. What used to want its own page lays over it as a filter you switch on and off: weather (the
 radar, fronts, anomalies once the Walker is taught), archaeology (the ground radar's Survey) and
 navigation (bearings, the Walker's contacts, the course and the sail's ideal).
+
+As built (`Console._map_page`, `ConsoleScreen._draw_map`, `Chart.layer`):
+- **Tabs:** Map, Stats, Power, Log. The Survey and Chart pages are gone; a save on either opens
+  on the Map.
+- **The filters** are three plain switches under the map, WEATHER, SURVEY and NAV, each in its
+  own third so it stays put. A switch shows only while the Console's system feeds it: weather
+  from any instrument that reads it (the same gear the storm map needs), the survey from a ground
+  radar, navigation once there's something to steer by, a noted bearing or a Home fix. Each starts
+  on; use on a switch turns its filter off and on, and a save keeps which are off.
+- **Weather** is the storm map as it was, with the anomalies once the Walker's taught.
+  **Survey** is the ground radar's rings, old lines and sites. **Navigation** is the noted
+  bearings from the Walker's contacts, the fix, Home (dim once its beacon's last fix is all
+  that's known), the deck's course dashed to the edge, and the Rim and Tu when they're near.
+  The deliveryship and the gods stay on the radio.
+- **One scale:** the map reaches as far as the nearest filter on, so each stays readable: the
+  survey's 300 m, the weather radar's reach, navigation's out past its fix and Home. What lies
+  past the edge (the front, the fix, Home) is pinned there with how far. Its span is written in
+  the map's corner.
+- **Under the map:** the weather's gyro and readings while weather's on; otherwise the survey's
+  nearest sites, then navigation's bearings, fix, Home and evidence. Nothing is drawn that no
+  filter asked for: with every filter off, the map is empty.
+- **The sail's ideal** (an ideal sheet and heading) is not built; by Hunter's call it comes
+  later, on navigation beside the course.
+- **Checks:** devices 45 (each filter with its gear, and off when switched off), radio 26 (the
+  bearings and fix stay once taught), saves 33 (the survey lists the ruin), weather 24; captures
+  in `look/map`.
 
 ## The patrol board as a superchassis (proposed, not built)
 
@@ -815,6 +842,14 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
   felt weather. Use never wears them. A part sheltered from a harm doesn't wear from
   it, so the shield protects your parts as well as you. (Session 4, part 5 gives each era a repair
   material, which nothing here mends yet: [frames by era](#frames-by-era-agreed-session-4-part-5-not-built).)
+- **Storms leave visible damage (Hunter, 2026-10-22; agreed, not built).** "We can start with the storm
+  causing visible damage to items to wear in our wear system, keeping in mind we will use it to create
+  tiered gear later just like youre suggesting, with kind of the same model across eras of the same
+  piece of gear but yeah different conditions and wear levels and modifications and repair needs and
+  capabilities but theres a throughline, a theme if you will." First step: a storm's wear on a part
+  shows on it, through the one wear shader, and what it costs the part is real. Later, one piece of
+  gear keeps one model across eras, its era and state carried by condition, wear, modifications and
+  repair needs, so the throughline reads at a glance.
 
 ## Frames by era (Agreed, session 4, part 5; not built)
 
@@ -943,18 +978,22 @@ Readings, not in the session:
   therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
   are built.
 
-## The burner and the humidifier (proposed, not built)
+## The burner and the humidifier
+
+The burner is agreed and built through the [coalcane chain](power.md#fuel-crops-and-the-burner-agreed-2026-10-22):
+a deck-mounted device with a fuel hopper and cable port. The humidifier remains proposed.
 
 *[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md): "New equipment implied: burner/generator
 (for coalcane fuel), humidifier. Both are crate parts like the existing devices." Implied, not
 specified; direction only.*
 
-- **The burner** consumes coalcane and produces power ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built)).
+- **The burner** consumes coalcane and produces power ([Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22)).
 - **The humidifier** raises humidity for storm crops, a managed input in the late game, with the lamp
   for light ([Farming](farming.md#progression-agreed)). Its water and power draw are not said.
 - **The lamp** that grows the office fern is the existing lamp-on-crate snap.
 
-Readings, not in the session:
+Readings before implementation; the burner choice above resolves its frame and fuel-socket
+questions. The humidifier remains open:
 - **"Crate parts like the existing devices" has two readings.** A part fits a socket (a battery, a
   panel, a hook), and a device is a frame with sockets of its own, and the existing devices include
   both: the shield and the radio seat on a top mount while the condenser and the charger stand on a

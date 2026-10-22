@@ -2,16 +2,20 @@ class_name SurveyReceiver
 extends Radio
 ## A loop receiver for the old ruins' beacons, not a full broadcast radio.
 
-const LOOK := preload("res://game/look/survey_receiver_looks.gd")
+const DEFAULT_VISUAL := preload("res://game/look/receiver/survey_receiver_visual.tscn")
+
 const HOW_TO := "survey_receiver"
 const HOW_TO_SAYS := "{interact} switches it on; turn it to find the strongest needle."
+
+@export var visual_scene: PackedScene = DEFAULT_VISUAL
+var visual: ReceiverVisual
+var _procedural_frame: ArrayMesh
 
 ## How far from this target the receiver first acquired it, saved for the approach deed.
 var acquired_from := 0.0
 var scan_pending := false
 var strength := 0.0
 var meter_step := 0
-var loop_view: MeshInstance3D
 var _shown_strength := 0.0
 var _introduced := false
 var _switch_sound: AudioStream
@@ -26,12 +30,8 @@ func _init() -> void:
 
 func _ready() -> void:
 	super()
-	needle.mesh = LOOK.needle()
-	knob.mesh = LOOK.knob()
-	volume_knob.mesh = LOOK.knob()
-	loop_view = _on_face(LOOK.loop())
-	loop_view.position = LOOK.LOOP_AT
-	show_wear()
+	if not replace_visual(visual_scene):
+		replace_visual(DEFAULT_VISUAL)
 	_switch_sound = Sounds.RECEIVER_SWITCH
 	_tick_sound = Sounds.RECEIVER_TICK
 	_pulse_sound = Sounds.RECEIVER_PULSE
@@ -56,6 +56,7 @@ func switch(up: bool) -> bool:
 		return false
 	world.salvage.claim(self)
 	on = up
+	_show_appearance()
 	scan_pending = up and (target.is_empty() or not target_valid())
 	if scan_pending and playing():
 		_acquire()
@@ -105,14 +106,82 @@ func playing() -> bool:
 
 
 func painted() -> Array[MeshInstance3D]:
-	var views := super()
-	if loop_view != null:
-		views.append(loop_view)
-	return views
+	return visual.painted_meshes.duplicate() if visual != null else super()
+
+
+func show_wear() -> void:
+	super()
+	_show_appearance()
+
+
+func _recompute() -> void:
+	super()
+	_show_appearance()
+
+
+func _show_appearance() -> void:
+	if visual != null:
+		visual.appearance(Paint.age_for(self, durability), Paint.row_for(self), 1.0 if on and powered else 0.0)
+
+
+func apply_frame_look(mesh: ArrayMesh) -> void:
+	_procedural_frame = mesh
+	if visual == null:
+		super(mesh)
+	else:
+		visual.apply_frame_look(mesh)
+
+
+## Validate first so a bad asset never removes the working instrument.
+func replace_visual(scene: PackedScene) -> bool:
+	if scene == null or not is_instance_valid(frame_view):
+		return false
+	var instance := scene.instantiate()
+	var next := instance as ReceiverVisual
+	if next == null or not next.usable():
+		if is_instance_valid(instance):
+			instance.free()
+		push_warning("Receiver appearance needs a shell, control pivots and reading anchor")
+		return false
+	next.prepare()
+	# Preserve the current procedural lineage when rebuilding its appearance.
+	if _procedural_frame == null:
+		_procedural_frame = frame_view.mesh as ArrayMesh
+	next.apply_frame_look(_procedural_frame)
+	if visual != null:
+		remove_child(visual)
+		if is_instance_valid(visual):
+			visual.free()
+	else:
+		for old: MeshInstance3D in [frame_view, needle, knob, volume_knob, band_lamp]:
+			if is_instance_valid(old):
+				remove_child(old)
+				if is_instance_valid(old):
+					old.free()
+	visual = next
+	visual_scene = scene
+	add_child(visual)
+	frame_view = visual.shell
+	needle = null
+	knob = null
+	volume_knob = null
+	band_lamp = null
+	_show_dial()
+	show_wear()
+	return true
 
 
 func face() -> Transform3D:
-	return global_transform.translated_local(LOOK.FACE)
+	return visual.reading.global_transform if visual != null else super()
+
+
+func preview_pose(view: MeshInstance3D) -> Transform3D:
+	return visual.preview_pose(view, float(meter_step) / _tuning.receiver_meter_steps)
+
+
+## This receiver has no broadcast band lamp.
+func _show_band() -> void:
+	pass
 
 
 func _acquire() -> void:
@@ -128,11 +197,6 @@ func _distance() -> float:
 func target_valid() -> bool:
 	return not target.is_empty() and not world.salvage.taken(target.site, target.index) \
 		and _distance() <= _tuning.receiver_reach_m
-
-
-## A loop's two opposite lobes: strength alone cannot tell which end is forward.
-func meter_pose() -> Transform3D:
-	return Transform3D(Basis(Vector3.BACK, lerpf(PI / 3.0, -PI / 3.0, float(meter_step) / _tuning.receiver_meter_steps)), LOOK.METER_AT)
 
 
 func signal_strength() -> float:
@@ -224,10 +288,5 @@ func _process(delta: float) -> void:
 
 
 func _show_dial() -> void:
-	if needle == null or knob == null:
-		return
-	needle.transform = Transform3D(Basis(Vector3.BACK, lerpf(PI / 3.0, -PI / 3.0, _shown_strength)), LOOK.METER_AT)
-	knob.transform = Transform3D(Basis(Vector3.BACK, -knob_turn(shown_khz)), LOOK.KNOB_AT)
-	if volume_knob != null:
-		volume_knob.transform = Transform3D(Basis(Vector3.BACK, VOLUME_SWEEP * (0.5 - shown_volume))
-			.scaled(Vector3.ONE * 0.38), LOOK.VOLUME_AT)
+	if visual != null:
+		visual.present(_shown_strength, -knob_turn(shown_khz), VOLUME_SWEEP * (0.5 - shown_volume))
