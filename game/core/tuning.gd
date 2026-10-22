@@ -1553,7 +1553,7 @@ static func current() -> Tuning:
 @export var arrival_exit_offset_m: float = 3.2
 @export var arrival_landing_clearance_m: float = 0.04
 @export var arrival_spill_gap_m: float = 0.18
-@export var arrival_spill_columns: int = 5
+@export var arrival_spill_columns: int = 2
 @export var arrival_spill_attempts: int = 80
 ## Per approach as (shallow, standard, steep): a steeper drop is quicker and harder.
 @export var arrival_entry_s: Vector3 = Vector3(5.0, 3.0, 2.0)
@@ -1566,7 +1566,6 @@ static func current() -> Tuning:
 @export var arrival_device_wear_high: Vector3 = Vector3(1.0, 0.95, 0.8)
 @export var arrival_usable_min: float = 0.25
 ## The seated fall: view, turbulence and sound.
-@export var arrival_limb_below_deg: float = 5.0
 @export var arrival_head_yaw_deg: float = 110.0
 @export var arrival_head_pitch_deg: float = 75.0
 @export var arrival_sway_m: float = 0.012
@@ -1589,7 +1588,7 @@ static func current() -> Tuning:
 @export var arrival_impact_jolt_s: float = 0.42
 @export var arrival_impact_offset_m: float = 0.035
 @export var arrival_impact_tilt_deg: float = 1.3
-@export var arrival_impact_dust_s: float = 1.15
+@export var arrival_impact_dust_s: float = 0.9
 
 
 @export_group("Ground posture")

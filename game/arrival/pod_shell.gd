@@ -126,6 +126,28 @@ static func _heatshield_mesh() -> ArrayMesh:
 
 
 ## Close the actual retained panels; no replacement chassis is constructed.
+## In orbit nothing has been out in the weather: age 0 is the wear shader's sealed look.
+## Landing puts back each surface's own age, which then builds with time on the sand.
+static func seal_weather(bodies: Array, sealed: bool) -> void:
+	var seen := {}
+	for body: Variant in bodies:
+		if not is_instance_valid(body):
+			continue
+		for view: Node in [body] + (body as Node).find_children("*", "GeometryInstance3D", true, false):
+			if not view is GeometryInstance3D or seen.has(view):
+				continue
+			seen[view] = true
+			var geometry := view as GeometryInstance3D
+			if sealed:
+				if not geometry.has_meta(&"ground_age"):
+					var age: Variant = geometry.get_instance_shader_parameter(&"age")
+					geometry.set_meta(&"ground_age", 1.0 if age == null else age)
+				geometry.set_instance_shader_parameter(&"age", 0.0)
+			elif geometry.has_meta(&"ground_age"):
+				geometry.set_instance_shader_parameter(&"age", geometry.get_meta(&"ground_age"))
+				geometry.remove_meta(&"ground_age")
+
+
 static func reseal(rig: Rig) -> void:
 	for role: StringName in PANELS:
 		var panel := rig.named.get(role) as Chassis
