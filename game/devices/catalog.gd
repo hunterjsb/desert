@@ -26,6 +26,9 @@ const KINDS := {
 	&"computer_top": Color(0.65, 1.0, 0.95),
 	&"screen": Color(0.9, 0.95, 0.95),
 	&"radio_mod": Color(0.95, 0.4, 0.55),
+	&"radio_bay": Color(0.85, 0.3, 0.75),
+	&"lead": Color(0.72, 0.42, 0.22),
+	&"radio_top": Color(0.85, 0.85, 0.85),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -203,6 +206,35 @@ const PARTS := {
 	# antenna in place of a whip.
 	&"sw_converter": {"kind": &"radio_mod", "label": "Shortwave converter", "mass": 0.6,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.24, 0.22, 0.2), "stats": {"sw": 1, "draw_w": 0.5}},
+	# The radio's misc bay takes one of these, the same maker's add-ons as its
+	# converters (gonkhub, 2026-10-21: "give all of the upgrades effects. Make
+	# them functional, give them a purpose in the world"). What each does is in
+	# Radio, by its stat.
+	# Bleeds a flown kite's charge off steadily (AntennaKite): fair weather and a
+	# breeze it holds; a dust front's charge outruns it.
+	&"bleed_resistor": {"kind": &"radio_bay", "label": "Bleed resistor", "mass": 0.4,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.7, 0.15), "stats": {"bleed": 1}},
+	# Lifts what it hears out of the hiss, at three times the set's draw.
+	&"valve_preamp": {"kind": &"radio_bay", "label": "Valve preamp", "mass": 0.7,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.42, 0.1), "stats": {"preamp": 1, "draw_w": 4.0}},
+	# A loop in place of the ferrite rod's: its null sharp and deep, by night too.
+	&"direction_loop": {"kind": &"radio_bay", "label": "Direction loop", "mass": 0.5,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.6, 0.62, 0.64), "stats": {"loop": 1}},
+	# Takes the edge off a storm's hash, and a little of the signal.
+	&"static_choke": {"kind": &"radio_bay", "label": "Static choke", "mass": 0.5,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.3, 0.55, 0.85), "stats": {"choke": 1}},
+	# Records what comes in on wire: a report half lost to the storm, it plays back clean.
+	&"wire_logger": {"kind": &"radio_bay", "label": "Wire logger", "mass": 0.6,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.8, 0.68), "stats": {"logger": 1, "draw_w": 0.2}},
+	# Reads the frequency exactly: tuned near a carrier, the dial locks onto it.
+	&"frequency_counter": {"kind": &"radio_bay", "label": "Frequency counter", "mass": 0.4,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.25, 0.15), "stats": {"counter": 1, "draw_w": 0.3}},
+	# A headset on its cord: the set in your ears near it, the wind and storm turned down.
+	&"headset_jack": {"kind": &"radio_bay", "label": "Headset jack", "mass": 0.3,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.1, 0.1, 0.1), "stats": {"headset": 1}},
+	# A lid of cells: trickles a charge into the set's battery by day (Device's solar_w).
+	&"solar_lid": {"kind": &"radio_bay", "label": "Solar lid", "mass": 0.5,
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.2, 0.3, 0.55), "stats": {"solar_w": 3.0}},
 	&"radar": {"kind": &"computer_top", "label": "Weather radar", "mass": 2.5, "size": Vector3(0.32, 0.32, 0.26),
 		"color": Color(0.8, 0.76, 0.66), "stats": {"radar": 1, "radar_m": 6000.0, "draw_w": 6.0}},
 }
@@ -213,7 +245,7 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 ## chassis: hooks on rings, plugs in ports, a line's end, a hose's end, crops
 ## in beds, mods in their mounts, a sail on its mast.
 const SLOT_ONLY: Array[StringName] = [&"ring", &"port", &"tie", &"plant_pot", &"plant_standard", &"plant_deep",
-	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face", &"radio_mod"]
+	&"mod", &"computer_mod", &"computer_top", &"screen", &"sail", &"face", &"radio_mod", &"radio_bay", &"radio_top"]
 
 ## The colonial entity mark on each thing (art direction): TILG is the
 ## consignor; RMC is a legacy contractor placeholder, not mapped one-to-one
@@ -383,7 +415,19 @@ const DEVICES := {
 			# FM converter and the shortwave converter.
 			[&"radio_mod", Vector3(-0.16, 0.052, -0.01), Vector3.LEFT],
 			[&"radio_mod", Vector3(-0.16, -0.052, -0.01), Vector3.LEFT],
+			# Its right side, over the power port, a misc bay for one module.
+			[&"radio_bay", Vector3(0.16, 0.052, -0.01), Vector3.RIGHT],
+			# On its top toward the back, a mount for a rope hook: a kite's lead
+			# clips to the hook's stem (AntennaKite). Its own kind, so a found
+			# radio comes without one (Finds fills rings with hooks).
+			[&"radio_top", Vector3(-0.07, 0.11, -0.03), Vector3.UP],
 		]},
+	# An antenna kite on its own reel of flying line (AntennaKite): use it to fly
+	# it up on the wind and again to reel it in; a cable from a radio's top hook
+	# to the reel's terminal, run through a driven stake or not, makes it the
+	# set's aerial.
+	&"antenna_kite": {"label": "Antenna kite", "size": Vector3(0.36, 0.2, 0.18), "mass": 2.2, "kite": true,
+		"carryable": true, "sticks": true, "sockets": [[&"lead", Vector3(0.18, -0.02, 0.0), Vector3.RIGHT]]},
 	# A reel of aerial wire, clipped to a radio and walked out (AntennaReel).
 	&"antenna_reel": {"label": "Antenna reel", "size": Vector3(0.14, 0.12, 0.08), "mass": 0.8, "antenna_reel": true,
 		"carryable": true, "sticks": true, "sockets": []},
@@ -588,6 +632,12 @@ static func part(id: StringName) -> Part:
 		_add_tie(made, spec.tie, Vector3.BACK)
 		if made is RopeHook:
 			made.guide = RopeEnd.make(made, spec.tie, false)
+			# A cable's plug clips to its stem, under the ring: a kite's lead on a
+			# radio's top hook. Leads carry no power (Cable.joined).
+			var lead := Socket.new()
+			lead.kind = &"lead"
+			lead.transform = Transform3D(_facing(Vector3.BACK), spec.tie * 0.55)
+			made.add_child(lead)
 	if spec.has("adds"):
 		var adds := Socket.new()
 		adds.kind = spec.adds[0]
@@ -684,6 +734,14 @@ static func stake() -> Stake:
 
 
 ## A tie socket facing `outward`, with the ring you see there.
+## Whether a part of `part_kind` fits a socket of `socket_kind`: its own kind,
+## a rope hook on a radio's top mount, or a cable's plug on a lead clip (a rope
+## hook's stem, a kite reel's terminal).
+static func fits(part_kind: Variant, socket_kind: StringName) -> bool:
+	return part_kind == socket_kind or part_kind == &"ring" and socket_kind == &"radio_top" \
+		or part_kind == &"port" and socket_kind == &"lead"
+
+
 static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
 	var tie := Socket.new()
 	tie.kind = &"tie"
@@ -713,7 +771,8 @@ static func device(id: StringName) -> Device:
 		else (PowerBox.new() if spec.get("power_box", false) \
 		else (Cutter.new() if spec.get("cutter", false) \
 		else (AntennaReel.new() if spec.get("antenna_reel", false) \
-		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new()))))))))))))))))
+		else (AntennaKite.new() if spec.get("kite", false) \
+		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new())))))))))))))))))
 	made.set_meta(&"catalog", id)
 	made.label = spec.label
 	made.frame_mass = spec.mass

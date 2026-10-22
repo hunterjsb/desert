@@ -509,6 +509,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				b.drum(0.055, 0.016, Vector3(0.0, -h.y + 0.004, z), Paint.coat(Color(0.45, 0.8, 1.0), 0.0, 0.0, 0.3, 0.3, 1.6), Basis.IDENTITY, 14)
 		&"survey_receiver":
 			return SurveyReceiverLooks.frame()
+		&"antenna_kite":
+			return KiteLooks.packed(size)
 		&"antenna_reel":
 			# A drum of copper aerial wire between two gunmetal cheeks, a crank on
 			# one, and the wire's clip on its lead.
@@ -889,6 +891,8 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				b.drum(0.0055, 0.003, at + Vector3(0.0, 0.0015, 0.0), Paint.coat(post[1], 0.3, 0.0, 0.35), Basis.IDENTITY, 10)
 				b.drum(0.0022, 0.006, at + Vector3(0.0, 0.005, 0.0), brass, Basis.IDENTITY, 8)
 				b.drum(0.0042, 0.0028, at + Vector3(0.0, 0.0068, 0.0), brass, Basis.IDENTITY, 8)
+		&"bleed_resistor", &"valve_preamp", &"direction_loop", &"static_choke", &"wire_logger", &"frequency_counter", &"headset_jack", &"solar_lid":
+			_module(b, size, id)
 		&"radar":
 			# A dish on a post, up from the Console's top.
 			b.drum(0.07, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 16)
@@ -1139,6 +1143,87 @@ static func _converter(b: Paint.Pieces, size: Vector3, band: Color, name: String
 	b.box(Vector3(body.x - 0.012, 0.009, 0.001), foot, colour, 0.0)
 	_numeral(b, name, foot + Vector3(0.0, 0.0, 0.0006), 0.0058, Paint.coat(Paint.BLACK, 0.0, 0.0, 0.6, 0.0))
 	return chrome
+
+
+## A misc bay module, the converters' maker's: the same enamel body on a
+## chromed flange, its colour along its front end, and on its face what it does
+## (from the radio kit lab's cartridges, look/radio_kit). Its +Z is out from the set.
+static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
+	var h := size * 0.5
+	var along := Basis(Vector3.RIGHT, PI / 2.0)
+	var enamel := Paint.coat(Color(0.07, 0.07, 0.075), 0.7, 0.2, 0.35)
+	var chrome := Paint.coat(Color(0.78, 0.78, 0.76), 0.3, 0.95, 0.18)
+	var copper := Paint.coat(Color(0.72, 0.38, 0.2), 0.6, 0.7, 0.35)
+	var ceramic := Paint.coat(Paint.CERAMIC, 0.4, 0.0, 0.3)
+	var steel := Paint.coat(Paint.STEEL, 0.6, 0.6, 0.3)
+	var colour := Paint.coat(Catalog.PARTS[id].color, 0.5, 0.0, 0.5)
+	var tall := size.y - 0.01
+	b.box(Vector3(size.x - 0.002, tall, 0.004), Vector3(0.0, 0.0, 0.002), enamel, 0.001)
+	for x in [-1, 1]:
+		for y in [-1, 1]:
+			b.drum(0.0035, 0.003, Vector3(x * (h.x - 0.0065), y * (tall * 0.5 - 0.007), 0.0055), chrome, along, 6)
+	var body := Vector3(size.x - 0.024, tall, size.z - 0.012)
+	b.box(body, Vector3(0.0, 0.0, 0.004 + body.z * 0.5), enamel, 0.006)
+	var front := 0.004 + body.z
+	b.box(Vector3(0.002, tall - 0.024, body.z - 0.014), Vector3(body.x * 0.5 + 0.0005, 0.0, 0.004 + body.z * 0.5), colour, 0.0005)
+	b.box(Vector3(body.x - 0.006, tall - 0.014, 0.003), Vector3(0.0, 0.0, front + 0.0005), chrome, 0.001)
+	b.box(Vector3(body.x - 0.012, tall - 0.02, 0.002), Vector3(0.0, 0.0, front + 0.002), Paint.coat(Paint.BONE, 0.4, 0.0, 0.5), 0.0005)
+	var on := front + 0.0035
+	# Its colour in a band along the face's foot.
+	b.box(Vector3(body.x - 0.012, 0.009, 0.001), Vector3(0.0, -tall * 0.5 + 0.0165, on), colour, 0.0)
+	match id:
+		&"bleed_resistor":
+			# A finned ceramic resistor across its face, a neon that flickers as it bleeds.
+			b.drum(0.008, 0.07, Vector3(0.0, 0.012, on + 0.008), ceramic, Basis(Vector3.BACK, PI / 2.0), 10)
+			for i in 6:
+				b.drum(0.012, 0.0025, Vector3(-0.028 + i * 0.0112, 0.012, on + 0.008), ceramic, Basis(Vector3.BACK, PI / 2.0), 12)
+			b.ball(0.004, Vector3(0.036, -0.012, on + 0.003), Paint.coat(Color(1.0, 0.45, 0.2), 0.0, 0.0, 0.3, 0.0, 1.2))
+		&"valve_preamp":
+			# A valve in a cage, its filament glowing.
+			b.drum(0.01, 0.006, Vector3(0.0, 0.006, on + 0.003), Paint.coat(Paint.BLACK, 0.5), along, 12)
+			b.drum(0.008, 0.04, Vector3(0.0, 0.006, on + 0.026), Paint.coat(Color(0.5, 0.55, 0.5), 0.2, 0.2, 0.05), along, 12)
+			b.drum(0.0025, 0.024, Vector3(0.0, 0.006, on + 0.026), Paint.coat(Color(1.0, 0.5, 0.15), 0.0, 0.0, 0.3, 0.0, 2.0), along, 6)
+			for i in 6:
+				var a := TAU * i / 6.0
+				b.box(Vector3(0.0018, 0.0018, 0.046), Vector3(cos(a) * 0.012, 0.006 + sin(a) * 0.012, on + 0.024), steel, 0.0)
+			b.drum(0.015, 0.0025, Vector3(0.0, 0.006, on + 0.047), steel, along, 12)
+		&"direction_loop":
+			# A copper loop up off its top on a turning post, a bearing ring under it.
+			b.drum(0.016, 0.004, Vector3(0.0, h.y + 0.002, size.z * 0.5), Paint.coat(Paint.BONE, 0.4), Basis.IDENTITY, 16)
+			b.drum(0.003, 0.03, Vector3(0.0, h.y + 0.017, size.z * 0.5), steel, Basis.IDENTITY, 8)
+			b.ring(0.03, 0.035, Vector3(0.0, h.y + 0.065, size.z * 0.5), copper, Basis(Vector3.UP, 0.4) * Basis(Vector3.RIGHT, PI / 2.0) * Basis(Vector3.RIGHT, PI / 2.0), 14)
+		&"static_choke":
+			# A choke's can, its windings showing through a slot.
+			b.drum(0.017, 0.03, Vector3(0.0, 0.006, on + 0.015), Paint.coat(Color(0.2, 0.38, 0.6), 0.5, 0.5, 0.3), along, 14)
+			for i in 5:
+				b.ring(0.0155, 0.0185, Vector3(0.0, 0.006, on + 0.004 + i * 0.006), copper, along, 12)
+		&"wire_logger":
+			# Two reels of wire under a window, a red lamp while it records.
+			b.box(Vector3(0.07, 0.04, 0.002), Vector3(-0.004, 0.008, on + 0.001), Paint.coat(Color(0.12, 0.14, 0.16), 0.0, 0.0, 0.1), 0.001)
+			for x in [-0.02, 0.012]:
+				b.drum(0.013, 0.004, Vector3(x, 0.008, on + 0.004), Paint.coat(Paint.BONE, 0.4), along, 14)
+				b.drum(0.006, 0.005, Vector3(x, 0.008, on + 0.005), copper, along, 12)
+			b.ball(0.003, Vector3(0.04, 0.024, on + 0.002), Paint.coat(Color(1.0, 0.2, 0.1), 0.0, 0.0, 0.3, 0.0, 1.5))
+		&"frequency_counter":
+			# Glowing digits behind a dark window.
+			b.box(Vector3(0.076, 0.026, 0.002), Vector3(0.0, 0.012, on + 0.001), Paint.coat(Color(0.05, 0.03, 0.03), 0.0, 0.0, 0.1), 0.001)
+			_numeral(b, "1020", Vector3(0.0, 0.012, on + 0.0025), 0.016, Paint.coat(Color(1.0, 0.35, 0.12), 0.0, 0.0, 0.3, 0.0, 2.0))
+		&"headset_jack":
+			# A jack, and the headset hung on it by its cord.
+			b.drum(0.005, 0.008, Vector3(-0.03, 0.02, on + 0.004), steel, along, 10)
+			b.ring(0.026, 0.03, Vector3(0.006, 0.0, on + 0.012), Paint.coat(Paint.BLACK, 0.6), Basis.IDENTITY, 10)
+			for x in [-1, 1]:
+				b.drum(0.012, 0.01, Vector3(0.006 + x * 0.028, -0.004, on + 0.012), Paint.coat(Paint.BLACK, 0.6), Basis(Vector3.BACK, PI / 2.0), 14)
+				b.drum(0.01, 0.003, Vector3(0.006 + x * 0.034, -0.004, on + 0.012), Paint.coat(Paint.BONE, 0.6), Basis(Vector3.BACK, PI / 2.0), 14)
+		&"solar_lid":
+			# A lid of cells, hinged open off its top.
+			var lid := Basis(Vector3.RIGHT, -0.5)
+			var hinge := Vector3(0.0, h.y, front)
+			b.box(Vector3(body.x, 0.004, 0.07), hinge + lid * Vector3(0.0, 0.0, 0.035), enamel, 0.002, lid)
+			for i in 3:
+				for j in 2:
+					b.box(Vector3(0.026, 0.002, 0.03), hinge + lid * Vector3(-0.03 + i * 0.03, 0.003, 0.018 + j * 0.033),
+						Paint.coat(Paint.CELL, 0.6, 0.6, 0.2), 0.0, lid)
 
 
 ## A number or a name in block strokes, `tall` m high, its middle at `at`,

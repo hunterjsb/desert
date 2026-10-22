@@ -96,6 +96,8 @@ const UNHEARD := -1
 const FM_RECKON_M := 2.0
 ## Its long wire is read again this often, s.
 const WIRE_EVERY := 0.5
+## A kite flown this high, m, on its lead, hearing a satellite clear: High Wire.
+const KITE_HIGH := 50.0
 const FM_RECKON_S := 1.0
 const FM_JUMP_M := 50.0
 ## Its dial on its face (+Z), m: the band window's middle and size, the band
@@ -265,6 +267,12 @@ var _level := 1.0
 var _lines := []
 var _line := 0
 var _reading_for := 0.0
+## The dirtiest a report it's reading over the air has come through, for its
+## wire logger; and how many its logger has played back.
+var _reading_dirt := 0.0
+var played_back := 0
+## The physics frame a headset last turned the weather down on, for every radio.
+static var _ducked_at := -10
 var _done_at := 0.0
 var _local := false
 ## What the dial read last tick; UNHEARD before its first, so a save's beacon keeps its target.
@@ -432,8 +440,23 @@ func tune(notches: int, fine := false) -> bool:
 	frequency = clampf(snappedf(frequency + notches * step, snap), _lowest(), _highest())
 	if band == AM_BAND:
 		frequency = Dial.on_dial(frequency, notches > 0)
+	if _has(&"counter"):
+		_lock_on()
 	_retuned(before)
 	return true
+
+
+## Its frequency counter reads the carrier near the dial exactly: within
+## counter_lock_khz of one, the dial stands right on it.
+func _lock_on() -> void:
+	var nearest := _tuning.counter_lock_khz
+	var on_it := NAN
+	for each in carriers():
+		if absf(each - frequency) < nearest:
+			nearest = absf(each - frequency)
+			on_it = each
+	if not is_nan(on_it):
+		frequency = on_it
 
 
 ## On FM, use sweeps up to the next station, and off past the last, coming
@@ -469,6 +492,46 @@ func _has(stat: StringName) -> bool:
 
 
 ## Whether it reaches a band: the AM dial always, the others with their converters.
+## Its misc bay's module at work: whether one with this stat is fitted.
+func bleeds() -> bool:
+	return _has(&"bleed")
+
+
+## The socket holding the converter with this stat (&"fm", &"sw"), or null.
+func converter_socket(stat: StringName) -> Socket:
+	for socket in sockets():
+		if socket.kind == &"radio_mod" and socket.part != null and socket.part.stats.get(stat, 0) > 0:
+			return socket
+	return null
+
+
+## The antenna kite its top hook's lead runs to, or null.
+func kite() -> AntennaKite:
+	if not is_inside_tree():
+		return null
+	for node in get_tree().get_nodes_in_group(AntennaKite.GROUP):
+		var each := node as AntennaKite
+		if each != null and each.rig.get("radio") == self:
+			return each
+	return null
+
+
+## What its valve preamp and static choke make of a signal's strength.
+func boost() -> float:
+	return (_tuning.preamp_gain if _has(&"preamp") else 1.0) * (_tuning.choke_signal if _has(&"choke") else 1.0)
+
+
+## What its static choke leaves of the storm's hash or the garbling.
+func choked(amount: float, share: float) -> float:
+	return amount * share if _has(&"choke") else amount
+
+
+## Its headset in use: fitted, the set playing, you within its cord.
+func headset_on() -> bool:
+	return _has(&"headset") and playing() and world != null and not carried() \
+		and world.player.global_position.distance_to(global_position) <= _tuning.headset_cord_m
+
+
 func reaches(to: StringName) -> bool:
 	return to == AM_BAND or (to == FM_BAND and has_fm()) or (to == SW_BAND and has_sw())
 
@@ -713,9 +776,19 @@ func painted() -> Array[MeshInstance3D]:
 
 ## The needle and knobs turn after the dial and the volume, so you see them go.
 func _process(delta: float) -> void:
-	# Carried, its voices keep up with your eyes every frame, not just every tick.
-	if carried() and music != null:
+	# Carried, or on its headset, its voices keep up with your eyes every frame.
+	var on_headset := music != null and headset_on()
+	if (carried() or on_headset) and music != null:
 		_to_your_ears(true)
+	if on_headset:
+		_ducked_at = Engine.get_process_frames()
+	# A headset in use anywhere turns the wind and storm down for you.
+	var weather := AudioServer.get_bus_index(Sounds.WEATHER)
+	if weather >= 0:
+		var want := _tuning.headset_duck_db if Engine.get_process_frames() - _ducked_at <= 2 else 0.0
+		var now_db := AudioServer.get_bus_volume_db(weather)
+		if not is_equal_approx(now_db, want):
+			AudioServer.set_bus_volume_db(weather, move_toward(now_db, want, 40.0 * delta))
 	var to := _needle_khz()
 	if shown_khz == to and shown_volume == volume:
 		return
@@ -909,7 +982,7 @@ func _retuned(before: int) -> void:
 
 ## What it plays this tick, from the systems it reads.
 func _listen(delta: float) -> void:
-	_to_your_ears(carried())
+	_to_your_ears(carried() or headset_on())
 	_track_moves()
 	_read_wire()
 	if not playing():
@@ -940,7 +1013,12 @@ func _listen(delta: float) -> void:
 	var field := world.weather.field
 	# A storm front's static, and any a jammer overhead sprays round the dial.
 	noise = maxf(field.outflow_at(x, z, t), constellation_of(world).jamming(frequency, point_at(x, z), t))
-	odd = field.anomaly_at(x, z, t)
+	# A kite flown on its lead charges up, and its static rises with it.
+	var flown := kite()
+	if flown != null:
+		noise = maxf(noise, flown.charge * _tuning.kite_static)
+	noise = choked(noise, _tuning.choke_static)
+	odd = choked(field.anomaly_at(x, z, t), _tuning.choke_static)
 	var now := channel
 	var station := tuned_to()
 	if station != _spoken_station:
@@ -1062,6 +1140,9 @@ func _listen(delta: float) -> void:
 	through = maxf(through, sky_heard)
 	if band == SW_BAND and wire.x >= _tuning.sw_wire_m and sky_heard >= WHOLE and volume > 0.0 and heard():
 		Deeds.done(world, &"long_wire")
+	if band == SW_BAND and flown != null and flown.up() and flown.height() >= KITE_HIGH and sky_heard >= WHOLE \
+			and volume > 0.0 and heard():
+		Deeds.done(world, &"high_wire")
 	# Tu's roar, up on shortwave, under the rest and over the static.
 	var tu := 0.0
 	if band == SW_BAND:
@@ -1089,6 +1170,8 @@ func _listen(delta: float) -> void:
 		_tuning.dial_width_khz)
 	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id(), _tuning.am_audio_hz)
 	var broke := _glitch.tick(delta, dirt)
+	if not _local and not _lines.is_empty():
+		_reading_dirt = maxf(_reading_dirt, dirt)
 	music.volume_db += linear_to_db(maxf(broke.x, 0.0001))
 	music.pitch_scale = maxf(0.05, music.pitch_scale * broke.y)
 	_read(delta, now)
@@ -1125,12 +1208,16 @@ func _read_wire() -> void:
 ## silence, both ways along it.
 func rod(bearing: float, sky: bool) -> float:
 	var axis := world.player.camera.global_basis.x if carried() else global_basis.x
+	# A direction loop in its bay: its null sharp and deep, by night too.
+	var loop := _has(&"loop")
 	var flat := Vector2(axis.x, axis.z)
 	# Stood on its end the rod's upright, and every way's the same to it.
 	if flat.length() < 0.2:
 		return 1.0
 	var to := Vector2(sin(deg_to_rad(bearing)), -cos(deg_to_rad(bearing)))
 	var across := absf(flat.normalized().cross(to))
+	if loop:
+		return lerpf(_tuning.loop_null, 1.0, smoothstep(0.0, _tuning.loop_width, across))
 	return lerpf(_tuning.rod_night_null if sky else _tuning.rod_null, 1.0, smoothstep(0.0, _tuning.rod_width, across))
 
 
@@ -1142,7 +1229,12 @@ func antenna_gain() -> float:
 		return 1.0
 	var long := smoothstep(0.0, _tuning.sw_wire_m, wire.x)
 	var high := lerpf(_tuning.sw_wire_low, 1.0, smoothstep(0.0, _tuning.sw_wire_high_m, wire.y))
-	return lerpf(_tuning.sw_bare, 1.0, long * high)
+	var got := lerpf(_tuning.sw_bare, 1.0, long * high)
+	# A kite flown on its lead: the higher, the more, past a long wire's.
+	var flown := kite()
+	if flown != null and flown.up():
+		got = maxf(got, AntennaKite.gain(flown.height(), _tuning))
+	return got
 
 
 ## How far it has moved, in the world's own metres so the world shifting
@@ -1282,7 +1374,7 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	var slid := Interference.warp(storm, t, id, _tuning)
 	var share := Dial.heard(frequency - khz - slid, _tuning)
 	var turned := rod(ground, Dial.by_sky(khz, metres, night, _tuning))
-	var broadside := Dial.strength(id, khz, metres, night, _tuning)
+	var broadside := Dial.strength(id, khz, metres, night, _tuning) * boost()
 	var power := broadside * turned
 	var strength := share * power
 	# A jammer overhead buries what's near it on the dial.
@@ -1292,8 +1384,8 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	# Broadside to its rod, it would come in this clean.
 	var whole := smoothstep(_tuning.signal_floor, WHOLE, share * broadside) * Interference.let_through(storm, _tuning) \
 		* (1.0 - jammed)
-	var dirt := Garble.dirt(power, Interference.let_through(storm, _tuning), jammed, odd,
-		1.0 - Dial.pull(frequency - khz - slid, _tuning.dial_width_khz), _tuning)
+	var dirt := choked(Garble.dirt(power, Interference.let_through(storm, _tuning), jammed, odd,
+		1.0 - Dial.pull(frequency - khz - slid, _tuning.dial_width_khz), _tuning), _tuning.choke_dirt)
 	var words := Transmissions.say(id, self, gods, p, x, z, t)
 	var heard := {"id": id, "khz": khz, "metres": metres, "bearing": ground,
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
@@ -1323,7 +1415,7 @@ func receive_city(x: float, z: float, t: float) -> Dictionary:
 	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
 	var slid := Interference.warp(storm, t, &"city", _tuning)
 	var near := 1.0 - smoothstep(_tuning.city_heard_m.x, _tuning.city_heard_m.y, metres)
-	var strength := Dial.pull(frequency - city.carrier() - slid, _tuning.dial_width_khz) * near * rod(ground, false)
+	var strength := Dial.pull(frequency - city.carrier() - slid, _tuning.dial_width_khz) * near * rod(ground, false) * boost()
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning)
 	var heard := {"id": &"city", "khz": city.carrier(), "metres": metres, "bearing": ground, "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, &"city", _tuning),
@@ -1414,12 +1506,12 @@ func receive_music(x: float, z: float, t: float) -> Dictionary:
 	var slid := Interference.warp(storm, t, &"music", _tuning)
 	var share := Dial.heard(frequency - Dial.MUSIC_KHZ - slid, _tuning)
 	var power := Dial.strength(&"ledger", Dial.MUSIC_KHZ, metres, night, _tuning) \
-		* rod(ground, Dial.by_sky(Dial.MUSIC_KHZ, metres, night, _tuning))
+		* rod(ground, Dial.by_sky(Dial.MUSIC_KHZ, metres, night, _tuning)) * boost()
 	var jammed := constellation_of(world).jamming(frequency, p, t)
 	var through := Interference.let_through(storm, _tuning)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, share * power) * through * (1.0 - jammed)
-	var dirt := Garble.dirt(power, through, jammed, odd,
-		1.0 - Dial.pull(frequency - Dial.MUSIC_KHZ - slid, _tuning.dial_width_khz), _tuning)
+	var dirt := choked(Garble.dirt(power, through, jammed, odd,
+		1.0 - Dial.pull(frequency - Dial.MUSIC_KHZ - slid, _tuning.dial_width_khz), _tuning), _tuning.choke_dirt)
 	return {"id": &"music", "khz": Dial.MUSIC_KHZ, "metres": metres, "bearing": ground, "storm": storm,
 		"warp": slid, "strength": share * power, "clean": clean, "cut": Interference.cut(storm, t, &"music", _tuning),
 		"share": share, "dirt": dirt}
@@ -1441,13 +1533,13 @@ func receive_from(relay: Satellite, khz: float, id: StringName, x: float, z: flo
 	var up := smoothstep(0.0, deg_to_rad(_tuning.relay_rise_degrees), sky.elevation)
 	# A tumbling satellite's signal swells and fades as it turns.
 	var share := Dial.heard(frequency - khz - slid, _tuning)
-	var power := up * constellation_of(world).tumble(id, t) * antenna_gain()
+	var power := up * constellation_of(world).tumble(id, t) * antenna_gain() * boost()
 	var strength := share * power
 	var jammed := constellation_of(world).jamming(frequency, p, t, id)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning) \
 		* (1.0 - jammed)
-	var dirt := Garble.dirt(power, Interference.let_through(storm, _tuning), jammed, odd,
-		1.0 - Dial.pull(frequency - khz - slid, _tuning.dial_width_khz), _tuning)
+	var dirt := choked(Garble.dirt(power, Interference.let_through(storm, _tuning), jammed, odd,
+		1.0 - Dial.pull(frequency - khz - slid, _tuning.dial_width_khz), _tuning), _tuning.choke_dirt)
 	return {"id": id, "elevation": sky.elevation, "bearing": ground, "metres": sky.metres, "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
 		"share": share, "dirt": dirt}
@@ -1659,8 +1751,24 @@ func _read(delta: float, now: int) -> void:
 			reader.stream = own
 			reader.play(into)
 	if _reading_for >= _done_at:
+		var over_air := not _local
 		_lines = []
 		_local = false
+		# Heard half through the storm, its wire logger plays it back clean.
+		if over_air and _has(&"logger") and _reading_dirt >= _tuning.logger_dirty and not spoken.is_empty():
+			_play_back()
+		_reading_dirt = 0.0
+
+
+## Its wire logger playing back the report it just recorded, from its own
+## speaker, clean of the storm the signal came through.
+func _play_back() -> void:
+	played_back += 1
+	_click(Sounds.RADIO_TUNE, -8.0)
+	_line = 0
+	_reading_for = 0.0
+	_local = true
+	_queue(spoken, spoken, Sounds.RADIO_TUNE.get_length())
 
 
 func _hush() -> void:
@@ -1670,6 +1778,7 @@ func _hush() -> void:
 	_line = 0
 	_reading_for = 0.0
 	_local = false
+	_reading_dirt = 0.0
 
 
 ## The weather station on the air at world place x, z and time t: an advisory
@@ -1937,6 +2046,9 @@ func _to_your_ears(on_you: bool) -> void:
 
 func _place(voice: AudioStreamPlayer3D, on_you: bool) -> void:
 	var player := get_parent() as Player
+	if player == null and on_you and world != null:
+		# On its headset, it's in your ears from wherever it stands.
+		player = world.player
 	# No side to it in your ears, however fast you look round.
 	voice.panning_strength = 0.0 if on_you else 1.0
 	if on_you and player != null and voice.is_inside_tree():

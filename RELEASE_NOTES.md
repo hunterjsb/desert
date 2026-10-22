@@ -48,6 +48,11 @@ acceptance remains.
   Morgan's station by line of sight and the relay's music; shortwave carries the
   satellites and Tu's roar, clearer on an antenna reel's strung wire.
 - Find a station's direction by the ferrite rod's null.
+- Fly an antenna kite from a rope hook on the radio's top, its lead a cable run
+  straight or through a driven stake to earth it; unearthed, its static burns
+  out pieces of the rig, and a sandstorm shreds it. The radio's misc bay takes a
+  bleed resistor, valve preamp, direction loop, static choke, wire logger,
+  frequency counter, headset jack or solar lid. New deeds: High Wire, Grounded.
 - The AM dial is a real set's longwave and mediumwave, 150–280 and 530–1700 kHz,
   the gap between skipped; the gods, the beacon and the Eye moved inside it.
 - Fewer satellites, each on its own orbit: about two cross the sky at once.

@@ -1166,6 +1166,68 @@ static var _current: Tuning
 @export var sw_wire_m: float = 10.0
 @export var sw_wire_low: float = 0.75
 @export var sw_wire_high_m: float = 3.0
+## The antenna kite (AntennaKite), from the radio kit lab's charge model
+## (look/radio_kit/charge_model.gd): on this much flying line, paid out and
+## reeled in this fast, m/s. It flies from this wind, m/s, its line at the
+## first of these angles, rising to the second in the first of its best winds
+## and pressed back this many degrees each m/s past the second; the line sags
+## to this share of it straight.
+@export var kite_line_m: float = 120.0
+@export var kite_payout_ms: float = 3.0
+@export var kite_reel_ms: float = 4.0
+@export var kite_lift_ms: float = 3.0
+@export var kite_best_ms: Vector2 = Vector2(6.0, 12.0)
+@export var kite_angle_deg: Vector2 = Vector2(25.0, 60.0)
+@export var kite_pressed_deg: float = 2.0
+@export var kite_sag: float = 0.85
+## Its aerial on shortwave: about 10 dB a tenfold of height over the whip's
+## height, m, to this many dB at most, from the set's bare terminals (sw_bare);
+## heard at most this many times a full long wire.
+@export var kite_whip_m: float = 0.3
+@export var kite_gain_db: float = 26.0
+@export var kite_gain_most: float = 2.5
+## Its charge, 0 to 1 of what arcs for certain: gathered this fast a second
+## at 100 m in clear air, and this fast in a front's full outflow; leaking off
+## into the air over this long, s. Past the first, an arc may jump somewhere
+## in the rig, its chance a second climbing with the square of how far past
+## to the second at full; it spends this share of the charge, and burns out
+## what it hits this share of the time (the rest it scorches). A driven stake
+## its lead runs through dumps what's past this to earth, this share a
+## second; a bleed resistor leaks it over this long, s.
+@export var kite_charge_fair: float = 0.002
+@export var kite_charge_dust: float = 0.06
+@export var kite_air_tau: float = 240.0
+@export var kite_arc: Vector2 = Vector2(0.25, 0.5)
+@export var kite_arc_spends: float = 0.7
+@export var kite_burns: float = 0.6
+@export var kite_gap_at: float = 0.2
+@export var kite_gap_rate: float = 0.5
+@export var kite_bleed_tau: float = 20.0
+## Its charge raises the set's static, at full this share of a front's.
+@export var kite_static: float = 0.6
+## Its wear: flying at all, over this long, s; past this wind, m/s, this
+## share a second each m/s; in a sandstorm, gone in about this long, s.
+@export var kite_wear_s: float = 21600.0
+@export var kite_harm_ms: float = 14.0
+@export var kite_wear_wind: float = 0.0011
+@export var kite_storm_ruin_s: float = 75.0
+## The radio's misc bay modules. The valve preamp lifts what it hears this
+## many times; the static choke leaves this share of storm static, this share
+## of the garbling, and this share of the signal; the direction loop's null
+## is this deep, by day or night, within this much of end-on; tuned within
+## this far of a carrier, kHz, a frequency counter locks on; a report heard
+## dirtier than this the wire logger plays back clean; a headset's cord
+## reaches this far, m, and turns the wind and storm down this many dB.
+@export var preamp_gain: float = 2.0
+@export var choke_static: float = 0.5
+@export var choke_dirt: float = 0.6
+@export var choke_signal: float = 0.8
+@export var loop_null: float = 0.0
+@export var loop_width: float = 0.1
+@export var counter_lock_khz: float = 8.0
+@export var logger_dirty: float = 0.3
+@export var headset_cord_m: float = 3.0
+@export var headset_duck_db: float = -14.0
 ## Tu's roar on shortwave: it comes in from the bottom of this span, kHz, to
 ## full at its top; Tu storms while Zan is within half of tu_roar_window (a
 ## share of a day) of one of these places round its orbit (shares of a day),

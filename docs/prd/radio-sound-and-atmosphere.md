@@ -835,6 +835,80 @@ longwave and mediumwave (gonkhub: "Cut it"), and natural radio's 0–30 kHz is b
 - **The deed** Whistler: hear one on an antenna reel's wire, away from your camp's hum.
 - **Not yet:** the dawn chorus near the poles; gonkhub's own sounds for sferics and whistlers.
 
+### The antenna kite and the radio's modules (gonkhub, 2026-10-21; built)
+
+*gonkhub: "The kite needs to be able to be connected to the top of the radio with a rope hook as its
+connection point. The player can connect them using a cable or a strong cable ... a cable needs to be
+able to first be run to a stake first and then to the kite ... we can just use the normal stake that's
+already in the game ... I want you to give all of the upgrades effects. Make them functional, give them
+a purpose in the world." Asked, gonkhub chose: the kite on its own reel of line, the cable as its lead;
+burnouts unless earthed, the stake earthing it; the kite placed by the wind rather than flown by
+physics.* From the radio kit lab's proposal ([look/radio_kit](../../look/radio_kit/README.md)), its
+numbers from `charge_model.gd`, now in `tuning.tres`.
+
+- **The rig.** The radio has a mount on its top toward the back for a rope hook (the game's own `hook`;
+  socket kind `radio_top`, its own so a found radio comes without a hook, as Finds fills rings with them).
+  A fitted hook has a **lead clip** on its stem (socket kind `lead`), and so does the antenna kite's
+  reel, on its right cheek. A cable's plug, plain or strong, fits a lead clip as it fits a port: one plug
+  on the hook, the other on the kite's reel, and the kite is the set's shortwave aerial
+  (`AntennaKite.find_rig`). A lead carries no power (`Cable.joined` skips lead clips). Holding a cable's
+  plug at a **driven stake**, use passes the cable through the stake's ring, or takes it off ("pass
+  cable through stake"): one cable through all three points, set, stake and kite, its two legs measured
+  round the stake against its length (6 m), and a strong cable's rope runs through the ring too
+  (`Cable.route`, `through`). The lab's earth stake is gone: the normal stake earths it.
+- **The kite** (`antenna_kite`, `AntennaKite`): a delta 1.4 m across, shortwave violet with
+  survey-orange chevrons and a copper dipole, packed on a drum of 120 m of line (`KiteLooks`). Use it,
+  in your hands or looking at it, and in a wind of `kite_lift_ms` (3 m/s) or more it goes up, paying out
+  3 m/s; use it again and it reels in at 4 m/s. Placed by the wind: its line stands at 25° just flying,
+  60° in its best winds from 6 m/s, pressed back 2° each m/s past 12, the line sagging to 0.85 of it
+  straight, so on its full line it flies about 90 m up in 9 m/s (measured 87 m, radio probe 55), and it
+  sways. Under the lift wind it comes down.
+- **Height is signal.** On shortwave the kite adds about 10 dB a tenfold of height over the whip's
+  0.3 m, to 26 dB, from the bare terminals' `sw_bare`, capped at `kite_gain_most` (2.5) times a full long
+  wire (`Radio.antenna_gain`): a satellite low over the horizon comes through that the reel's wire loses.
+- **Static.** Flown high it gathers charge, 0.002 a second at 100 m in clear air and 0.06 in a front's
+  outflow or a storm, leaking off over 240 s; it raises the set's static (`kite_static`). Past 0.25 an arc
+  may jump, its chance a second climbing with the square of how far past to 0.5 at full; an arc spends
+  70% of the charge and burns out (60%) or scorches what it hits, picked by exposure: the kite's dipole
+  (the kite torn useless), the lead (the cable gone), the rope hook, the shortwave converter, or the set
+  (wrecked). A crack of sparks, a violet flash and a zap. **Its lead through a driven stake**, the
+  stake's ring dumps what's past 0.2 to earth, so the charge never climbs to an arc; in a dust front the
+  stake takes what would have arced (Grounded). Measured: unearthed in a 9 m/s breeze the charge climbs
+  past an arc within minutes and burns something out; staked it never arcs (radio probe 57).
+- **Wear**, as a sail's: flying at all over 6 hours, faster past 14 m/s, and in a sandstorm it's torn to
+  rags in about 75 s (measured 75 s, radio probe 58), and comes down hearing nothing. Its sail tears in
+  its shader (`torn`, `age`), and its dipole and edges glow as it charges.
+- **The misc bay** on the radio's right side, over its power port, takes one module, the converters'
+  maker's add-ons (`radio_bay`; drawn in `Dress._module`):
+  - **Bleed resistor:** leaks a flown kite's charge off over 20 s, so in a breeze unearthed the charge
+    holds well under an arc (radio probe 59); a dust front outruns it. Safe kiting without a stake.
+  - **Valve preamp:** lifts everything the set hears `preamp_gain` (2) times, gods, music, the city and
+    the satellites, so one lost in the hiss comes through, at three times the set's draw (4 W more;
+    radio probe 60). For far gods.
+  - **Direction loop:** takes the ferrite rod's place, its null deep (0) and narrower (`loop_width`
+    0.1 against the rod's 0.25), and as deep by night's sky wave, where the rod's goes shallow (radio
+    probe 61). Sharper bearings to gods, the Walker and the city.
+  - **Static choke:** a storm's static at half, the garbling at 0.6 of itself, the signal at 0.8
+    (radio probe 62). Listening through weather.
+  - **Wire logger:** records what comes in; a report or a god's words read through a signal dirtier
+    than `logger_dirty` (0.3) it plays back once they're done, from the set's own speaker, clean of the
+    storm (radio probe 63). The half-heard forecast, again.
+  - **Frequency counter:** tuned within `counter_lock_khz` (8) of a carrier, the dial stands right on
+    it (radio probe 64). No hunting by ear.
+  - **Headset jack:** with the set playing and you within `headset_cord_m` (3 m), it's in your ears from
+    where it stands, no panning, and the weather bus (wind and storm) turned down 14 dB (radio probe 65).
+  - **Solar lid:** 3 W of cells (`solar_w`): a switched-off set's battery fills by day, and far less on
+    Tu's light by night, as any solar panel's (radio probe 66). Off-grid listening.
+- **Found:** the kite on skimmer-era floors; the counter, loop and solar lid on colonial shelves; the
+  bleed resistor, logger and preamp on First Kingdom shelves; a relay mast's cabinet holds the bleed
+  resistor, choke, loop and headset. All in the creative menu's Devices.
+- **Deeds** (signals): **High Wire**, hear a satellite clear on a kite flown 50 m up on a radio's lead;
+  **Grounded**, let a staked kite lead take an arc to earth.
+- **Probes:** radio 55 (a kite flies on the wind), 56 (one cable through the stake), 57 (an unearthed
+  kite burns out), 58 (a sandstorm shreds the kite), and one a module, 59 to 66.
+- **Not yet:** the kite's pull on its reel (it stays where it's set); a drawn arc bolt down the lead;
+  the lab's crystal set and survey set tiers.
+
 ### Litanies and the survey log (2026-10-18; built, on the `signatures` branch)
 
 *Fleshing out the broadcasts.* What a god says outside its window is a liturgy with a shape, not a
