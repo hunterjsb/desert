@@ -882,6 +882,9 @@ roster to 71 deeds in the same eleven families.
 Preflight saves retain actual object references and the selected plan/cargo,
 not a second kit grant. Integrated evidence remains pending.
 
+**Summit deed (2026-10-22).** Above the Dunes (`summit`, far family, summit mark)
+records standing on a mountain's summit structure; the roster is 72 deeds.
+
 ## Towing and gathering deeds (2026-10-22)
 
 The board's powered towing and gathering several line ends in one hand came without deeds.
@@ -889,4 +892,4 @@ The board's powered towing and gathering several line ends in one hand came with
 motor, recorded by the ride; **Bogged Down** (Board, after Pack Mule) is loading that motor
 until it sputters. **Fistful** (Wind, after Set Sail) is gathering a second line's end into the
 hand, recorded by the waist as the end joins the knot; Make Fast now follows it. Three more
-deeds in the same eleven families; the roster's count is `Deeds.TABLE`'s.
+deeds in the same eleven families; with the summit deed the roster is 75.

@@ -1781,7 +1781,9 @@ over meets the sand at its frame corners, seated shapes and masthead together
 (`Runners.rest_on`, swept three times), where the masthead used to be met alone and before the
 rest: probe 4 found it 0.54 m in the sand once its halyard end had a collider there, and now
 measures the masthead directly. One hinged assembly is configured per carrier a tick and only
-its velocities are re-read per contact (probe 25 bounds the cost). The overloaded motor's
+its velocities are re-read per contact. Probe 25 bounds the tipped contact work of the
+2x2 sailing rig lying over at 1 ms a tick; on the loaded shared host it measured 0.72 to 0.83 ms
+(nine near points of 41). The 108-piece camp was not re-timed. The overloaded motor's
 sputter is its pulse's share of each tick, the same at any tick rate. A taut line still governs
 the motor whichever way it pulls: keyed to the opposing pull alone, a throttled rider overran
 the Varran rig and was snatched off the board mid-tack (probe 13).
@@ -1949,6 +1951,14 @@ nor budget more simultaneous contacts, multiple booms, rough terrain or larger c
 Upright runner support does not enter this added path. Further optimization should look at
 geometry and height-query reuse while preserving impulse order and fresh projected
 velocities; caching the full physics snapshot changes sequential contact response.
+
+**Native projection skip.** A fresh native contact model (`RopeArticulation.native`)
+has zero external velocity, so its predicted/external projection pass is skipped, while
+ordinary rope models keep both passes. On the 108-piece capsized camp this cut settled CPU
+about 3% (12.58 to 12.16 ms per tick) with identical contact outputs. Since 2026-10-22 the
+model is configured once per carrier a tick and only its velocities are re-read per contact
+(see the review fixes under the manual sail hoist). Rope 32 checks that ordinary steps with
+real external motion still conserve momentum and obey the hinge.
 
 ### Cache the chassis's ordered frame geometry (built 2026-10-21)
 

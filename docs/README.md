@@ -37,7 +37,7 @@ settled design decisions are folded into the vision, world references, and PRDs.
 
 - [Physical departure cargo view](prd/pod-cargo-screen.md)
 - [Connected Surveyor expedition check](prd/surveyor-expedition-check.md)
-- [Native contact cost](prd/native-contact-cost.md)
+- [Native contact cost](prd/movement.md#final-capsized-large-camp-cost)
 
 ### Radio integration review
 
