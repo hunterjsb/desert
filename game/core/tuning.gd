@@ -723,6 +723,9 @@ static var _current: Tuning
 ## this fast a turn, rad/s, by a turning push of at most this much, N·m.
 @export var helm_turn: float = 0.5
 @export var helm_torque: float = 800.0
+## A camp lying over drags along the sand at its edges and masthead by this
+## share of what holds it up there.
+@export var tipped_grip: float = 0.6
 
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line

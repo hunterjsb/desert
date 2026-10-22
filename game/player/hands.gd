@@ -463,7 +463,7 @@ func gathering_clear() -> bool:
 		and look_wreck == null and look_scrap == null and not look_bed
 
 
-func _look_hook() -> RopeHook:
+func look_hook() -> RopeHook:
 	if look_part is RopeHook and (look_part as RopeHook).socket != null:
 		return look_part as RopeHook
 	var at := look_socket
@@ -511,7 +511,7 @@ func hold(body: RigidBody3D) -> void:
 	_grip(body)
 	_arrive_from(body.global_transform)
 	# A line's end in your hand tows what it leads to.
-	_player.world.ropes._towing()
+	_player.world.ropes.count_towed()
 
 
 ## Reel in by `notches`, or pay out for a negative count: a line's end in
@@ -1431,7 +1431,7 @@ func _stand_on(socket: Socket) -> void:
 	_tint_as(null, {})
 	_player.world.salvage.claim(deck)
 	deck.join(piece, socket, _stand_turns)
-	_seat_sound()
+	seat_sound()
 
 
 ## Where a thing would stick: the sticky face your look meets within reach,
@@ -1483,7 +1483,7 @@ func _stick_held() -> void:
 	_player.world.salvage.claim(deck)
 	_let_go()
 	var into := deck.stick(thing, target.pose, target.out, target.piece)
-	_seat_sound()
+	seat_sound()
 	if thing is Part:
 		fitted.emit(thing, deck, into)
 
@@ -1498,7 +1498,7 @@ func _stick_grasped() -> void:
 	sticking = {}
 	_tint_as(null, {})
 	deck.stick(thing, target.pose, target.out, target.piece)
-	_seat_sound()
+	seat_sound()
 
 
 ## Having hold of something, a throw punches it where you look: a small shove
@@ -1835,13 +1835,13 @@ func _fit(into: Socket) -> void:
 		_let_go()
 		var deck := device as Chassis
 		deck.join(piece, into, deck._turns_for(piece, into, turn))
-		_seat_sound()
+		seat_sound()
 		return
 	if held is Device:
 		var seated := held as Device
 		_let_go()
 		device.mount(seated, into)
-		_seat_sound()
+		seat_sound()
 		return
 	var part := held as Part
 	_let_go()
@@ -1854,7 +1854,7 @@ func _fit(into: Socket) -> void:
 	if part.has_meta(&"line"):
 		_play(Sounds.TIE)
 	else:
-		_seat_sound()
+		seat_sound()
 	fitted.emit(part, device, into)
 
 
@@ -2163,7 +2163,7 @@ func _play(stream: AudioStream) -> void:
 	_sound.play()
 
 
-func _seat_sound() -> void:
+func seat_sound() -> void:
 	_play(Sounds.SEAT[_seated_count % Sounds.SEAT.size()])
 	_seated_count += 1
 
@@ -2224,10 +2224,10 @@ func line() -> String:
 			return opening
 	if notice != "":
 		return notice
-	if phase == Phase.HELD and held is Part and held.has_meta(&"line") and _look_hook() != null:
+	if phase == Phase.HELD and held is Part and held.has_meta(&"line") and look_hook() != null:
 		var laid: Line = held.get_meta(&"line")
 		return Controls.key_for(&"interact") + " · " + ("remove line from hook" if laid.rope != null \
-			and laid.rope.through == _look_hook().guide else "pass line through hook")
+			and laid.rope.through == look_hook().guide else "pass line through hook")
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
 	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \

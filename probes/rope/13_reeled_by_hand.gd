@@ -68,13 +68,24 @@ func run() -> void:
 	check(hands.interact() and player.waist.holds(line.ends[1]), "you tie it at your waist")
 	hands.reel.choose(line.ends[1])
 	await _settled(rope, planter)
-	var waist_from := _apart(planter)
+	# Tied at the belt, behind where the hand held it, it may hang a little
+	# slack: that's taken up first.
+	for i in 8:
+		if rope.tension > 0.0:
+			break
+		await _reel(1, [planter, player], rope)
+		await _settled(rope, planter)
+	# Pulled from the belt, the planter leans in as it comes: its tie is what
+	# the line brings nearer.
+	var tie := rope.a if rope.a.holder == planter else rope.b
+	var waist_length := rope.length
+	var waist_from := _apart(tie)
 	await _reel(NOTCHES / 2, [planter, player], rope)
 	await _settled(rope, planter)
-	print("at your waist, %d notches in: the line %.2f m shorter, the planter %.2f m nearer"
-		% [NOTCHES / 2, full - rope.length, waist_from - _apart(planter)])
-	check(absf(full - rope.length - NOTCHES / 2 * Reel.NOTCH) < 1e-3
-		and absf(waist_from - _apart(planter) - NOTCHES / 2 * Reel.NOTCH) < NOTCHES / 2 * Reel.NOTCH * ROUGHLY,
+	print("at your waist, %d notches in: the line %.2f m shorter, the planter's tie %.2f m nearer, leaning %.0f°"
+		% [NOTCHES / 2, waist_length - rope.length, waist_from - _apart(tie), rad_to_deg(planter.global_basis.y.angle_to(Vector3.UP))])
+	check(absf(waist_length - rope.length - NOTCHES / 2 * Reel.NOTCH) < 1e-3
+		and absf(waist_from - _apart(tie) - NOTCHES / 2 * Reel.NOTCH) < NOTCHES / 2 * Reel.NOTCH * ROUGHLY,
 		"the line at your waist reels too")
 	print("the strand drawn within %.2f%% of the line's length over %d ticks reeling"
 		% [_seen.length * 100.0, _seen.reeling])

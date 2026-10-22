@@ -65,7 +65,7 @@ func line() -> Rope:
 		return held
 	var chosen := chosen_body()
 	if chosen != null:
-		return _line_of(chosen)
+		return line_of(chosen)
 	var connected := connected_ropes()
 	return connected[0] if connected.size() == 1 else null
 
@@ -80,7 +80,7 @@ func waist_lines() -> Array[RigidBody3D]:
 		if not is_instance_valid(root) or not root is Part:
 			continue
 		for member in RopeBundle.members(root):
-			if _live_rope(_line_of(member)):
+			if _live_rope(line_of(member)):
 				found.append(member)
 	return found
 
@@ -128,7 +128,7 @@ func in_hand() -> Rope:
 	var hands := _player.hands
 	if hands.phase != Hands.Phase.HELD or not is_instance_valid(hands.held):
 		return null
-	return _line_of(held_end()) if hands.held is RopeTip else _line_of(hands.held)
+	return line_of(held_end()) if hands.held is RopeTip else line_of(hands.held)
 
 
 ## The original end worked inside the knot in hand, without changing any tie.
@@ -141,7 +141,7 @@ func held_end() -> Part:
 	if members.has(chosen):
 		return chosen
 	for member in members:
-		if _live_rope(_line_of(member)):
+		if _live_rope(line_of(member)):
 			return member
 	return null
 
@@ -157,25 +157,14 @@ func waist_body() -> RigidBody3D:
 	return null
 
 
-## A named target and its live load make the wheel's choice visible.
-func waist_readout() -> String:
-	if waist_body() == null:
-		return ""
-	var active := line()
-	for body in waist_lines():
-		if _line_of(body) == active:
-			return waist_description(body) + (" · selected" if body == chosen_body() else "")
-	return ""
-
-
-## The same name and live numbers in the carry view and the sailing readout.
+## A waist line's name and live numbers, for the carry view.
 func waist_description(body: RigidBody3D) -> String:
 	if not _live_carried(body):
 		return ""
-	var selected := _line_of(body)
+	var selected := line_of(body)
 	var label := "Sail sheet" if Mast.sheet_end(body) else "Waist line"
 	var far := _far(selected)
-	if label == "Waist line" and far.holder is Chassis and _player._bridled():
+	if label == "Waist line" and far.holder is Chassis and _player.bridled():
 		var deck := far.holder as Chassis
 		var middle := 0.0
 		for piece in deck.pieces():
@@ -266,7 +255,7 @@ func _physics_process(delta: float) -> void:
 		# Slower as the pull nears your strength, a sheet's sail's too: what
 		# won't come along the line, you step in to.
 		var strain := smoothstep(STRAIN, 1.0, rope.tension / _tuning.hand_strength)
-		pace *= 1.0 - maxf(strain, smoothstep(STRAIN, 1.0, rope.haul_n / _tuning.hand_strength))
+		pace *= 1.0 - strain
 		var far := _far(rope).global_position - _player.global_position
 		walk_in = Vector2(far.x, far.z).normalized() * PACE * strain
 	var step := clampf(off, -pace * stroke_seconds, pace * stroke_seconds)
@@ -278,7 +267,7 @@ func _physics_process(delta: float) -> void:
 	rope.strand.set_length(rope.length)
 	if yanking and step < 0.0:
 		_yank_m -= step
-		_yank_n = maxf(_yank_n, maxf(rope.tension, rope.haul_n))
+		_yank_n = maxf(_yank_n, rope.tension)
 		if _yank_m >= _tuning.rope_yank_deed_m and _yank_n >= _tuning.rope_yank_deed_n:
 			Deeds.done(_player.world, &"quick_haul")
 	if yanking and _yank_left == 0.0:
@@ -352,7 +341,7 @@ func _rub() -> void:
 	_sound.play()
 
 
-func _line_of(body: Variant) -> Rope:
+func line_of(body: Variant) -> Rope:
 	if not is_instance_valid(body) or not (body is Part):
 		return null
 	# A scenario cleared away may free a line whose end is still on you.

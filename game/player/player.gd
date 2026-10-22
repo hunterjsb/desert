@@ -392,13 +392,13 @@ func get_on(on: Hoverboard) -> bool:
 	_jumped = false
 	if Controls.ui != null and Controls.playing():
 		# One how-to a ride: the board's first, then a bridled rig's.
-		if not Controls.ui.teach(Controls.RIDE_HOW_TO, Controls.RIDE_HOW_TO_SAYS) and _bridled():
+		if not Controls.ui.teach(Controls.RIDE_HOW_TO, Controls.RIDE_HOW_TO_SAYS) and bridled():
 			Controls.ui.teach(Mast.BRIDLE_HOW_TO, Mast.BRIDLE_HOW_TO_SAYS)
 	return true
 
 
 ## Whether a sail's rig flies from your waist on its sheet and two lines more.
-func _bridled() -> bool:
+func bridled() -> bool:
 	var rigs := {}
 	for body in waist.tied:
 		if is_instance_valid(body) and Mast.sheet_end(body) and world.ropes.far_holder(body) != null:

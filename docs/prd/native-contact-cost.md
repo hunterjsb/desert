@@ -62,9 +62,18 @@ complete final heel, speed and spin values. Fresh native velocity reads, model
 construction, terrain queries, ordinary contact/impulse order and native policy
 are unchanged. No physics snapshot is cached.
 
-Rope32 compares the complete and actual-only projections of identical zero-
-external fixtures for exact actual-velocity equality. It separately gives the
-ordinary default path nonzero expected linear/angular motion and checks momentum
-conservation, matching pivot velocity and permitted hinge spin. Existing Rope3
-and Sail4/24 cover momentum, freely falling/tipping craft and coupled friction.
-Combined CI and native-platform acceptance remain integration gates.
+## One assembly per carrier a tick (2026-10-22)
+
+Geometry and masses hold within a physics tick; only velocities change as each
+contact lands. `RopeArticulation.native` now configures a carrier's hinged
+assembly once a tick (rebuilt if a boom is made or freed, or the carrier moves)
+and re-reads and projects only its velocities per contact, so sequential contact
+response is unchanged; with the cache disabled, sailing probe 4 gives the same
+numbers to the third digit. The root's unit-impulse mobility is worked out once
+per assembly too. A camp lying over meets its near points together
+(`Runners.rest_on`): every near point once, then those still pushing twice more,
+so the masthead, met alone and first before, holds instead of sinking 0.54 m.
+
+Sailing probe 25 runs alone and bounds the tipped contact work of the 2x2 sailing
+rig lying over at 1 ms a tick; on the shared, loaded development host it measured
+about 0.72 ms (nine near points of 41). The 108-piece camp above was not re-timed.

@@ -11,26 +11,74 @@ var masses: PackedFloat64Array
 var center := Vector3.ZERO
 var total := 0.0
 var inverse: Array[PackedFloat64Array] = []
+var _mobility: Array[Basis] = []
 
 
-## A fresh native snapshot, including untethered craft: runner support must
-## not change when the last rope is untied.
+## Each carrier's configured assembly this tick: [root origin, model or null].
+## Geometry and masses hold within a tick, while every contact changes
+## velocities, so a reused model only re-reads them.
+static var _kept := {}
+static var _frame := -1
+
+
+## A native snapshot, including untethered craft: runner support must not
+## change when the last rope is untied.
 static func native(root: Device) -> RopeArticulation:
 	if root == null or root.freeze:
 		return null
-	var nodes: Array[RigidBody3D] = [root]
+	if _frame != Engine.get_physics_frames():
+		_frame = Engine.get_physics_frames()
+		_kept.clear()
+	var id := root.get_instance_id()
+	var kept: Array = _kept.get(id, [])
+	if not kept.is_empty() and kept[0] == root.global_position \
+			and (kept[1] == null or (kept[1] as RopeArticulation)._live()):
+		var reused: RopeArticulation = kept[1]
+		if reused != null:
+			reused._read_velocities()
+		return reused
+	var model := _snapshot(root)
+	_kept[id] = [root.global_position, model]
+	return model
+
+
+## A boom made or freed mid-tick changes its carrier's assembly at once.
+static func forget(root: Device) -> void:
+	if root != null:
+		_kept.erase(root.get_instance_id())
+
+
+## A carrier's free booms: [bodies, hinge pivots, hinge axes], world frame.
+static func hinges(root: Device) -> Array:
+	var booms: Array[RigidBody3D] = []
 	var pivots: Array[Vector3] = []
 	var along: Array[Vector3] = []
 	var mounted: Array[Device] = [root]
 	while not mounted.is_empty():
 		var device: Device = mounted.pop_back()
 		mounted.append_array(device.mounted())
-		if device is Mast and is_instance_valid(device._boom_body) and not device._boom_body.freeze:
-			nodes.append(device._boom_body)
-			pivots.append(device.global_transform * Mast.BOOM_AT)
-			along.append(device.global_basis.y.normalized())
-	if nodes.size() == 1:
+		var mast := device as Mast
+		if mast != null and is_instance_valid(mast.boom_body()) and not mast.boom_body().freeze:
+			booms.append(mast.boom_body())
+			pivots.append(mast.global_transform * Mast.BOOM_AT)
+			along.append(mast.global_basis.y.normalized())
+	return [booms, pivots, along]
+
+
+## Custom inertia set this tick precedes the native cache, which lags a tick.
+static func inverse_inertia(rigid: RigidBody3D) -> Basis:
+	if rigid.inertia == Vector3.ZERO:
+		return PhysicsServer3D.body_get_direct_state(rigid.get_rid()).inverse_inertia_tensor
+	var turn := rigid.global_basis.orthonormalized()
+	return turn * Basis.from_scale(Vector3.ONE / rigid.inertia) * turn.transposed()
+
+
+static func _snapshot(root: Device) -> RopeArticulation:
+	var hinged := hinges(root)
+	if hinged[0].is_empty():
 		return null
+	var nodes: Array[RigidBody3D] = [root]
+	nodes.append_array(hinged[0])
 	var on: Array[RopeBody] = []
 	for rigid in nodes:
 		var state := PhysicsServer3D.body_get_direct_state(rigid.get_rid())
@@ -39,22 +87,38 @@ static func native(root: Device) -> RopeArticulation:
 		body.rigid = rigid
 		body.center = rigid.global_transform * state.center_of_mass_local
 		body.inv_mass = Vector3.ONE / rigid.mass
-		body.inv_inertia = state.inverse_inertia_tensor
-		if rigid.inertia != Vector3.ZERO:
-			# Restored custom inertia precedes the native cache's first tick.
-			var turn := rigid.global_basis.orthonormalized()
-			body.inv_inertia = turn * Basis.from_scale(Vector3.ONE / rigid.inertia) * turn.transposed()
-		body.velocity = state.linear_velocity
-		body.spin = state.angular_velocity
+		body.inv_inertia = inverse_inertia(rigid)
 		on.append(body)
 	var model := RopeArticulation.new()
-	model.configure(on, pivots, along)
-	model.project_velocities(false)
+	model.configure(on, hinged[1], hinged[2])
+	model._read_velocities()
 	return model
 
 
-## The root's translation and spin for unit force and torque impulses.
-func root_mobility() -> Array[Basis]:
+func _live() -> bool:
+	for body in bodies:
+		if not is_instance_valid(body.rigid) or body.rigid.freeze:
+			return false
+	return true
+
+
+func _read_velocities() -> void:
+	for body in bodies:
+		var state := PhysicsServer3D.body_get_direct_state(body.rigid.get_rid())
+		body.velocity = state.linear_velocity
+		body.spin = state.angular_velocity
+	project_velocities(false)
+
+
+## The root's translation and spin for unit force and torque impulses: its
+## geometry's alone, so worked out once for the tick.
+func mobility() -> Array[Basis]:
+	if _mobility.is_empty():
+		_mobility = _root_mobility()
+	return _mobility
+
+
+func _root_mobility() -> Array[Basis]:
 	var root := bodies[0]
 	var zero := Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO)
 	var blocks: Array[Basis] = [zero, zero, zero, zero]

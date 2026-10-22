@@ -857,3 +857,12 @@ These two add a candidate roster of 67 deeds in the same eleven families; the
 separate Spaceport kite prototype's deeds are not integrated in this count.
 Preflight saves retain actual object references and the selected plan/cargo,
 not a second kit grant. Integrated evidence remains pending.
+
+## Towing and gathering deeds (2026-10-22)
+
+The board's powered towing and gathering several line ends in one hand came without deeds.
+**Pack Mule** (Board, after Frequent Flyer) is driving a loaded line along with the board's
+motor, recorded by the ride; **Bogged Down** (Board, after Pack Mule) is loading that motor
+until it sputters. **Fistful** (Wind, after Set Sail) is gathering a second line's end into the
+hand, recorded by the waist as the end joins the knot; Make Fast now follows it. Three more
+deeds in the same eleven families; the roster's count is `Deeds.TABLE`'s.

@@ -81,6 +81,8 @@ var lift_share := 1.0:
 ## What its trays hold up this tick, kg: its weight floating free, less what
 ## the sand or a hand takes, more what a line pulls down. They draw for it.
 var carried_kg := 0.0
+## What resting tipped over on its edges costs a tick, µs, on average.
+var rest_us := 0.0
 
 var world: World
 ## Its runners, if it rides the sand on any, or null.
@@ -844,8 +846,12 @@ func _physics_process(delta: float) -> void:
 
 
 ## Tipped over, a chassis and its seated devices meet the sand at their
-## real frame corners, so the camp rests on its edges rather than through sand.
+## real frame corners and a mast at its head, all together, so the camp rests
+## on its edges and masthead rather than through sand.
 func _rest_seated(h: float) -> void:
+	var started := Time.get_ticks_usec()
+	var points := PackedVector3Array()
+	var clearances := PackedFloat32Array()
 	var riding: Array[Device] = []
 	if self is Chassis:
 		riding.append(self)
@@ -856,8 +862,11 @@ func _rest_seated(h: float) -> void:
 		riding.append_array(each.mounted())
 		# The native carrier stays ahead of terrain speculation; seated frames are frozen.
 		var clearance := world.tuning.runner_clearance if each == self else 0.0
+		if each is Mast:
+			points.append((each as Mast).masthead())
+			clearances.append(0.0)
 		if each == self and self is Chassis:
-			(self as Chassis)._rest_frame_contacts(h, clearance)
+			(self as Chassis).frame_contact_points(points, clearances, clearance)
 			continue
 		for child in each.get_children():
 			var shape := child as CollisionShape3D
@@ -866,7 +875,10 @@ func _rest_seated(h: float) -> void:
 			var box := Catalog.bounds(shape.shape)
 			var to_world := each.global_transform * shape.transform
 			for i in 8:
-				Runners.touch(self, world, to_world * box.get_endpoint(i), 0.6, h, clearance)
+				points.append(to_world * box.get_endpoint(i))
+				clearances.append(clearance)
+	Runners.rest_on(self, world, points, clearances, world.tuning.tipped_grip, h)
+	rest_us += (Time.get_ticks_usec() - started - rest_us) * 0.05
 
 
 ## Each tray reads the sand under its face, on average, and pushes straight

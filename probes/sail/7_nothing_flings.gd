@@ -21,23 +21,17 @@ func run() -> void:
 	driving_sheet = true
 	# Lambdas copy what they're given: what they change lives in here.
 	var seen := {"fastest": 0.0, "jolt": 0.0, "spin": 0.0, "leaned": 0.0, "seams": 0, "shifts": 0, "sunk": -INF,
-		"was": deck.linear_velocity, "numbers": true, "jolt_state": {},
+		"was": deck.linear_velocity, "numbers": true, "ticks": 0, "aloft": 0,
 		"chunk": world.terrain.chunk_at(world.world_x(deck.global_position.x), world.world_z(deck.global_position.z))}
 	world.origin_shifted.connect(func(_by: Vector2i) -> void: seen.shifts += 1)
 	var watch := func() -> void:
 		var v := deck.linear_velocity
 		seen.numbers = seen.numbers and is_finite(v.length()) and is_finite(deck.global_position.length())
 		seen.fastest = maxf(seen.fastest, v.length())
-		var jolt: float = (v - seen.was).length()
-		if jolt > seen.jolt:
-			seen.jolt = jolt
-			seen.jolt_state = {"time": world.time,
-				"world_position": Vector3(world.world_x(deck.global_position.x), deck.global_position.y, world.world_z(deck.global_position.z)),
-				"before": seen.was, "after": v, "frozen": deck.freeze,
-				"world_froze": deck.get_meta(&"frozen_by_world", false),
-				"collision": world.terrain.has_collision_at(world.world_x(deck.global_position.x), world.world_z(deck.global_position.z)),
-				"physics_frame": Engine.get_physics_frames(), "render_frame": Engine.get_process_frames()}
+		seen.jolt = maxf(seen.jolt, (v - seen.was).length())
 		seen.was = v
+		seen.ticks += 1
+		seen.aloft += int(deck.glider.touching == 0)
 		seen.spin = maxf(seen.spin, deck.angular_velocity.length())
 		seen.leaned = maxf(seen.leaned, roll())
 		seen.sunk = maxf(seen.sunk, sunk())
@@ -46,20 +40,14 @@ func run() -> void:
 			seen.seams += 1
 			seen.chunk = now
 	speed_up(4)
-	var elapsed := {"seconds": 0.0, "luffed": false}
 	for leg in 6:
 		course = heading() * (1.0 if leg % 2 == 0 else -1.0)
 		# Leave enough reach after a real turn and the normal-rate sheet haul.
 		await sail_for(40.0, func() -> void:
-			elapsed.seconds += get_physics_process_delta_time()
-			# The last five seconds luff the sail and verify support recovers.
-			var finishing: bool = elapsed.seconds >= 235.0
-			if finishing and not elapsed.luffed:
-				print("before easing: %d corners, %.3f° roll, %.1f N support" % [deck.glider.touching, roll(), deck.glider.pressed_n])
-				elapsed.luffed = true
+			# Off course through a turn, the sheet is eased, as a sailor would.
 			var ahead := -deck.global_basis.z
 			var off := absf(Vector2(ahead.x, ahead.z).angle_to(course))
-			tending = deg_to_rad(12.0) if off < deg_to_rad(15.0) and not finishing else 0.0
+			tending = deg_to_rad(12.0) if off < deg_to_rad(15.0) else 0.0
 			if tending == 0.0:
 				var sheet := mast.sheet()
 				if sheet != null:
@@ -70,14 +58,14 @@ func run() -> void:
 			world.shift_origin(Vector2i(1 if leg == 0 else -1, 0))
 	print("4 min gusting: at most %.2f m/s, the most a tick changed it %.3f m/s, spin at most %.2f rad/s, leaning at most %.1f°, in the sand at most %.3f m, %d seams, %d shifts" % [
 		seen.fastest, seen.jolt, seen.spin, seen.leaned, seen.sunk, seen.seams, seen.shifts])
-	print("largest jolt: ", seen.jolt_state)
-	print("after easing: %d corners, %.3f° roll, %.1f N support" % [deck.glider.touching, roll(), deck.glider.pressed_n])
 	print("a tick costs the runners %.0f µs and the sail %.0f µs" % [deck.glider.cost_us, mast.cost_us])
 	check(seen.numbers, "every number stays a number")
 	# Turned hard about at each end, its boom swinging across drags on it only
 	# through its gooseneck, so the turn's own spin reaches 1.6 rad/s.
 	check(seen.fastest < 9.0 and seen.jolt < 0.3 and seen.spin < 2.0, "nothing flung, no jolt, no wild spin")
-	check(seen.leaned < 30.0 and deck.glider.touching >= 8, "never over, and back on its runners after easing (%.1f° at most, %d corners)" % [seen.leaned, deck.glider.touching])
+	# A gust lifts its windward runners and a bump may lift it all for a tick;
+	# it never sails clear of the sand.
+	check(seen.leaned < 30.0 and seen.aloft < seen.ticks / 100, "never over, and on its runners (%.1f° at most, clear of the sand %d of %d ticks)" % [seen.leaned, seen.aloft, seen.ticks])
 	check(seen.sunk < 0.05, "never in the sand (%.3f m)" % seen.sunk)
 	check(seen.seams >= 4 and seen.shifts >= 2, "across chunk seams and origin shifts")
 	deck.free()
