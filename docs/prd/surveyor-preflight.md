@@ -509,3 +509,15 @@ A capped shared-GPU sample measured summed viewport GPU medians of 2.379 ms live
 versus 1.950 ms frozen. This is a bounded screen-cost observation, not an uncapped
 frame-rate or representative large-camp budget. Logs and captures stay outside
 source control. No version bump or release is declared by this integration.
+
+## Pod patch integration (2026-10-22)
+
+The roof, physical escape and flight-feel changes at `0e14a7b2` passed
+[all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39716462147)
+and landed on master as 0.3.1-alpha development. The
+[full platform/build follow-up](https://github.com/hunterjsb/desert/actions/runs/39717579371)
+is running. Twelve focused checks pass, including real roof placement, physical
+crawl/stand, original cargo assemblies/rope ends, actual launch sound and saved
+mouse-chosen flight view. Forward+ and Compatibility captures were inspected.
+The patch remains unpublished and Hunter's comprehension/comfort acceptance
+remains open. See the three linked patch accounts above for measured behavior.

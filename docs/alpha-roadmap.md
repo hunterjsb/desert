@@ -363,3 +363,15 @@ those follow-ups within Sanddune rather than silently treating publication as
 acceptance. Kites, deeper suit/wrist instruments and broader origins remain
 Spaceport directions. Runtime `622cec08` passed all 21 platform/build jobs; the
 release tag repeats the full verification and packaged-build gates.
+
+### Sanddune 0.3.1 development follow-up
+
+Built on master after [all nine Linux groups passed](https://github.com/hunterjsb/desert/actions/runs/39716462147):
+interchangeable manually fitted pod roofs with named attachment refusals; an
+actual clear post-impact crawl route preserving released cargo assemblies and
+rope ends; seven glazed panels, saved mouse look and bounded phase-driven flight
+sound/motion. Focused input, movement, saves and inspected renderer captures pass.
+[Native platform/build checks](https://github.com/hunterjsb/desert/actions/runs/39717579371)
+are running. This patch is not published; new-impact clearance does not rearrange
+already recovered camps. Human roof/launch clarity, escape and motion comfort
+remain playtest work. Publication of 0.3.0 did not complete those acceptance gates.
