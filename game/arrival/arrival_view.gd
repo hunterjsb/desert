@@ -257,9 +257,14 @@ func _air_audio(phase: StringName, progress: float) -> void:
 
 
 func _hide_world(hide_it: bool) -> void:
-	if hide_it != _hidden_world and is_instance_valid(_world):
+	if hide_it != _hidden_world and is_inside_tree():
 		_hidden_world = hide_it
-		_world.get_viewport().disable_3d = hide_it
+		get_viewport().disable_3d = hide_it
+
+
+## A run left mid-fall still gives the menu its 3D back.
+func _exit_tree() -> void:
+	_hide_world(false)
 
 
 func dispose() -> void:
