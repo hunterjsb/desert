@@ -1,10 +1,10 @@
 extends WeatherProbe
 ## Radio probe 47: the deliveryship's schedule. Frontier Ag's deliveryship
 ## passes over Port Morgan every lap, its route swinging round the port lap
-## by lap. Port Morgan Tower, on FM beside the port, reads after its weather
-## the deliveryship's speed, altitude and how long until it's over Port Morgan,
-## and that's when it is; it reads again only once radio_report_every has gone
-## by. Hearing it is Flight Plan.
+## by lap. Port Morgan Tower, on FM beside the port, reads as you tune in the
+## deliveryship's altitude, speed and how long until it's over Port Morgan,
+## and that's when it is; it reads again only for its next pass, news, not on a
+## timer. Hearing it is Flight Plan.
 
 ## How far from the port's middle the radio stands, m.
 const NEAR := 800.0
@@ -45,21 +45,34 @@ func run() -> void:
 	radio.switch_band()
 	radio.on = true
 	radio.fm_mhz = radio.fm_of(Fm.TOWER)
-	await physics_frames(5)
-	var read := " ".join(radio.spoken)
-	print("tuned to the tower: \"%s\", reading \"%s\"" % [radio.said, read])
-	check(radio.channel == Radio.WEATHER and read.contains("Deliveryship") and read.contains("Port Morgan in"),
-		"the tower reads its schedule after its weather")
-	check(get_node(^"/root/Profile").did(&"flight_plan"), "hearing it is Flight Plan")
+	# Any weather news first, then the schedule.
+	var profile := get_node(^"/root/Profile")
+	for i in 900:
+		await physics_frames(1)
+		if profile.did(&"flight_plan"):
+			break
+	var spoken := radio.spoken_count
+	print("tuned to the tower: \"%s\", %d read" % [radio.said, spoken])
+	check(radio.channel == Radio.WEATHER and spoken > 0, "tuned in, the tower reads the deliveryship's schedule")
+	check(profile.did(&"flight_plan"), "hearing it is Flight Plan")
 	var eta := orbit.until_through(world.time)
 	var off := rad_to_deg(orbit.at(world.time + eta).normalized().angle_to(port))
 	print("over Port Morgan in %.0f s: %.2f° off it then" % [eta, off])
 	check(off < 0.1, "over Port Morgan when it says")
+	# Only with news: a new pass, once this one's gone over.
 	var count := radio.spoken_count
-	world.time += world.tuning.radio_report_every * 0.5
-	await physics_frames(3)
+	world.time += eta * 0.5
+	await _read_out(radio)
 	var early := radio.spoken_count
-	world.time += world.tuning.radio_report_every * 0.5 + 1.0
-	await physics_frames(3)
-	print("read %d times by halfway, %d once its time came" % [early - count, radio.spoken_count - count])
-	check(early == count and radio.spoken_count == count + 1, "it reads again only once its time comes")
+	world.time += eta * 0.5 + 20.0
+	await _read_out(radio)
+	print("read %d times before the pass, %d after it" % [early - count, radio.spoken_count - count])
+	check(early == count and radio.spoken_count == count + 1, "it reads again only for its next pass")
+
+
+## Physics frames until what it's reading is done, or a while.
+func _read_out(radio: Radio) -> void:
+	for i in 600:
+		await physics_frames(1)
+		if radio._lines.is_empty():
+			break

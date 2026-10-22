@@ -50,8 +50,9 @@ POINTS = ["north", "north-north-east", "north-east", "east-north-east", "east", 
           "south-east", "south-south-east", "south", "south-south-west", "south-west", "west-south-west",
           "west", "west-north-west", "north-west", "north-north-west"]
 # What Piper is given for a phrase it says unclearly as written: alone, "Oh
-# one." comes out "a what", and "Eighty," "A.J.".
-SAID = {"Oh one.": "Oh, one.", "Oh five.": "Oh, five.", "Eighty,": "Eightee.", "Metres a second.": "Meters a second."}
+# one." comes out "a what", "Eighty," "A.J." and "Schedule." "Tetra".
+SAID = {"Oh one.": "Oh, one.", "Oh five.": "Oh, five.", "Eighty,": "Eightee.", "Metres a second.": "Meters a second.",
+        "Schedule.": "Skejool."}
 # What the station says numbers up to, exactly, and past it to the ten.
 EXACT = 60
 
@@ -136,6 +137,16 @@ def score(phrase, text, sure):
     return 0, sure
 
 
+def surest(voice, ears, phrase, rate):
+    """The take Whisper hears surest as the phrase: (score, heard, audio, voiced)."""
+    takes = []
+    while len(takes) < TAKES and not (takes and takes[-1][0] >= (2, SURE)):
+        audio, voiced = trimmed(render(voice, SAID.get(phrase, phrase)), rate)
+        text, sure = heard(ears, audio, rate)
+        takes.append((score(phrase, text, sure), text, audio, voiced))
+    return max(takes, key=lambda take: take[0])
+
+
 def trimmed(audio, rate):
     """Its voiced part, the silence either side cut down to a breath, eased in
     and out so phrases join without a click."""
@@ -191,12 +202,7 @@ def main():
     ears = WhisperModel("small.en", device="cpu", compute_type="int8", cpu_threads=3)
     rate = voice.config.sample_rate
     for phrase in args.phrase or phrases():
-        takes = []
-        while len(takes) < TAKES and not (takes and takes[-1][0] >= (2, SURE)):
-            audio, voiced = trimmed(render(voice, SAID.get(phrase, phrase)), rate)
-            text, sure = heard(ears, audio, rate)
-            takes.append((score(phrase, text, sure), text, audio, voiced))
-        best, text, audio, voiced = max(takes, key=lambda take: take[0])
+        best, text, audio, voiced = surest(voice, ears, phrase, rate)
         save(os.path.join(args.out, key(phrase) + ".ogg"), levelled(audio, voiced), rate)
         print("%-28s %.2f s  heard %r%s" % (phrase, len(audio) / rate, text, "" if best[0] else "  NOT HEARD"),
               flush=True)

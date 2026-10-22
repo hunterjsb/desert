@@ -144,6 +144,19 @@ static func _flag(radio: Radio, x: float, z: float, t: float) -> String:
 ## first, then each contact it keeps, latest first, round again. {log, contact}:
 ## the line, and the contact it reads if it does.
 static func walker_log(world: World, gods: Gods, t: float) -> Dictionary:
+	# Read every tick, it changes by the second at most: worked out once a second.
+	var key := [gods, world.run_seed, floori(t)]
+	if key != _log_key:
+		_log_key = key
+		_log = _walker_log(world, gods, t)
+	return _log
+
+
+static var _log_key := []
+static var _log := {}
+
+
+static func _walker_log(world: World, gods: Gods, t: float) -> Dictionary:
 	var tuning := Tuning.current()
 	var slot := floori(t / tuning.walker_log_every)
 	var kept := gods.city.contacts(gods, t, tuning.walker_contacts_kept)
