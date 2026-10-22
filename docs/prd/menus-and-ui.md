@@ -11,13 +11,13 @@ Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, 
 > it does not need that, but we do want to star thinking about an inventory rework and suit module system.
 
 No wrist instrument is required for Spaceport. The later answer below selects the
-inventory direction; it does not assign release timing. Existing behavior remains
+inventory direction and places it after Spaceport. Existing behavior remains
 as built. [Survival](survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
 owns food/drink buffs; those statuses are not equipment sockets.
 
 ### Combined inventory direction and first module (selected 2026-10-22)
 
-Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built. **Timing, 2026-10-22:** after Spaceport. Asked whether it goes in 0.4 or after, Hunter said: “after”.
 
 > A, B and C was my actual vision. B is going to completely overhaul what inventory means. C. needs to feel really good and snappy and white is open you can see the objects physically. A. must be done at some pt.
 
