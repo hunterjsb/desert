@@ -71,6 +71,9 @@ static var _current: Tuning
 @export var deed_board_height_m: float = 8.0
 ## One ride without stepping off, m: more than a scout round camp.
 @export var deed_board_m: float = 5000.0
+## One ride on a make before Quiver counts it, m: seven or eight seconds
+## pushing from a stand on the slowest make, past stepping on and off.
+@export var deed_make_m: float = 100.0
 ## Tumbled in one wipeout, m: thrown off near flat out, past what an edge
 ## caught in a stop throws you.
 @export var deed_tumble_m: float = 12.0
