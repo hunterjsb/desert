@@ -63,6 +63,11 @@ func crawl_out() -> void:
 			break
 	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands (%.2f m, %s)"
 		% [world.player.global_position.distance_to(from), world.player.ground_pose])
+	# Turned from the pod, ahead is open sand, as a run's first steps expect.
+	var pod := world.arrival_nodes.get(&"floor_a") as Node3D
+	if is_instance_valid(pod):
+		var away := world.player.global_position - pod.global_position
+		world.player.rotation.y = atan2(-away.x, -away.z)
 	await physics_frames(2)
 
 
