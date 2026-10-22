@@ -197,7 +197,7 @@ func frame_sockets() -> Array[Socket]:
 	var own: Array[Socket] = []
 	if deck != null:
 		for node in _own:
-			if node is Socket and not (node as Socket).stuck():
+			if is_instance_valid(node) and node is Socket and not (node as Socket).stuck():
 				own.append(node)
 		return own
 	for socket in super():
@@ -709,6 +709,13 @@ func deeds() -> void:
 			on.append(&"ground_radar")
 	Deeds.measure(world, &"deck_home", Deeds.HOME.filter(func(id: StringName) -> bool: return on.has(id)).size())
 	Deeds.measure(world, &"dig_setup", Deeds.SETUP.filter(func(id: StringName) -> bool: return on.has(id)).size())
+
+
+func _unmade(socket: Socket) -> void:
+	if socket.stuck() and socket.get_parent() == self:
+		# Joined pieces retain their original socket order, including custom mounts.
+		own_piece(socket)._own.erase(socket)
+	super(socket)
 
 
 func dismount(socket: Socket) -> Device:
