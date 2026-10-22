@@ -464,6 +464,10 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   are gone. The kite patch never shipped, so no player save has a hook on a radio.
 - **An arc hits one piece of the chain at random** (`AntennaKite.chain`), all alike.
 - **Consolidating with the salvage kite** (Spaceport): open; Hunter's prototype isn't in the repository.
+- **The bleed resistor stays as it is:** "a stake is stationary," so the bleed is the kite's protection on
+  the move, as the stake is at camp.
+- **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
+  one misc bay stops forcing a choice between modules.
 
 ### The ferrite rod's null (built 2026-10-20)
 
