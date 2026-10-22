@@ -809,6 +809,8 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
   console control." A winch, stuck on a deck, that takes the sheet. With a Console it trims the
   sail to the ideal, and with a keel, helps you drive: driving by computer shows you what ideal
   sailing looks like.
+- **When (Hunter, 2026-10-22):** after the review fixes settle ("after"). The hand winch is built;
+  the Console's ideal and its winch control are not.
 
 ### The dune sailboat (Agreed, session 4, part 3; superseded)
 
