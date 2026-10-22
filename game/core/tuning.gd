@@ -1182,15 +1182,8 @@ static var _current: Tuning
 @export var crystal_dirt: float = 0.85
 @export var crystal_headset_quiet_db: float = 12.0
 @export var crystal_headset_dirt: float = 0.45
-## An antenna reel holds this much wire, m: walked farther from its radio, its
-## clip pops off the set.
-@export var antenna_reel_m: float = 30.0
-## A shortwave set's long wire: on its converter's terminals alone it hears
-## this share of what's sent from above the ceiling; an antenna reel's wire
-## strung out this long, m, hears all of it, strung low only this share,
-## and fully once it's this high over the ground somewhere, m. Under the
-## ceiling, on the AM dial, a wire adds nothing: the world's own noise is the
-## floor there, not the set's.
+## A shortwave set on its converter's terminals alone hears this share of
+## what's sent from above the ceiling.
 @export var sw_bare: float = 0.25
 ## A satellite near straight overhead comes through decently on the terminals
 ## alone (gonkhub, 2026-10-22): from this elevation, degrees, rising to this
@@ -1198,9 +1191,6 @@ static var _current: Tuning
 @export var sw_bare_overhead: float = 0.6
 @export var sw_overhead_from_deg: float = 60.0
 @export var sw_overhead_full_deg: float = 80.0
-@export var sw_wire_m: float = 10.0
-@export var sw_wire_low: float = 0.75
-@export var sw_wire_high_m: float = 3.0
 ## The antenna kite (AntennaKite), from the radio kit lab's charge model
 ## (look/radio_kit/charge_model.gd): on this much flying line, paid out and
 ## reeled in this fast, m/s. It flies from this wind, m/s, its line at the

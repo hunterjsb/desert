@@ -511,18 +511,6 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			return SurveyReceiverLooks.frame()
 		&"antenna_kite":
 			return KiteLooks.packed(size)
-		&"antenna_reel":
-			# A drum of copper aerial wire between two gunmetal cheeks, a crank on
-			# one, and the wire's clip on its lead.
-			var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
-			var copper := Paint.coat(Color(0.55, 0.36, 0.2), 0.8, 0.6, 0.4)
-			var turned := Basis(Vector3.FORWARD, PI / 2.0)
-			b.drum(0.035, size.x - 0.03, Vector3.ZERO, copper, turned, 14)
-			for x in [-h.x + 0.008, h.x - 0.008]:
-				b.drum(h.y, 0.012, Vector3(x, 0.0, 0.0), gun, turned, 18)
-			b.box(Vector3(0.01, 0.05, 0.01), Vector3(h.x + 0.008, -0.02, 0.0), steel, 0.002)
-			b.drum(0.008, 0.03, Vector3(h.x + 0.02, -0.045, 0.0), black, turned, 8)
-			b.box(Vector3(0.02, 0.012, 0.03), Vector3(0.0, h.y - 0.004, h.z - 0.004), Paint.coat(Paint.BRASS, 0.8, 0.7, 0.4), 0.002)
 		&"radio", &"radio_colonial", &"radio_skimmer", &"radio_kingdoms", &"radio_second_age":
 			# The field radio in its maker's look, its body alone: its needle,
 			# knobs, lamps and band window are the radio's own, live.

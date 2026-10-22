@@ -1087,19 +1087,13 @@ static func _open(device: Device, kind: StringName) -> Socket:
 
 
 ## The radio of "radio" on the weather station, beside its charged shield,
-## switched off.
+## switched off, a valve preamp in its bay to lift the relay on shortwave.
 static func weather_station(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
 	var tuned := dropped[0] as Radio
-	var reel := standing(world, &"antenna_reel", [], [RADIO_AT[0] - WIRE_M, RADIO_AT[1]]) as AntennaReel
-	reel.clip(tuned)
-	dropped.append(reel)
+	tuned.fit(Catalog.part(&"valve_preamp"), _free(tuned, &"radio_bay"))
 	_on_station(world, tuned)
 	return dropped
-
-
-## The weather scenario's antenna reel stands this far off its radio, m.
-const WIRE_M := 10.0
 
 
 ## A radio switched on and tuned to the weather: far from Port Morgan, the

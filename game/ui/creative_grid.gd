@@ -16,7 +16,7 @@ const GROUPS := [
 	["Power", [&"coalcane_bundle", &"battery", &"big_battery", &"power_box", &"power_cabinet", &"power_rack", &"power_shrine", &"solar_panel", &"light_panel", &"turbine", &"cable", &"strong_cable"]],
 	["Devices", [&"shield", &"light_shield", &"personal_shield", &"condenser", &"console", &"nav_computer", &"screen",
 		&"anemometer", &"barometer", &"hygrometer", &"particle_sensor", &"radar", &"ground_radar", &"radio", &"radio_colonial", &"radio_skimmer", &"radio_kingdoms", &"radio_second_age",
-		&"crystal_set", &"fm_converter", &"sw_converter", &"antenna_reel", &"antenna_kite",
+		&"crystal_set", &"fm_converter", &"sw_converter", &"antenna_kite",
 		&"bleed_resistor", &"valve_preamp", &"direction_loop", &"static_choke", &"wire_logger", &"frequency_counter",
 		&"headset_jack", &"solar_lid", &"survey_receiver", &"lamp",
 		&"planter", &"harvester", &"bedroll", &"survival_kit"]],

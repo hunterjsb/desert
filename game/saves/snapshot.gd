@@ -256,11 +256,6 @@ func finish(data: Dictionary) -> void:
 	var seat: int = data.get("helm", -1)
 	if _made.get(seat) is Helm:
 		world.player.sit(_made[seat])
-	for pair: Array in data.get("reels", []):
-		var reel := _made.get(int(pair[0])) as AntennaReel
-		var radio := _made.get(int(pair[1])) as Radio
-		if reel != null and radio != null:
-			reel.radio = radio
 	DialMarks.restore(world, data.get("dial_marks", []))
 	# The lines last: their ends are all where they belong now.
 	var strands: Array[RopeStrand] = []
@@ -426,13 +421,6 @@ func _take() -> Dictionary:
 	# At the helm, you sit there again on resume.
 	if player.helm != null and _refs.has(player.helm):
 		data.helm = _refs[player.helm]
-	# A strung antenna reel stays clipped to its set: [reel, radio] by ref.
-	var reels := []
-	for reel: AntennaReel in world.get_tree().get_nodes_in_group(AntennaReel.GROUP):
-		if is_instance_valid(reel.radio) and _refs.has(reel) and _refs.has(reel.radio):
-			reels.append([_refs[reel], _refs[reel.radio]])
-	if not reels.is_empty():
-		data.reels = reels
 	data.dial_marks = DialMarks.all(world)
 	data.home = world.home.snapshot(_ref)
 	if not data.home.is_empty():

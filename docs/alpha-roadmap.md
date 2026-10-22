@@ -179,7 +179,7 @@ Gonk's [radio-equipment modelling lab](../look/radio_kit/README.md) preserves
 receiver tiers, band/window/module studies and an experimental antenna-kite/static
 rig. These are references for future equipment, not proof that the kite, receiver
 tiers or electrostatic hazards are implemented. Existing FM/shortwave converters
-and antenna reels are part of the current runtime radio progression.
+are part of the current runtime radio progression; the antenna reel was scrapped 2026-10-22.
 
 
 | Feature | Status as of 2026-10-21 | Scope and remaining evidence |

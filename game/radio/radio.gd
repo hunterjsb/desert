@@ -12,7 +12,7 @@ extends Device
 ## port's music, the living city's chatter and reed music, and the near gods,
 ## each heard only near its mast. Shortwave, through its own converter, is the
 ## sky's: the satellites, Tu's roar and the relay repeating the tower, heard
-## better the longer and higher its wire or kite. It reads the real systems and
+## near overhead, or better the higher its kite. It reads the real systems and
 ## never makes anything up. A god's signal comes in by how far off it is, its
 ## frequency and the hour, and the storm between you and it garbles, slides
 ## and cuts it. Static comes in with a front's outflow, before the wall, and
@@ -100,8 +100,6 @@ const PLACE_EVERY := 30
 ## moves); and a tick's move longer than this is the world shifting under it,
 ## not it moving.
 const FM_RECKON_M := 2.0
-## Its long wire is read again this often, s.
-const WIRE_EVERY := 0.5
 ## A kite flown this high, m, on its lead, hearing a satellite clear: High Wire.
 const KITE_HIGH := 50.0
 const FM_RECKON_S := 1.0
@@ -323,11 +321,6 @@ var _motif_slot := NAN
 var _wanted := UNHEARD
 ## Tu's roar on shortwave, heard under whatever else plays.
 var roar: AudioStreamPlayer3D
-## Its long wire: an antenna reel's wire clipped to its aerial terminal and
-## strung out, as a real shortwave set hears on a wire: (how far it's strung,
-## m; the higher of its two ends over the ground, m), or zero with none.
-var wire := Vector2.ZERO
-var _wire_at := -INF
 ## How far it has moved, m, for the fade it passes through on FM; where it was
 ## last tick; and each FM station's margin as last worked out, and where.
 var _moved := 0.0
@@ -1179,7 +1172,6 @@ func _listening_to(station: StringName) -> void:
 func _listen(delta: float) -> void:
 	_to_your_ears(carried() or headset_on())
 	_track_moves()
-	_read_wire()
 	if not playing():
 		noise = 0.0
 		odd = 0.0
@@ -1303,8 +1295,6 @@ func _listen(delta: float) -> void:
 	# The satellites, all at once over whatever else it hears.
 	var sky_heard := sky.listen(delta, x, z, t)
 	through = maxf(through, sky_heard)
-	if band == SW_BAND and wire.x >= _tuning.sw_wire_m and sky_heard >= WHOLE and volume > 0.0 and heard():
-		Deeds.done(world, &"long_wire")
 	if band == SW_BAND and flown != null and flown.up() and flown.height() >= KITE_HIGH and sky_heard >= WHOLE \
 			and volume > 0.0 and heard():
 		Deeds.done(world, &"high_wire")
@@ -1351,22 +1341,6 @@ func _listen(delta: float) -> void:
 		_hissing = true
 
 
-## Its long wire as it lies now, read every WIRE_EVERY s: the longest strung
-## from a reel clipped to it, and the higher of that wire's ends over the ground.
-func _read_wire() -> void:
-	if world == null or not is_inside_tree() or absf(world.time - _wire_at) < WIRE_EVERY:
-		return
-	_wire_at = world.time
-	wire = Vector2.ZERO
-	for node in get_tree().get_nodes_in_group(AntennaReel.GROUP):
-		var reel := node as AntennaReel
-		if reel == null or reel.radio != self:
-			continue
-		var tip := reel.end()
-		var high := maxf(global_position.y - world.height_under(global_position), tip.y - world.height_under(tip))
-		wire = Vector2(maxf(wire.x, reel.strung()), maxf(wire.y, high))
-
-
 ## How much of a station on the AM dial its ferrite rod picks up, coming from
 ## `bearing` (degrees from -z, on the ground), 0 to 1. The rod lies along the
 ## set's own width, as a real AM set's does, or across your view while you carry
@@ -1392,18 +1366,15 @@ func rod(bearing: float, sky: bool) -> float:
 
 ## How much of what's sent from above the ceiling it hears, 0 to 1: on
 ## shortwave, a little on its converter's terminals alone, more from a
-## satellite near straight overhead (its `elevation`, radians), all of it on a
-## long wire strung out, less strung low along the sand; elsewhere all of it.
+## satellite near straight overhead (its `elevation`, radians), and more again
+## on a kite flown high; elsewhere all of it.
 func antenna_gain(elevation := 0.0) -> float:
 	if band != SW_BAND:
 		return 1.0
-	var long := smoothstep(0.0, _tuning.sw_wire_m, wire.x)
-	var high := lerpf(_tuning.sw_wire_low, 1.0, smoothstep(0.0, _tuning.sw_wire_high_m, wire.y))
 	# A whip hears best straight up, where the signal's path through the air is shortest.
-	var bare := lerpf(_tuning.sw_bare, _tuning.sw_bare_overhead, smoothstep(deg_to_rad(_tuning.sw_overhead_from_deg),
+	var got := lerpf(_tuning.sw_bare, _tuning.sw_bare_overhead, smoothstep(deg_to_rad(_tuning.sw_overhead_from_deg),
 		deg_to_rad(_tuning.sw_overhead_full_deg), elevation))
-	var got := lerpf(bare, 1.0, long * high)
-	# A kite flown on its lead: the higher, the more, past a long wire's.
+	# A kite flown on its lead: the higher, the more.
 	var flown := kite()
 	if flown != null and flown.up():
 		got = maxf(got, AntennaKite.gain(flown.height(), _tuning))

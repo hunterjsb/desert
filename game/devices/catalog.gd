@@ -244,7 +244,10 @@ const PARTS := {
 const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots": &"tubers",
 	# The survey set was scrapped (gonkhub, 2026-10-21): its saves wake with the
 	# colonial field radio, its maker's look.
-	&"survey_set": &"radio_colonial"}
+	&"survey_set": &"radio_colonial",
+	# The antenna reel was scrapped (gonkhub, 2026-10-22): its saves wake with
+	# the antenna kite, shortwave's aerial now.
+	&"antenna_reel": &"antenna_kite"}
 ## Part kinds that go only in a slot of their own, never stuck loose on a
 ## chassis: hooks on rings, plugs in ports, a line's end, a hose's end, crops
 ## in beds, mods in their mounts, a sail on its mast.
@@ -505,9 +508,6 @@ const DEVICES := {
 	# set's aerial.
 	&"antenna_kite": {"label": "Antenna kite", "size": Vector3(0.36, 0.2, 0.18), "mass": 2.2, "kite": true,
 		"carryable": true, "sticks": true, "sockets": [[&"lead", Vector3(0.18, -0.02, 0.0), Vector3.RIGHT]]},
-	# A reel of aerial wire, clipped to a radio and walked out (AntennaReel).
-	&"antenna_reel": {"label": "Antenna reel", "size": Vector3(0.14, 0.12, 0.08), "mass": 0.8, "antenna_reel": true,
-		"carryable": true, "sticks": true, "sockets": []},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,
 		"sticks": true,
@@ -847,9 +847,8 @@ static func device(id: StringName) -> Device:
 		else (Console.new() if spec.get("console", false) \
 		else (PowerBox.new() if spec.get("power_box", false) \
 		else (Cutter.new() if spec.get("cutter", false) \
-		else (AntennaReel.new() if spec.get("antenna_reel", false) \
 		else (AntennaKite.new() if spec.get("kite", false) \
-		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new())))))))))))))))))
+		else ((SurveyorGuide.new() if spec.get("surveyor_guide", false) else SailingNotes.new()) if spec.get("notes", false) else Device.new()))))))))))))))))
 	made.set_meta(&"catalog", id)
 	if made is Radio:
 		(made as Radio).style = spec.get("style", &"")

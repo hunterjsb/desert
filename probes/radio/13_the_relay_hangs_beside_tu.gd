@@ -2,7 +2,7 @@ extends ShieldProbe
 ## Radio probe 13: the relay hangs beside Tu. It's at Zan and Tu's L1, so from
 ## where a run begins it stands a few degrees off Tu all day and never sets,
 ## looping slowly round its point. On shortwave it repeats Port Morgan Tower,
-## so a radio far from the port hears the weather there on a wire. At night, sunlit, it shows
+## so a radio far from the port hears the weather there through a preamp. At night, sunlit, it shows
 ## in the sky. From the far side, where Tu never shows, it never does either.
 
 ## The clock is read this often, s.
@@ -35,9 +35,7 @@ func run() -> void:
 	check(lowest > 0.0 and widest < BESIDE, "from the start it stays beside Tu all day and never sets")
 	check(moved > 1.0, "looping slowly round its point")
 
-	var reel := Scenarios.standing(world, &"antenna_reel", [], [10.0, 2.0]) as AntennaReel
-	reel.freeze = true
-	reel.clip(radio)
+	radio.fit(Catalog.part(&"valve_preamp"), Scenarios._free(radio, &"radio_bay"))
 	radio.channel = Radio.WEATHER
 	await physics_frames(60)
 	print("on shortwave at %.0f kHz: \"%s\"" % [radio.frequency, radio.said])
