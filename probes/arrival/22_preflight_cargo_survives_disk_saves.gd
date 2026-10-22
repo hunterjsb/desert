@@ -20,6 +20,9 @@ func run() -> void:
 	if not is_instance_valid(opening):
 		return
 	var nodes := SurveyorRecovery.named(world)
+	var deck := opening.ship.pod.deck
+	deck.join(nodes[&"roof_a"], Rig.face_of(deck, Vector2i(1, 0), &"top"))
+	deck.join(nodes[&"roof_b"], Rig.face_of(deck, Vector2i.ZERO, &"top"))
 	var water := nodes[&"water"] as Supply
 	water.drain(water.amount * 0.25)
 	var amount := water.amount
@@ -32,6 +35,10 @@ func run() -> void:
 	await _prepared()
 	opening = world.arrival.preflight
 	nodes = SurveyorRecovery.named(world)
+	deck = opening.ship.pod.deck
+	check(nodes[&"roof_a"].joined_at == Rig.face_of(deck, Vector2i(1, 0), &"top")
+		and nodes[&"roof_b"].joined_at == Rig.face_of(deck, Vector2i.ZERO, &"top"),
+		"preparation disk resume preserves manually swapped original roofs")
 	water = nodes[&"water"]
 	check(nodes.size() == 28 and world.player.hands.held == water and water.amount == amount,
 		"preparation resumes the exact held store and all original roles once")
