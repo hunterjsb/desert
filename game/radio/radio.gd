@@ -1391,14 +1391,18 @@ func rod(bearing: float, sky: bool) -> float:
 
 
 ## How much of what's sent from above the ceiling it hears, 0 to 1: on
-## shortwave, a little on its converter's terminals alone, all of it on a long
-## wire strung out, less strung low along the sand; elsewhere all of it.
-func antenna_gain() -> float:
+## shortwave, a little on its converter's terminals alone, more from a
+## satellite near straight overhead (its `elevation`, radians), all of it on a
+## long wire strung out, less strung low along the sand; elsewhere all of it.
+func antenna_gain(elevation := 0.0) -> float:
 	if band != SW_BAND:
 		return 1.0
 	var long := smoothstep(0.0, _tuning.sw_wire_m, wire.x)
 	var high := lerpf(_tuning.sw_wire_low, 1.0, smoothstep(0.0, _tuning.sw_wire_high_m, wire.y))
-	var got := lerpf(_tuning.sw_bare, 1.0, long * high)
+	# A whip hears best straight up, where the signal's path through the air is shortest.
+	var bare := lerpf(_tuning.sw_bare, _tuning.sw_bare_overhead, smoothstep(deg_to_rad(_tuning.sw_overhead_from_deg),
+		deg_to_rad(_tuning.sw_overhead_full_deg), elevation))
+	var got := lerpf(bare, 1.0, long * high)
 	# A kite flown on its lead: the higher, the more, past a long wire's.
 	var flown := kite()
 	if flown != null and flown.up():
@@ -1483,9 +1487,9 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 	crackle.volume_db = linear_to_db(0.0001)
 	roar.volume_db = linear_to_db(0.0001)
 	_loudness()
-	# Through the converter it plays as the AM set does, as narrow.
+	# Through the converter it plays FM's full range, clear where AM's narrow.
 	dirt = reception.get("dirt", 0.0)
-	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id(), _tuning.am_audio_hz)
+	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id())
 	_read(delta, now)
 	if not _hissing:
 		hiss.play(fposmod(t, hiss.stream.get_length()))
@@ -1806,7 +1810,7 @@ func receive_from(relay: Satellite, khz: float, id: StringName, x: float, z: flo
 	var up := smoothstep(0.0, deg_to_rad(_tuning.relay_rise_degrees), sky.elevation)
 	# A tumbling satellite's signal swells and fades as it turns.
 	var share := Dial.heard(frequency - khz - slid, _tuning)
-	var power := up * constellation_of(world).tumble(id, t) * antenna_gain() * boost()
+	var power := up * constellation_of(world).tumble(id, t) * antenna_gain(sky.elevation) * boost()
 	var strength := share * power
 	var jammed := constellation_of(world).jamming(frequency, p, t, id)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, strength) * Interference.let_through(storm, _tuning) \

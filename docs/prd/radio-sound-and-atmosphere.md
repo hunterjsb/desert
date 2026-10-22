@@ -283,8 +283,8 @@ the port's music is on FM only; the relay repeats the tower on shortwave.*
   the Stoker and the Walker, each from a `fm_god_mast_m` mast at its home, so heard only near it, the Walker's
   moving as it walks. Changing station clears the last one's queued words.
 - **Shortwave, the sky's:** every satellite and Tu's roar, and **the relay** at L1 on 7250 kHz, repeating Port
-  Morgan Tower. It's heard as a satellite is (`Radio.receive_from`): faint on a bare shortwave converter,
-  better on an antenna reel's wire, best by a kite. So the weather near the port is FM's, and anywhere on the
+  Morgan Tower. It's heard as a satellite is (`Radio.receive_from`): faint on a bare shortwave converter
+  unless near overhead, better on an antenna reel's wire, best by a kite. So the weather near the port is FM's, and anywhere on the
   near side with a good rig.
 - **Not yet:** the sleep offer "Until a storm's called" still wakes you by the storm at your camp, while the
   radio it tunes reads the tower's weather.
@@ -336,8 +336,8 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
   2.5 km up.
 - **Its sound.** Over `fm_threshold_db` it quiets over `fm_quiet_db`; under, hiss takes it. No storm static,
   no anomaly crackle. Ground bounce fades it as the radio moves (`Fm.fade_db`), so near the threshold it
-  flutters as you walk. Two within `fm_capture_db` fight. Through the converter it plays as narrow as AM:
-  the AM dial and shortwave play up to `am_audio_hz` (5 kHz), the gap an FM set will open.
+  flutters as you walk. Two within `fm_capture_db` fight. Through the converter it plays FM's full range,
+  clear, while the AM dial and shortwave play up to `am_audio_hz` (5 kHz) (Radio upgrades vetted, below).
 - **The converters' look** (`Dress._converter`): another maker's add-ons after 1960s car-radio FM converters,
   black enamel boxes bolted to the set's side, each with a chrome-rimmed bone face, small dial and needle, a
   knob, a chrome throw and its band's name; the FM one has a three-section whip, the shortwave one brass
@@ -347,7 +347,8 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
 ### Shortwave and Tu's roar (built 2026-10-20)
 
 - **The shortwave converter** (`sw_converter`), the FM converter's sibling, 0.6 kg, no power of its own; the radio's left
-  side takes two mods. Found on skimmer-era shelves and in relay mast cabinets.
+  side takes two mods. Late-game tech: found only among the colonial and skimmer eras' best, the deepest
+  sockets of their sites.
 - **The band** runs 2–30 MHz, the dial going on in kHz past the AM dial (`Shortwave`, `sw_notch_khz`, fine
   tuning 1 kHz): "Radio · 29.07 MHz". AM and shortwave share one `frequency`, each keeping its place
   (`am_khz`, `sw_khz`), so skirts and the jammer work unchanged. Nothing on the ground sends here.
@@ -356,7 +357,8 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
   loudest storms, and while Tu's turn faces its source to Zan (`tu_roar_turn`): a timetable to learn. In a
   storm it comes in slow swells. Seed 1234 at the start, 22 MHz: 13 dB in a storm, silent out of one. The
   deed **Storm on Tu**: hear it.
-- **Not yet:** skip and dead zones for ground stations; Tu's "popcorn" bursts; the roar's own sound.
+- **Not yet:** Tu's "popcorn" bursts; the roar's own sound. Shortwave is for space; no ground stations
+  (gonkhub, 2026-10-22).
 
 ### The antenna reel (built 2026-10-21)
 
@@ -370,10 +372,11 @@ to lift a wire (below).*
   `antenna_reel_m` (30 m) the clip pops off. The look-at line gives how far it's strung. A strung reel
   survives a save. Found on skimmer-era shelves.
 - **On shortwave the wire is gain** (`Radio.antenna_gain`, `Radio.wire`): on a converter's terminals alone
-  the set hears `sw_bare` of what's sent from above the ceiling; strung `sw_wire_m` it hears all of it,
+  the set hears `sw_bare` of what's sent from above the ceiling, rising to `sw_bare_overhead` for a satellite
+  between `sw_overhead_from_deg` and `sw_overhead_full_deg` up (radio probe 77); strung `sw_wire_m` it hears all of it,
   `sw_wire_low` with both ends on the sand, fully with an end `sw_wire_high_m` up. On the AM dial a wire adds
   nothing: the world's own noise is the floor there. Seed 1234, a satellite overhead: dirt 0.65 on the
-  terminals, 0.03 on 10.4 m.
+  terminals, 0.03 on 10.4 m (before the overhead rise; probe 51 now takes one below it).
 - **The deed** Long Wire: hear a satellite clear on an antenna reel's wire.
 
 ### The antenna kite and the radio's modules (gonkhub, 2026-10-21; built)
@@ -431,13 +434,24 @@ now in `tuning.tres` (`kite_*`).
 ### Radio upgrades vetted (gonkhub, 2026-10-22)
 
 *Walking through the radio's upgrades one by one. gonkhub: "make upgrades cost no additional power for
-now," and the FM converter "should be a fairly easy to find midgame upgrade for the radio."*
+now," and the FM converter "should be a fairly easy to find midgame upgrade for the radio." Then: "just
+let the fm converter have clear quality." On the shortwave converter: "If the satellite is directly
+overhead, let the signal come through decently, sure"; "Late game tech upgrade. Should be rare or
+restricted to late game areas"; keep the risk of a kite's arc burning it out; "drop the ground stations.
+SW is for space stuff."*
 
 - **No upgrade draws power** for now: the converters, valve preamp, wire logger and frequency counter
   carry no `draw_w` (they were 0.5, 0.5, 4, 0.2 and 0.3 W). The powered ones still need a powered set, so a
   crystal set can't run them (radio probe 73).
 - **The FM converter is a midgame find:** First Kingdom shelves weight it 2, and skimmer-era shelves now
   hold it too, beside colonial shelves and relay mast cabinets.
+- **FM plays clear:** through the converter FM keeps its full range; AM and shortwave stay narrow.
+- **A satellite overhead on bare terminals:** from 60° up the converter's terminals alone hear more, to 0.6
+  by 80° (`sw_bare_overhead`). Seed 1234: the deliveryship overhead 0.60, the windsock low 0.25 (radio
+  probe 77). A wire or kite still does better.
+- **The shortwave converter is late-game:** off skimmer shelves and relay mast cabinets, onto the colonial
+  and skimmer eras' best tables, the deepest sockets.
+- **No ground stations on shortwave:** the planned skip and dead zones are dropped.
 
 ### The ferrite rod's null (built 2026-10-20)
 

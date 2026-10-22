@@ -1192,6 +1192,12 @@ static var _current: Tuning
 ## ceiling, on the AM dial, a wire adds nothing: the world's own noise is the
 ## floor there, not the set's.
 @export var sw_bare: float = 0.25
+## A satellite near straight overhead comes through decently on the terminals
+## alone (gonkhub, 2026-10-22): from this elevation, degrees, rising to this
+## share by this one.
+@export var sw_bare_overhead: float = 0.6
+@export var sw_overhead_from_deg: float = 60.0
+@export var sw_overhead_full_deg: float = 80.0
 @export var sw_wire_m: float = 10.0
 @export var sw_wire_low: float = 0.75
 @export var sw_wire_high_m: float = 3.0
@@ -1266,8 +1272,8 @@ static var _current: Tuning
 @export var tu_roar_phases: PackedFloat32Array = PackedFloat32Array([0.25, 0.67])
 @export var tu_roar_window: float = 0.12
 @export var tu_roar_turn: float = 1.2
-## The AM dial plays sound up to this, Hz: AM's narrow audio, and the FM
-## converter's too, since it plays through the AM set.
+## The AM dial plays sound up to this, Hz: AM's narrow audio. FM plays its full
+## range (gonkhub, 2026-10-22: "let the fm converter have clear quality").
 @export var am_audio_hz: float = 5000.0
 ## A signal flare burns this long, s (Flare). The deliveryship fires its
 ## care-package cannon at a lit one it passes this high over, degrees, and the

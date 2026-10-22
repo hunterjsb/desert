@@ -51,7 +51,7 @@ const ERAS := {
 		BED: [[&"root_tuber", 3], [&"vat_fungus", 2]],
 		BEST: [[&"console", 2], [&"shield", 2], [&"turbine", 2], [&"condenser", 1], [&"big_battery", 3],
 			[&"hover_tray", 2], [&"solar_panel", 2], [&"radar", 1], [&"screen", 1], [&"harvester", 1],
-			[&"power_cabinet", 1]]},
+			[&"power_cabinet", 1], [&"sw_converter", 1]]},
 	# The best single-item gear, from deserters and the black site: light,
 	# cheap and fragile, made before Zan was a desert. Its boards are its
 	# crews' racers.
@@ -62,12 +62,13 @@ const ERAS := {
 			[&"antenna_kite", 1]],
 		SHELF: [[&"battery", 2], [&"ration", 2], [&"hook", 1], [&"plug", 1], [&"anemometer", 1],
 			[&"particle_sensor", 1], [&"compass", 1], [&"lamp", 1], [&"sand_scoop", 1], [&"sealant", 1],
-			[&"sw_converter", 1], [&"fm_converter", 1], [&"antenna_reel", 1]],
+			[&"fm_converter", 1], [&"antenna_reel", 1]],
 		CACHE: [[&"big_battery", 2], [&"battery", 2], [&"strong_plug", 1], [&"hose_end", 1], [&"med_kit", 1],
 			[&"sealant", 1]],
 		BED: [[&"vat_fungus", 1]],
 		BEST: [[&"shield", 3], [&"racer_board", 2], [&"radar", 2], [&"harvester", 2], [&"particle_sensor", 1],
-			[&"anemometer", 1], [&"big_battery", 2], [&"console", 1], [&"cutter", 2], [&"power_rack", 1]]},
+			[&"anemometer", 1], [&"big_battery", 2], [&"console", 1], [&"cutter", 2], [&"power_rack", 1],
+			[&"sw_converter", 1]]},
 	# Intact working colonial tech, kept running and used in new ways.
 	Eras.FIRST: {"kept": 0.6, "layer": Finds.SURFACE, "charge": Vector2(0.4, 1.0), "sound": Vector2(0.75, 1.0),
 		"fills": Finds.DEEP, "fill": 0.75, "sealed": true,
@@ -119,7 +120,7 @@ const KINDS := {
 	&"hab_pod": {SHELF: [[&"vat_fungus", 3], [&"ration", 2], [&"lamp", 1], [&"battery", 1]]},
 	# The mast's cabinet: its instruments and its power.
 	&"relay_mast": {SHELF: [[&"battery", 2], [&"big_battery", 1], [&"barometer", 1], [&"anemometer", 1],
-		[&"compass", 1], [&"strong_plug", 1], [&"ground_radar", 1], [&"fm_converter", 1], [&"sw_converter", 1],
+		[&"compass", 1], [&"strong_plug", 1], [&"ground_radar", 1], [&"fm_converter", 1],
 		[&"bleed_resistor", 1], [&"static_choke", 1], [&"direction_loop", 1], [&"headset_jack", 1]]},
 	# The inspection hatch: the line's own hose, valves and water.
 	&"pipeline_segment": {BEST: [[&"hose_end", 3], [&"canister", 2], [&"condenser", 1], [&"strong_plug", 1],

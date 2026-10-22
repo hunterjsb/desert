@@ -1,6 +1,7 @@
 extends ShieldProbe
 ## Radio probe 51: a long wire. On shortwave, on its converter's terminals
-## alone, a satellite overhead comes through chewed up; an antenna reel clipped
+## alone, a satellite up but not near overhead comes through chewed up (one
+## near overhead comes through decently, probe 77); an antenna reel clipped
 ## to the radio and its wire strung out, it comes through cleaner, as a real
 ## shortwave set hears better on a long wire.
 
@@ -17,12 +18,14 @@ func run() -> void:
 	var x := world.world_x(radio.global_position.x)
 	var z := world.world_z(radio.global_position.z)
 	var sky := Radio.constellation_of(world)
-	var overhead := sky.carriers(radio.point_at(x, z), world.time)
-	check(radio.band == Radio.SW_BAND and not overhead.is_empty(), "on shortwave, a satellite overhead")
-	if overhead.is_empty():
+	var p := radio.point_at(x, z)
+	var up := sky.carriers(p, world.time).filter(func(each: Array) -> bool:
+		return rad_to_deg(sky.orbits[each[1]].seen_from(p, world.time).elevation) < Tuning.current().sw_overhead_from_deg)
+	check(radio.band == Radio.SW_BAND and not up.is_empty(), "on shortwave, a satellite up, not overhead")
+	if up.is_empty():
 		return
-	var id: StringName = overhead[0][1]
-	radio.frequency = overhead[0][0]
+	var id: StringName = up[0][1]
+	radio.frequency = up[0][0]
 	await physics_frames(40)
 	var bare: Dictionary = radio.receive_from(sky.orbits[id], radio.frequency, id, x, z, world.time)
 	_reel_out(radio, OUT)
