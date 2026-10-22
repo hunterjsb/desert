@@ -52,7 +52,7 @@ func _ready() -> void:
 	main.ui.close_top()
 	await _opened(main, &"crops", 0.0)
 	_shoot(out.path_join("deeds_menu_top.png"))
-	await _opened(main, &"slept_it_off", 1.0, false)
+	await _opened(main, &"nomad", 1.0, false)
 	_shoot(out.path_join("deeds_menu_foot.png"))
 	main.ui.close_top()
 	main.new_game()
