@@ -16,8 +16,9 @@ const STARTS := [[0.0, 0.0, -45.0, 2.0], [0.0, 0.0, 0.0, 1.0], [-3.0, 1.0, -45.0
 ## Closing on the port faster than this, m/s, the cable slung it: past the
 ## rope's closing speed, a tick's push it can't see coming.
 const FLUNG := 5.0
-## How long after the cable last pulled the plug can still be flying from it, s.
-const SLING := 0.25
+## A sling is the cable's own pull: what the plug does this soon after the
+## cable last pulled it, s, is the cable's doing; later it's the wind's.
+const SLING := 0.05
 const SECONDS := 3.0
 
 var _wind: RopeWind
