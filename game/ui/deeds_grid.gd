@@ -3,7 +3,9 @@ extends Control
 ## Every deed as a card in a tree (Deeds): a branch or two for each family,
 ## its name down the left, each deed right of the ones it waits on, a line
 ## from each to what it opens, narrow enough to stand left of the prop
-## aside. Taller than the screen has room for, it shows a part of its page at
+## aside. A capstone stands apart under the middle of them all, a line from
+## each of the trees it waits on any deed of, lit where you've done one. Taller
+## than the screen has room for, it shows a part of its page at
 ## a time, scrolled by the wheel, its bar beside it or the selection, and
 ## keeps the card highlighted in view.
 ## A card shows its name and its thing: lit once done, dimmer while open but
@@ -23,6 +25,8 @@ const ICON := 42.0
 const GAP := 8.0
 const FAMILY_GAP := 16.0
 const STEP := 28.0
+## Between a capstone's lines down the right of the trees, px.
+const LANE := 6.0
 ## The families in the order they stand, and their names down the left
 ## beside their branches, in a column this wide, px.
 const FAMILIES := {&"board": "Board", &"wind": "Wind", &"weather": "Weather", &"camp": "Camp", &"farm": "Farming",
@@ -64,6 +68,9 @@ var _bar := PageBar.new()
 ## Each deed's card, and where its middle stands, px.
 var _cards := {}
 var _at := {}
+## Each family's branches from top to foot, px; and where the cards end on the right.
+var _bands := {}
+var _right := 0.0
 var _tip: PanelContainer
 var _said: Array[Label] = []
 ## The card the panel stands beside.
@@ -183,7 +190,7 @@ func _lay_out() -> void:
 	for family: StringName in FAMILIES:
 		var steps := {}
 		for id: StringName in Deeds.TABLE:
-			if Deeds.TABLE[id].family == family:
+			if Deeds.TABLE[id].family == family and not Deeds.TABLE[id].has("after_any"):
 				steps[depth[id]] = steps.get(depth[id], []) + [id]
 		var wide := 1
 		for d: int in steps:
@@ -193,6 +200,7 @@ func _lay_out() -> void:
 				_at[steps[d][k]] = Vector2(HEAD + d * (CARD.x + STEP) + CARD.x * 0.5,
 					y + k * (CARD.y + GAP) + CARD.y * 0.5)
 		var tall := wide * (CARD.y + GAP) - GAP
+		_bands[family] = Vector2(y, y + tall)
 		var head := Label.new()
 		head.theme_type_variation = &"MenuNote"
 		head.text = FAMILIES[family]
@@ -202,7 +210,14 @@ func _lay_out() -> void:
 		head.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		_page.add_child(head)
 		y += tall + FAMILY_GAP
-	_page.size = Vector2(HEAD + (deepest + 1) * (CARD.x + STEP) - STEP, y - FAMILY_GAP)
+	_right = HEAD + (deepest + 1) * (CARD.x + STEP) - STEP
+	var lanes := 0
+	for id: StringName in Deeds.TABLE:
+		if Deeds.TABLE[id].has("after_any"):
+			_at[id] = Vector2(HEAD + floorf(deepest * 0.5) * (CARD.x + STEP) + CARD.x * 0.5, y + CARD.y * 0.5)
+			lanes = maxi(lanes, Deeds.TABLE[id].after_any.size())
+			y += CARD.y + FAMILY_GAP
+	_page.size = Vector2(_right + LANE * (lanes + 1), y - FAMILY_GAP)
 	custom_minimum_size = _page.size
 	for id: StringName in Deeds.TABLE:
 		_cards[id] = _card(id)
@@ -266,6 +281,9 @@ func _tell(id: StringName) -> void:
 			if not Deeds.lit(_profile, before):
 				waits.append(Deeds.TABLE[before].name if Deeds.is_open(_profile, before)
 					and Deeds.revealed(_profile, before) else "????")
+		for family: StringName in spec.get("after_any", []):
+			if not Deeds.any_lit(_profile, family):
+				waits.append("any %s deed" % FAMILIES[family])
 		lines[2] = "after " + " and ".join(waits)
 	for i in _said.size():
 		_said[i].text = lines[i]
@@ -306,6 +324,27 @@ func _draw_lines() -> void:
 			var bend := (from.x + to.x) * 0.5
 			_page.draw_polyline(PackedVector2Array([from, Vector2(bend, from.y), Vector2(bend, to.y), to]),
 				lit if Deeds.is_open(_profile, id) else faint, 2.0, true)
+		for tree in tree_lines(id):
+			_page.draw_polyline(tree.line, lit if tree.lit else faint, 2.0, true)
+			_page.draw_polyline(tree.tick, lit if tree.lit else faint, 2.0, true)
+
+
+## A capstone's line from each tree it waits on: down the right of the trees,
+## marking the tree's branches top to foot, into the capstone's side, the
+## top tree outermost so none cross; lit where you've done one of the tree.
+## Each {line, tick, lit}, page px.
+func tree_lines(id: StringName) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var trees: Array = Deeds.TABLE[id].get("after_any", [])
+	var edge := _right + LANE * 0.5
+	for i in trees.size():
+		var band: Vector2 = _bands[trees[i]]
+		var x := _right + LANE * (trees.size() - i)
+		var into: float = _at[id].y - CARD.y * 0.5 + CARD.y * (trees.size() - i) / (trees.size() + 1.0)
+		out.append({"line": PackedVector2Array([Vector2(edge, band.x), Vector2(x, band.x), Vector2(x, into),
+			Vector2(_at[id].x + CARD.x * 0.5, into)]), "tick": PackedVector2Array([Vector2(edge, band.y), Vector2(x, band.y)]),
+			"lit": Deeds.any_lit(_profile, trees[i])})
+	return out
 
 
 ## A deed's card's picture, `across` px: its thing's look, or a mark drawn;
@@ -345,7 +384,7 @@ static func _silhouette() -> ShaderMaterial:
 ## a landmark's mast with its pennant, a sail, a storm's wall, an anomaly's
 ## eye, a ruin bared, a wreck, a mast's signal, the eclipse, a glint, a vent
 ## and its boom, a summit, Tu overhead, the dark side's stars, the sun's days, bearings
-## crossing, the living city's decks and the Walker.
+## crossing, the living city's decks, the Walker and Nomad's star.
 static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 	var ink := on.get_theme_color(&"faint" if locked else &"text", &"Palette")
 	var s := on.size
@@ -492,6 +531,12 @@ static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 			for k in 5:
 				var a := PI + PI * (k + 1) / 6.0
 				on.draw_line(sun + Vector2.from_angle(a) * u * 0.28, sun + Vector2.from_angle(a) * u * 0.4, ink, 2.0, true)
+		&"nomad":
+			# A star of five points, one for each tree Nomad ties together.
+			var points := PackedVector2Array()
+			for k in 11:
+				points.append(c + Vector2.from_angle(-PI * 0.5 + PI * k / 5.0) * u * (0.4 if k % 2 == 0 else 0.17))
+			on.draw_polyline(points, ink, 2.0, true)
 		_:
 			ground.call()
 			on.draw_line(foot, top, ink, 3.0, true)

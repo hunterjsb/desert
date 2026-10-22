@@ -33,7 +33,8 @@ func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
 	var view := MeshInstance3D.new()
 	view.mesh = ShipLooks.mesh()
 	add_child(view)
-	view.set_instance_shader_parameter(&"age", 0.18)
+	# A ship that has never touched the desert: the wear shader's sealed look.
+	view.set_instance_shader_parameter(&"age", 0.0)
 	view.set_instance_shader_parameter(&"lit", 1.0)
 	var hull := StaticBody3D.new()
 	hull.name = "CabinHull"
@@ -105,11 +106,8 @@ func set_departure_sample(sample: Dictionary, clock: float) -> void:
 	var body: Basis = sample.body_basis
 	var position: Vector3 = body.inverse() * sample.ship_position
 	_orbital_origin = position * ArrivalOrbit.RADIUS
-	var radial := position.normalized()
-	var north := Sphere.north(radial)
-	var limb := asin(clampf(1.0 / maxf(position.length(), 1.0001), 0.0, 1.0))
-	var toward := (-radial * cos(limb * 0.85) + north * sin(limb * 0.85)).normalized()
-	_orbital_basis = Basis.looking_at(toward, north)
+	# The window faces Tu's side of the sky, the one that always faces Zan.
+	_orbital_basis = ArrivalOrbit.toward_tu(position, world.weather.day.sub_tu(clock))
 	_departure_clock = clock
 
 

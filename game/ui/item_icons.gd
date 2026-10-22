@@ -18,6 +18,7 @@ const LOOKS := {
 	&"console": {"frame": &"console", "sockets": {1: &"screen"}, "turn": Vector2(155.0, 15.0)},
 	&"nav_computer": {"frame": &"nav_computer", "sockets": {0: &"screen"}, "turn": Vector2(155.0, 15.0)},
 	&"turbine": {"frame": &"turbine", "turn": Vector2(30.0, 15.0)},
+	&"power_box": {"frame": &"power_box", "sockets": {0: &"battery", 1: &"battery"}, "turn": Vector2(30.0, 45.0)},
 	&"helm": {"frame": &"helm_seat", "turn": Vector2(150.0, 20.0)},
 	&"compass": {"part": &"compass", "turn": Vector2(0.0, 55.0)},
 	&"cutter": {"frame": &"cutter", "turn": Vector2(60.0, 25.0)},

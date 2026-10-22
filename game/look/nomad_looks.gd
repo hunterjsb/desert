@@ -5,21 +5,14 @@ extends RefCounted
 ## rust and an indigo gone grey), bone toggles, and scrap from every era
 ## lashed in where it fits. Their rigs and camps use the same coats.
 
-const OCHRE := Color(0.72, 0.52, 0.24)
-const RUST := Color(0.56, 0.24, 0.14)
-const INDIGO := Color(0.28, 0.32, 0.42)
-const WOOD := Color(0.62, 0.5, 0.34)
-const CORD := Color(0.42, 0.31, 0.2)
-const BONE := Color(0.86, 0.82, 0.7)
-
 static var _cloth: ArrayMesh
 static var _ladder: ArrayMesh
 
 
 static func coats() -> Dictionary:
-	return {"ochre": Paint.coat(OCHRE, 1.2, 0.0, 0.95, 1.2), "rust": Paint.coat(RUST, 1.2, 0.0, 0.95, 1.2),
-		"indigo": Paint.coat(INDIGO, 1.2, 0.0, 0.95, 1.2), "wood": Paint.coat(WOOD, 1.0, 0.0, 0.85),
-		"cord": Paint.coat(CORD, 0.6, 0.0, 0.95), "bone": Paint.coat(BONE, 0.6, 0.0, 0.7),
+	return {"ochre": Paint.coat(Paint.OCHRE_DYE, 1.2, 0.0, 0.95, 1.2), "rust": Paint.coat(Paint.RUST_DYE, 1.2, 0.0, 0.95, 1.2),
+		"indigo": Paint.coat(Paint.INDIGO_DYE, 1.2, 0.0, 0.95, 1.2), "wood": Paint.coat(Paint.NOMAD_WOOD, 1.0, 0.0, 0.85),
+		"cord": Paint.coat(Paint.ROPE, 0.6, 0.0, 0.95), "bone": Paint.coat(Paint.NOMAD_BONE, 0.6, 0.0, 0.7),
 		"scrap": Paint.coat(Paint.GUNMETAL.darkened(0.1), 1.4, 0.6, 0.6), "brass": Paint.coat(Paint.BRASS, 0.6, 0.9, 0.35)}
 
 

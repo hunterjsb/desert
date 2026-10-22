@@ -588,7 +588,7 @@ func _throw(how: StringName, speed: float) -> void:
 	thrown_at = speed
 
 ## The board's deeds as they happen: high over the sand under it, far in one
-## ride, and into a storm by night or in an eclipse.
+## ride, a ride on its make, and into a storm by night or in an eclipse.
 func _deeds(world: World) -> void:
 	var stormy := world.weather.in_storm
 	var into := stormy and not _stormy
@@ -597,6 +597,8 @@ func _deeds(world: World) -> void:
 		return
 	Deeds.measure(world, &"board_height", y - _height(Vector2(player.global_position.x, player.global_position.z)))
 	Deeds.measure(world, &"board_distance", _came)
+	if _came >= world.tuning.deed_make_m:
+		Deeds.done(world, &"quiver", BoardMakes.make_of(board))
 	var day := world.weather.day
 	if into and (not day.is_day(world.time, world.moon.longitude) or day.sun_shown(world.time) < 1.0):
 		Deeds.done(world, &"board_storm")

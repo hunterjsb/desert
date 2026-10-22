@@ -154,10 +154,10 @@ void fragment() {
 	rough = mix(rough, 0.32, cut_in);
 	metallic = mix(metallic, 0.9, cut_in);
 	// Sand on what faces up, and in the low band at the foot; less on what
-	// hasn't been out long.
+	// hasn't been out long, none on what never has (age 0: sealed, in orbit).
 	float up = smoothstep(0.55, 0.95, wn.y);
 	float foot = 1.0 - smoothstep(0.0, 0.07, above);
-	float sand = clamp((up * (0.25 + 0.4 * smoothstep(0.5, 0.75, coarse + 0.3 * grain)) + foot * (0.4 + 0.4 * fine)) * finish.z * (0.35 + 0.65 * min(age, 1.0)), 0.0, 1.0);
+	float sand = clamp((up * (0.25 + 0.4 * smoothstep(0.5, 0.75, coarse + 0.3 * grain)) + foot * (0.4 + 0.4 * fine)) * finish.z * (0.35 + 0.65 * min(age, 1.0)) * smoothstep(0.0, 0.05, age), 0.0, 1.0);
 	col = mix(col, dust * (0.9 + 0.2 * grain), sand * 0.8);
 	rough = mix(rough, 1.0, sand);
 	metallic = mix(metallic, 0.0, sand);

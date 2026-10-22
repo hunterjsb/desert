@@ -621,7 +621,7 @@ a ground radar fitted to a Console, a sand scoop and a sieve, all on one deck.
   (`sites.newly_exposed`), solid once it's out. Under it the nearest five, each its name, how far and which
   way, and a row under that: the sand over it, "bared" or "dug out".
 - **The chart, and the Walker** (built 2026-10-19, the Walker's quest in
-  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-agreed-2026-10-19-hunter-perfect-built)):
   a Console with a radio in its system tuned to the Walker notes each contact its log reads whole, and
   its bearings show on the Map (its navigation filter) once it has noted one: the moon round it north
   up, each bearing a line, three crossing a fix. It keeps evidence of each anomaly tell its system
@@ -983,18 +983,22 @@ Readings, not in the session:
   therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
   are built.
 
-## The burner and the humidifier (proposed, not built)
+## The burner and the humidifier
+
+The burner is agreed and built through the [coalcane chain](power.md#fuel-crops-and-the-burner-agreed-2026-10-22):
+a deck-mounted device with a fuel hopper and cable port. The humidifier remains proposed.
 
 *[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md): "New equipment implied: burner/generator
 (for coalcane fuel), humidifier. Both are crate parts like the existing devices." Implied, not
 specified; direction only.*
 
-- **The burner** consumes coalcane and produces power ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built)).
+- **The burner** consumes coalcane and produces power ([Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22)).
 - **The humidifier** raises humidity for storm crops, a managed input in the late game, with the lamp
   for light ([Farming](farming.md#progression-agreed)). Its water and power draw are not said.
 - **The lamp** that grows the office fern is the existing lamp-on-crate snap.
 
-Readings, not in the session:
+Readings before implementation; the burner choice above resolves its frame and fuel-socket
+questions. The humidifier remains open:
 - **"Crate parts like the existing devices" has two readings.** A part fits a socket (a battery, a
   panel, a hook), and a device is a frame with sockets of its own, and the existing devices include
   both: the shield and the radio seat on a top mount while the condenser and the charger stand on a

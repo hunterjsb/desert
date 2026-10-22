@@ -50,9 +50,9 @@ static func stage(world: World, ship: SurveyorShip, state: Dictionary) -> Dictio
 				break
 	var deck := ship.pod.deck
 	if (named[&"shield"] as Device).host() == null:
-		Stick.put(deck, ship.pod_parts[&"floor_a"], Chassis.TOP, Vector2(-0.2, 0.2), 0.0, named[&"shield"])
+		Stick.put(deck, ship.pod_parts[&"floor_a"], Chassis.TOP, Vector2(PodShell.STORES_X, 0.2), 0.0, named[&"shield"])
 	if (named[&"camp_cell"] as Part).socket == null:
-		Stick.put(deck, ship.pod_parts[&"floor_a"], Chassis.TOP, Vector2(-0.2, -0.2), 0.0, named[&"camp_cell"])
+		Stick.put(deck, ship.pod_parts[&"floor_a"], Chassis.TOP, Vector2(PodShell.STORES_X, -0.2), 0.0, named[&"camp_cell"])
 	for pair: Array in [[&"water", Vector3(1.13, 0.0, 0.2)], [&"food", Vector3(1.13, 0.0, -0.2)]]:
 		var body := named[pair[0]] as RigidBody3D
 		var box := SurveyorRecovery.bounds_of(body)

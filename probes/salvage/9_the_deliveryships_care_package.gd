@@ -134,7 +134,7 @@ func run() -> void:
 	var bursts := drop.find_children("*", "CPUParticles3D", false, false).filter(func(p: CPUParticles3D) -> bool:
 		return p.one_shot and p.emitting)
 	check(bursts.size() == 2, "it hits in a cloud of sand and a ring of it")
-	await simulate(Airdrop.SETTLE + 1.0)
+	await simulate(tuning.airdrop_settle_seconds + 1.0)
 	check(is_instance_valid(cargo) and cargo.get_parent() == world.content and cargo.get_meta(&"catalog") == &"cargo"
 		and not is_instance_valid(drop), "it stays in the world, a container, settled on the sand")
 	check(is_instance_valid(cargo) and cargo.global_position.y < world.height_under(cargo.global_position) + 1.5,
