@@ -139,7 +139,7 @@ func _radio_near(at: Vector3) -> Radio:
 	var nearest := CLIPS_WITHIN
 	for node in get_tree().get_nodes_in_group(Radio.GROUP):
 		var each := node as Radio
-		if each == null or each is SurveyReceiver or not each.is_inside_tree():
+		if each == null or not each.is_inside_tree():
 			continue
 		var d := each.global_position.distance_to(at)
 		if d < nearest:

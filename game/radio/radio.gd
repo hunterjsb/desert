@@ -1,5 +1,5 @@
 class_name Radio
-extends Device
+extends Receiver
 ## A radio you carry, set down or stick on a deck, and tune: a dial from 0
 ## to 2000 kHz, rolled a notch at a time as you look at it, and use to sweep up
 ## to the next carrier, and off past the last; its needle crosses the band on
@@ -45,24 +45,16 @@ const BANDS: Array[StringName] = [AM_BAND, FM_BAND, SW_BAND]
 const POINTS: Array[String] = ["north", "north-north-east", "north-east", "east-north-east", "east",
 	"east-south-east", "south-east", "south-south-east", "south", "south-south-west", "south-west",
 	"west-south-west", "west", "west-north-west", "north-west", "north-north-west"]
-## Its dial's clicks are heard at their level this far off, m; what it plays,
-## out to radio_heard_m.
-const HEARD := 6.0
 ## Of full static, the hiss under a clean signal, and with nothing to hear.
 const CARRIER := 0.2
 const NOTHING := 0.6
 ## A god's tones sound this often, s.
 const TONES_EVERY := 8.0
-## A beacon pings this often from as far as FAINT and this often close by, s.
-## Past FAINT it's faint, past CLEAR clear, nearer strong, and within HERE, m,
-## you're on it.
-const PING_FAR := 2.5
-const PING_NEAR := 0.5
+## A beacon's pings: past FAINT it's faint, past CLEAR clear, nearer strong,
+## and within HERE, m, you're on it.
 const FAINT := 1000.0
 const CLEAR := 250.0
 const HERE := 15.0
-## Tuned within this many widths of a carrier, the dial counts it as on it.
-const ON_IT := 2.0
 ## The gods that play a song now and then on their frequency, silent between:
 ## the Stoker's furnace song and the Eye's drones, one of them each time.
 const SONGS := {&"stoker": [Sounds.RADIO_STOKER], &"eye": [Sounds.RADIO_EYE, Sounds.RADIO_EYE_TUNNEL]}
@@ -73,7 +65,6 @@ const PITCH_SLIDE := 0.04
 const CRACKLE_PITCH := Vector2(1.4, 2.2)
 const CRACKLE_LEVEL := 0.5
 ## The volume knob turns this far a notch, of full.
-const VOLUME_STEP := 0.1
 ## A signal this clean or better comes through whole.
 const WHOLE := 0.5
 ## An anomaly's crackle this deep, heard, is a tell.
@@ -89,6 +80,8 @@ const ONES: Array[String] = ["zero", "one", "two", "three", "four", "five", "six
 	"eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 const TENS: Array[String] = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
 const UNHEARD := -1
+## The weather station's news, as its short report gives it.
+enum News { CLEAR, COMING, HERE }
 ## On FM, it works out again how far each station clears the ground between
 ## once it's moved this far, m, or this long has gone by, s (a satellite
 ## moves); and a tick's move longer than this is the world shifting under it,
@@ -110,14 +103,6 @@ const BAND := Vector2(-0.105, 0.105)
 const KNOB_AT := Vector3(0.06, -0.042, 0.084)
 const VOLUME_AT := Vector3(0.11, -0.06, 0.084)
 const VOLUME_KNOB := 0.55
-## The tuning knob goes once round across the whole dial, 0 to 2000 kHz
-## (gonkhub, 2026-10-20: "make the visual for the knob turning match the
-## bandwidth, so going from 0-20k is one full knob turn"); the volume knob
-## sweeps three quarters round, silent to full.
-const KHZ_A_TURN := Dial.HIGHEST
-const VOLUME_SWEEP := PI * 1.5
-## The needle and knobs catch up with where the dial stands in about this long, s.
-const TURN_SECONDS := 0.05
 ## Past this much dirt a signal fades away as it's lost.
 const LOST := 0.92
 ## Its signal's bus, where interference chews it up (Garble).
@@ -148,7 +133,7 @@ const BAND_LAMP_FROM := Vector3(0.03, LAMP_FROM.y, 0.0)
 const BAND_LAMP_GAP := 0.034
 ## Close up, the view looks at this point on its face.
 const FACE := Vector3(0.0, 0.01, 0.08)
-## The crop survey's altitude as it reads it wanders this far about its
+## The drone's altitude as it reads it wanders this far about its
 ## true one, m, over these periods, s: a working figure, for flavour.
 const SURVEY_WANDER := Vector2(150.0, 70.0)
 const SURVEY_WANDER_S := Vector2(97.0, 31.0)
@@ -159,12 +144,6 @@ static var _sky_for := []
 static var _clips := {}
 static var _letters := RegEx.create_from_string("[a-z]+")
 
-## Whether it's switched on, and where its dial stands, kHz.
-var on := false:
-	set(to):
-		on = to
-		_recompute()
-var frequency := 0.0
 ## Which band it's on (BANDS), and where its FM dial stands, MHz: each band
 ## keeps its own place, so switching back finds where you were. The AM dial
 ## and the shortwave band share `frequency`, kHz, one going on past the
@@ -173,8 +152,6 @@ var band := AM_BAND
 var fm_mhz := Fm.LOWEST
 var am_khz := 0.0
 var sw_khz := Shortwave.LOWEST
-## Where its volume knob stands, 0 silent to 1 full: everything it plays.
-var volume := 1.0
 ## What the dial reads now (OFF to STATIC). Set, as old saves do, it moves
 ## the dial to that channel's carrier, once it knows its world.
 var channel: int:
@@ -182,25 +159,19 @@ var channel: int:
 		return _reads()
 	set(to):
 		_tune_to_channel(to)
-## What the beacon points at, decided when it was tuned to it: {x, z, coord,
-## index} in world metres, or {} for no signal.
-var target := {}
 ## The weather station's last reading (forecast()), and when it was read.
 var reading := {}
 var read_at := -INF
 ## The last god signal it heard: {id, khz, metres, bearing, way, storm,
 ## strength, clean, cut, useful, text}, or {} off a god.
 var reception := {}
-## What it says now, for the line in view; "" while it plays music, or doesn't play.
-var said := ""
-## The crop survey's flight plan as it last read it, and when.
+## The drone's schedule as it last read it, and when.
 var _survey_words := ""
 var _survey_at := -INF
 ## The Walker's log entry as it comes through, the line under it; "" off the Walker.
 var logged := ""
-## The report it reads aloud, as its phrases, how many it has read, and when
-## it last read one, world time. A storm loses phrases of it as it does the
-## line's characters, "..." in their place.
+## What it reads aloud, as its phrases, how many it has read, and when it last
+## read one, world time. It's read whole: a storm roughens the sound, never the words.
 var spoken := PackedStringArray()
 var spoken_count := 0
 var spoken_at := -INF
@@ -211,35 +182,35 @@ var spoken_urgent := false
 var _warned := {}
 ## The reading last checked for an advisory, by when it was read.
 var _checked_at := NAN
+## The news it last gave (News), UNHEARD till it's tuned in; and the Walker's
+## contacts it has read, by when each was made.
+var _news := UNHEARD
+var _contacts_read := {}
 ## How much of the storm's static gets in now, 0 to 1, and of an anomaly's
 ## own, which crackles where a storm's hisses.
 var noise := 0.0
 var odd := 0.0
 var music: AudioStreamPlayer3D
-var hiss: AudioStreamPlayer3D
-## What you turn on its face: the needle across the band, the tuning knob and
-## the volume knob; and where they've got to, kHz and of full.
-var needle: MeshInstance3D
-var knob: MeshInstance3D
-var volume_knob: MeshInstance3D
+## Its band lamp, on its face by the band it's on.
 var band_lamp: MeshInstance3D
-var shown_khz := 0.0
-var shown_volume := 1.0
 var crackle: AudioStreamPlayer3D
 ## The weather station's voice, reading a report a phrase at a time.
 var reader: AudioStreamPlayer3D
 
-var _tuning := Tuning.current()
-## Every voice it plays through, its satellites' too.
-var _voices: Array[AudioStreamPlayer3D] = []
 var _effect_buses: Array[StringName] = []
+var _signal_bus := &""
 var _spoken_station: StringName = &""
 var _last_words := ""
 ## What it hears from the satellites.
 var sky: SkyVoices
-var _signal: AudioStreamPlayer3D
-## Your marks' ticks on its band.
+## Your marks' ticks on its band, as of which change to them (DialMarks.version).
 var _ticks: Array[MeshInstance3D] = []
+var _marks_shown := -1
+## What the dial heard this tick, and for where it stood (tuned_to).
+var _tuned := &""
+var _tuned_key := []
+## Each line's distortion as last worked out, by what it was (_distorted).
+var _distortions := {}
 ## The wheel spun fast: how many notches its last went, when (real seconds)
 ## and which way.
 var _spin := 1.0
@@ -253,7 +224,6 @@ var _glitch: Glitch
 ## signal lamps show it; and the lamps.
 var lamp_level := 0.0
 var _lamps: Array[MeshInstance3D] = []
-var _since_signal := INF
 ## The track it has on air, and whether its static is: a voice only starts
 ## playing a moment after it's told, so it keeps its own word on what it plays.
 var _on_air: AudioStream
@@ -262,8 +232,7 @@ var _on_air_started := NAN
 var _hissing := false
 ## How loud what's on air comes through, 0 to 1, before the volume knob.
 var _level := 1.0
-## What its voice is reading: each phrase's recording (null where the storm
-## took it) and when it starts, s in; the next one due, how far in it is, when
+## What its voice is reading: each word's recording and when it starts, s in; the next one due, how far in it is, when
 ## it ends, and whether it's a Console speaking through it rather than the air.
 var _lines := []
 var _line := 0
@@ -304,7 +273,7 @@ var _margins_t := -INF
 
 
 func _init() -> void:
-	carryable = true
+	super()
 	add_to_group(GROUP)
 	needle = _on_face(Dress.dial_needle())
 	knob = _on_face(Dress.knob())
@@ -342,13 +311,13 @@ func _ready() -> void:
 	sky = SkyVoices.new()
 	add_child(sky)
 	reader = _voice()
+	VoiceWords.warm()
 	if _wanted != UNHEARD:
 		_tune_to_channel(_wanted)
 	shown_khz = _needle_khz()
 	shown_volume = volume
 	_show_dial()
 	_show_marks()
-	Profile.marks_changed.connect(_show_marks)
 	_make_lamps()
 
 
@@ -601,10 +570,10 @@ func toggle_mark() -> bool:
 		return false
 	var near := dial_near_khz()
 	var khz := roundf(dial_khz())
-	if Profile.unmark(khz, near):
+	if DialMarks.remove(world, khz, near):
 		_click(Sounds.MENU_BACK, -6.0)
 		return false
-	Profile.mark(khz, dial_reading(), Color.from_hsv(randf(), MARK_SATURATION, MARK_VALUE), near)
+	DialMarks.add(world, khz, dial_reading(), Color.from_hsv(randf(), MARK_SATURATION, MARK_VALUE), near)
 	_click(Sounds.MENU_CONFIRM, -6.0)
 	return true
 
@@ -613,8 +582,10 @@ func toggle_mark() -> bool:
 ## the lowest past the highest, with a burst of static. A dark radio comes on.
 ## Says whether there was a mark to go to.
 func next_mark() -> bool:
-	var marks := Profile.marks().filter(func(each: Dictionary) -> bool: return on_band(each.khz))
-	if not has_dial_marks() or marks.is_empty() or wrecked() or world == null:
+	if not has_dial_marks() or wrecked() or world == null:
+		return false
+	var marks: Array = DialMarks.all(world).filter(func(each: Dictionary) -> bool: return on_band(each.khz))
+	if marks.is_empty():
 		return false
 	world.salvage.claim(self)
 	var to: float = marks[0].khz
@@ -634,19 +605,6 @@ func next_mark() -> bool:
 	return true
 
 
-## The volume knob: turned `notches` a notch each, between silent and full.
-func turn_volume(notches: int) -> bool:
-	if wrecked() or world == null:
-		return false
-	world.salvage.claim(self)
-	volume = clampf(snappedf(volume + notches * VOLUME_STEP, VOLUME_STEP), 0.0, 1.0)
-	_loudness()
-	return true
-
-
-## Whether it plays: on, powered, whole and in the world.
-func playing() -> bool:
-	return on and powered and not wrecked() and world != null and is_inside_tree()
 
 
 ## The carrier the dial hears now, by its id (&"music", &"beacon" or a god's):
@@ -655,6 +613,15 @@ func playing() -> bool:
 func tuned_to() -> StringName:
 	if world == null:
 		return &""
+	# Read several times a tick: worked out once for where the dial stands then.
+	var key := [Engine.get_physics_frames(), world.time, frequency, band, fm_mhz]
+	if key != _tuned_key:
+		_tuned_key = key
+		_tuned = _nearest_carrier()
+	return _tuned
+
+
+func _nearest_carrier() -> StringName:
 	var best := &""
 	if band == SW_BAND:
 		# Nothing on the ground sends up here: only the sky, heard apart (SkyVoices).
@@ -700,32 +667,21 @@ func track() -> AudioStream:
 	return _on_air if playing() and channel == MUSIC else null
 
 
-func demand_w(t := NAN) -> float:
-	return super(t) + (_tuning.radio_w if on and not wrecked() else 0.0)
-
 
 func stats() -> Dictionary:
 	var now := super()
 	now["tuned"] = dial_reading() if on else "off"
 	# On a frequency you've marked, its name too.
-	var mark := Profile.mark_at(dial_khz(), dial_near_khz()) if on else {}
+	var mark := DialMarks.at(world, dial_khz(), dial_near_khz()) if on and world != null else {}
 	if not mark.is_empty() and mark.name != now.tuned:
 		now["tuned"] += " · " + str(mark.name)
 	return now
 
 
-func _recompute() -> void:
-	super()
-	# Its dial lights only while it's on.
-	for view in painted():
-		if view != null:
-			view.set_instance_shader_parameter(&"lit", 1.0 if on and powered else 0.0)
 
-
-## Its needle and knobs wear its paint too.
 func painted() -> Array[MeshInstance3D]:
 	var out := super()
-	out.append_array([needle, knob, volume_knob, band_lamp])
+	out.append(band_lamp)
 	return out
 
 
@@ -734,6 +690,8 @@ func _process(delta: float) -> void:
 	# Carried, its voices keep up with your eyes every frame, not just every tick.
 	if carried() and music != null:
 		_to_your_ears(true)
+	if _marks_shown != DialMarks.version:
+		_show_marks()
 	var to := _needle_khz()
 	if shown_khz == to and shown_volume == volume:
 		return
@@ -742,10 +700,6 @@ func _process(delta: float) -> void:
 	shown_volume = volume if absf(volume - shown_volume) < 0.001 else lerpf(shown_volume, volume, k)
 	_show_dial()
 
-
-## How far the tuning knob stands turned at a frequency, rad clockwise.
-static func knob_turn(khz: float) -> float:
-	return TAU * khz / KHZ_A_TURN
 
 
 ## Where the needle stands on its window, as the AM dial's kHz across it:
@@ -776,9 +730,11 @@ func _show_marks() -> void:
 	for tick in _ticks:
 		tick.queue_free()
 	_ticks.clear()
-	if not has_dial_marks():
+	# Till it knows its world, it doesn't know the run's marks.
+	_marks_shown = DialMarks.version if world != null else -1
+	if not has_dial_marks() or world == null:
 		return
-	for each: Dictionary in Profile.marks():
+	for each: Dictionary in DialMarks.all(world):
 		if not on_band(each.khz):
 			continue
 		var tick := MeshInstance3D.new()
@@ -827,23 +783,6 @@ func face() -> Transform3D:
 	return global_transform.translated_local(FACE)
 
 
-func _on_face(look: ArrayMesh) -> MeshInstance3D:
-	var view := MeshInstance3D.new()
-	view.mesh = look
-	add_child(view)
-	return view
-
-
-func _physics_process(delta: float) -> void:
-	super(delta)
-	_listen(delta)
-
-
-## Whether you hear it where you are: its words in the line low in your
-## view, or what it plays within earshot.
-func heard() -> bool:
-	var far := global_position.distance_to(world.player.camera.global_position)
-	return far < Broadcast.EARSHOT or far < _tuning.radio_heard_m and volume > 0.0
 
 
 ## What the dial reads, from where it stands.
@@ -921,7 +860,8 @@ func _retuned(before: int) -> void:
 		read_at = -INF
 		_survey_at = -INF
 		_since_signal = INF
-		# Tuned onto the weather station, it reports at once.
+		# Tuned in, a station's news is new to you.
+		_news = UNHEARD
 		spoken_at = -INF
 
 
@@ -954,7 +894,14 @@ func _listen(delta: float) -> void:
 		_set_band(AM_BAND)
 	if band == FM_BAND:
 		_listen_fm(delta, x, z, t)
-		return
+	else:
+		_listen_dial(delta, x, z, t)
+
+
+## What it plays this tick on the AM dial or shortwave: one dial, the
+## shortwave band going on past the AM dial's top, heard alike but for what
+## only shortwave carries (_listen_sw).
+func _listen_dial(delta: float, x: float, z: float, t: float) -> void:
 	var field := world.weather.field
 	# A storm front's static, and any a jammer overhead sprays round the dial.
 	noise = maxf(field.outflow_at(x, z, t), constellation_of(world).jamming(frequency, point_at(x, z), t))
@@ -972,6 +919,50 @@ func _listen(delta: float) -> void:
 			_retuned(_was)
 		_was = now
 	var dial := "%d kHz · " % roundi(frequency)
+	var heard_now := _hear(now, dial, delta, x, z, t)
+	var under: float = heard_now.under
+	var song: AudioStream = heard_now.song
+	var into: float = heard_now.into
+	var quiet: bool = heard_now.quiet
+	if now == GOD and not reception.cut and audible(reception) > 0.0:
+		_transmit(reception.words, reception.useful, t)
+	elif now == BEACON and not target.is_empty() and voice_level() > 0.0:
+		_transmit(said.trim_prefix(dial), true, t)
+	if song != null:
+		_put_on(song, t, into)
+	elif _on_air != null:
+		# A report breaks into the hold music through a burst of static.
+		if _on_air == Sounds.RADIO_CLEAR_SKIES:
+			_click(Sounds.RADIO_TUNE, -6.0)
+		music.stop()
+		_on_air = null
+	if not _is_song(song) and now != MUSIC:
+		music.pitch_scale = 1.0
+	# The static sinks under whatever you can hear, and is all there is when there's nothing.
+	var through := 0.0
+	if now == MUSIC:
+		through = _level
+	elif now == WEATHER or now == GOD:
+		through = 0.0 if quiet or reception.cut else reception.clean
+	elif now == BEACON and not target.is_empty():
+		through = Dial.heard(frequency - Dial.BEACON_KHZ, _tuning)
+	elif now == CITY:
+		through = 0.0 if reception.cut else reception.clean
+	# The satellites, all at once over whatever else it hears.
+	var sky_heard := sky.listen(delta, x, z, t)
+	through = maxf(through, sky_heard)
+	var tu := _listen_sw(sky_heard, x, z, t) if band == SW_BAND else 0.0
+	roar.volume_db = linear_to_db(tu + 0.0001) + knob_db()
+	through = maxf(through, tu * 0.5)
+	through = maxf(through, _natural(delta, x, z, t))
+	_mix(delta, now, through, under, t)
+
+
+## What the dial hears on the channel it reads, `now`, at x, z, time t: what
+## it says and plays, and {under: the hiss under it, song: what it puts on the
+## air or null, into: where that song is, s, or NAN, quiet: a god between songs}.
+func _hear(now: int, dial: String, delta: float, x: float, z: float, t: float) -> Dictionary:
+	var field := world.weather.field
 	var under := NOTHING
 	var song: AudioStream = null
 	var into := NAN
@@ -1051,56 +1042,36 @@ func _listen(delta: float) -> void:
 			under = NOTHING if reception.cut else lerpf(NOTHING, CARRIER, reception.clean)
 			_level = 0.0 if reception.cut else sqrt(reception.clean)
 			_chatter(reception)
-	if now == GOD and not reception.cut and audible(reception) > 0.0:
-		_transmit(reception.words, t)
-	elif now == BEACON and not target.is_empty() and voice_level() > 0.0:
-		_transmit(said.trim_prefix(dial), t)
-	if song != null:
-		_put_on(song, t, into)
-	elif _on_air != null:
-		# A report breaks into the hold music through a burst of static.
-		if _on_air == Sounds.RADIO_CLEAR_SKIES:
-			_click(Sounds.RADIO_TUNE, -6.0)
-		music.stop()
-		_on_air = null
-	if not _is_song(song) and now != MUSIC:
-		music.pitch_scale = 1.0
-	# The static sinks under whatever you can hear, and is all there is when there's nothing.
-	var through := 0.0
-	if now == MUSIC:
-		through = _level
-	elif now == WEATHER or now == GOD:
-		through = 0.0 if quiet or reception.cut else reception.clean
-	elif now == BEACON and not target.is_empty():
-		through = Dial.heard(frequency - Dial.BEACON_KHZ, _tuning)
-	elif now == CITY:
-		through = 0.0 if reception.cut else reception.clean
-	# The satellites, all at once over whatever else it hears.
-	var sky_heard := sky.listen(delta, x, z, t)
-	through = maxf(through, sky_heard)
-	if band == SW_BAND and wire.x >= _tuning.sw_wire_m and sky_heard >= WHOLE and volume > 0.0 and heard():
+	return {"under": under, "song": song, "into": into, "quiet": quiet}
+
+
+## What only shortwave carries, at x, z and time t: a satellite clear on a long
+## wire (the deed), and Tu's roar, under the rest and over the static, how loud.
+func _listen_sw(sky_heard: float, x: float, z: float, t: float) -> float:
+	if wire.x >= _tuning.sw_wire_m and sky_heard >= WHOLE and volume > 0.0 and heard():
 		Deeds.done(world, &"long_wire")
-	# Tu's roar, up on shortwave, under the rest and over the static.
-	var tu := 0.0
-	if band == SW_BAND:
-		tu = Shortwave.roar(point_at(x, z), world.shape.history.sub_tu, frequency, t, world.weather.day.tu_turn(t),
-			_tuning) * antenna_gain()
-		if tu >= CRACKLE_TELL and volume > 0.0 and heard():
-			Deeds.done(world, &"tu_roar")
-	roar.volume_db = linear_to_db(tu + 0.0001) + knob_db()
-	through = maxf(through, tu * 0.5)
-	through = maxf(through, _natural(delta, x, z, t))
+	var tu := Shortwave.roar(point_at(x, z), world.shape.history.sub_tu, frequency, t, world.weather.day.tu_turn(t),
+		_tuning) * antenna_gain()
+	if tu >= CRACKLE_TELL and volume > 0.0 and heard():
+		Deeds.done(world, &"tu_roar")
+	return tu
+
+
+## The dial's static, crackle and lamps under what comes `through`, 0 to 1,
+## over `under`; then what plays chewed up as dirty as it comes, glitching.
+func _mix(delta: float, now: int, through: float, under: float, t: float) -> void:
 	_show_lamps(through, delta)
 	# Static only while nothing plays (gonkhub, 2026-10-19): interference is in
 	# what you hear, not hiss laid over it.
 	var ducked := 1.0 - smoothstep(STATIC_GONE.x, STATIC_GONE.y, through)
 	hiss.volume_db = linear_to_db(maxf(noise, under) * ducked + 0.0001) + knob_db()
 	# An anomaly's static sputters: the hiss thinned and pitched up, cut in and
-	# out in short bursts, the deeper the more of it.
+	# out in short bursts, the deeper the more of it. It's the tell no forecast
+	# gives, so it sputters over whatever plays rather than sinking under it.
 	var burst := Interference.crackle(t)
 	crackle.pitch_scale = lerpf(CRACKLE_PITCH.x, CRACKLE_PITCH.y, burst.y)
-	crackle.volume_db = linear_to_db(odd * burst.x * CRACKLE_LEVEL * ducked + 0.0001) + knob_db()
-	if odd >= CRACKLE_TELL and volume > 0.0 and heard():
+	crackle.volume_db = linear_to_db(odd * burst.x * CRACKLE_LEVEL + 0.0001) + knob_db()
+	if odd >= CRACKLE_TELL and burst.x > 0.0 and volume > 0.0 and heard():
 		Deeds.done(world, &"tells", &"crackle")
 	_loudness()
 	# What it plays, chewed up as dirty as it comes through, glitching.
@@ -1241,7 +1212,7 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 			music.stop()
 			_on_air = null
 	elif reception.id == Fm.TOWER:
-		# Port Morgan Control Tower: no music, the Surveyor's schedule read every
+		# Port Morgan Control Tower: no music, the drone's schedule read every
 		# survey_report_every s and at once as you tune in, while it's heard at all.
 		if _on_air != null:
 			music.stop()
@@ -1252,7 +1223,7 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 			_survey_words = survey_words(t)
 			_survey_at = t
 			_say_aloud(_survey_words, false, t)
-			if heard():
+			if heard() and Settings.radio_voice:
 				Deeds.done(world, &"flight_plan")
 		said = "%.1f MHz · Port Morgan Control Tower · %s" % [reception.mhz,
 			_survey_words if reception.heard > 0.0 and _survey_words != "" else "static"]
@@ -1359,15 +1330,27 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 		"way": Dial.way(world.shape.history, p, q, ground, say_point, _tuning), "storm": storm,
 		"warp": slid, "strength": strength, "clean": clean, "cut": Interference.cut(storm, t, id, _tuning),
 		"share": share, "dirt": dirt, "rod": turned, "broadside": whole, "useful": words.useful, "calm": words.get("calm", false), "words": words.text,
-		"spoken": words.get("spoken", PackedStringArray()), "text": Interference.distort(words.text, clean, t, id)}
+		"text": _distorted(id, words.text, clean, t)}
 	if words.has("log"):
 		# Its log goes out weaker than its forecast: whole only near it.
 		var near := _tuning.walker_log_m
 		heard["log_clean"] = clean * (1.0 - smoothstep(near.x, near.y, metres))
-		heard["log"] = Interference.distort(words.log, heard.log_clean, t, &"walker_log")
+		heard["log"] = _distorted(&"walker_log", words.log, heard.log_clean, t)
 		heard["contact"] = words.contact
 		heard["log_words"] = words.log if heard.log_clean >= WHOLE else ""
 	return heard
+
+
+## A line as interference leaves it (Interference.distort), worked out again
+## only when its words, its slice of time or how clean it comes change: what
+## it says is read every tick but changes a few times a second.
+func _distorted(id: StringName, line: String, clean: float, t: float) -> String:
+	var key := [line, floori(t / Interference.SLICE), snappedf(clean, 0.02)]
+	var last: Array = _distortions.get(id, [])
+	if last.is_empty() or last[0] != key:
+		last = [key, Interference.distort(line, clean, t, id)]
+		_distortions[id] = last
+	return last[1]
 
 
 ## The living city's chatter as it reaches a place at world time t: how far
@@ -1422,7 +1405,9 @@ static func audible(heard: Dictionary) -> float:
 ## The bus its signal plays through, the music, a god's song or tones: the
 ## interference chain (Garble) on into the radio's own. One for every radio.
 func signal_bus() -> StringName:
-	var bus := StringName("%s_%d" % [SIGNAL_BUS, get_instance_id()])
+	if _signal_bus == &"":
+		_signal_bus = StringName("%s_%d" % [SIGNAL_BUS, get_instance_id()])
+	var bus := _signal_bus
 	if AudioServer.get_bus_index(bus) == -1:
 		AudioServer.add_bus()
 		var i := AudioServer.bus_count - 1
@@ -1551,14 +1536,6 @@ func _off_air() -> void:
 	_hissing = false
 
 
-## A station's signal again each `seconds`, at once on tuning in.
-func _every(delta: float, seconds: float, stream: AudioStream) -> void:
-	_since_signal += delta
-	if _since_signal >= seconds:
-		_since_signal = 0.0
-		_signal.stream = stream
-		_signal.play()
-
 
 ## A line as a voice reads it: units in words and the line's dots as pauses,
 ## every word of it. (It used to lose words to a weak signal, so numbers went
@@ -1573,20 +1550,9 @@ static func spoken_words(line: String) -> String:
 			word = word.replace("s", "seconds")
 		out.append(word)
 	return " ".join(out)
-## A report as it comes through at `clean`: as many of its phrases lost as
-## the signal loses, gone into the static.
-static func speech(phrases: PackedStringArray, clean: float, t: float) -> PackedStringArray:
-	var out := PackedStringArray()
-	var slice := floori(t / Interference.SLICE)
-	for i in phrases.size():
-		out.append("..." if float(hash([slice, i, "spoken"]) & 0xffff) / 65536.0 < 1.0 - clean else phrases[i])
-	return out
-
-
-## What the weather station says aloud of its last reading, in short radio
-## phrases, the storm first: "Storm coming. From the north-east. Four minutes."
-## Wind and the long outlook stay in the continuous written report.
-func report(t: float, _long := {}) -> PackedStringArray:
+## What the weather station says aloud of its last reading, two to four words
+## a sentence, the storm first: "Storm coming. From the north-east. Four minutes."
+func report(t: float) -> PackedStringArray:
 	var out := PackedStringArray()
 	if reading.is_empty():
 		out.append("No reading.")
@@ -1650,20 +1616,6 @@ static func clip(phrase: String) -> AudioStream:
 	return _clips[phrase]
 
 
-## A report read out from the top: the station's tones first, then each
-## phrase after the last with a breath between, those the storm took left
-## as gaps of their own length, the static in them. While a Console speaks
-## through it, a report due goes unread.
-func _read_out(heard: PackedStringArray, whole: PackedStringArray) -> void:
-	spoken = heard
-	if _local and not _lines.is_empty():
-		return
-	_since_signal = INF
-	_hush()
-	if Settings.radio_voice:
-		_queue(heard, whole, Sounds.RADIO_TONES.get_length() / maxf(_signal.pitch_scale, 0.5))
-
-
 ## A Console in its system speaking through it: `phrases` read after the
 ## Console's tones from its speaker, at its knob, whatever it's tuned to and
 ## on or off, since they don't come over the air.
@@ -1671,21 +1623,23 @@ func announce(phrases: PackedStringArray) -> void:
 	_hush()
 	if Settings.radio_voice:
 		_local = true
-		_queue(phrases, phrases, Sounds.RADIO_TONES.get_length())
+		_queue(phrases, Sounds.RADIO_TONES.get_length())
 
 
-func _queue(heard: PackedStringArray, whole: PackedStringArray, lead: float) -> void:
+## Its reader's lines for `phrases`, each word's recording due after the last,
+## starting `lead` s in.
+func _queue(phrases: PackedStringArray, lead: float) -> void:
 	var profile: Dictionary = {} if _local else _tuning.radio_voice_profiles.get(tuned_to(), {})
 	reader.pitch_scale = profile.get("rate", 1.0)
 	reader.bus = Sounds.radio_bus() if _local else _speech_bus(profile)
 	var at := lead + STOP_GAP
-	for i in whole.size():
-		for entry: Array in RadioSpeech.plan(whole[i], Radio.clip):
+	for phrase in phrases:
+		for entry: Array in RadioSpeech.plan(phrase, Radio.clip):
 			var own: AudioStream = entry[0]
-			_lines.append([own if heard[i] != "..." else null, at])
+			_lines.append([own, at])
 			_done_at = at + own.get_length() / reader.pitch_scale
 			at = _done_at + (STOP_GAP if entry[1] else _tuning.radio_word_gap_seconds)
-		if whole[i].ends_with(","):
+		if phrase.ends_with(","):
 			at = _done_at + COMMA_GAP
 
 
@@ -1732,10 +1686,12 @@ func _hush() -> void:
 	_local = false
 
 
-## The weather station on the air at world place x, z and time t: an advisory
-## the moment one's due, breaking off whatever it's saying; else its regular
-## report every radio_report_every s, and at once as you tune in. Only while
-## its signal reaches you at all; read whole however dirty it comes.
+## The weather station on the air at world place x, z and time t, speaking
+## only with news (Hunter, 2026-10-19: "make the sentences shorter still. and
+## probably announce less often"): an advisory the moment one's due, breaking
+## off whatever it's saying; its short report when its news changes, and as you
+## tune in to anything but calm; and each new contact in the Walker's log once.
+## Only while its signal reaches you at all; read whole however dirty it comes.
 func _report(x: float, z: float, t: float) -> void:
 	if Radio.audible(reception) <= 0.0:
 		return
@@ -1754,22 +1710,40 @@ func _report(x: float, z: float, t: float) -> void:
 		var advisory := Advisories.check(self, reading, x, z, t)
 		if not advisory.is_empty() and not _warned_of(advisory):
 			_warned[advisory.kind] = advisory.at
+			_news = news(t)
 			_say_aloud(advisory.words, true, t)
 			return
-	if t >= spoken_at + _tuning.radio_report_every or t < spoken_at:
-		var report := report_words(x, z, t)
-		if reception.get("log_words", "") != "":
-			report += ". " + reception.log_words
-		_say_aloud(report, false, t)
+	# News waits for what's being read to finish, never cutting it short.
+	var now := news(t)
+	if now != _news and _lines.is_empty():
+		var was := _news
+		_news = now
+		# Tuned in to calm, its Clear Skies song says so.
+		if now != News.CLEAR or was != UNHEARD:
+			_say_aloud(" ".join(report(t)), false, t)
+			return
+	var contact: Dictionary = reception.get("contact", {})
+	if not contact.is_empty() and reception.get("log_words", "") != "" and not _contacts_read.has(contact.t) \
+			and _lines.is_empty():
+		_contacts_read[contact.t] = true
+		_say_aloud(reception.log_words, false, t)
 
 
-## A god's words or a beacon's bearing, without the dial's visual prefix.
-## A changing line has a bounded cadence; an unchanged reading repeats less often.
-func _transmit(words: String, t: float) -> void:
-	if words.strip_edges() == "" or not _lines.is_empty():
+## The weather station's news by its last reading: all clear, a storm coming
+## or a storm here.
+func news(t: float) -> int:
+	if reading.is_empty() or not reading.stormy and Transmissions.calm(reading, t):
+		return News.CLEAR
+	return News.HERE if reading.stormy else News.COMING
+
+
+## A god's words or a beacon's bearing, without the dial's prefix, read as
+## news: as you tune in, then only when they change, at most once each
+## radio_report_every. A litany is never news: its line is read once as you tune in.
+func _transmit(words: String, useful: bool, t: float) -> void:
+	if words.strip_edges() == "" or words == _last_words or not _lines.is_empty():
 		return
-	var every := _tuning.radio_report_every if words == _last_words else Transmissions.IDLE_EVERY
-	if t < spoken_at + every and t >= spoken_at:
+	if _last_words != "" and (not useful or t >= spoken_at and t < spoken_at + _tuning.radio_report_every):
 		return
 	_last_words = words
 	_say_aloud(words, false, t)
@@ -1809,61 +1783,25 @@ func _say_aloud(words: String, urgent: bool, t: float) -> void:
 	if not _local or _lines.is_empty():
 		_hush()
 		if Settings.radio_voice:
-			_queue(spoken, spoken, 0.0)
+			_queue(spoken, 0.0)
 
 
-## Frontier Ag's crop survey's flight plan as Port Morgan Control Tower reads
-## it out on FM at world time t (gonkhub, 2026-10-21: "give Port Morgan a
-## Surveyor schedule announcement every 5mins on an FM channel. Port Morgan
-## Control Tower can be an FM broadcast that we use for this and other
-## worldbuilding tracks"): its speed over the ground, its altitude (a working
-## figure wandering about its true one: flavour for now) and how long until
-## it's over Port Morgan, which it passes every lap. Said "elevation": the
-## bundled voice has no "altitude" yet.
+## The drone's schedule as Port Morgan Control Tower reads it out on FM at
+## world time t, in short sentences (gonkhub, 2026-10-21: "report its current
+## speed, altitude (fluff ...) and ETA to Port Morgan"): its altitude (a
+## working figure wandering about its true one, for flavour), its speed over
+## the ground and how long until it's over the port, which it passes every lap.
 func survey_words(t: float) -> String:
 	var orbit: Satellite = constellation_of(world).orbits[Airdrop.SURVEYOR]
 	var speed := orbit.at(t + 0.5).distance_to(orbit.at(t - 0.5)) * orbit.radius
 	var altitude := orbit.height(t) * orbit.radius + SURVEY_WANDER.x * sin(t / SURVEY_WANDER_S.x) \
 		+ SURVEY_WANDER.y * sin(t / SURVEY_WANDER_S.y)
-	var words := "Surveyor · Speed %d m/s · Elevation %d metres" % [roundi(speed), roundi(altitude / 10.0) * 10]
+	var words := "Port Morgan tower · Drone · Altitude %d · Speed %d" % [roundi(altitude / 100.0) * 100,
+		roundi(speed / 10.0) * 10]
 	var eta := orbit.until_through(t)
 	if eta == INF:
 		return words
-	var when := "%d seconds" % maxi(roundi(eta / 10.0) * 10, 10) if eta < 60.0 else (
-		"1 minute" if eta < 90.0 else "%d minutes" % roundi(eta / 60.0))
-	return words + " · Port Morgan in " + when
-
-
-## The weather station's regular report for where the radio stands at world
-## time t: the local time, the wind there and the temperature, all read from
-## the world, then its outlook.
-func report_words(x: float, z: float, t: float) -> String:
-	var day := world.weather.day
-	var local := day.time_of_day(t, Sphere.longitude(point_at(x, z)))
-	var minutes := roundi(local * 24.0 * 60.0) % (24 * 60)
-	var wind := world.weather.field.steady_wind_at(x, z, t)
-	var blowing := "Calm" if wind.length() < 0.5 else "Wind %d m/s from the %s" % [roundi(wind.length()),
-		say_point(bearing(-wind))]
-	var heat := roundi(world.weather.field_temperature(global_position, t))
-	var degrees := "%d degrees" % heat if heat >= 0 else "minus %d degrees" % -heat
-	return "Weather station · Local time %d:%02d · %s · Temperature %s · %s" % [minutes / 60, minutes % 60, blowing,
-		degrees, outlook_words(t)]
-
-
-## The weather station's outlook from its last reading, for its report: the
-## storm it's in or the next, without the wind now, which the report gives.
-func outlook_words(t: float) -> String:
-	if reading.is_empty():
-		return "No reading"
-	var from := say_point(reading.from)
-	var horizon := roundi(_tuning.radio_forecast_minutes)
-	if reading.stormy:
-		return "In a storm from the %s, winds to %d m/s, %s" % [from, roundi(reading.wind),
-			"clearing in %s" % span(reading.change - t) if reading.change < INF else "no clearing for %d min" % horizon]
-	if reading.change == INF:
-		return "Clear for %d min and more" % horizon
-	return "A storm from the %s in %s, winds to %d m/s, %s" % [from, span(reading.change - t), roundi(reading.wind),
-		"for %s" % span(reading.back - reading.change) if reading.back < INF else "lasting past %d min" % horizon]
+	return words + " · Port Morgan, " + spoken_span(eta)
 
 
 ## The weather station's words for its last reading.
@@ -1957,14 +1895,6 @@ static func span(seconds: float) -> String:
 	return "%d s" % maxi(0, roundi(seconds)) if seconds < 90.0 else "%d min" % roundi(seconds / 60.0)
 
 
-## Where the volume knob puts everything it plays, dB: a fixed step a notch,
-## as ears hear loudness, from radio_loudness_db at full down through
-## radio_volume_range_db to barely there at a tenth, and silence at none.
-func knob_db() -> float:
-	if volume <= 0.0:
-		return -80.0
-	return _tuning.radio_loudness_db - _tuning.radio_volume_range_db * (1.0 - volume)
-
 
 ## The knob on what it plays besides the hiss: the music, a station's tones
 ## and the weather station's voice, which comes and goes with its signal as a song does.
@@ -1978,57 +1908,8 @@ func _loudness() -> void:
 		_signal.volume_db = db
 
 
-## Whether it's on you, in what you carry (Suit): then it plays straight into
-## your ears.
-func carried() -> bool:
-	return has_meta(&"carried")
 
 
-## Its voices sound from its middle, the point your hands hold ahead of you.
-## Carried, they sound from just before your eyes, where that would be held
-## as near as you can bring it (Hands.nearest_hold), straight ahead, with no
-## panning, so looking round never moves them from side to side:
-## as loud as that, and stowing one held close changes nothing you hear. Out
-## again, they're back on the set.
-func _to_your_ears(on_you: bool) -> void:
-	for each: AudioStreamPlayer3D in _voices:
-		_place(each, on_you)
 
 
-func _place(voice: AudioStreamPlayer3D, on_you: bool) -> void:
-	var player := get_parent() as Player
-	# No side to it in your ears, however fast you look round.
-	voice.panning_strength = 0.0 if on_you else 1.0
-	if on_you and player != null and voice.is_inside_tree():
-		var eyes := player.camera.global_transform
-		voice.global_position = eyes.origin - eyes.basis.z.normalized() * player.hands.nearest_hold_of(self)
-	else:
-		voice.position = Hands.middle_of(self)
 
-
-## A click of its dial, heard at its level within HEARD, from where its voices are.
-func _click(stream: AudioStream, db: float) -> void:
-	var voice := Sounds.world_voice(stream, db, HEARD)
-	voice.autoplay = true
-	voice.finished.connect(voice.queue_free)
-	add_child.call_deferred(voice)
-	_place.call_deferred(voice, carried())
-
-
-## One of its voices: as loud as its knob at full allows, past the cap other
-## things in the world have.
-func _voice() -> AudioStreamPlayer3D:
-	return add_voice(Sounds.radio_bus())
-
-
-## A voice of its own through `bus`, which goes on into the radio's (the
-## satellites' each have one), placed as its others are.
-func add_voice(bus: StringName) -> AudioStreamPlayer3D:
-	var out := Sounds.world_voice(null, 0.0, _tuning.radio_heard_m)
-	out.max_db = _tuning.radio_loudness_db + 3.0
-	# Through a small speaker: its lows cut.
-	out.bus = bus
-	add_child(out)
-	out.position = Hands.middle_of(self)
-	_voices.append(out)
-	return out

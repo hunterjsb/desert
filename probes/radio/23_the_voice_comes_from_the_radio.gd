@@ -1,11 +1,9 @@
 extends WeatherProbe
-## Radio probe 23: the weather station's voice comes from the radio. It reads
-## a report in a few short phrases, not its line: a storm on its way is
-## "Storm coming. From the <point>. <when>.", one on you
-## "Storm here. Clearing, <when>.", and every phrase it can
-## say is in its bank of recordings. Breaking in on the clear-skies scenario's radio, it reads from
-## the radio itself, on the radio's bus, after its tones, the volume knob
-## turning it down.
+## Radio probe 23: the weather station's voice comes from the radio. Its
+## report is short sentences (Hunter, 2026-10-19: "make the sentences shorter
+## still"), and every phrase it can say is in its bank of recordings. Breaking
+## in on the clear-skies scenario's radio with news, it reads from the radio
+## itself, on the radio's bus, the volume knob turning it down.
 
 
 func run() -> void:
@@ -25,9 +23,10 @@ func run() -> void:
 	radio.reading = {"stormy": true, "change": t + 600.0, "back": INF, "wind": 26.4, "from": from}
 	var on_you := radio.report(t)
 	print("coming: \"%s\"; on you: \"%s\"" % [" ".join(coming), " ".join(on_you)])
-	check(" ".join(coming) == "Storm coming. From the %s. Four minutes." % radio.say_point(from),
-		"a storm on its way, in three short phrases")
-	check(" ".join(on_you) == "Storm here. Clearing, ten minutes.", "and one on you")
+	var longest := 0
+	for sentence in (" ".join(coming) + " " + " ".join(on_you)).split(".", false):
+		longest = maxi(longest, sentence.split(" ", false).size())
+	check(longest <= 5, "a storm on its way or on you, in short sentences (%d words at most)" % longest)
 
 	var missing := {}
 	for stormy in [false, true]:
@@ -35,7 +34,7 @@ func run() -> void:
 			for wind in [0.0, 7.4, 33.0, 61.0, 99.0, 140.0]:
 				for ahead in [0.0, 4.0, 44.0, 89.0, 90.0, 300.0, 1234.0, 2400.0, 9000.0, INF]:
 					radio.reading = {"stormy": stormy, "change": t + ahead, "back": INF, "wind": wind, "from": bearing}
-					for phrase in radio.report(t, radio.reading):
+					for phrase in radio.report(t):
 						if Radio.clip(phrase) == null:
 							missing[phrase] = true
 	check(missing.is_empty(), "every phrase it can say is in its bank (missing: %s)" % ", ".join(missing.keys()))
@@ -50,8 +49,8 @@ func run() -> void:
 			break
 	print("it reads \"%s\", playing %s" % [" ".join(radio.spoken), radio.reader.stream.resource_path
 		if radio.reader.stream != null else "nothing"])
-	check(radio.spoken_count == before + 1 and " ".join(radio.spoken).contains("storm") and radio.reader.playing,
-		"the scheduled report is read aloud from bundled recordings")
+	check(radio.spoken_count == before + 1 and " ".join(radio.spoken).to_lower().contains("storm") and radio.reader.playing,
+		"its news is read aloud from bundled recordings")
 	check(radio.reader.get_parent() == radio and radio.reader.global_position.is_equal_approx(
 		radio.to_global(Hands.middle_of(radio))) and radio.reader.bus == radio.signal_bus(),
 		"from the radio through its own speaker and interference chain")

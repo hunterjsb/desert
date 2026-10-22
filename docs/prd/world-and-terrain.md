@@ -1049,7 +1049,18 @@ sheet. The new capture fixtures drain their worlds before renderer shutdown;
 three pre-existing orphan Shelter nodes remain, reproduced in the unmodified
 horizon fixture. That existing allocation issue is not attributed to this change.
 
-The finite-drone shader/gate also passes the foreground-ridge and above-drone
-GPU cases on Forward+ and Compatibility; ordinary worn shadows match the prior
-shader exactly. Combined CI/native builds and player
-acceptance are pending; this is not a new release or seamless spherical physics.
+**The drone against the ground** (2026-10-21). The drone is drawn as a near
+angular proxy of a craft 6 km up ([Radio](radio-sound-and-atmosphere.md#the-drone)),
+so terrain between must hide it and it must never paint over nearer dunes.
+Decided: give the proxy's hull, overlay and muzzle finite depth along their own
+camera ray (camera-space vertices scaled by slant over proxy distance, clamped
+only past the far plane), and hide it by the sight line's lowest altitude
+against SurfaceProjection, observer altitude included, not the sky's horizon
+mask. Only `crop_survey_worn.gdshader` defines SKY_PROXY over the shared
+`worn_surface.gdshaderinc`; ordinary worn materials keep their native projection.
+Measured with `look/drone_horizon` on Forward+ and Compatibility: no drone
+pixels over a ridge 600 m off and 81 above it at 1280×720; from 10 km up the
+drone shows against farther ground (hull 1,379 px), where all-background depth
+hid it; ordinary worn shadows match the prior shader pixel for pixel.
+Combined CI/native builds and player acceptance are pending; this is not a new
+release or seamless spherical physics.

@@ -14,7 +14,7 @@ const SLANT := PI / 6.0
 const CLEAR := 0.12
 
 ## The radio the view closes in on, or null, and how far in it is, 0 to 1.
-var radio: Radio
+var radio: Receiver
 var close := 0.0
 
 var _player: Player
@@ -35,7 +35,7 @@ func _ready() -> void:
 ## steps bring the view in (gonkhub, 2026-10-19: "Bring back the pov zoom when
 ## using fine-tune shift scrolling"), unless dial_close_up has every tuning
 ## action do it.
-func tuned(by: Radio, fine := false) -> void:
+func tuned(by: Receiver, fine := false) -> void:
 	if not fine and not _tuning.dial_close_up:
 		return
 	radio = by

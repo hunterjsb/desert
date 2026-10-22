@@ -1,10 +1,9 @@
 extends WeatherProbe
-## Radio probe 47: the Surveyor's schedule. Frontier Ag's crop survey
+## Radio probe 47: the drone's schedule. Frontier Ag's crop-survey drone
 ## passes over Port Morgan every lap, its route swinging round the port lap
-## by lap. Port Morgan Control Tower, on FM beside the port, reads the
-## Surveyor's speed, altitude and how long until it's over Port Morgan, and
-## that's when it is; it reads again only once survey_report_every has gone
-## by. Hearing it is Flight Plan.
+## by lap. Port Morgan Control Tower, on FM beside the port, reads aloud how
+## long until it's over the port, and that's when it is; it reads again only
+## once survey_report_every has gone by. Hearing it is Flight Plan.
 
 ## How far from the port's middle the radio stands, m.
 const NEAR := 800.0
@@ -48,7 +47,7 @@ func run() -> void:
 		func(each: Dictionary) -> bool: return each.id == Fm.TOWER)[0].mhz
 	await physics_frames(5)
 	print("tuned to the tower: \"%s\"" % radio.said)
-	check(radio.channel == Radio.SURVEY and radio.said.contains("Port Morgan in"), "the tower reads its schedule")
+	check(radio.channel == Radio.SURVEY and radio.spoken_count > 0, "the tower reads its schedule aloud")
 	check(get_node(^"/root/Profile").did(&"flight_plan"), "hearing it is Flight Plan")
 	var eta := orbit.until_through(world.time)
 	var off := rad_to_deg(orbit.at(world.time + eta).normalized().angle_to(port))

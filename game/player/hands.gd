@@ -409,7 +409,7 @@ func interact() -> bool:
 	if _player.world.stoker != null and _player.world.stoker.interact(_player):
 		return true
 	# A radio in your hands with frequencies marked: use goes to the next.
-	if held is Radio and phase == Phase.HELD and (held as Radio).next_mark():
+	if held is Receiver and phase == Phase.HELD and (held as Receiver).next_mark():
 		_player.close_up.tuned(held)
 		return true
 	if look_bed and held == null and look_device == null and look_part == null:
@@ -429,7 +429,7 @@ func interact() -> bool:
 		# Marking Home requires ownership; a refusal must not claim its host.
 		if not look_device is HomeBeacon:
 			_player.world.salvage.claim(look_device)
-		if look_device is Radio:
+		if look_device is Receiver:
 			_player.close_up.tuned(look_device)
 		return true
 	if held == null:
@@ -448,7 +448,7 @@ func interact() -> bool:
 		used = (held as Part).use(_player, look_point)
 	elif held is Device:
 		used = (held as Device).use(_player, look_point)
-	if used and held is Radio:
+	if used and held is Receiver:
 		_player.close_up.tuned(held)
 	if used or _player.waist.take_from_hands():
 		return true
@@ -610,8 +610,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("mark_frequency"):
 		# A radio in your hands: mark where its dial stands, or unmark it.
-		if held is Radio and phase == Phase.HELD and (held as Radio).has_dial_marks() and not (held as Radio).wrecked():
-			(held as Radio).toggle_mark()
+		if held is Receiver and phase == Phase.HELD and (held as Receiver).has_dial_marks() and not (held as Receiver).wrecked():
+			(held as Receiver).toggle_mark()
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
@@ -661,30 +661,30 @@ func _tunes(event: InputEvent) -> bool:
 ## The radio the tuning actions work: the one you look at, or the first in
 ## the system of a console you look at, unless you're reeling the line in
 ## your hand; else the one you hold, while there's no line at your waist to reel.
-func dialled() -> Radio:
+func dialled() -> Receiver:
 	_look()
 	return dial()
 
 
 ## The radio the tuning actions work, as your look last fell.
-func dial() -> Radio:
+func dial() -> Receiver:
 	if reel.in_hand() != null:
 		return null
 	var radio := tuned_by_look()
-	if radio == null and held is Radio and phase == Phase.HELD and reel.line() == null:
+	if radio == null and held is Receiver and phase == Phase.HELD and reel.line() == null:
 		radio = held
 	return radio
 
 
 ## The radio your look tunes: the one you look at, or the first in the system
 ## of a console you look at.
-func tuned_by_look() -> Radio:
-	if look_device is Radio:
+func tuned_by_look() -> Receiver:
+	if look_device is Receiver:
 		return look_device
 	var console := look_device as Console
 	if console != null:
 		for device in console._system():
-			if device is Radio:
+			if device is Receiver:
 				return device
 	return null
 
@@ -849,7 +849,7 @@ func _physics_process(delta: float) -> void:
 		_stroke = 0.0
 	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
 	# A radio in your hands you tune turns its face up to your eyes, to read its dial.
-	if held is Radio and _player.close_up.radio == held:
+	if held is Receiver and _player.close_up.radio == held:
 		var to_eyes := Basis(Vector3.RIGHT, _player.camera.rotation.x)
 		_carry = _carry.slerp(to_eyes, 1.0 - exp(-HOLD_EASE * delta)).orthonormalized()
 	match phase:

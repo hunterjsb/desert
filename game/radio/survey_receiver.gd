@@ -1,6 +1,7 @@
 class_name SurveyReceiver
-extends Radio
-## A loop receiver for the old ruins' beacons, not a full broadcast radio.
+extends Receiver
+## A loop receiver for the old ruins' beacons, the cheaper tier below the
+## broadcast radio: its own set, with no bands, gods or sky to carry.
 
 const LOOK := preload("res://game/look/survey_receiver_looks.gd")
 const HOW_TO := "survey_receiver"
@@ -25,13 +26,16 @@ var _pulse_sound: AudioStream
 func _init() -> void:
 	super()
 	frequency = Dial.BEACON_KHZ
+	needle = _on_face(LOOK.needle())
+	knob = _on_face(LOOK.knob())
+	volume_knob = _on_face(LOOK.knob())
 
 
 func _ready() -> void:
 	super()
-	needle.mesh = LOOK.needle()
-	knob.mesh = LOOK.knob()
-	volume_knob.mesh = LOOK.knob()
+	hiss = _voice()
+	hiss.stream = Sounds.RADIO_STATIC
+	_signal = _voice()
 	loop_view = _on_face(LOOK.loop())
 	loop_view.position = LOOK.LOOP_AT
 	show_wear()
@@ -41,17 +45,14 @@ func _ready() -> void:
 	_show_dial()
 
 
-## This tier's loop and needle replace the broadcast set's face controls.
-func has_dial_marks() -> bool:
-	return false
-
-
-func _make_lamps() -> void:
-	pass
-
-
 func interact(_by: Player) -> bool:
 	return switch(not on)
+
+
+## Use in your hands switches it just the same.
+func use(by: Player, _at: Vector3) -> bool:
+	return interact(by)
+
 
 
 func switch(up: bool) -> bool:

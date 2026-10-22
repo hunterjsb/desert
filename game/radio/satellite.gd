@@ -59,7 +59,7 @@ var _node: Vector3
 var _across: Vector3
 var _phase: float
 
-## Held over a place on the ground instead (the crop survey over Port
+## Held over a place on the ground instead (the drone over Port
 ## Morgan): that place, its plane's other axis at the run's start, both on
 ## the moon and turning with it, and how fast its plane swings round that
 ## place, rad/s. A zero place is an orbit among the stars.

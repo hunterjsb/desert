@@ -5,11 +5,12 @@ extends RefCounted
 
 static var _numbers := RegEx.create_from_string("-?[0-9]+(?:\\.[0-9]+)?")
 static var _fix := RegEx.create_from_string("([0-9])([nsewNSEW])\\b")
+static var _unit := RegEx.create_from_string("([0-9])([a-z]{2,})")
 const SMALL := ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
 	"eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 const TENS := ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
 const UNITS := {"brg": "bearing", "hdg": "heading", "km": "kilometres", "min": "minutes", "s": "seconds",
-	"c": "degrees"}
+	"c": "degrees", "rng": "range"}
 
 
 ## A queue entry is [recording, sentence ends here]. Full recorded phrases win.
@@ -27,14 +28,14 @@ static func plan(text: String, phrase: Callable) -> Array[Array]:
 		var i := 0
 		while i < tokens.size():
 			var length := mini(10, tokens.size() - i)
-			while length > 1 and not VoiceWords.SPANS.has(" ".join(tokens.slice(i, i + length))):
+			while length > 1 and not VoiceWords.has(" ".join(tokens.slice(i, i + length))):
 				length -= 1
 			var word := " ".join(tokens.slice(i, i + length))
-			if VoiceWords.SPANS.has(word):
+			if VoiceWords.has(word):
 				out.append([VoiceWords.track(word), i + length == tokens.size()])
 			else:
 				for letter in word:
-					if VoiceWords.SPANS.has(letter):
+					if VoiceWords.has(letter):
 						out.append([VoiceWords.track(letter), false])
 				if not out.is_empty():
 					out[-1][1] = i + length == tokens.size()
@@ -49,6 +50,8 @@ static func normalize(text: String) -> String:
 		var suffix: String = fix.get_string(2)
 		var direction: String = {"n": "north", "s": "south", "e": "east", "w": "west"}[suffix]
 		text = text.replace(fix.get_string(), fix.get_string(1) + " " + direction)
+	# A unit written against its number ("1.2km") is a word of its own.
+	text = _unit.sub(text, "$1 $2", true)
 	var out := ""
 	var at := 0
 	for found in _numbers.search_all(text):

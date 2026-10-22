@@ -1,5 +1,6 @@
 extends Probe
-## Repeating an interference fragment must not replace the station's playback.
+## Repeating an interference fragment must not replace the station's playback,
+## and a slowed or sped-up one leaves the song where its station is in it.
 ## Runs alone
 
 func run() -> void:
@@ -36,4 +37,12 @@ func run() -> void:
 		"catching up also retains the active playback")
 	check(caught_up >= glitch._anchor + glitch._length and caught_up < glitch._anchor + glitch._length + 0.5,
 		"the player's cursor follows the intended catch-up position")
+	# A drag slows the song for a moment; over, it's where it would have been.
+	glitch.kind = &"drag"
+	glitch._anchor = 5.0
+	glitch._length = 0.5
+	glitch._end()
+	await physics_frames(2)
+	var after_drag := radio.music.get_playback_position()
+	check(after_drag >= 5.5 and after_drag < 6.0, "after a drag it catches up with its station (%.2f s)" % after_drag)
 	radio.free()

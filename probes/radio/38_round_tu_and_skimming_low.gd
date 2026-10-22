@@ -2,8 +2,8 @@ extends WeatherProbe
 ## Radio probe 38: round Tu, and skimming low. The lantern orbits Tu, not
 ## Zan: it's on the air only while it's on Zan's side of the planet, about
 ## half of each lap; heard from under Tu, never from Zan's far side, where Tu
-## never rises; fainter than the rest; and never drawn in the sky. The crop
-## survey flies about six km up: from below it crawls along near the horizon
+## never rises; fainter than the rest; and never drawn in the sky. The drone
+## flies low: from below it crawls along near the horizon
 ## and sweeps across overhead, many times faster; it's modelled (CropSurvey),
 ## not drawn on the sky, far bigger overhead than low down, and shows even in
 ## Zan's shadow. By day only the nearest and brightest show: the low hull
@@ -53,9 +53,6 @@ func run() -> void:
 
 	# Flying low: crawling at the horizon, sweeping overhead.
 	var survey: Satellite = sky.orbits[&"thermal"]
-	print("the crop survey flies %.0f to %.0f m up" % [survey.height(0.0) * survey.radius,
-		survey.height(survey.period * 0.5) * survey.radius])
-	check(absf(survey.height(0.0) * survey.radius - 6000.0) < 1000.0, "the crop survey flies about six km up")
 	var p := world.start
 	var overhead := 0.0
 	var low := 0.0

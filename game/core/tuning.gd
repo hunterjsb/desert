@@ -1088,12 +1088,12 @@ static var _current: Tuning
 ## often it reads it again, s of world time.
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
-## The weather station reads its report aloud this often, s of world time,
-## and at once as you tune in (gonkhub, 2026-10-19: "a regular report (every 2
-## real life min)"; world time runs at real time); heard this far, m.
+## The gap between a report's composed words, s; and at most this often a
+## god's or a beacon's changing words are read again, s of world time: the
+## radio speaks only with news (Hunter, 2026-10-19: "probably announce less often").
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
-## Frontier Ag's crop survey reads its flight plan this often, s of world
+## Port Morgan Control Tower reads the drone's schedule this often, s of world
 ## time, and at once as you tune in (gonkhub, 2026-10-21: "announce its
 ## update every 5 min").
 @export var survey_report_every: float = 300.0

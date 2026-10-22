@@ -21,6 +21,8 @@ var _since := {}
 var _glitches := {}
 
 static var _loops := {}
+## Each satellite's own bus name, by id.
+var _buses := {}
 
 ## Where the interference chain (Garble) starts on a satellite's bus: after
 ## its own tone and grit.
@@ -41,6 +43,10 @@ func _ready() -> void:
 ## time t. Says how loud the loudest comes through, 0 to 1, for the static to
 ## sink under.
 func listen(delta: float, x: float, z: float, t: float) -> float:
+	# Nothing in orbit comes down through the ceiling onto the AM dial.
+	if radio.band == Radio.AM_BAND:
+		silence()
+		return 0.0
 	var sky := Radio.constellation_of(radio.world)
 	var tuning := Tuning.current()
 	var loudest := 0.0
@@ -74,10 +80,12 @@ func listen(delta: float, x: float, z: float, t: float) -> float:
 		voice.pitch_scale = maxf(0.05, shape.pitch * (1.0 + Radio.PITCH_SLIDE * heard.warp
 			/ maxf(tuning.storm_warp_khz, 0.01)))
 		# Allocate the private chain only when this satellite reaches the dial.
-		voice.bus = bus_for(id)
-		_shape_bus(id, shape)
+		var bus := bus_for(id)
+		voice.bus = bus
+		var index := AudioServer.get_bus_index(bus)
+		_shape_bus(index, shape)
 		# Chewed up as dirty as it comes through, and glitching.
-		Garble.shape(AudioServer.get_bus_index(bus_for(id)), GARBLE_FROM, heard.dirt, t, hash(id), tuning.am_audio_hz)
+		Garble.shape(index, GARBLE_FROM, heard.dirt, t, hash(id), tuning.am_audio_hz)
 		var broke: Vector2 = _glitches[id].tick(delta, heard.dirt)
 		voice.volume_db += linear_to_db(maxf(broke.x, 0.0001))
 		voice.pitch_scale = maxf(0.05, voice.pitch_scale * broke.y)
@@ -95,7 +103,9 @@ func listen(delta: float, x: float, z: float, t: float) -> float:
 ## All of them gone quiet: the radio's off.
 func silence() -> void:
 	for id: StringName in _voices:
-		(_voices[id] as AudioStreamPlayer3D).stop()
+		var voice := _voices[id] as AudioStreamPlayer3D
+		if voice.playing:
+			voice.stop()
 		levels[id] = 0.0
 		_since[id] = INF
 
@@ -123,7 +133,9 @@ static func track(id: StringName) -> AudioStream:
 ## A satellite's own bus, on into the radio's: a low-pass for its tone and a
 ## distortion for its grit, both open until its LFOs turn them.
 func bus_for(id: StringName) -> StringName:
-	var bus_name := StringName("RadioSky_%d_%s" % [radio.get_instance_id(), id])
+	if not _buses.has(id):
+		_buses[id] = StringName("RadioSky_%d_%s" % [radio.get_instance_id(), id])
+	var bus_name: StringName = _buses[id]
 	if AudioServer.get_bus_index(bus_name) == -1:
 		AudioServer.add_bus()
 		var i := AudioServer.bus_count - 1
@@ -141,8 +153,7 @@ func bus_for(id: StringName) -> StringName:
 	return bus_name
 
 
-func _shape_bus(id: StringName, shape: Dictionary) -> void:
-	var i := AudioServer.get_bus_index(bus_for(id))
+func _shape_bus(i: int, shape: Dictionary) -> void:
 	(AudioServer.get_bus_effect(i, 0) as AudioEffectLowPassFilter).cutoff_hz = shape.cutoff
 	var gritty: bool = shape.drive > 0.01
 	AudioServer.set_bus_effect_enabled(i, 1, gritty)

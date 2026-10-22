@@ -148,7 +148,7 @@ const TABLE := {
 		"family": &"nomad", "after": [&"ten_days"], "icon": &"bedroll"},
 	&"care_package": {"name": "Care Package", "asks": "Call the drone with a signal flare",
 		"family": &"signals", "icon": &"flare"},
-	&"flight_plan": {"name": "Flight Plan", "asks": "Hear Port Morgan Control Tower read the Surveyor's schedule",
+	&"flight_plan": {"name": "Flight Plan", "asks": "Hear Port Morgan Control Tower read the drone's schedule",
 		"family": &"signals", "icon": &"radio"},
 	&"follow_signal": {"name": "Follow the Signal", "asks": "Find a ruin by following a survey receiver's signal",
 		"family": &"signals", "icon": &"survey_receiver"},

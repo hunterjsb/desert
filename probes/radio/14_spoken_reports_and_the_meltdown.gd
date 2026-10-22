@@ -3,12 +3,12 @@ extends ShieldProbe
 ## plays by itself: its frequency carries only its talk and tones until a
 ## meltdown (the dev console's, for now) calls it up, when it plays through
 ## once from its start and stops; called up again while it plays, it starts
-## over. The weather station reports aloud the moment you tune in, Clear
-## Skies or not, and every radio_report_every s after: the local time, the
-## wind and the temperature where the radio stands, read from the world, then
-## its outlook, units in words, every word and number of it, through a dirty
-## signal too; and your ears hear it. A fast storm breaks in at once with an
-## advisory, out of turn, read over whatever was being read, and only once.
+## over. The weather station speaks only with news (Hunter, 2026-10-19:
+## "probably announce less often"): tuned in to calm, Clear Skies plays and it
+## says nothing, however long the calm holds; a storm that comes and lasts
+## breaks in with an advisory, read whole through the dirty signal, then
+## nothing while its news holds; its clearing is a short report your ears
+## hear; and a fast storm's advisory comes once.
 
 
 func run() -> void:
@@ -52,48 +52,46 @@ func run() -> void:
 	await physics_frames(5)
 	check(radio.on_air() == null and gods.stoker_song(world.time + 600.0, length) < 0.0, "then it stops, and stays stopped")
 
-	# Count weather reports after the Stoker's own transmissions.
+	# The weather station, after the Stoker's own transmissions.
 	var earlier := radio.spoken_count
 	world.time = 0.0
 	broadside(radio, &"walker")
 	radio.frequency = gods.carrier(&"walker", world.time)
 	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
-	await _heard(radio, earlier + 1)
-	var x := world.world_x(radio.global_position.x)
-	var z := world.world_z(radio.global_position.z)
-	var heat := roundi(world.weather.field_temperature(radio.global_position, radio.spoken_at))
-	var local := world.weather.day.time_of_day(radio.spoken_at, Sphere.longitude(radio.point_at(x, z)))
-	var minutes := roundi(local * 24.0 * 60.0) % (24 * 60)
-	print("tuned in: \"%s\"; you hear \"%s\"" % [" ".join(radio.spoken), broadcast.reading])
-	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and radio.spoken_count == earlier + 1, "tuned in, it reports at once, Clear Skies or not")
-	check(" ".join(radio.spoken).contains("Local time %d:%02d" % [minutes / 60, minutes % 60])
-		and " ".join(radio.spoken).contains("Temperature %s degrees" % (str(heat) if heat >= 0 else "minus %d" % -heat))
-		and (" ".join(radio.spoken).contains("Wind") or " ".join(radio.spoken).contains("Calm")),
-		"the local time, the temperature and the wind, read from the world, units in words")
-	check(not " ".join(radio.spoken).contains("..."), "every word of it")
-	check(broadcast.reading == " ".join(radio.spoken) and not radio.spoken_urgent, "and your ears hear it, in its turn")
-	var first := radio.spoken_at
-	world.time = first + tuning.radio_report_every * 0.5
-	await physics_frames(5)
-	check(radio.spoken_count == earlier + 1, "not again before %d s" % roundi(tuning.radio_report_every))
-	world.time = first + tuning.radio_report_every + 1.0
-	await _heard(radio, earlier + 2)
-	check(radio.spoken_count == earlier + 2, "and again after")
+	await physics_frames(10)
+	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and radio.spoken_count == earlier,
+		"tuned in to calm, Clear Skies plays and it says nothing")
+	for k in 3:
+		world.time += tuning.radio_report_every
+		radio.read_at = -INF
+		await physics_frames(3)
+	check(radio.spoken_count == earlier, "however long the calm holds: no timed report")
 
 	# A storm the same everywhere never ends: large, so an advisory at once,
-	# read whole through the dirty signal; then the report in its turn, whole.
+	# read whole through the dirty signal; then nothing while it holds.
 	weather_everywhere(0.3)
 	radio.read_at = -INF
-	await _heard(radio, earlier + 3)
+	await _heard(radio, earlier + 1)
 	print("a thin storm that never ends (dirt %.2f): \"%s\"" % [radio.dirt, " ".join(radio.spoken)])
-	check(radio.spoken_urgent and " ".join(radio.spoken).contains("large") and not " ".join(radio.spoken).contains("..."),
+	check(radio.spoken_count == earlier + 1 and radio.spoken_urgent and not " ".join(radio.spoken).contains("..."),
 		"a storm that lasts and lasts: an advisory, read whole")
-	world.time = radio.spoken_at + tuning.radio_report_every + 1.0
-	await _heard(radio, earlier + 4)
-	print("its report: \"%s\"" % " ".join(radio.spoken))
-	check(radio.dirt > 0.3 and not radio.spoken_urgent and " ".join(radio.spoken).contains("Temperature")
-		and " ".join(radio.spoken).contains("In a storm") and not " ".join(radio.spoken).contains("..."),
-		"through a dirty signal, the report still read whole")
+	for k in 3:
+		world.time += tuning.radio_report_every
+		radio.read_at = -INF
+		await physics_frames(3)
+	check(radio.spoken_count == earlier + 1, "while its news holds, nothing more")
+
+	# Its clearing is news: a short report, heard.
+	weather_everywhere(0.0)
+	radio.read_at = -INF
+	await _heard(radio, earlier + 2)
+	var longest := 0
+	for sentence in " ".join(radio.spoken).split(".", false):
+		longest = maxi(longest, sentence.split(" ", false).size())
+	print("cleared: \"%s\"; you hear \"%s\"" % [" ".join(radio.spoken), broadcast.reading])
+	check(radio.spoken_count == earlier + 2 and not radio.spoken_urgent and longest <= 5,
+		"its clearing is news, in short sentences")
+	check(broadcast.reading == " ".join(radio.spoken), "and your ears hear it")
 
 	# Out of it, then a fast storm: an advisory at once, out of turn, and once.
 	weather_everywhere(0.0)
@@ -106,8 +104,7 @@ func run() -> void:
 	for i in 3:
 		await get_tree().process_frame
 	print("a fast storm: \"%s\"" % " ".join(radio.spoken))
-	check(radio.spoken_count == before + 1 and radio.spoken_urgent and " ".join(radio.spoken).begins_with("Weather advisory.")
-		and " ".join(radio.spoken).contains("fast"), "a fast storm breaks in with an advisory at once, out of turn")
+	check(radio.spoken_count == before + 1 and radio.spoken_urgent, "a fast storm breaks in with an advisory at once")
 	check(broadcast.reading == " ".join(radio.spoken), "and your ears hear it over what was being read")
 	for k in 4:
 		radio.read_at = -INF

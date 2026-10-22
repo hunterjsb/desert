@@ -210,7 +210,7 @@ func radios() -> Array[Radio]:
 	var found: Array[Radio] = []
 	for device in _system():
 		var radio := device as Radio
-		if radio != null and not radio is SurveyReceiver and radio.powered and not radio.wrecked():
+		if radio != null and radio.powered and not radio.wrecked():
 			found.append(radio)
 	return found
 
@@ -675,7 +675,7 @@ func _say(text: String, fields := [], aloud := "") -> void:
 		lead.terminal.form(SENDER, text, fields, t, _clock(t))
 	for device in _system():
 		var radio := device as Radio
-		if radio != null and not radio is SurveyReceiver and radio.powered and not radio.wrecked() and radio.is_inside_tree():
+		if radio != null and radio.powered and not radio.wrecked() and radio.is_inside_tree():
 			Sounds.play_at(radio, Sounds.RADIO_TONES, -8.0, Radio.HEARD)
 			if aloud != "":
 				radio.announce(PackedStringArray([aloud]))

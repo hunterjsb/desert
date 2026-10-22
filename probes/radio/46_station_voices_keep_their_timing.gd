@@ -12,11 +12,11 @@ func run() -> void:
 	var gods := Radio.gods_of(world)
 	first.frequency = gods.carrier(&"ledger", world.time)
 	second.frequency = gods.carrier(&"almanac", world.time)
-	first._queue(words, words, 0.0)
+	first._queue(words, 0.0)
 	var ledger_bus := first.reader.bus
 	var ledger_pitch := AudioServer.get_bus_effect(AudioServer.get_bus_index(ledger_bus), 0) as AudioEffectPitchShift
 	var pitch_before := ledger_pitch.pitch_scale
-	second._queue(words, words, 0.0)
+	second._queue(words, 0.0)
 	check(first.reader.pitch_scale != second.reader.pitch_scale and first.reader.bus != second.reader.bus
 		and ledger_pitch.pitch_scale == pitch_before, "station character and cadence belong to each receiver")
 	check(first.music.bus == first.signal_bus() and second.music.bus == second.signal_bus(),
@@ -33,7 +33,7 @@ func run() -> void:
 		"local computer announcements retain the original voice")
 	first._hush()
 	first.frequency = gods.carrier(&"walker", world.time)
-	first._queue(words, words, 0.0)
+	first._queue(words, 0.0)
 	check(first.reader.pitch_scale == 1.0 and first.reader.bus == first.signal_bus(),
 		"weather keeps the approved voice after a station change")
 	var owned := second._effect_buses.duplicate()

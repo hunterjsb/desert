@@ -15,7 +15,8 @@ const SPAN := 6.0 * 3600.0
 
 func run() -> void:
 	await load_storm(0.0)
-	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
+	# The sky is above the ceiling: heard on shortwave, through its converter.
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	await physics_frames(2)
 	var sky := Radio.constellation_of(world)
@@ -113,6 +114,8 @@ func run() -> void:
 		return sky.on_air(&"thermal", u) and sky.orbits[&"thermal"].seen_from(p, u).elevation > deg_to_rad(30.0))
 	world.time = up
 	radio.on = true
+	while radio.band != Radio.SW_BAND and radio.switch_band():
+		pass
 	radio.frequency = sky.carrier(&"thermal", up)
 	await physics_frames(5)
 	var voice := radio.sky.voice_of(&"thermal")

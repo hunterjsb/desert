@@ -20,11 +20,7 @@ const EVERYWHERE_M := 4000.0
 ## Every carrier on the dial at world time t, low to high: [kHz, id]. The
 ## living city's is one, heard only near it.
 static func carriers(gods: Gods, t: float) -> Array[Array]:
-	var out: Array[Array] = [[MUSIC_KHZ, &"music"], [BEACON_KHZ, &"beacon"], [gods.city.carrier(), &"city"]]
-	for id in Gods.ids():
-		out.append([gods.carrier(id, t), id])
-	out.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
-	return out
+	return gods.dial_carriers(t)
 
 
 ## A home frequency that wanders inside its band from one spell to the next
@@ -35,6 +31,8 @@ static func carriers(gods: Gods, t: float) -> Array[Array]:
 ## spell's frequency as far as worked out, the caller's own for this carrier;
 ## `key` seeds it. Spells before the first are the first.
 static func walk(walked: Array, key: Array, spell: int, band: Vector2, margin: float, step: float) -> float:
+	if not walked.is_empty() and walked.size() > spell:
+		return walked[maxi(spell, 0)]
 	var low := band.x + margin
 	var high := band.y - margin
 	var rng := RandomNumberGenerator.new()

@@ -1,0 +1,484 @@
+a
+a basin
+a hundred
+a signal
+a signal right here
+a storm from the
+abnormally
+aboard
+accrues
+acknowledge
+add
+advisory
+after
+again
+ago
+aitch
+all
+all clear
+all personnel report to muster point
+all stations stand by
+alpha
+altitude
+and
+anomalous
+anomaly
+any
+are
+ashore
+at
+at its full
+authenticate
+awaiting
+awaiting countersign
+awaiting harbour traffic
+b
+balance
+balances
+basin
+bay
+be
+bearing
+berth
+berth inventory
+berths
+berths occupied
+billion
+bin
+blackout
+blackout drill
+blessed
+blessed are the thirsty
+book
+bravo
+burn
+burner
+bushel
+buyers
+by
+c
+cache
+call
+cargo
+cargo hold
+challenge
+charlie
+check
+check the seal check the seal again and give thanks
+child
+children
+clear
+clear at the walker
+clear for
+clearance
+clearance lapsed
+clearing
+clearing in
+clears
+closed
+closing
+closing the book
+cold
+colony
+coming
+compensating
+contact
+continuing
+contract
+control
+counted
+countersign
+credits
+crew
+crew list
+cup
+d
+dark
+dark in
+data
+day
+deep
+degrees
+delta
+denied
+depot
+dew
+dew tonight
+discarding
+discrepancy
+do
+do not acknowledge
+do not drink from the open sky
+drill
+drink
+drone
+due
+dunes
+dunes slip faces
+e
+east
+east north east
+east south east
+echo
+eight
+eighteen
+eighty
+elders
+eleven
+entry
+events
+every
+f
+faces
+fading
+faint
+fast
+fault
+fee
+fee due
+feed
+feed me
+feed required
+fifteen
+fifty
+file
+filled
+fire
+fire call
+first
+five
+fix
+flats
+for
+forty
+four
+four minutes
+fourteen
+foxtrot
+from
+from the
+from the north east
+frost
+frost tonight
+full
+full in
+funded
+fungus
+future
+futures
+futures suspended pending harvest data
+g
+gait
+gait fault
+give
+go
+go in peace and keep the seals closed
+golf
+grade
+grade nominal
+h
+halloran
+harbour
+harvest
+heading
+hear
+hear us children of the colony hear the plan
+heat
+height
+here
+hold
+hotel
+hundred
+i
+i see you
+in
+in a storm from the
+india
+interrupt
+inventory
+inventory unchanged
+is
+issue
+it
+it is
+its
+j
+juliet
+k
+keep
+kept
+kilo
+kilometres
+l
+lapsed
+large
+lasting
+lasting more than
+lasting past
+ledger
+ledger balance owed
+leg
+lima
+list
+logged
+long
+long range
+low
+low dunes
+m
+maintenance
+manifest
+market
+market closed
+market open
+may
+me
+metres
+metres a second
+mike
+million
+minus
+minute
+minutes
+more
+morgan
+muster
+n
+near
+net
+net control
+net control out
+net remains closed
+net seven
+next
+next storm
+nine
+nineteen
+ninety
+no
+no basin near child
+no buyers
+no cache on file this sector
+no clearing
+no clearing for
+no countersign
+no discrepancy
+no operator
+no reading
+no response
+no storm for
+no storms
+nominal
+north
+north east
+north north east
+north north west
+north west
+not
+nothing
+november
+now
+o
+occupied
+of
+of the plan
+of you
+on
+on you now
+one
+one and one are two
+one cup for every child one cup
+one minute
+open
+opening
+opening the book
+operator
+or
+oscar
+out
+outstanding
+owed
+p
+papa
+past
+peace
+peak
+penalty
+penalty accrues
+pending
+per
+per bushel
+per share
+percent
+perimeter
+perimeter status
+personnel
+phase
+plan
+point
+port
+port morgan
+port morgan tower
+pressure
+pressure low
+q
+quebec
+quota
+quota shortfall
+quote
+r
+rain
+rain at the forty first year
+range
+ration
+ration call
+reading
+remains
+report
+required
+requisition
+reservoirs
+response
+right
+right here
+rights
+rim
+roll
+roll call
+romeo
+root
+root tuber
+s
+saltbush
+sample
+sample bin full
+sand
+sand deep
+sand thin
+sandstorm
+sandstorms
+schedule
+seal
+seals
+second
+seconds
+sector
+see
+seed
+seed stock
+seven
+seventeen
+seventy
+shall
+share
+shelter
+shortfall
+sierra
+signal
+six
+sixteen
+sixty
+sky
+slip
+south
+south east
+south south east
+south south west
+south west
+sow
+speed
+stable
+stand
+starcom
+stations
+status
+stock
+stoke
+storm
+storm at the walker
+storm clears in
+storm coming
+storm here
+storm in
+storms
+strike
+strike it
+strong
+stuck
+subscribe
+subscribe for the advisory
+survey
+survey leg
+suspended
+t
+take
+take shelter
+tango
+ten
+than
+thanks
+the
+the basin shall be filled
+the book balances
+the elders drink after the children
+the reservoirs are not yet funded
+thin
+thirsty
+thirteen
+thirty
+this
+this is net control
+thousand
+three
+time
+to
+tonight
+tower
+traffic
+tuber
+twelve
+twenty
+two
+two and two are four
+u
+unchanged
+unfilled
+uniform
+unit
+unverified
+us
+v
+valve
+vat
+vat fungus
+victor
+w
+walker
+water
+water rights
+waypoint
+we
+weather
+weather advisory
+west
+west north west
+west south west
+what
+what is counted is kept
+what is kept is counted
+where
+where you stand
+whiskey
+wind
+winds
+winds to
+x
+xray
+y
+yankee
+year
+yet
+you
+z
+zero
+zulu
