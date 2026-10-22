@@ -389,8 +389,8 @@ now in `tuning.tres` (`kite_*`).
   flies about 90 m up (measured 87 m), and it sways. Under the lift wind it comes down. It keeps its place in
   the world as the world's origin shifts.
 - **Height is signal:** on shortwave the kite adds about 10 dB a tenfold of height over the whip, to
-  `kite_gain_db`, capped at `kite_gain_most` times what the set hears from
-  straight overhead at its best, so a satellite low over the horizon comes through that the bare terminals lose.
+  `kite_gain_db`, capped at `kite_gain_most` (1 is a satellite heard whole),
+  so a satellite low over the horizon comes through that the bare terminals lose.
 - **Static.** Flown high it gathers charge, little in clear air and fast in a front's outflow or a storm, and
   it raises the set's static (`kite_static`). Past `kite_arc` an arc may jump; it burns out or scorches what it
   hits: the kite's dipole, the lead, the hook, the shortwave converter, or the set. A crack of sparks, a violet
