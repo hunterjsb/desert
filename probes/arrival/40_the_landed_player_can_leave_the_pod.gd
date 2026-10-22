@@ -8,7 +8,11 @@ func run() -> void:
 	tuning.prevailing_speed = 0.0
 	tuning.prevailing_sway = 0.0
 	tuning.storm_outflow_speed = 0.0
-	await open_main(false)
+	main = MAIN.instantiate()
+	main.opens_on_menu = false
+	add_child(main)
+	world = main.world()
+	await drop_in()
 	check(world.arrival_state.get("phase") == &"recovery", "the real opening lands")
 	if world.arrival_state.get("phase") != &"recovery":
 		return

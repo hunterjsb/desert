@@ -95,12 +95,17 @@ func _physics_process(delta: float) -> void:
 		world.player.velocity = Vector3.ZERO
 
 
+## Until launch or cancel; a station may outlive the state by a frame.
+func preparing() -> bool:
+	return not _disposed and is_instance_valid(world) and world.arrival_state.get("phase") == &"preflight"
+
+
 func model() -> Dictionary:
-	return world.arrival_state.landing_plan.get("departure_trajectory", {})
+	return world.arrival_state.get("landing_plan", {}).get("departure_trajectory", {})
 
 
 func clock() -> float:
-	return float(world.arrival_state.preflight.get("departure_time", world.time))
+	return float(world.arrival_state.get("preflight", {}).get("departure_time", world.time))
 
 
 ## The landing moves as the moon turns; this is the only place it is judged.

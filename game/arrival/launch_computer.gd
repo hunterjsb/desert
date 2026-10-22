@@ -149,7 +149,7 @@ func refresh() -> void:
 		_cargo_page.show_report(report, missing)
 
 func _process(_delta: float) -> void:
-	if not is_instance_valid(_preflight) or not is_instance_valid(_orbit.camera):
+	if not is_instance_valid(_preflight) or not _preflight.preparing() or not is_instance_valid(_orbit.camera):
 		return
 	_frame = DepartureTrajectory.frame(_preflight.model(), _preflight.clock())
 	if _frame.is_empty():

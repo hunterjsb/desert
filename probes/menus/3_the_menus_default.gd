@@ -87,13 +87,14 @@ func run() -> void:
 	var camp: Array = main.showpiece._built.get(Showpiece.CAMP, [Node3D.new()])
 	print("Resume lists ", view.aside())
 	check(view != menu and view.side and view.shows == Showpiece.CAMP
-		and camp[0].get_child_count() == mini(saves().held().things.size(), Showpiece.CAMP_MOST)
+		and camp[0].get_child_count() == mini(saves().held().things.filter(func(rec: Dictionary) -> bool:
+			return Catalog.DEVICES.has(Catalog.current(rec.id))).size(), Showpiece.CAMP_MOST)
 		and camp[0].find_children("*", "GeometryInstance3D", true, false).size() > 20
 		and camp[0].find_children("*", "CollisionObject3D", true, false).is_empty(),
 		"Resume shows the saved nearby camp pieces aside, only to look at")
 	check(view.aside().size() == 5 and numbers.played > 0.0 and view.aside()[2][1] == str(numbers.day)
 		and view.aside()[3][1] == Kit.standard().label and view.aside()[1][1] == UIRoot.when(saves().saved_at(),
-			saves().saved_at()) and view.aside()[4][1] == "0 of %d" % Deeds.TABLE.size(),
+			saves().saved_at()) and view.aside()[4][1] == "%d of %d" % [get_node(^"/root/Profile").deeds().size(), Deeds.TABLE.size()],
 		"with the save's numbers: played, saved today, its day and who you came as, and the deeds done")
 	press(&"ui_cancel")
 	check(main.ui.top() == menu and menu.highlighted() == 0, "back goes back")

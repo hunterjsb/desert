@@ -75,10 +75,11 @@ static func stage(world: World, ship: SurveyorShip, state: Dictionary) -> Dictio
 
 
 ## Full collision geometry counts; looking at an item or holding it over the pod does not.
-static func loaded(world: World, ship: SurveyorShip) -> Array[StringName]:
+## `named` may be passed when the caller already walked the stores.
+static func loaded(world: World, ship: SurveyorShip, named := {}) -> Array[StringName]:
 	var found: Array[StringName] = []
-	# The cabin makes no new stores; their identities are known since staging.
-	var named := world.arrival_nodes
+	if named.is_empty():
+		named = SurveyorRecovery.named(world)
 	var seat := seat_bounds(world, ship)
 	for spec: Array in SurveyorManifest.EQUIPMENT:
 		var uid: StringName = spec[0]
@@ -93,9 +94,9 @@ static func loaded(world: World, ship: SurveyorShip) -> Array[StringName]:
 
 ## The same physical selection as launch, one short state per store.
 static func packing_report(world: World, ship: SurveyorShip) -> Array[Dictionary]:
-	var aboard := loaded(world, ship)
-	# The cabin makes no new stores; their identities are known since staging.
-	var named := world.arrival_nodes
+	# A coil laid out becomes other bodies under the same identity: walk them afresh.
+	var named := SurveyorRecovery.named(world)
+	var aboard := loaded(world, ship, named)
 	var seat := seat_bounds(world, ship)
 	var essential := SurveyorManifest.essentials()
 	var report: Array[Dictionary] = []
@@ -128,9 +129,8 @@ static func label_of(uid: StringName) -> String:
 ## Each blocker is one plain line naming what is actually wrong; empty means launch will go.
 static func readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
 	var missing := _structure_readiness(world, ship)
-	var aboard := loaded(world, ship)
-	# The cabin makes no new stores; their identities are known since staging.
-	var named := world.arrival_nodes
+	var named := SurveyorRecovery.named(world)
+	var aboard := loaded(world, ship, named)
 	for uid: StringName in SurveyorManifest.essentials():
 		var name := label_of(uid)
 		if not aboard.has(uid) or not ship.cargo_bounds.grow(GEOMETRY_EPS).encloses(bounds_in(named[uid], ship.global_transform)):

@@ -29,6 +29,7 @@ func started() -> void:
 	await get_tree().physics_frame
 	if world.arrival != null and world.arrival.active():
 		await drop_in()
+		await crawl_out()
 	for i in 600:
 		if world.has_meta(&"kit"):
 			return
@@ -45,6 +46,15 @@ func drop_in() -> void:
 	await set_pulse(prep)
 	await launch_pod(prep)
 	await fly_to(&"recovery")
+
+
+## Out of the landed pod through its hatch and standing, by the ordinary moves.
+func crawl_out() -> void:
+	Input.action_press(&"move_back")
+	await physics_frames(180)
+	Input.action_release(&"move_back")
+	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands")
+	await physics_frames(2)
 
 
 ## The ready cabin, within ten simulated seconds.
