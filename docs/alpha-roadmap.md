@@ -14,6 +14,20 @@ passed. The published release remains
 immutable. Unassisted sailing/expedition, camera comfort and representative
 large-camp budgets remain open acceptance work.
 
+### Continued Sanddune pass
+
+The physical departure screen now reports actual packed/held/misplaced equipment.
+A connected engineering check follows original loaded pod equipment through landing,
+a powered Home, a 2.1 km scouting trip, a controlled storm, distant disk resume
+and return. It exposed and fixed saving after removing a joined custom mount.
+This scripts the loading and route; unassisted discovery and human acceptance
+remain open. See [the expedition account](prd/surveyor-expedition-check.md).
+
+A 108-piece camp experiment avoids a redundant zero-motion contact projection.
+Paired settled CPU medians improve about 3.4%; falling CPU does not improve. This
+is a bounded saving, not a representative large-camp budget acceptance. See
+[native contact cost](prd/native-contact-cost.md) for its physical checks and limits.
+
 ## Version policy
 
 The canonical [version policy](version-policy.md) uses milestone numbering:

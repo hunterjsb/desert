@@ -9,6 +9,12 @@
 - Add real glazed side and roof panels, free mouse look while falling, stronger
   phase-driven flight sound and bounded turbulence. Looking does not steer the pod.
 
+- Inspect a live Cargo view on the physical launch computer before departure. It
+  reports which original items are aboard, held or misplaced without moving them.
+- Fix saving recovered camps after removing custom mounts from joined chassis.
+- Avoid a redundant zero-motion projection in large craft contact work; a
+  controlled 108-piece camp measured about 3.4% lower settled CPU time.
+
 Existing run/profile formats remain supported. The escape-route repair applies
 when impact materializes; already recovered camps are not rearranged on load.
 Published 0.3.0 remains unchanged. This patch is not yet published.

@@ -6,6 +6,9 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | System | Entry points | Checks |
 | --- | --- | --- |
 | Large-moon presentation | `game/world/surface_projection.gd` and `.gdshaderinc` share the visual radius, tangent falloff/inverse and normals; navigation remains `MoonPosition`, solar time remains `DayCycle` | `probes/world/14_distant_ground_shares_the_moon.gd`, `15_travelling_changes_the_solar_day.gd`, `probes/weather/27_large_moon_atmosphere.gd`, `look/large_moon`; integrated baseline passed all 21 platform/build jobs |
+| Departure cargo report | `game/arrival/preflight_cargo.gd: packing_report` reads the actual launch selection; `departure_cargo_page.gd` and `launch_computer.gd` show it on the same glass | `probes/arrival/46_the_physical_screen_reports_packed_cargo.gd` |
+| Original pod Home continuity | `Chassis._unmade` retires joined custom socket ownership before freeing the socket; ordinary Main/Snapshot/Home paths retain original arrival roles | `probes/devices/44_removed_joined_mounts_leave_no_dead_sockets.gd`, `probes/camp/11_the_recovered_pod_stays_home.gd` |
+| Large-camp native projection | `game/rope/articulation.gd: native` skips only the fresh zero external-motion projection | `probes/rope/32_native_projection_keeps_external_steps.gd`; measured bounds in [native contact cost](prd/native-contact-cost.md) |
 | Boot and runs | `game/main.gd`, `game/run.tscn`, `game/world/world.tscn`; `game/survival/runs.gd` starts runs from `kit.gd` and the kit resources | `probes/foundation`, `probes/saves` |
 | Tuning and controls | `game/core/tuning.gd`, `game/tuning.tres`; `game/core/controls.gd` owns bindings and action text | `probes/dev`, `probes/menus` |
 | World coordinates | `game/world/world.gd`: `height_at`, `teleport`, `world_x`/`world_z`, `engine_x`/`engine_z`; the engine origin moves while world coordinates stay fixed | `probes/world` |

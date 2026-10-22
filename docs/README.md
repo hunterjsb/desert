@@ -32,3 +32,9 @@ Settled world decisions should be read from `world/`, not inferred from a brief 
 
 Voice-session records and personal working notes are kept outside the repository. Their
 settled design decisions are folded into the vision, world references, and PRDs.
+
+### Continued Sanddune checks
+
+- [Physical departure cargo view](prd/pod-cargo-screen.md)
+- [Connected Surveyor expedition check](prd/surveyor-expedition-check.md)
+- [Native contact cost](prd/native-contact-cost.md)
