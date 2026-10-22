@@ -14,31 +14,51 @@ static func build(parts: Dictionary = {}) -> PodInterior:
 		return interior
 	var root := floor.deck if floor.deck != null else floor
 	var origin := root.global_transform * floor.pose() if root.is_inside_tree() else floor.pose()
+	var selected := {}
+	for part: Node in parts.values():
+		if is_instance_valid(part):
+			selected[part.get_instance_id()] = true
+	var copied := {}
 	for role: StringName in parts:
 		var part := parts[role] as Node3D
 		if not is_instance_valid(part):
 			continue
 		if part is Chassis:
 			var deck: Chassis = part.deck if part.deck != null else part
+			# Joined panels share one body: copy only that panel's own shell here.
 			for child in deck.get_children():
 				if child is MeshInstance3D and not child.has_meta(&"socket") \
 					and child.get_meta(&"piece", deck) == part:
-					var pose: Transform3D = origin.affine_inverse() * child.global_transform if child.is_inside_tree() \
-						else floor.pose().affine_inverse() * child.transform
-					interior._copy(child, pose)
-		elif part is Frame and part.socket != null:
+					interior._collect(child, origin, copied, selected)
+		elif part is Part and part.socket != null:
+			# Fitted parts wait off-tree; their real meshes live on the host body.
 			for child in part.socket.fitted:
-				if child is MeshInstance3D:
-					var pose: Transform3D = origin.affine_inverse() * child.global_transform if child.is_inside_tree() \
-						else floor.pose().affine_inverse() * child.transform
-					interior._copy(child, pose)
+				interior._collect(child, origin, copied, selected)
+		else:
+			for child in part.get_children():
+				interior._collect(child, origin, copied, selected)
 	return interior
+
+
+func _collect(node: Node, origin: Transform3D, copied: Dictionary, selected: Dictionary) -> void:
+	if node is RigidBody3D and not selected.has(node.get_instance_id()):
+		return
+	if node is MeshInstance3D and node.mesh != null and not copied.has(node.get_instance_id()):
+		copied[node.get_instance_id()] = true
+		var pose: Transform3D = origin.affine_inverse() * node.global_transform
+		_copy(node, pose)
+	for child in node.get_children():
+		_collect(child, origin, copied, selected)
 
 
 func _copy(source: MeshInstance3D, pose: Transform3D) -> void:
 	var view := _mesh(source.mesh, pose)
 	view.material_override = source.material_override
 	view.material_overlay = source.material_overlay
+	for i in source.get_surface_override_material_count():
+		view.set_surface_override_material(i, source.get_surface_override_material(i))
+	view.visible = source.is_visible_in_tree() if source.is_inside_tree() else source.visible
+	view.set_meta(&"pod_source_mesh", source.get_instance_id())
 	view.cast_shadow = source.cast_shadow
 	view.layers = source.layers
 	for property in source.get_property_list():

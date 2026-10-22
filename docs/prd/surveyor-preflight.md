@@ -460,3 +460,13 @@ and an empty suit. Its cabin, physical screen, pod, seat, ejection, descent,
 entry, impact and recovery captures were inspected. This is candidate evidence;
 combined CI/native verification and Hunter's feel/comprehension acceptance are
 separate gates. No release or version bump is declared here.
+
+### Loaded gear remains visible in flight (selected 2026-10-21)
+
+The seated-flight mesh snapshot includes actual selected cargo as well as the
+shell. Mounted devices, fitted parts and loose loaded stores keep their source
+meshes, material state and true pod-local poses before impact. Deduplicate by
+actual source mesh instance so a fitted cell named separately from its host is
+not drawn twice. Unselected rack equipment is not copied. This changes only the
+render snapshot: no catalog bodies, gear state, physics or cargo identities are
+created or changed. Legacy nominal interiors still have no invented cargo.
