@@ -45,3 +45,8 @@ wheel events, checks original held and legally mounted gear, reads/scrolls the
 report, returns to landing and steps away. Headless check passes. An unseen
 1280×720 Forward+ capture shows readable shared-theme text and PageBar beside
 the rotating globe; the report clips at its page edge and scrolls.
+
+The connected packing/recovery audit also found misleading field-guide text:
+standing shield and beacon instructions must name an upward-facing chassis top,
+matching their actual mounting rules. Batteries/panels retain general face and
+preview guidance. This is an instruction correction, with no placement changes.
