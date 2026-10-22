@@ -2,30 +2,65 @@
 # CI on what's checked out, before it reaches master: pushes HEAD to
 # verify-<name>, waits for its run, and prints each job and what failed. With
 # --land, a green run moves master to it and drops the branch, unless master's
-# latest macOS/Windows run is red: then only its fix lands (FIXES_PLATFORMS=1).
+# latest macOS/Windows run failed a real check: then only its fix lands
+# (FIXES_PLATFORMS=1). A platform timeout or runner fault only warns.
 #   scripts/verify.sh <name> [--land]
+# DESERT_LAND_WAIT caps the wait for another driver's landing, DESERT_CI_WAIT
+# the wait for a run, both in seconds.
 set -euo pipefail
 name=${1:?a name for the verify branch}
 land=${2:-}
-# A landing holds the shared lock for its whole run, so two drivers never land
-# over each other: the second waits, then must merge what the first landed.
-if [[ $land == --land ]] && command -v flock >/dev/null; then
-	lock=${DESERT_LAND_LOCK:-$(git rev-parse --show-toplevel)/../.desert-land.lock}
-	exec 9>"$lock"
-	flock -n 9 || { echo "another landing holds $lock: waiting for it"; flock 9; }
+land_wait=${DESERT_LAND_WAIT:-2700}
+ci_wait=${DESERT_CI_WAIT:-5400}
+# Lands $sha while holding the lock shared by every driver, which is taken
+# only for the landing itself, never the run. If master gained only docs
+# meanwhile they're merged in without another run; if it gained code, the
+# combined result needs verifying.
+land_it() {
+	local target=$sha base tree lock
+	if command -v flock >/dev/null; then
+		lock=${DESERT_LAND_LOCK:-$(git rev-parse --show-toplevel)/../.desert-land.lock}
+		exec 9>"$lock"
+		if ! flock -n 9; then
+			echo "another landing holds the lock: waiting up to $((land_wait / 60)) min"
+			flock -w "$land_wait" 9 || { echo "the landing queue stayed busy for $((land_wait / 60)) min: land again" >&2; exit 1; }
+		fi
+	fi
 	git fetch -q origin
-	git merge-base --is-ancestor origin/master HEAD || { echo "master moved past it: merge master and verify again" >&2; exit 1; }
-fi
+	if ! git merge-base --is-ancestor origin/master "$sha"; then
+		base=$(git merge-base origin/master "$sha")
+		if [[ -n $(git diff --name-only "$base" origin/master -- . ':!docs' ':!*.md') ]]; then
+			echo "master moved past it with code: merge master and verify again" >&2
+			exit 1
+		fi
+		tree=$(git merge-tree --write-tree --no-messages origin/master "$sha") ||
+			{ echo "master's new docs conflict with it: merge master and verify again" >&2; exit 1; }
+		target=$(git commit-tree "$tree" -p origin/master -p "$sha" -m "Merge master's docs into ${sha:0:7} as it lands")
+		echo "master moved only by docs: merged them in as ${target:0:7}"
+	fi
+	git push -q origin "$target:master"
+	echo "landed ${target:0:7} on master"
+}
+# Waits for run $1 to finish, at most ci_wait seconds.
+wait_run() {
+	local waited=0 status
+	while :; do
+		status=$(gh run view "$1" --json status -q .status)
+		[[ $status == completed ]] && return 0
+		if ((waited >= ci_wait)); then
+			echo "run $1 still $status after $((ci_wait / 60)) min: check it" >&2
+			return 1
+		fi
+		sleep 60
+		waited=$((waited + 60))
+	done
+}
 sha=$(git rev-parse HEAD)
 git fetch -q origin
 # Docs alone run no CI (probes.yml ignores them): nothing to wait for.
 if [[ -z $(git diff --name-only origin/master "$sha" -- . ':!docs' ':!*.md') ]]; then
 	echo "docs only at ${sha:0:7}: no CI to run"
-	if [[ $land == --land ]]; then
-		git merge-base --is-ancestor origin/master "$sha" || { echo "master moved past it: merge master and verify again" >&2; exit 1; }
-		git push -q origin "$sha:master"
-		echo "landed ${sha:0:7} on master"
-	fi
+	[[ $land == --land ]] && land_it
 	exit 0
 fi
 # Only dashboard-owned paths may bypass game checks. Renames out of game paths
@@ -69,11 +104,7 @@ if [[ -z $id ]]; then
 	done
 fi
 [[ -n $id ]] || { echo "no $workflow run for $branch at ${sha:0:7}" >&2; exit 1; }
-while :; do
-	status=$(gh run view "$id" --json status -q .status)
-	[[ $status == completed ]] && break
-	sleep 60
-done
+wait_run "$id" || exit 1
 conclusion=$(gh run view "$id" --json conclusion -q .conclusion)
 echo "$conclusion: run $id at ${sha:0:7}"
 gh run view "$id" --json jobs -q '.jobs[] | "  \(.conclusion)  \(.name)"'
@@ -82,39 +113,41 @@ failures() {
 	while read -r job; do
 		# Log lines open with a 29-character timestamp.
 		gh api --allow-escape-sequences "repos/{owner}/{repo}/actions/jobs/$job/logs" | sed 's/\x1b\[[0-9;]*m//g' |
-			grep -E ' (FAIL|ERROR|TIMEOUT) |CHECK FAILED|SCRIPT ERROR|PROBE FAIL' | cut -c30- | head -20 || true
+			grep -E ' (FAIL|ERROR|TIMEOUT) |CHECK FAILED|SCRIPT ERROR|PROBE FAIL' | grep -v -e 'probes/selftest/' -e '.probe_tmp/' |
+			cut -c30- | head -20 || true
 	done
 }
 if [[ $conclusion != success ]]; then
 	gh run view "$id" --json jobs -q '.jobs[] | select(.conclusion == "failure") | .databaseId' | failures
 	exit 1
 fi
-# Platforms run only on master, so a red one stops the line until it's fixed.
+# Platforms run only on master, so a real failure there stops the line until
+# it's fixed. A timeout on those slower runners, or a job that failed with no
+# probe failing (a setup or runner fault), is named but doesn't stop it.
 platforms_red() {
-	local run jobs
+	local run jobs lines
 	for run in $(gh run list -w probes.yml -b master -e push -s completed --limit 10 \
 		--json databaseId -q '.[].databaseId'); do
 		jobs=$(gh run view "$run" --json jobs -q '.jobs[] | select(.name | test("^(macOS|Windows) |smoke \\((macos|windows)"))
 			| select(.conclusion == "success" or .conclusion == "failure") | "\(.conclusion) \(.databaseId) \(.name)"')
 		[[ -n $jobs ]] || continue
-		grep '^failure ' <<<"$jobs" | cut -d' ' -f3- | sed "s/^/  red on master (run $run): /" || true
-		grep '^failure ' <<<"$jobs" | cut -d' ' -f2 | failures || true
-		grep -q '^failure ' <<<"$jobs"
-		return
+		grep -q '^failure ' <<<"$jobs" || return 1
+		grep '^failure ' <<<"$jobs" | cut -d' ' -f3- | sed "s/^/  red on master (run $run): /"
+		lines=$(grep '^failure ' <<<"$jobs" | cut -d' ' -f2 | failures)
+		[[ -z $lines ]] || printf '%s\n' "$lines"
+		if grep -qE 'CHECK FAILED|SCRIPT ERROR|PROBE FAIL|^(FAIL|ERROR) ' <<<"$lines" || grep -q 'smoke' <<<"$jobs"; then
+			return 0
+		fi
+		echo "  only timeouts or a runner fault: not stopping the line, but fix what's named"
+		return 1
 	done
 	return 1
 }
 if [[ $land == --land && $workflow == probes.yml && -z ${FIXES_PLATFORMS:-} ]] && platforms_red; then
-	echo "master's platform run is red: land its fix first, with FIXES_PLATFORMS=1" >&2
+	echo "master's platform run failed a real check: land its fix first, with FIXES_PLATFORMS=1" >&2
 	exit 1
 fi
 if [[ $land == --land ]]; then
-	git fetch -q origin
-	if ! git merge-base --is-ancestor origin/master "$sha"; then
-		echo "master moved past it: merge master and verify again" >&2
-		exit 1
-	fi
-	git push -q origin "$sha:master"
+	land_it
 	git push -q origin --delete "verify-$name"
-	echo "landed ${sha:0:7} on master"
 fi
