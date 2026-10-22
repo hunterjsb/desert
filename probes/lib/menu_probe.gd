@@ -51,7 +51,10 @@ func drop_in() -> void:
 ## Out of the landed pod through its hatch and standing, by the ordinary moves.
 func crawl_out() -> void:
 	Input.action_press(&"move_back")
-	await physics_frames(180)
+	for i in 600:
+		await get_tree().physics_frame
+		if i > 90 and world.player.posture.clear(&"stand"):
+			break
 	Input.action_release(&"move_back")
 	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands")
 	await physics_frames(2)
