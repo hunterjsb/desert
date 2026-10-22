@@ -1847,6 +1847,43 @@ shared-host reference averages, not worst-tick, rendered-frame or arbitrary-load
 guarantees. The dense load exceeds Home's cap; its admitted variant is documented
 under [Marked Home](bubble-shield-and-camp.md#large-home-main-thread-budget-2026-10-22).
 
+## One-line salvage kite (Hunter, 2026-10-20; selected 2026-10-22)
+
+Hunter: "its own little rig, contained, so like a super light version of a rig.
+So just like you'd be the keel of your hoverboard, you could be the keel of this
+kite... I probably like one line". Camp use is "almost like a decorative piece,
+or a little bit of extra pull"; "I leave my shield on a lot just so it is easier
+to see from far away when I'm scouting... Adding a kite solves that problem".
+"Kite-powered board is such a good idea" and "if you're on the board and being
+pulled by the wind, it should not really take much battery".
+
+**Selected scope.** A found packed kite unfolds into a contained light rig. Its
+bridle belongs to the item; the player manages one ordinary rope, using the same
+waist, hook, stake, gathering, reeling and recovery interactions as other lines.
+The board and rider supply the moving keel. Board steering and rider position
+change the wind window, while hauling or easing that one line changes its reach;
+looking around never changes trim. The same line can be made fast to a camp hook
+or stake, leaving the kite flying as a physical landmark and adding limited pull.
+Visibility depends on distance, terrain and weather, not a HUD marker through them.
+
+Reuse the antenna kite's wind/elevation and settling model and its existing
+procedural art. The antenna kite is deliberately wind-positioned on a visual
+line ([Radio](radio-sound-and-atmosphere.md#the-antenna-kite-and-the-radios-modules-gonkhub-2026-10-21-built));
+the salvage kite adds an ordinary rope and aerodynamic load coupling for traction.
+The radio's flight, gain, charge, grounding and wear behavior remain their own.
+Keep the reusable flight law shared rather than making another kite simulator.
+
+**Energy direction (approved gate, SANDGAME 2026-10-22).** Motor draw follows
+propulsion the motor supplies, including powered catch-up and work against a
+loaded line. Wind propulsion itself costs no motor power. Hover and equipped
+devices still draw normally, and wind travel never creates charge. Apply this to
+real board motion rather than a kite discount. The matched-trip gate is below;
+kite area, force and line behavior remain Tuning parameters.
+
+**Acceptance.** Real one-line flight and board towing, ordinary recovery and camp
+anchoring, a rendered kite visible from a nearby scouting dune, and equivalent flight at
+supported physics rates. A deed is recorded at actual wind-powered travel.
+
 ## Kite propulsion energy gate (SANDGAME, 2026-10-22)
 
 The approved gate is at least 50% lower propulsion Wh/km than motor-only travel

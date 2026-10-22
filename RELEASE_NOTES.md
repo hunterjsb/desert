@@ -1,3 +1,14 @@
+## 0.4.0-alpha “Spaceport” — development, unreleased
+
+- Fly a found salvage kite on one ordinary rope from your waist or a camp hook.
+  The board and rider steer beneath it; reeling controls its reach. Recover and
+  relaunch the same line, or leave it aloft as a physical camp landmark.
+  Shares the antenna kite's wind law and worn procedural wing, without changing
+  radio reception, charge or aerial behavior.
+- Meter existing board propulsion and hover draw separately for the loaded
+  kite-travel comparison; wind travel receives no special electrical discount.
+  Existing run and profile formats are retained.
+
 ## 0.3.1-alpha “Sanddune” — development, unreleased
 
 - Compare your heading and sail trim with an ideal on the Console Map's Nav layer.

@@ -1662,3 +1662,15 @@ static func current() -> Tuning:
 @export var airdrop_settle_seconds: float = 7.0
 ## Each of its sockets holds something this often (salvage's loot fills it).
 @export var airdrop_packed_share: float = 0.75
+
+@export_group("Traction kite")
+@export var traction_area_m2: float = 5.5
+@export var traction_scale: float = 2.875
+@export var traction_catch: float = 0.7
+@export var traction_vertical_drag: float = 1.2
+@export var traction_line_m: float = 55.0
+@export var traction_payout_ms: float = 3.0
+@export var traction_launch_slack_m: float = 1.5
+@export var traction_toss_ms: float = 2.0
+@export var traction_spin_damp: float = 4.0
+@export var traction_deed_load_n: float = 15.0
