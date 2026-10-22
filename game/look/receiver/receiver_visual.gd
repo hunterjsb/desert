@@ -13,6 +13,9 @@ var _rest := {}
 
 
 func usable() -> bool:
+	if not find_children("*", "CollisionObject3D", true, false).is_empty() \
+			or not find_children("*", "CollisionShape3D", true, false).is_empty():
+		return false
 	for node: Node3D in [shell, meter, tuning, volume, reading]:
 		if node == null or not is_ancestor_of(node):
 			return false

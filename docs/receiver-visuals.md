@@ -43,7 +43,7 @@ at the identity transform; put import-axis corrections below it.
    replace the contents of `game/look/receiver/survey_receiver_visual.tscn` with the
    wrapper. Receiver gameplay and saves require no changes.
 
-A live replacement validates the required references before retiring the working
+A live replacement rejects embedded collision bodies/shapes and validates the required references before retiring the working
 appearance and immediately reapplies the current control and appearance state.
 Invalid configured appearances fall back to the original scene at startup.
 Appearance choice is an asset configuration, not a new item/save identity.

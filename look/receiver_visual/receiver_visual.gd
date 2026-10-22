@@ -11,13 +11,16 @@ func _ready() -> void:
 	var out := args[0] if not args.is_empty() else "user://receiver-visual"
 	DirAccess.make_dir_recursive_absolute(out)
 	var scene: PackedScene = load(args[1]) if args.size() > 1 else SurveyReceiver.DEFAULT_VISUAL
-	var visual := scene.instantiate() as ReceiverVisual
-	if visual == null or not visual.usable():
+	var receiver := Catalog.device(&"survey_receiver") as SurveyReceiver
+	receiver.freeze = true
+	receiver.process_mode = Node.PROCESS_MODE_DISABLED
+	receiver.visual_scene = scene
+	add_child(receiver)
+	var visual := receiver.visual
+	if visual == null or receiver.visual_scene != scene:
 		push_error("Choose a receiver visual scene with its required references")
 		get_tree().quit(1)
 		return
-	visual.prepare()
-	add_child(visual)
 	visual.present(0.7, -0.4, 0.2)
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR

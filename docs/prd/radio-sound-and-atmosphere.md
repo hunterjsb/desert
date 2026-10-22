@@ -471,6 +471,14 @@ contract, with their own material adapter where necessary; the procedural wear
 shader's custom vertex channels are not assumed to exist on imported geometry.
 See [the asset contract](../receiver-visuals.md) for authoring and replacement.
 
+**As built:** the default wrapper reuses the original five meshes and Paint
+material. Radio 77 passed the live replacement/restoration check, including an
+independently authored hierarchy, physical fittings, lineage and inventory
+preview. Existing controls/stowing (41) and legacy disk restoration (71) passed.
+Actual Forward+ captures show the assembled default fresh, worn and from behind;
+the authored fixture also renders through the same device startup path. These
+checks do not constitute acceptance of future Blender art or its materials.
+
 ## Stations
 
 From Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-2026-10-18.md): a station is a
