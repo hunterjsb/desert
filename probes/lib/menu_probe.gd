@@ -56,10 +56,10 @@ func crawl_out() -> void:
 		Input.action_press(move)
 		for i in 300:
 			await get_tree().physics_frame
-			if i > 60 and world.player.posture.clear(&"stand"):
+			if _out(from):
 				break
 		Input.action_release(move)
-		if world.player.posture.clear(&"stand"):
+		if _out(from):
 			break
 	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands (%.2f m, %s)"
 		% [world.player.global_position.distance_to(from), world.player.ground_pose])
@@ -69,6 +69,11 @@ func crawl_out() -> void:
 		var away := world.player.global_position - pod.global_position
 		world.player.rotation.y = atan2(-away.x, -away.z)
 	await physics_frames(2)
+
+
+## Clear of the pod's own floor, with room to stand.
+func _out(from: Vector3) -> bool:
+	return world.player.global_position.distance_to(from) > 1.5 and world.player.posture.clear(&"stand")
 
 
 ## The ready cabin, within ten simulated seconds.
