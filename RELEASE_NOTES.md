@@ -5,11 +5,18 @@
   occupied helm can steer toward the chosen course or Home through its existing
   controls. Manual input takes priority; the aid adds no sailing force.
 
+- Make sailing and towing respond at the real rope and hull centres. The sail follows
+  its physical halyard, the board motor stays consistent across power ticks, and the
+  old magic sail toggle is gone.
 
 - Add main-thread CPU budgets for 108-frame sailing, capsized and remote Home
   camps. Batch tipped-contact ground reads while preserving contact order and
   live impulse response. Admit the measured heavy Home camp with a 272-item cap,
   guarded by the existing one-millisecond upkeep budget.
+
+- Keep distant Home support current as the world shifts: rebuild it only when
+  needed, build nearby collision first, and keep collision under a camp that
+  outruns its ground. Home's state stays with its beacon.
 
 - Make the survey receiver appearance replaceable independently of gameplay,
   retaining its current procedural model, wear, controls and saved identity.
@@ -20,6 +27,9 @@
 - Keep the real crawl route through the opened hatch clear after impact.
   Obstructing cargo breaks loose as its original recoverable assembly, preserving
   fitted batteries and both rope ends instead of trapping the player.
+- Keep the Surveyor opening on one forecast and flight path, explain launch blockers
+  together, and make a ready cabin launch reliably. See Tu from orbit, keep the pod
+  clear in space, then see the scatter on landing with room to lie down.
 - Add real glazed side and roof panels, free mouse look while falling, stronger
   phase-driven flight sound and bounded turbulence. Looking does not steer the pod.
 
@@ -31,7 +41,8 @@
 
 - Add the passive crystal set, new field-radio looks, coloured band windows and
   powered receiver modules. Reorganize AM/FM/shortwave broadcasts around their
-  updated carriers, including wreck distress and the tower weather/schedule.
+  updated carriers, including wreck distress and the tower weather/schedule. Hear
+  the Walker on FM, and bring the relay's music back.
 - Align the printed AM/FM/shortwave dial marks with actual tuning and needle travel.
 - Fly a radio antenna aerial from its reel and route its lead through a stake
   for grounding. Static charge, wear and damaged leads affect reception. The
@@ -43,6 +54,19 @@
   require power for the counter and logger modules.
 - Keep the aerial aligned through world recentering and disconnect a ruptured
   strong lead from reception and grounding. Remove the clipped footstep sample.
+- Call a deliveryship care package with a signal flare and recover its contents
+  after it lands clear of your camp.
+- Fold the Console's Survey and Chart pages into one Map with weather, survey and
+  navigation filters.
+- Grow coalcane from cuttings and burn the harvest for camp power through the night
+  and storms; earn Night Harvest for powering the camp.
+- Storms leave visible wear on struck parts, and worn parts produce less. Repairs
+  are not available yet.
+- Add Quiver for riding every board make, On Reserve for powering camp from a
+  battery, and Nomad after earning a deed in each of Wind, Weather, Ruins, Signals
+  and Far.
+- Import a source checkout before the launcher starts it, so Godot refreshes its
+  script cache; published game builds launch directly.
 
 Existing run/profile formats remain supported. The escape-route repair applies
 when impact materializes; already recovered camps are not rearranged on load.
