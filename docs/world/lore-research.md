@@ -1836,6 +1836,40 @@ Readings, not in the session:
   terminals, and the windows carry gods "arguing" over the radio, which the Radio PRD leaves open as a
   voice or tones ([section 19](#19-open-after-session-4-part-5)).
 
+### Starcom, the gods and surviving satellites (2026-10-22)
+
+**Agreed, Hunter's words:** "local gods get reconnected with starcom, the young god will play diff music and read diff readings if corrupted. we need to consider satellites too and make sure it makes sense that our gods cant use them or could only using them for sparring occasional messages, whatevers realisitic."
+
+Reconnecting Starcom restores the local god network as well as external contact. The corrupted
+Eye has different music and readings. This does not settle whether reconnecting reverses an
+existing corruption; keep that state transition open. Contract, radio-route and repair decisions
+live in [the vision](../vision.md#starcom-decisions-agreed-2026-10-22).
+
+**Proposed explanation, awaiting Hunter:** surviving orbital broadcasts are not a functioning
+all-purpose communications network. Retain the actual [satellite and relay roster](../prd/radio-sound-and-atmosphere.md):
+a craft can keep transmitting its instruments, or repeating a particular ground feed, without
+accepting and forwarding arbitrary messages from every god. The Tower relay is the useful
+counterexample: one surviving route, not proof that the whole network still routes traffic.
+
+**Proposed mechanism:** Starcom once provided the ground-side switching and compatible uplinks
+that tied these separate systems together. Its outage left some local links intact, consistent
+with Mother Cistern reaching Mitchell, while cutting dependable planet-wide conversation.
+An orbiting relay could still pass a brief stored message when compatible endpoints have a
+usable pass and working uplinks; that would be exceptional, not impossible. A pass alone does
+not guarantee an uplink, a compatible destination or permission to forward. Do not invent
+weather or the horizon as a universal explanation: the L1 relay already serves a fixed route.
+
+**Proposed gameplay consequence:** an occasional delayed dispatch can survive without giving
+the Eye continuous counsel or replacing the Walker and player as couriers. Restoring Starcom
+adds reliable addressed exchange; it does not need to revive every satellite. A full addressed
+exchange that grants launch clearance must still count as a bridge, whichever channel carries
+it. No silent exception that makes successful messages useless just to preserve a quest.
+
+This proposes no new satellite, frequency, maker, orbit or ancient maintenance miracle.
+Surviving hardware longevity remains an existing setting premise, not something intermittent
+coverage explains. Which endpoints can exchange sparse messages, and whether any need to be
+implemented, remain open; coordinate satellite or Walker changes with Gonk.
+
 ### Mitchell, the dead god (Agreed, session 5)
 
 *Session 5, "Mitchell, the dead god." The game side
