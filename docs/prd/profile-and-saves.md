@@ -886,4 +886,4 @@ not a second kit grant. Integrated evidence remains pending.
 
 Climbing into a crow's nest on a standing mast records **Lookout** (Wind, after
 Hand-Me-Down): the nest is the nomads' gear and came without one. The roster is
-68 deeds in eleven families. Devices 41 checks it.
+72 deeds in eleven families. Devices 41 checks it.

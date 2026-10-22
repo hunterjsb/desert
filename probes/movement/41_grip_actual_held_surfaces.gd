@@ -1,13 +1,13 @@
 extends HandsProbe
 ## Movement probe 41: your gloves meet what you hold within reach. A cutter
-## and a chassis, held level and looking down, each have a glove on their own
-## surface rather than reaching short of it.
+## and a chassis, held looking a little down, each have a glove on their own
+## surface rather than reaching short of it or into it.
 
 func run() -> void:
 	await load_hands()
 	var player := world.player
 	for id: StringName in [&"cutter", &"chassis"]:
-		for pitch in [0.0, -25.0]:
+		for pitch in [-25.0]:
 			player.camera.rotation_degrees.x = pitch
 			var item := Catalog.device(id)
 			world.content.add_child(item)

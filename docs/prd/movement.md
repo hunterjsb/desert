@@ -917,13 +917,14 @@ pieces posed each frame by `Body` from how you move, with no shapes of its own
 
 The limbs ease with time (`suit_ease_seconds`), the same at any frame rate.
 Probes: movement 39 (only looks, boots on the sand), 41 (a glove is on a held
-cutter or chassis, level and looking down), 42 (the riding suit draws with the
+cutter or chassis looking a little down), 42 (the riding suit draws with the
 board at 15 FPS, helmet and collar out of view), 44 (the climb gesture).
 
-**Cost.** Nine paired rounds of 60 frames at 1920×1080 on the RTX 3070, suit
-drawn against hidden: from outside +0.144 ms median (-0.265 to +0.309); in your
-own view looking down -0.466 ms (-0.738 to +0.115), since the suit covers the
-sand's close relief there. `look/player_body/cost.tscn` repeats it.
+**Cost.** Nine paired rounds of 60 frames at 1920×1080 on the RTX 3070, the
+slim suit drawn against hidden: from outside +0.003 ms median (-0.109 to
++0.510), within noise; in your own view looking down -0.405 ms (-0.866 to
++0.284), since the suit covers the sand's close relief there.
+`look/player_body/cost.tscn` repeats it.
 
 ## Rules
 
