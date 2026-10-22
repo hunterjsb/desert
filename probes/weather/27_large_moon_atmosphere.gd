@@ -55,7 +55,7 @@ func run() -> void:
 	var tangent := Vector3(1.0, -0.01, 0.0).normalized()
 	check(not craft._clear_segment(10.0, tangent, 100000.0), "planet crossing hides a target even when its far endpoint rises above ground")
 
-	var orbit: Satellite = Radio.constellation_of(world).orbits[&"thermal"]
+	var orbit: Satellite = Radio.constellation_of(world).orbits[&"deliveryship"]
 	var orbit_at := orbit.at(world.time)
 	var below := orbit_at.normalized()
 	world.moon.place(rad_to_deg(Sphere.latitude(below)), rad_to_deg(Sphere.longitude(below)))
