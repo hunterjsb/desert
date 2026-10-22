@@ -4,8 +4,7 @@ extends Node
 ## the sun's radiation are built in and free, with no power and no bar. It
 ## carries whatever you can carry in your hands, with no slots and no count:
 ## weight is the only limit, and a soft one. Past what you carry easily you
-## sink into the sand and slow down (Player). It feeds you from the water and
-## food you carry. The inventory action opens a view of it all, like things
+## sink into the sand and slow down (Player). The inventory action opens a view of it all, like things
 ## stacked, each drawn as itself, and frees the mouse: a click on a thing
 ## brings it to your empty hands, a click on the view with something in your
 ## hands puts it in, and use on a thing uses it where it is. Rope and wire go
@@ -314,9 +313,8 @@ func click(stack: int) -> bool:
 
 
 ## Use on a stack: one of it is used where it is. A device is worked, as a
-## radio's dial turns; water or food you drink or eat your fill of, the
-## least full first, as the suit would. Anything else does nothing. Says
-## whether it did anything.
+## radio's dial turns; water or food you drink or eat a portion of, the
+## least full first. Anything else does nothing. Says whether it did anything.
 func use(stack: int) -> bool:
 	var all := stacks()
 	if stack < 0 or stack >= all.size():
@@ -332,7 +330,11 @@ func use(stack: int) -> bool:
 		var it := each as Supply
 		if it != null and it.amount > 0.0 and (least == null or it.amount < least.amount):
 			least = it
-	return least != null and _player.vitals.take_in(least) > 0.0
+	if least == null:
+		return false
+	# Taken in here, not by its use: an emptied ration is freed at once.
+	var why := least.refusal(_player)
+	return _player.hands.refuse(why) if why != "" else _player.vitals.take_in(least) > 0.0
 
 
 ## What goes in, off the tree: rope and wire as one rolled-up body, a device

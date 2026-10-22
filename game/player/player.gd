@@ -324,15 +324,25 @@ func _physics_process(delta: float) -> void:
 	var tiring := sink if dir != Vector2.ZERO else maxf(sink - minf(suit.burden(), 1.0), 0.0)
 	stamina -= tiring * _tuning.haul_stamina_drain * delta
 	if not sprinting and climb == 0.0 and tiring < 0.05:
-		stamina += _tuning.stamina_regen * delta
-	stamina = clampf(stamina, 0.0, _tuning.stamina_max)
+		stamina += stamina_regen() * delta
+	stamina = clampf(stamina, 0.0, stamina_full())
 
 	Dev.put("player/mode", ("crouch walk" if mode == "walk" else "crouch") if crouched and mode in ["stand", "walk"]
 		else mode)
-	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
+	Dev.put("player/stam", "%d/%d" % [stamina, stamina_full()])
 	Dev.put("player/spd", "%.1fkm/h" % (Vector2(velocity.x, velocity.z).length() * 3.6))
 	Dev.put("player/slope", "%d°" % roundi(rad_to_deg(atan(slope.length()))))
 	Dev.put("player/sink", "%d%%" % roundi(sink * 100.0))
+
+
+## Stamina when full, and won back a second at rest: the base, as being Fed,
+## Rested or Hydrated lifts it (Buffs). Running out returns to the base.
+func stamina_full() -> float:
+	return _tuning.stamina_max * vitals.buffs.capacity()
+
+
+func stamina_regen() -> float:
+	return _tuning.stamina_regen * vitals.buffs.recovery()
 
 
 func _stop() -> void:
@@ -471,7 +481,7 @@ func _ride(delta: float, input: Vector2) -> void:
 		step_off()
 	Dev.put("player/mode", "ride")
 	Dev.put("player/spd", "%.1fkm/h" % (own.length() * 3.6))
-	Dev.put("player/stam", "%d/%d" % [stamina, _tuning.stamina_max])
+	Dev.put("player/stam", "%d/%d" % [stamina, stamina_full()])
 	if ride != null:
 		var slid := absf(ride.velocity.angle_to(ride.ahead)) if ride.velocity.length() > 0.5 else 0.0
 		Dev.put("player/board", "%s %.2fm up, %d%%, dug %d%% at %.1f/%.1f%s" % [board.label, ride.gap

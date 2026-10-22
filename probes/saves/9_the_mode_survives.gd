@@ -34,10 +34,7 @@ func run() -> void:
 	var old := world
 	var old_seed := world.run_seed
 	var player := world.player
-	for part in player.suit.carried:
-		if part is Supply and part.kind == &"water":
-			part.drain(INF)
-	player.vitals.thirst = 0.0
+	player.vitals.wounds.sick = 1.0
 	player.vitals.health = 0.01
 	for i in 120:
 		await get_tree().physics_frame

@@ -4,7 +4,7 @@ extends WreckProbe
 ## power module by its live capacitor bank shocks you: health gone at once, thrown
 ## off it, stunned, unable to walk or close your hands, the bank spent. A
 ## hauler's cargo by a breached store makes you sick: health drained a little
-## at a time, thirst faster, no healing, until it wears off, and a med kit
+## at a time, no healing, until it wears off, and a med kit
 ## cures it. With a stake laid across a bank's terminals, and sealant over a
 ## store's breach, both from your hands, every hazard on a pod, a lifeboat and
 ## a hopper is made safe and its module taken unharmed.
@@ -69,15 +69,12 @@ func run() -> void:
 	check(wounds.sick > 0.0 and wounds.sicknesses == 1 and hauler.hazard(store) == &"",
 		"taking it by a breached store makes you sick")
 	hands.drop()
-	vitals.thirst = Vitals.FULL
 	health = vitals.health
-	var thirst := vitals.thirst
 	for k in 4:
 		world.time += 15.0
 		await physics_frames(2)
-	print("sick a minute: health %.2f to %.2f, thirst %.2f to %.2f" % [health, vitals.health, thirst, vitals.thirst])
+	print("sick a minute: health %.2f to %.2f" % [health, vitals.health])
 	check(vitals.health < health - tuning.sickness_harm * 50.0, "it takes health over time")
-	check(wounds.thirst_factor() == tuning.sick_thirst, "and you thirst %.1f times as fast" % tuning.sick_thirst)
 	var med := Catalog.part(&"med_kit")
 	world.content.add_child(med)
 	med.global_position = eye() - world.player.camera.global_basis.z * 0.6

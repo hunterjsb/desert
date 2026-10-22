@@ -44,7 +44,9 @@ const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind"
 const RIDE := ["velocity", "ahead", "y", "vy", "gap", "last_step", "bank", "pitch", "roll", "drifting", "kicks",
 	"bottomed", "hardest", "ticks", "waited", "_ground", "_came", "_hopping", "_tilting", "_tilt_was", "_ahead_was",
 	"_kick_wait", "_stroke", "dig", "_bitten", "overload", "motor_pulse", "_motor_load", "_line_load", "_motor_age"]
-const VITALS := ["health", "hunger", "thirst", "dead", "harms", "taken", "drunk", "eaten", "_next", "in_heart"]
+const VITALS := ["health", "dead", "harms", "taken", "drunk", "eaten", "_next", "in_heart"]
+## Each buff's time left and the rest you're in toward Rested.
+const BUFFS := ["rested", "fed", "hydrated", "resting"]
 const ROPE := ["length", "kg_per_m", "breaking", "frequency", "damping", "max_stretch", "tension", "sustained",
 	"spring_impulse", "stop_impulse"]
 const STRAND := ["length", "_rest", "_velocity", "_ground", "_slope", "_near", "_bulge", "_age", "_phase",
@@ -174,10 +176,16 @@ func begin(data: Dictionary) -> Array[Vector2]:
 		player.set(key, you.state[key])
 	player.restore_ground_pose(StringName(you.get("ground_pose", &"stand")))
 	player.set_meta(&"rope_drag", you.drag)
+	# A save from before kept hunger and thirst, gone now: they come back as
+	# nothing, never as harm or as supplies, and a save before buffs has none.
 	for key: String in you.vitals:
-		player.vitals.set(key, _copy(you.vitals[key]))
+		if key in VITALS:
+			player.vitals.set(key, _copy(you.vitals[key]))
 	for key: String in you.get("wounds", {}):
 		player.vitals.wounds.set(key, you.wounds[key])
+	for key: String in you.get("buffs", {}):
+		if key in BUFFS:
+			player.vitals.buffs.set(key, you.buffs[key])
 	world.weather.forecast_now()
 	world.salvage.recall(data.finds, world.terrain.chunk_at(world.player_world_x(), world.player_world_z()))
 	# What was taken from each site; a save from before kept none.
@@ -382,6 +390,9 @@ func _take() -> Dictionary:
 	# A sickness from a wreck runs on through a save; a stun is over by then.
 	you.wounds = {"sick": player.vitals.wounds.sick, "shocks": player.vitals.wounds.shocks,
 		"sicknesses": player.vitals.wounds.sicknesses}
+	you.buffs = {}
+	for key in BUFFS:
+		you.buffs[key] = player.vitals.buffs.get(key)
 	you.ground_pose = player.ground_pose
 	data.player = you
 	var things := []

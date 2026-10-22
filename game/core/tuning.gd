@@ -793,30 +793,28 @@ static var _current: Tuning
 @export var turbine_watts_per_cubic: float = 0.0128
 
 @export_group("Survival")
-## Full to empty in the mild, in days: hunger, and thirst, which runs faster in
-## the heat, from thirst_heat_from °C up to heat_thirst times as fast at the
-## suit's hot limit.
-@export var hunger_days: float = 2.0
-@export var thirst_days: float = 1.0
-@export var thirst_heat_from: float = 30.0
-@export var heat_thirst: float = 2.0
-## What fills you from empty: litres of water, kcal of food.
-@export var thirst_litres: float = 1.5
-@export var hunger_kcal: float = 2000.0
-## The suit gives you water when you fall below this share, and food below
-## this, back up to full.
-@export var drink_below: float = 0.8
-@export var eat_below: float = 0.6
+## Setting out prepared (Buffs): still and safe this many world seconds, sat
+## or lying on support or asleep, you're Rested; a meal of this many kcal
+## leaves you Fed, a drink of this many L Hydrated. Each lasts this many
+## days, Rested counted from when you get up; less than a portion, for less.
+@export var rest_seconds: float = 30.0
+@export var meal_kcal: float = 400.0
+@export var drink_litres: float = 0.25
+@export var rested_days: float = 0.5
+@export var fed_days: float = 1.0
+@export var hydrated_days: float = 0.5
+## Rested and Hydrated add these shares of base stamina recovery, together;
+## Fed this share of base stamina.
+@export var rested_recovery: float = 0.25
+@export var hydrated_recovery: float = 0.15
+@export var fed_stamina: float = 0.2
 ## Health a second, of 100: at a full storm; per m/s of wind past
 ## wind_hurts_from; per degree past the suit's limits.
 @export var storm_harm: float = 0.25
 @export var wind_hurts_from: float = 20.0
 @export var wind_harm: float = 0.01
 @export var temperature_harm: float = 0.05
-## Health a second with nothing left in you to eat, or to drink.
-@export var starving_harm: float = 0.1
-@export var parched_harm: float = 0.3
-## Unharmed, fed and watered, you heal from nothing to full in this many days.
+## Unharmed, you heal from nothing to full in this many days.
 @export var heal_days: float = 1.0
 ## The suit keeps you safe between these, °C; past them the temperature harms you.
 @export var suit_cold: float = -40.0
@@ -866,9 +864,6 @@ static var _current: Tuning
 @export var sleep_camp_m: float = 30.0
 @export var sleep_still_speed: float = 0.5
 @export var sleep_still_spin: float = 1.0
-## Asleep with nothing left to drink or eat, you wake once thirst or hunger
-## falls to this share.
-@export var sleep_wake_need: float = 0.25
 
 @export_group("Farming")
 ## A planter's water tank, L. Found empty.
@@ -958,12 +953,11 @@ static var _current: Tuning
 @export var cutter_w: float = 120.0
 ## A live capacitor bank's shock: health it takes at once, and seconds you're
 ## stunned. A breached store's sickness: health a second it takes, for how
-## many seconds of world time, and how much faster you thirst meanwhile.
+## many seconds of world time.
 @export var shock_harm: float = 25.0
 @export var shock_stun: float = 1.5
 @export var sickness_harm: float = 0.08
 @export var sickness_seconds: float = 240.0
-@export var sick_thirst: float = 1.8
 
 @export_group("History")
 ## The moon's cells history is made and laid in, m across.

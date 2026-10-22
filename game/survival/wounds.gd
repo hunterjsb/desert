@@ -5,8 +5,7 @@ extends Node
 ## once, throws what you hold out of your hands and leaves you stunned, unable
 ## to move, look round or close your hands, for a moment: a white flash, a
 ## crack and a shower of sparks, the view jolting. A sickness from a breached
-## store takes health a little at a time and makes you thirstier while it
-## lasts, and stops you healing; the edges of your sight go sallow while it
+## store takes health a little at a time while it lasts, and stops you healing; the edges of your sight go sallow while it
 ## does. It wears off, or a med kit cures it. A save keeps the sickness.
 
 ## Seconds of stun and of sickness left.
@@ -91,11 +90,6 @@ func loss(seconds: float) -> float:
 	var lasting := minf(seconds, sick)
 	sick -= lasting
 	return lasting * Tuning.current().sickness_harm
-
-
-## How much faster you thirst while sick.
-func thirst_factor() -> float:
-	return Tuning.current().sick_thirst if sick > 0.0 else 1.0
 
 
 func _process(delta: float) -> void:

@@ -27,10 +27,7 @@ func run() -> void:
 
 	# Dead, with the death screen up.
 	var player := world.player
-	for part in player.suit.carried:
-		if part is Supply and part.kind == &"water":
-			part.drain(INF)
-	player.vitals.thirst = 0.0
+	player.vitals.wounds.sick = 1.0
 	player.vitals.health = 0.01
 	await _play(period * 2)
 	check(player.vitals.dead and main.ui.is_open() and _saved_at() == auto, "dead, the run never saves itself")
