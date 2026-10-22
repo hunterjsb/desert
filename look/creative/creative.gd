@@ -39,6 +39,7 @@ func _ready() -> void:
 	_main.new_game()
 	while _main.world() == null or _main.ui._fading:
 		await get_tree().process_frame
+	await SurfaceStart.begin(_main)
 	await _idle()
 	await get_tree().create_timer(PLAYED).timeout
 	_press(&"creative")

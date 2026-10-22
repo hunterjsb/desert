@@ -247,7 +247,7 @@ func launch() -> bool:
 	world.arrival_state = sealed
 	sealed.landing_world = selected.landing_world
 	sealed.heading = plan.heading
-	sealed.exit_world = selected.landing_world + Vector2(-world.tuning.arrival_exit_offset_m, 0).rotated(-plan.heading)
+	sealed.exit_world = selected.landing_world + Vector2(world.tuning.arrival_exit_offset_m, 0).rotated(-plan.heading)
 	sealed.phase = &"ejection"
 	sealed.elapsed = 0.0
 	sealed.progress = 0.0
