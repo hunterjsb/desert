@@ -105,7 +105,7 @@ const ERAS := {
 		"from": {Eras.COLONIAL: 2, Eras.SKIMMER: 2, Eras.FIRST: 1, Eras.SECOND: 3},
 		FLOOR: [[&"coil", 3], [&"streamer", 2], [&"skates", 1], [&"board_plate", 1], [&"bedroll", 2], [&"chassis", 3],
 			[&"frame", 2], [&"fabric", 2], [&"canister", 2], [&"survival_kit", 1], [&"battery", 2], [&"board", 1],
-			[&"survey_receiver", 2], [&"crystal_set", 1], [&"antenna_kite", 1]],
+			[&"survey_receiver", 2], [&"crystal_set", 1], [&"antenna_kite", 1], [&"salvage_kite", 1]],
 		SHELF: [[&"streamer", 3], [&"coil", 2], [&"hook", 3], [&"canister", 2], [&"ration", 2], [&"compass", 1],
 			[&"battery", 1], [&"salt", 1], [&"fm_converter", 1], [&"sw_converter", 1], [&"antenna_reel", 1]],
 		CACHE: [[&"canister", 3], [&"ration", 2], [&"streamer", 1], [&"med_kit", 1], [&"coil", 1], [&"saltbush", 1]],

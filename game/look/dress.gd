@@ -538,6 +538,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			return SurveyReceiverLooks.frame()
 		&"antenna_kite":
 			return KiteLooks.packed(size)
+		&"salvage_kite":
+			return KiteLooks.packed(size, KiteLooks.SALVAGE_CLOTH, KiteLooks.SALVAGE_TRIM)
 		&"antenna_reel":
 			# A drum of copper aerial wire between two gunmetal cheeks, a crank on
 			# one, and the wire's clip on its lead.

@@ -92,6 +92,8 @@ static var _current: Tuning
 ## Ground made against the wind under one sail, m, through its tacks: a
 ## keeled yacht's half a day close-hauled, a camp on skates' most of one.
 @export var deed_upwind_m: float = 500.0
+## Real board travel while a loaded kite does work on its rider, m.
+@export var deed_kite_m: float = 100.0
 ## Sailed in one sitting at a keeled camp's helm, m: half a day on its reaches.
 @export var deed_yacht_m: float = 5000.0
 ## Sailed on a front's outflow ahead of its wall, m, without leaving it: a
@@ -1641,6 +1643,13 @@ static func current() -> Tuning:
 @export var suit_arm_swing: Vector2 = Vector2(0.25, 0.6)
 ## Looking down or up, the trunk leans with your head this share of it.
 @export var suit_lean: float = 0.1
+## A small thing brought all the way in hangs this far below your eye line,
+## rad: low at your chest, close, in your gloves' reach (Hunter, 2026-10-22);
+## it swings with this share of your look. Read, it comes up to here in your
+## view, m from your eyes in your turn's frame.
+@export var suit_carry_drop: float = 1.03
+@export var suit_carry_follow: float = 0.2
+@export var suit_read: Vector3 = Vector3(0.0, -0.12, -0.36)
 
 @export_group("Wind streamer")
 ## It hangs under the first air, m/s, stands out level from the second, and
@@ -1663,3 +1672,15 @@ static func current() -> Tuning:
 @export var airdrop_settle_seconds: float = 7.0
 ## Each of its sockets holds something this often (salvage's loot fills it).
 @export var airdrop_packed_share: float = 0.75
+
+@export_group("Traction kite")
+@export var traction_area_m2: float = 5.5
+@export var traction_scale: float = 2.875
+@export var traction_catch: float = 0.7
+@export var traction_vertical_drag: float = 1.2
+@export var traction_line_m: float = 55.0
+@export var traction_payout_ms: float = 3.0
+@export var traction_launch_slack_m: float = 1.5
+@export var traction_toss_ms: float = 2.0
+@export var traction_spin_damp: float = 4.0
+@export var traction_deed_load_n: float = 15.0

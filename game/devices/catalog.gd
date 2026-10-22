@@ -519,6 +519,9 @@ const DEVICES := {
 	# set's aerial.
 	&"antenna_kite": {"label": "Antenna kite", "size": Vector3(0.36, 0.2, 0.18), "mass": 2.2, "kite": true,
 		"carryable": true, "sticks": true, "sockets": [[&"lead", Vector3(0.18, -0.02, 0.0), Vector3.RIGHT]]},
+	# Its one bridle takes an ordinary rope; the cloth folds around its line drum.
+	&"salvage_kite": {"label": "Salvage kite", "size": Vector3(0.5, 0.22, 0.22), "mass": 3.0, "salvage_kite": true,
+		"carryable": true, "sockets": [[&"tie", Vector3.ZERO, Vector3.DOWN]]},
 	# A reel of aerial wire, clipped to a radio and walked out (AntennaReel).
 	&"antenna_reel": {"label": "Antenna reel", "size": Vector3(0.14, 0.12, 0.08), "mass": 0.8, "antenna_reel": true,
 		"carryable": true, "sticks": true, "sockets": []},
@@ -862,7 +865,7 @@ static func _maker(spec: Dictionary) -> Device:
 			["planter", Planter], ["board", Hoverboard], ["receiver", SurveyReceiver], ["radio", Radio],
 			["winch", ManualWinch], ["rig", Mast], ["streamer", Streamer], ["nest", CrowsNest], ["helm", Helm],
 			["chassis", Chassis], ["bedroll", Bedroll], ["console", Console], ["power_box", PowerBox],
-			["cutter", Cutter], ["antenna_reel", AntennaReel], ["kite", AntennaKite], ["surveyor_guide", SurveyorGuide],
+			["cutter", Cutter], ["antenna_reel", AntennaReel], ["kite", AntennaKite], ["salvage_kite", SalvageKite], ["surveyor_guide", SurveyorGuide],
 			["notes", SailingNotes]]:
 		if spec.get(each[0], false):
 			return each[1].new()

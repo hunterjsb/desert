@@ -28,10 +28,10 @@ const LINE_FROM := Vector3(0.0, 0.0, 0.0)
 ## Carried in the suit, its line runs from about this high on you, m.
 const ON_YOU := Vector3(0.0, 1.0, 0.0)
 ## It settles to where the wind puts it over about this long, s.
-const SETTLE_S := 1.5
+const SETTLE_S := KiteFlight.SETTLE_S
 ## Its sway on the wind: degrees round and up, and how fast, rad/s.
-const SWAY_DEG := Vector2(6.0, 3.0)
-const SWAY_RATE := Vector2(0.31, 0.47)
+const SWAY_DEG := KiteFlight.SWAY_DEG
+const SWAY_RATE := KiteFlight.SWAY_RATE
 ## How exposed each piece of the rig is to an arc: [piece, weight].
 const PIECES := [[&"kite", 3.0], [&"lead", 1.0], [&"hook", 2.0], [&"converter", 3.0], [&"radio", 1.5]]
 ## A scorch takes this much of a device's soundness.
@@ -190,12 +190,7 @@ func up() -> bool:
 ## The line's angle over the ground, degrees, in a wind of `w` m/s: none
 ## below kite_lift_ms, rising to its best, pressed back past it.
 static func angle(w: float, tuning: Tuning) -> float:
-	if w < tuning.kite_lift_ms:
-		return 0.0
-	var rise := clampf((w - tuning.kite_lift_ms) / (tuning.kite_best_ms.x - tuning.kite_lift_ms), 0.0, 1.0)
-	var a := lerpf(tuning.kite_angle_deg.x, tuning.kite_angle_deg.y, rise) \
-		- maxf(w - tuning.kite_best_ms.y, 0.0) * tuning.kite_pressed_deg
-	return clampf(a, 10.0, tuning.kite_angle_deg.y)
+	return KiteFlight.angle(w, tuning)
 
 
 ## How high it flies on `line` m in a wind of `w`, m (charge_model's height).
@@ -289,19 +284,14 @@ func _physics_process(delta: float) -> void:
 ## Where the wind puts it at the end of its line, swaying, settling there.
 func _place(w: Vector2, delta: float, tuning: Tuning) -> void:
 	var from := anchor()
-	var along := w.normalized() if w.length() > 0.01 else Vector2(0.0, 1.0)
-	var t := world.time
-	var round := deg_to_rad(SWAY_DEG.x) * sin(t * SWAY_RATE.x + _seed)
-	along = along.rotated(round)
-	var a := 0.0 if wrecked() else deg_to_rad(angle(w.length(), tuning))
-	a += deg_to_rad(SWAY_DEG.y) * sin(t * SWAY_RATE.y + _seed * 2.0) * (1.0 if a > 0.0 else 0.0)
+	var direction := KiteFlight.direction(w, world.time, _seed, tuning, not wrecked())
 	var reach := line_out * tuning.kite_sag
-	var target := from + Vector3(along.x, 0.0, along.y) * reach * cos(a) + Vector3.UP * reach * sin(a)
+	var target := from + direction * reach
 	target.y = maxf(target.y, world.height_under(target) + 0.3)
 	if not _placed or kite_at == Vector3.ZERO:
 		kite_at = target if line_out > 2.0 else from + Vector3.UP * 0.5
 		_placed = true
-	kite_at = kite_at.lerp(target, 1.0 - exp(-delta / SETTLE_S))
+	kite_at = kite_at.lerp(target, KiteFlight.settling(delta))
 
 
 ## Its wear and charge aloft, a tick of `real` s (by world time, so time
@@ -314,8 +304,7 @@ func _weather(speed: float, real: float, tuning: Tuning) -> void:
 	var t := world.time
 	var storm := field.raw_storm_at(x, z, t)
 	var dust := maxf(field.outflow_at(x, z, t), storm)
-	wear((1.0 / tuning.kite_wear_s + tuning.kite_wear_wind * maxf(speed - tuning.kite_harm_ms, 0.0)
-		+ (1.0 / tuning.kite_storm_ruin_s if storm > 0.0 else 0.0)) * delta)
+	wear(KiteFlight.wear_rate(speed, storm, tuning) * delta)
 	var h := height()
 	charge += (tuning.kite_charge_fair + tuning.kite_charge_dust * dust) * (h / 100.0) * delta
 	charge -= charge * delta / tuning.kite_air_tau

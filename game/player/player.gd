@@ -538,8 +538,7 @@ func _get_up() -> void:
 
 
 ## What's at your waist that would hold the board back: every line but a
-## sail's sheet and a line from the
-## sheet's own rig, which with the sheet flies it as a kite's lines do.
+## sail's sheet, its rig's other lines, and a flying salvage kite.
 func _holding_back() -> Array[RigidBody3D]:
 	var back: Array[RigidBody3D] = []
 	var rigs := []
@@ -547,8 +546,10 @@ func _holding_back() -> Array[RigidBody3D]:
 		if is_instance_valid(body) and Mast.sheet_end(body) and world.ropes.far_holder(body) != null:
 			rigs.append(world.ropes.far_holder(body))
 	for body in waist.tied:
-		if is_instance_valid(body) and not Mast.sheet_end(body) \
-				and not rigs.has(world.ropes.far_holder(body)):
+		if not is_instance_valid(body):
+			continue
+		var far := world.ropes.far_holder(body)
+		if not Mast.sheet_end(body) and not rigs.has(far) and not (far is SalvageKite and far.flying):
 			back.append(body)
 	return back
 

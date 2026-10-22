@@ -14,6 +14,8 @@ const TALL := 0.95
 const RING := Vector3(0.0, 0.0, 0.32)
 const ORANGE := Color(0.9, 0.42, 0.1)
 const VIOLET := Color(0.55, 0.32, 0.9)
+const SALVAGE_CLOTH := Color(0.15, 0.48, 0.46)
+const SALVAGE_TRIM := Color(0.98, 0.74, 0.16)
 const COPPER := Color(0.72, 0.38, 0.2)
 
 static var _made := {}
@@ -90,14 +92,14 @@ static func kite() -> ArrayMesh:
 ## Packed, as the device stands: a drum of flying line between orange cheeks,
 ## a crank, the kite rolled on its spine strapped along the top, and the
 ## lead's brass terminal on its right cheek (the device's lead socket).
-static func packed(size: Vector3) -> ArrayMesh:
+static func packed(size: Vector3, cloth := VIOLET, trim := ORANGE) -> ArrayMesh:
 	var h := size * 0.5
 	var b := Paint.Pieces.new(-h.y)
 	var across := Basis(Vector3.BACK, PI / 2.0)
 	var steel := coat(Paint.STEEL, 0.3, 0.6)
 	var drum_at := Vector3(0.0, -h.y + 0.08, 0.0)
 	for s in [-1, 1]:
-		b.drum(0.08, 0.012, drum_at + Vector3(s * (h.x - 0.03), 0.0, 0.0), coat(ORANGE, 0.5), across, 20)
+		b.drum(0.08, 0.012, drum_at + Vector3(s * (h.x - 0.03), 0.0, 0.0), coat(trim, 0.5), across, 20)
 	b.drum(0.055, size.x - 0.07, drum_at, coat(Color(0.82, 0.8, 0.72), 0.7), across, 18)
 	for i in 9:
 		b.ring(0.054, 0.058, drum_at + Vector3(-h.x + 0.05 + i * (size.x - 0.1) / 8.0, 0.0, 0.0),
@@ -105,11 +107,11 @@ static func packed(size: Vector3) -> ArrayMesh:
 	b.drum(0.01, size.x - 0.02, drum_at, steel, across, 10)
 	b.box(Vector3(0.008, 0.07, 0.012), drum_at + Vector3(-h.x + 0.006, -0.03, 0.03), steel, 0.003)
 	b.drum(0.008, 0.04, drum_at + Vector3(-h.x - 0.012, -0.06, 0.03), coat(Paint.BLACK, 0.6), across, 8)
-	# The kite rolled up along the top, violet and orange, its spars out each end.
+	# The rolled cloth and its straps keep the flying kite's colours.
 	var roll_at := Vector3(0.0, h.y - 0.035, 0.0)
-	b.drum(0.034, size.x - 0.03, roll_at, coat(VIOLET, 0.8), across, 14)
+	b.drum(0.034, size.x - 0.03, roll_at, coat(cloth, 0.8), across, 14)
 	for i in 3:
-		b.drum(0.036, 0.022, roll_at + Vector3(-0.1 + i * 0.1, 0.0, 0.0), coat(ORANGE, 0.8), across, 14)
+		b.drum(0.036, 0.022, roll_at + Vector3(-0.1 + i * 0.1, 0.0, 0.0), coat(trim, 0.8), across, 14)
 	b.drum(0.006, size.x + 0.02, roll_at, coat(Color(0.1, 0.1, 0.1), 0.3, 0.3), across, 6)
 	# Two straps down to the drum's axle.
 	for x in [-0.09, 0.09]:
