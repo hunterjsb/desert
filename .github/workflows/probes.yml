@@ -24,7 +24,7 @@ jobs:
       matrix:
         group:
           - probes/foundation probes/world probes/dev probes/radio
-          - probes/weather probes/salvage
+          - probes/weather probes/salvage probes/wrecks
           - probes/devices probes/menus
           - probes/power probes/farming
           - probes/rope
@@ -39,7 +39,7 @@ jobs:
       REST_EXCEPT: >-
         probes/foundation probes/world probes/dev probes/radio probes/weather probes/salvage probes/devices probes/menus
         probes/power probes/farming probes/rope probes/movement probes/survival probes/sail
-        probes/saves probes/kits
+        probes/saves probes/kits probes/wrecks
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
