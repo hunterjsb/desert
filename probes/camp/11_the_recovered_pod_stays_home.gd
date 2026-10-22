@@ -105,6 +105,7 @@ func run() -> void:
 	world.weather.field = WeatherField.new(world.run_seed, tuning)
 	var durability := shield.durability
 	var used := world.power.used_wh
+	charge = cell.charge_wh
 	await physics_frames(360)
 	check(world.weather.field_storm(shield.global_position) > 0.5 and world.weather.felt_storm(food.global_position) < 0.001,
 		"the real remote storm reaches Home while its original bubble shelters supplies")
@@ -113,6 +114,8 @@ func run() -> void:
 	check(not deck.freeze and not food.freeze and world.terrain.has_collision_at(at.x, at.y), "the remote pod stays physically live on real collision")
 	var remote_used := world.power.used_wh - used
 	var remote_draw := charge - cell.charge_wh
+	metric("remote_storm_use", remote_used, "Wh")
+	metric("original_cell_draw", remote_draw, "Wh")
 	var manifest: Dictionary = world.arrival_state.duplicate(true)
 	charge = cell.charge_wh
 	check(main.save_run(), "the distant expedition saves to the real disk store")
