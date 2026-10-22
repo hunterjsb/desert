@@ -849,9 +849,9 @@ drum works a raised, loaded sheet, not on a mode selection.
 The estimate runs in 200 µs slices on render frames, starting fresh snapshots no
 more often than every 0.25 s. Physics only follows the last completed ideal through
 the existing drum and helm. On the isolated 240-frame check, sampling plus search
-was 0.318 ms p95, 0.376 ms worst observed; sail 32 enforces 0.5 ms p95 and also
+was 0.302 ms p95, 0.449 ms worst observed; sail 32 enforces 0.5 ms p95 and also
 reports the worst elapsed frame. Timing is elapsed work, including scheduler
-interruptions, not GPU time. A real 26-second beam leg in 10 m/s wind made 45.7 m
+interruptions, not GPU time. A real 26-second beam leg in 10 m/s wind made 41.1 m
 toward its course with the trimmed sheet versus -0.6 m with a fixed sheet. Sails
 28–31 cover that comparison, real drum limits and takeover/power loss, unchanged
 hand-mode physics, and the occupied helm. Devices 46 and saves 50 cover the Map's

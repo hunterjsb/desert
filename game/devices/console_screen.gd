@@ -728,6 +728,8 @@ func _draw_keys() -> void:
 		var box: Rect2 = key.box
 		var aimed: bool = _model.aim == k
 		var font_size := TAB if key.device == null else KEY
+		if str(key.to).begins_with("sail_"):
+			draw_rect(box, GLASS)
 		draw_rect(box, Color(accent, 0.9) if aimed else (Color(accent, 0.35) if key.lit else Color(accent, 0.08)))
 		draw_rect(box, Color(accent, 0.9 if key.lit else 0.45), false, 3.0 if key.lit else 2.0)
 		draw_string(FONT, Vector2(box.position.x, box.position.y + (box.size.y + FONT.get_ascent(font_size)) * 0.5 - 3.0),

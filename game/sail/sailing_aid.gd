@@ -39,9 +39,12 @@ func tick(console: Console) -> void:
 		_job = null
 		mode = Mode.HAND
 		return
-	if mode == Mode.HAND or ideal.is_empty():
+	if mode == Mode.HAND:
 		return
-	var mast := ideal.get("mast") as Mast
+	var mast: Mast = rig(console) if ideal.is_empty() else null
+	var fitted: Variant = ideal.get("mast")
+	if is_instance_valid(fitted):
+		mast = fitted as Mast
 	if not is_instance_valid(mast) or mast.carrier() != console._root() or mast.sail() == null:
 		ideal.clear()
 		mode = Mode.HAND
@@ -56,6 +59,8 @@ func tick(console: Console) -> void:
 			helm = device
 	if drum == null or sheet == null:
 		mode = Mode.HAND
+		return
+	if ideal.is_empty():
 		return
 	drum.trim_by(console, ideal.length)
 	if mode == Mode.STEER:
