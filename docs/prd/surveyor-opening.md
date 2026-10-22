@@ -70,11 +70,12 @@ wall at first and thins through its own billows within a second. The impact
 bursts the front frame off with the tail you watched the fall through, so the seat always faces
 open floor under open sky: crawling straight ahead takes you out, and standing is possible
 once clear. Nothing the impact places may land in that way. Real bodies stay in the pod or
-are thrown clear on both sides of the way out, ahead of the seat, where crawling out shows
+are thrown clear on both sides of the way out, ahead of you, where crawling out shows
 them; anything that can't be placed is dropped beside the pod. The landing
 never holds the run. The burst frame and its panels are recoverable debris, and the shield
-and cell stay mounted behind the seat. The pod is your first chassis rig. Deeds: Plot a
-Course, Drop In, Making Landfall.
+and cell stay mounted behind the seat, at the back of the floor. You land prone over the seat,
+feet just short of them and head at the open front, so the length of you has room to lie.
+The pod is your first chassis rig. Deeds: Plot a Course, Drop In, Making Landfall.
 
 **Saves.** One saved opening state. A save made in the cabin, mid-fall or mid-impact resumes
 where it was, without rerolling, duplicating or replaying the impact. A departure model this

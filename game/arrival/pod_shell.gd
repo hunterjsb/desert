@@ -14,6 +14,10 @@ const PANELS := {
 	&"tail": [Vector2i(1, 0), &"right"],
 }
 const VIEWPORTS: Array[StringName] = [&"tail", &"side_front_a", &"side_front_b", &"side_back_a", &"side_back_b", &"roof_a", &"roof_b"]
+## Behind the seat the shield and camp cell stand side by side at the back of the cargo space.
+const STORES_X := -0.25
+## Landed, your feet stop just short of the shield's front.
+const FEET_X := STORES_X + 0.19
 static var _armor: ArrayMesh
 static var _heatshield: ArrayMesh
 
@@ -167,6 +171,14 @@ static func ensure_aperture(parts: Dictionary) -> void:
 
 static func seat_pose() -> Transform3D:
 	return Transform3D(Basis.looking_at(Vector3.RIGHT, Vector3.UP), Vector3(0.5, 0.07, 0))
+
+
+## The impact throws you prone over the seat onto the open front floor, the
+## length of you ahead of the shield and cell, facing the burst end.
+static func landed_pose(rules: Tuning) -> Transform3D:
+	var pose := seat_pose()
+	pose.origin.x = FEET_X + rules.posture_prone_length
+	return pose
 
 
 static func view_aperture_pose() -> Transform3D:

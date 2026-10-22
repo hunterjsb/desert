@@ -43,8 +43,8 @@ static func _spill(world: World, body: RigidBody3D, facing: Basis, origin: Vecto
 	var local := Transform3D(facing, Vector3.ZERO) * bounds_of(body)
 	var pitch := maxf(local.size.x, local.size.z) + gap
 	var columns := maxi(1, rules.arrival_spill_columns)
-	var ahead := PodShell.seat_pose().origin.x + Chassis.WIDTH * 0.6
-	# Thrown clear on both sides of the way out and ahead of the seat, where you see them crawling out.
+	var ahead := PodShell.landed_pose(rules).origin.x + Chassis.WIDTH * 0.6
+	# Thrown clear on both sides of the way out and ahead of where you lie, so you see them crawling out.
 	for i in rules.arrival_spill_attempts:
 		var side := 1.0 if i % 2 == 0 else -1.0
 		var k := i / 2
@@ -250,13 +250,13 @@ static func _unseat(body: RigidBody3D) -> void:
 		host.dismount(host.seat_of(body))
 
 
-## Cargo cannot settle in the occupant's crawl from the seat out over the burst end.
+## Cargo cannot settle where the occupant lies, feet to head, or in their crawl out over the burst end.
 static func _recovery_route(world: World) -> AABB:
-	var seat := PodShell.seat_pose().origin
+	var lie := PodShell.landed_pose(world.tuning).origin
 	var radius := world.player.posture.standing.radius + world.player.safe_margin
-	var back := seat.x - radius
+	var back := PodShell.FEET_X
 	var out := 1.5 * Chassis.WIDTH + Chassis.THICK + radius * 2.0
-	return AABB(Vector3(back, seat.y, seat.z - radius),
+	return AABB(Vector3(back, lie.y, lie.z - radius),
 		Vector3(out - back, world.player.posture.height(&"prone") + world.player.safe_margin, radius * 2.0))
 
 
