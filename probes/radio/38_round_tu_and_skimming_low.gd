@@ -2,10 +2,10 @@ extends WeatherProbe
 ## Radio probe 38: round Tu, and skimming low. The lantern orbits Tu, not
 ## Zan: it's on the air only while it's on Zan's side of the planet, about
 ## half of each lap; heard from under Tu, never from Zan's far side, where Tu
-## never rises; fainter than the rest; and never drawn in the sky. The crop
-## survey flies about six km up: from below it crawls along near the horizon
-## and sweeps across overhead, many times faster; it's modelled (CropSurvey),
-## not drawn on the sky, far bigger overhead than low down, and shows even in
+## never rises; fainter than the rest; and never drawn in the sky. The
+## deliveryship flies about thirty km up: from below it crosses the sky faster
+## overhead than near the horizon; it's modelled (Deliveryship),
+## not drawn on the sky, bigger overhead than low down, and shows even in
 ## Zan's shadow. By day only the nearest and brightest show: the low hull
 ## always, the dim ones never.
 
@@ -52,10 +52,10 @@ func run() -> void:
 	check(never, "and never drawn in the sky")
 
 	# Flying low: crawling at the horizon, sweeping overhead.
-	var survey: Satellite = sky.orbits[&"thermal"]
-	print("the crop survey flies %.0f to %.0f m up" % [survey.height(0.0) * survey.radius,
+	var survey: Satellite = sky.orbits[&"deliveryship"]
+	print("the deliveryship flies %.0f to %.0f m up" % [survey.height(0.0) * survey.radius,
 		survey.height(survey.period * 0.5) * survey.radius])
-	check(absf(survey.height(0.0) * survey.radius - 6000.0) < 1000.0, "the crop survey flies about six km up")
+	check(absf(survey.height(0.0) * survey.radius - 30000.0) < 2000.0, "the deliveryship flies about thirty km up")
 	var p := world.start
 	var overhead := 0.0
 	var low := 0.0
@@ -69,11 +69,11 @@ func run() -> void:
 			low = maxf(low, rate)
 		t += 0.25
 	print("crossing the sky at %.2f°/s near the horizon, %.2f°/s overhead" % [low, overhead])
-	check(low > 0.0 and overhead > low * 3.0, "it crawls near the horizon and sweeps across overhead")
+	check(low > 0.0 and overhead > low * 1.3, "it crosses the sky faster overhead than near the horizon")
 
-	# Modelled, far bigger overhead than low down, and shown sunlit or not.
-	var at := Constellation.voiced().find(&"thermal")
-	var craft := world.weather.sky.crop_survey
+	# Modelled, bigger overhead than low down, and shown sunlit or not.
+	var at := Constellation.voiced().find(&"deliveryship")
+	var craft := world.weather.sky.deliveryship
 	var up_at := _first(func(u: float) -> bool: return survey.seen_from(p, u).elevation > deg_to_rad(80.0))
 	world.time = up_at
 	await physics_frames(3)
@@ -88,7 +88,7 @@ func run() -> void:
 	var small := _across(craft)
 	print("%.2f° across overhead, %.2f° low down; shown %s overhead, sunlit %s" % [big, small, shown,
 		survey.sunlit(up_at, world.weather.day.sun_toward(up_at))])
-	check(big > small * 2.0 and big > 5.0, "far bigger overhead than low down")
+	check(big > small * 1.3 and big > 1.0, "bigger overhead than low down, and plain to see")
 	check(shown and on_sky == 0.0, "shown as its model, sunlit or not, and not drawn on the sky")
 	var shade := _first(func(u: float) -> bool:
 		return survey.seen_from(p, u).elevation > deg_to_rad(30.0) and not survey.sunlit(u, world.weather.day.sun_toward(u)))
@@ -107,10 +107,10 @@ func run() -> void:
 	check(craft.visible and forms[dim].z == 0.0, "by day the low hull shows, a dim one doesn't")
 
 
-## How many degrees across the crop survey's model looks from the camera.
-func _across(craft: CropSurvey) -> float:
+## How many degrees across the deliveryship's model looks from the camera.
+func _across(craft: Deliveryship) -> float:
 	var eye := get_viewport().get_camera_3d().global_position
-	var size := craft.global_basis.get_scale().x * CropSurveyLooks.SPAN
+	var size := craft.global_basis.get_scale().x * DeliveryshipLooks.SPAN
 	return rad_to_deg(2.0 * atan(size * 0.5 / eye.distance_to(craft.global_position)))
 
 

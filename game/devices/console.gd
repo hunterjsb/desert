@@ -1316,7 +1316,7 @@ func _switch_radio(radio: Radio, to: StringName, called: String, text: String) -
 
 func _work_dial(radio: Radio, to: StringName, called: String, _text: String) -> void:
 	if to == &"sweep":
-		radio.interact(null)
+		radio.sweep()
 	elif not radio.turn_volume(1 if to == &"louder" else -1):
 		return
 	_say("%s %s" % [called, (radio.dial_reading().to_upper() if radio.on else "OFF") if to == &"sweep"

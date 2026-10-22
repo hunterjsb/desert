@@ -9,16 +9,18 @@ extends HandsProbe
 
 
 func run() -> void:
+	# FM carrying everywhere, so the port's music comes in.
+	Tuning.current().fm_margin_db = 1e6
 	await load_hands()
 	var player := world.player
 	var radio := Catalog.device(&"radio") as Radio
 	world.content.add_child(radio)
 	radio.global_position = player.global_position + Vector3.UP
 	fit_part(radio, &"battery")
+	fit_part(radio, &"fm_converter")
 	hands.hold(radio)
 	await physics_frames(30)
-	while radio.channel != Radio.MUSIC:
-		radio.interact(player)
+	radio.channel = Radio.MUSIC
 	hands.scroll(100)
 	await physics_frames(60)
 	var nearest := hands.nearest_hold_of(radio)

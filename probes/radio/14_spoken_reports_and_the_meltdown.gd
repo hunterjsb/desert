@@ -3,9 +3,10 @@ extends ShieldProbe
 ## plays by itself: its frequency carries only its talk and tones until a
 ## meltdown (the dev console's, for now) calls it up, when it plays through
 ## once from its start and stops; called up again while it plays, it starts
-## over. The weather station reports aloud the moment you tune in, Clear
-## Skies or not, and every radio_report_every s after: the local time, the
-## wind and the temperature where the radio stands, read from the world, then
+## over. Port Morgan Tower, heard on shortwave through the relay on a wire,
+## reports aloud the moment you tune in, Clear Skies or not, and every
+## radio_report_every s after: the local time, the wind and the temperature
+## at the tower, read from the world, then
 ## its outlook, units in words, every word and number of it, through a dirty
 ## signal too; and your ears hear it. A fast storm breaks in at once with an
 ## advisory, out of turn, read over whatever was being read, and only once.
@@ -13,9 +14,15 @@ extends ShieldProbe
 
 func run() -> void:
 	var tuning := Tuning.current()
+	# FM carrying everywhere, for the Stoker's station.
+	tuning.fm_margin_db = 1e6
 	await load_storm(0.0)
-	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"fm_converter", &"sw_converter"],
+		[0.0, 2.0]) as Radio
 	radio.freeze = true
+	var reel := Scenarios.standing(world, &"antenna_reel", [], [10.0, 2.0]) as AntennaReel
+	reel.freeze = true
+	reel.clip(radio)
 	await physics_frames(2)
 	var gods := Radio.gods_of(world)
 	var length := Sounds.RADIO_STOKER.get_length()
@@ -26,9 +33,9 @@ func run() -> void:
 	for k in 120:
 		never = never and gods.stoker_song(k * 30.0, length) < 0.0
 	check(never, "its song never plays by itself")
-	broadside(radio, &"stoker")
 	radio.on = true
-	radio.frequency = gods.carrier(&"stoker", world.time)
+	radio.switch_band()
+	radio.fm_mhz = radio.fm_of(&"stoker")
 	await physics_frames(5)
 	check(radio.tuned_to() == &"stoker" and radio.on_air() == null, "tuned to the Stoker, no song")
 	gods.meltdown(world.time)
@@ -55,21 +62,20 @@ func run() -> void:
 	# Count weather reports after the Stoker's own transmissions.
 	var earlier := radio.spoken_count
 	world.time = 0.0
-	broadside(radio, &"walker")
-	radio.frequency = gods.carrier(&"walker", world.time)
+	radio.channel = Radio.WEATHER
 	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
 	await _heard(radio, earlier + 1)
-	var x := world.world_x(radio.global_position.x)
-	var z := world.world_z(radio.global_position.z)
-	var heat := roundi(world.weather.field_temperature(radio.global_position, radio.spoken_at))
-	var local := world.weather.day.time_of_day(radio.spoken_at, Sphere.longitude(radio.point_at(x, z)))
+	var tower := radio.tower_at()
+	var heat := roundi(world.weather.field_temperature(Vector3(world.engine_x(tower.x), world.height_at(tower.x, tower.y),
+		world.engine_z(tower.y)), radio.spoken_at))
+	var local := world.weather.day.time_of_day(radio.spoken_at, Sphere.longitude(radio.point_at(tower.x, tower.y)))
 	var minutes := roundi(local * 24.0 * 60.0) % (24 * 60)
 	print("tuned in: \"%s\"; you hear \"%s\"" % [" ".join(radio.spoken), broadcast.reading])
 	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and radio.spoken_count == earlier + 1, "tuned in, it reports at once, Clear Skies or not")
 	check(" ".join(radio.spoken).contains("Local time %d:%02d" % [minutes / 60, minutes % 60])
 		and " ".join(radio.spoken).contains("Temperature %s degrees" % (str(heat) if heat >= 0 else "minus %d" % -heat))
 		and (" ".join(radio.spoken).contains("Wind") or " ".join(radio.spoken).contains("Calm")),
-		"the local time, the temperature and the wind, read from the world, units in words")
+		"the local time, the temperature and the wind at the tower, read from the world, units in words")
 	check(not " ".join(radio.spoken).contains("..."), "every word of it")
 	check(broadcast.reading == " ".join(radio.spoken) and not radio.spoken_urgent, "and your ears hear it, in its turn")
 	var first := radio.spoken_at

@@ -39,9 +39,12 @@ jobs:
             echo "the tag is $TAG but project.godot says $version" >&2
             exit 1
           fi
+          # A release's notes are its own section, then the standing how-to-start and known issues.
+          awk -v v="$version" '/^## / { on = index($0, "## " v " ") == 1 || $0 == "## " v ||
+            $0 == "## How to start" || $0 == "## Known issues" } on' RELEASE_NOTES.md >build/notes.md
           zips=(build/desert-"$version"-*.zip)
-          if [[ ${#zips[@]} != 3 || ! -s RELEASE_NOTES.md ]]; then
-            echo "want 3 zips for $version and RELEASE_NOTES.md; have: ${zips[*]}" >&2
+          if [[ ${#zips[@]} != 3 ]] || ! grep -qF "## $version" build/notes.md; then
+            echo "want 3 zips and a RELEASE_NOTES.md section for $version; have: ${zips[*]}" >&2
             exit 1
           fi
           echo "version=$version" >>"$GITHUB_OUTPUT"
@@ -79,4 +82,4 @@ jobs:
           RELEASE_NAME: ${{ steps.what.outputs.release_name }}
         run: |
           gh release create "v$VERSION" build/desert-"$VERSION"-*.zip --verify-tag --prerelease \
-            --title "Desert $VERSION${RELEASE_NAME:+ — $RELEASE_NAME}" --notes-file RELEASE_NOTES.md
+            --title "Desert $VERSION${RELEASE_NAME:+ — $RELEASE_NAME}" --notes-file build/notes.md

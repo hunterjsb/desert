@@ -22,6 +22,7 @@ static var _kept := [
 	# A save from before the dial kept "channel": setting it places the dial.
 	[Radio, ["on", "frequency", "band", "fm_mhz", "am_khz", "sw_khz", "volume", "target"]],
 	[SurveyReceiver, ["acquired_from", "scan_pending"]],
+	[AntennaKite, ["flying", "line_out", "charge"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
@@ -265,6 +266,10 @@ func finish(data: Dictionary) -> void:
 			strands[rec.rope.strand] = _rope_in(lines[i].rope, rec.rope)
 	for i in cables.size():
 		var rec: Dictionary = data.cables[i]
+		# Run through a stake: a kite's lead earthed on its way (AntennaKite).
+		if rec.get("through") != null and _made.get(rec.through) is Stake:
+			cables[i].through = _made[rec.through]
+			cables[i]._rope_through()
 		var strong := cables[i] as StrongCable
 		if strong == null:
 			continue
@@ -430,6 +435,7 @@ func _take() -> Dictionary:
 		"rope": _rope_out(line.rope, strands) if line.rope != null and ropes.ropes.has(line.rope) else null})
 	data.cables = cables.map(func(cable: Cable) -> Dictionary: return {"strong": cable is StrongCable,
 		"hose": cable is Hose, "length": cable.length, "plugs": cable.plugs.map(_ref),
+		"through": _ref(cable.through) if is_instance_valid(cable.through) else null,
 		"rope": _rope_out(cable.rope, strands) if cable is StrongCable and cable.rope != null else null})
 	data.strands = strands.map(_strand_out)
 	data.solver = {"tick": ropes._tick, "drag": ropes._drag, "bodies": []}
@@ -641,6 +647,8 @@ func _state(body: RigidBody3D) -> Dictionary:
 		if is_instance_of(body, entry[0]):
 			for key: String in entry[1]:
 				out[key] = _copy(body.get(key))
+	if body is SurveyReceiver:
+		out.beacon_khz = Dial.BEACON_KHZ
 	var device := body as Device
 	if device != null:
 		out.durability = device.durability
@@ -657,13 +665,18 @@ func _state(body: RigidBody3D) -> Dictionary:
 
 func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 	var state: Dictionary = rec.state
+	if body is SurveyReceiver and not state.has("beacon_khz") and state.has("frequency"):
+		# The old narrow-band receiver followed the beacon at 1930 kHz.
+		if absf(state.frequency - 1930.0) <= _world.tuning.receiver_band_khz:
+			state = state.duplicate()
+			state.frequency += Dial.BEACON_KHZ - 1930.0
 	if body is Mast and not state.has("hoist_enabled"):
 		body.legacy_hoist = true
 	var part := body as Part
 	if part != null and state.has("stats"):
 		part.stats = state.stats.duplicate(true)
 	for key: String in state:
-		if key in ["durability", "powered", "stats", "amount"]:
+		if key in ["durability", "powered", "stats", "amount", "beacon_khz"]:
 			continue
 		body.set(key, _copy(state[key]))
 	if body is Battery:

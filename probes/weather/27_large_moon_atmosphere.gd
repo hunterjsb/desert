@@ -16,7 +16,7 @@ func run() -> void:
 	check(frame.is_equal_approx(Vector3(eye.global_position.x, eye.global_position.z, 3700000.0)), "storm inverse projection is anchored to actual observer and visual radius")
 	var tuning := world.tuning
 	var env := eye.get_world_3d().environment
-	var craft := sky.crop_survey
+	var craft := sky.deliveryship
 	craft._veil(env, Vector3.RIGHT, 10000.0)
 	var ground := float(craft._overlay.get_shader_parameter(&"veil"))
 	var old := tuning.moon_circumference
@@ -55,11 +55,12 @@ func run() -> void:
 	var tangent := Vector3(1.0, -0.01, 0.0).normalized()
 	check(not craft._clear_segment(10.0, tangent, 100000.0), "planet crossing hides a target even when its far endpoint rises above ground")
 
-	var orbit: Satellite = Radio.constellation_of(world).orbits[&"thermal"]
+	var orbit: Satellite = Radio.constellation_of(world).orbits[&"deliveryship"]
 	var orbit_at := orbit.at(world.time)
 	var below := orbit_at.normalized()
 	world.moon.place(rad_to_deg(Sphere.latitude(below)), rad_to_deg(Sphere.longitude(below)))
-	world.player.global_position.y = 10000.0
+	# Keep the observer above the actual orbital altitude as that orbit changes.
+	world.player.global_position.y = (orbit_at.length() - 1.0) * orbit.radius + 4000.0
 	sky._show_satellites(world.time)
 	check(craft.visible and (craft.global_position - eye.global_position).normalized().y < -0.99,
 		"actual ephemeris viewed from above places the finite Drone below the observer")

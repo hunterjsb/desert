@@ -11,14 +11,14 @@ extends RefCounted
 ## Each god: id, name, band kHz, home landmark (&"" for the two placed here),
 ## and how strong it sends.
 const ROSTER := [
-	[&"quartermaster", "the Quartermaster", Vector2(140.0, 175.0), &"black_site", 1.0],
+	[&"quartermaster", "the Quartermaster", Vector2(152.0, 172.0), &"black_site", 1.0],
 	# Its survey feed sends strongest after the Ledger's (the storms, signals & sailing spec).
-	[&"walker", "the Walker", Vector2(230.0, 290.0), &"", 1.4],
-	[&"cistern", "Mother Cistern", Vector2(410.0, 450.0), &"sister", 1.0],
-	[&"almanac", "the Almanac", Vector2(600.0, 660.0), &"", 0.9],
+	[&"walker", "the Walker", Vector2(225.0, 275.0), &"", 1.4],
+	[&"cistern", "Mother Cistern", Vector2(590.0, 630.0), &"sister", 1.0],
+	[&"almanac", "the Almanac", Vector2(680.0, 740.0), &"", 0.9],
 	[&"ledger", "the Ledger", Vector2(880.0, 940.0), &"port_morgan", 1.6],
 	[&"stoker", "the Stoker", Vector2(1180.0, 1240.0), &"halloran", 1.2],
-	[&"eye", "the Eye", Vector2(1720.0, 1790.0), &"observatory", 0.8],
+	[&"eye", "the Eye", Vector2(1620.0, 1690.0), &"observatory", 0.8],
 ]
 ## A carrier keeps this far inside its band, kHz.
 const BAND_MARGIN := 4.0

@@ -175,7 +175,8 @@ The session lists it as open, "willing to modify." Nothing needs modifying. `sto
 time)` is a pure function of the run's seed, the place and the time, so it can be sampled "at any
 time, including the future," and "forecasting comes free" (the model above). `WeatherField` is built that way: `storm_at`,
 `wind_at`, `steady_wind_at`, `outflow_at`, and `next_change`, which finds when a place's storm
-state flips. The radio's weather station does it now. It reads the field where the radio stands,
+state flips. The radio's weather station does it now. It reads the field where the radio stands
+(at Port Morgan Tower since 2026-10-21: [Radio](radio-sound-and-atmosphere.md), The bands rebuilt),
 20 minutes ahead, every 5 seconds, and speaks when a storm comes, from which way, its strongest
 steady wind and how long it lasts (radio probe 1 and weather probe 3 check it is honest). A
 storm's intensity curve at a camp is `storm_at` at the camp's place, sampled over time.

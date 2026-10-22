@@ -17,10 +17,11 @@ var _darkest_day := INF
 
 
 func run() -> void:
+	# FM carrying everywhere, so the port's music comes in.
+	Tuning.current().fm_margin_db = 1e6
 	await load_storm(1.0)
-	_radio = Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
-	while _radio.channel != Radio.MUSIC:
-		_radio.interact(world.player)
+	_radio = Scenarios.standing(world, &"radio", [&"battery", &"fm_converter"], [0.0, 2.0]) as Radio
+	_radio.channel = Radio.MUSIC
 	shield_at(_radio.global_position + Vector3(1.0, 0.0, 0.0))
 	await physics_frames(2)
 	var start := world.time

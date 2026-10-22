@@ -1,47 +1,16 @@
 # Toward 1.0 Alpha
 
-Release direction and status, updated 2026-10-22. This is a planning map, not a claim that
+Release direction. This is a planning map, not a claim that
 everything below is built or approved for implementation. The vision and each
 system's PRD remain the design sources. A full Alpha means a complete playable
 game loop with progression and conclusions; final art and final balance can follow.
 
-## Current release status
+## Versions
 
-**0.3.0-alpha “Sanddune” is published** with Linux, Windows and macOS downloads.
-**0.3.1-alpha is on verified master, not yet published**; it contains the pod roof,
-physical escape and flight-look improvements. Its [full 21-job platform/build follow-up](https://github.com/hunterjsb/desert/actions/runs/39717579371)
-passed. The published release remains
-immutable. Unassisted sailing/expedition, camera comfort and representative
-large-camp budgets remain open acceptance work.
-
-### Continued Sanddune pass
-
-The physical departure screen now reports actual packed/held/misplaced equipment.
-A connected engineering check follows original loaded pod equipment through landing,
-a powered Home, a 2.1 km scouting trip, a controlled storm, distant disk resume
-and return. It exposed and fixed saving after removing a joined custom mount.
-This scripts the loading and route; unassisted discovery and human acceptance
-remain open. See [the expedition account](prd/surveyor-expedition-check.md).
-
-A 108-piece camp experiment avoids a redundant zero-motion contact projection.
-Paired settled CPU medians improve about 3.4%; falling CPU does not improve. This
-is a bounded saving, not a representative large-camp budget acceptance. See
-[native contact cost](prd/movement.md#final-capsized-large-camp-cost) for its physical checks and limits.
-
-## Version policy
-
-The canonical [version policy](version-policy.md) uses milestone numbering:
-
-- A new named playable milestone increments the middle number and resets the
-  patch. Current development targets **0.3 “Sanddune”**, then **0.4 “Spaceport”**.
-- Fixes, tuning, polish and bounded improvements within a milestone increment
-  the patch. Patches retain the base name; an adjective is optional.
-- Alpha, Beta and full release describe earned maturity gates. **1.0.0-alpha**
-  marks the full playable Alpha gate below; it is not the public full release.
-- Numbers describe release sequence and scope, not percentage complete or save
-  compatibility. State run/profile compatibility and migrations in release notes.
-- Each release needs accurate notes and Linux, Windows and macOS builds from the
-  same verified commit. A version change alone does not publish a release.
+Numbers, names and maturity stages follow the [version policy](version-policy.md).
+Development targets **0.3 “Sanddune”**, then **0.4 “Spaceport”**; **1.0.0-alpha**
+marks the full playable Alpha gate below. Release notes and GitHub's releases say
+what has shipped.
 
 ## Existing foundation
 
@@ -130,7 +99,7 @@ These are candidates for prioritization, not an implementation commitment or a
 requirement to finish the full crop roster in Sanddune. Each selected goal needs
 its system design decisions and a concrete playtest outcome before work begins.
 
-## Current playtest follow-up (2026-10-21)
+## Playtest follow-up (2026-10-21)
 
 The verified playtest confirms useful rope reeling/yanking, physical boom
 constraints, the delivery scenario, radio stowing, voice clarity and music.
@@ -138,50 +107,9 @@ It does not establish easy sailing: skate craft tend to stall and hover
 craft circle. Improve force balance through visible craft layout and ordinary
 rigging; preserve the player's control and the working physical constraints.
 
-| Next-pass work | Current status and acceptance |
-| --- | --- |
-| Large-moon ground and sky | **Built on master; platform checks passed.** Provisional lore-scale curvature, shared distant ground/sky/storm projection, bounded background ground and finite drone depth. The 150 km travel lap, 20-minute fixed-longitude day and local collision remain unchanged. Focused checks, inspected GPU views and all 21 platform/build jobs pass; ordinary-player acceptance remains. |
-| Manual sail hoist | Published in 0.2.4 after all platform checks passed: chassis-mounted hand winch, halyard and masthead pulley. Separate sail height from the sheet; hold paid length on release. Starter/scenario and kept Nomad rigs include usable hardware; old saves retain their controls until converted. Unclaimed Nomad rig lines unload with their find and become ordinary saved lines when claimed. |
-| Sail removal, board-line detachment and ground-rope recovery | Published in 0.2.4 after all platform checks passed. The reported rope endpoint is the board, correcting the initial sail-end report. Pick up loose rope with ordinary actions and preserve attached ends/line identity. |
-| Coil recovery and presentation | Published recovery fixes in 0.2.4; continuous winding landed separately in Sanddune and passed all 19 platform checks. Loose coils reopen independently of find ownership. Remaining coils follow the active paying end and use shared layered windings, inspected in actual ground and held captures. |
-| Clear scenarios and craft naming | Published in 0.2.4; platform checks passed. One clear-weather/radio/flare/drone setup, old names as aliases. Delivery craft is “the drone”; Surveyor origin and Guide retain their names. |
-| Vault feel | Published in 0.2.4; platform checks passed and human acceptance remains. Focused checks and the GPU fixture pass. Climb the measured ledge height with continuous travel through rounded corners, retaining obstruction and moving-deck checks. |
-| Radio controls and voices | Published in 0.2.4; platform checks passed. Focused checks and 720p captures pass: live control hints only in the tune view, distinct machine voice identities grounded in the gods' lore. Keep the approved weather voice and music. Music follows world time; current speech starts reports on tuning, so a shared continuous speech schedule is not built. |
-| Halloran stock and cache | Published in 0.2.4; platform checks passed. Physical pickup, save and migration checks pass: ordinary pickup for visible coalcane; the completed burn unlocks physically preplaced rewards. Check individual claims, locked access, legacy saves and no duplication after return/reload. |
-| Halloran models and pipeline | Published in 0.2.4; platform checks passed. Actual GPU captures inspected: homes with constructed openings/repairs and a connected, supported pipeline with physical terminals. |
-
-The 0.2.2 and 0.2.3 tags remain unpublished candidates. **0.2.4 “Creaky
-Sailboat” is published** with Linux, Windows and macOS downloads after all 19 tag
-checks and all three release smoke checks passed.
-
-**Earlier Sanddune integration evidence:** Ground rest and continuous coils
-landed at `2fe581a7` and passed all 19 platform/build checks. Home retention,
-return navigation and the connected Surveyor opening landed at `49af744f` after
-Linux verification. The subsequent Controls, eclipse guidance and capsized-contact
-candidate `8f6cc9bd` passed all nine Linux groups and focused Ubuntu/macOS/Windows
-tipping/contact checks. Its full [platform/build run](https://github.com/hunterjsb/desert/actions/runs/39609115432)
-passed all **21 platform/build jobs**. The subsequent crop-survey model and
-radio flight plan also passed [all 21 jobs](https://github.com/hunterjsb/desert/actions/runs/39615663839)
-at `59db765c`.
-
-The large-moon model, visible body/boarding/waist presentation, gathered lines,
-and connected ship-to-recovery opening are now integrated. The baseline at
-`7f8e918a` passed [all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39689548835),
-including native Windows/macOS probes and all three exported-build smokes.
-The launch-readiness correction at `67a52115` passed
-[all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39696673498).
-The physical planner and continuous first-person departure at `622cec08` passed
-[all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39699225787).
-[All 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39700634561) passed. Connected input, disk saves and
-inspected nine-phase Forward+ and Compatibility captures pass; human understanding,
-packing and motion comfort remain open acceptance gates.
-
-Ordinary three-seed Surveyor recovery assembles and saves/resumes a powered
-shelter. Small live-powered and loaded nine-piece Home expeditions pass. Controls
-now opens from the pause menu, with the independent overlay removed. A real
-108-piece capsized camp remains a measured performance follow-up: its corrected
-contact path adds about 3.64 ms per tick on the sampled machine. Human playtest
-acceptance remains; Spaceport's kite is a separate target.
+Still open: Hunter's acceptance of vault feel, sailing balance, launch-screen and pod-roof
+clarity, pod escape and motion comfort, and a representative large-camp budget (a real
+108-piece capsized camp is the measured case). Spaceport's kite is a separate target.
 
 ## Consolidated feature register
 
@@ -208,42 +136,30 @@ fixes may ship as patches on the way to this named minor release.
 | Core travel, modular camp, sailing, survival, salvage, saves and deeds | **Built**, with the limitations in the system inventory above. | Sanddune foundation; continue real playtests rather than treating the presence of each system as a complete expedition. |
 | Physical waist-line selection and release | **Built**: carry-view hover/select, selected-line reeling and timed release-all preserving momentum. | Sanddune minimum; keep normal sailing viable while actively controlling one line. Persistent crosshair statistics and gaze selection were rejected. |
 | Surveyor's Guide and departure guidance | **Built**: the physical Guide now explains pod recovery, shelter assembly, Home and the first survey in five short pages. New normal Surveyors recover it from the pod. | Sanddune onboarding foundation; unassisted comprehension and camp assembly remain acceptance work. Other-origin, developer-scenario and legacy-save starts retain their kit behavior. |
-| Radio, satellites and drone deliveries (PR #50) | **Built**: merged as `badc8807` after all nine Linux groups passed. Thirteen-satellite sky/broadcasts, frequency marks and flare-called container drops preserve the bundled native voice. All four review repairs are integrated: audible god/beacon data, active-delivery saves, persistent lit/called flares and private radio/satellite effect buses. Receiver controls, carried sound and Console announcements retain their regression coverage. | Published in 0.2.4 with native platform and build checks passed. Delivery cargo is currently **empty**; supplies/loot and their balance are not implemented by this work. |
-| Halloran’s First Fire | **Built, bounded fragment** on master: a connected Aitch–Crossing–furnace route, three finite preserved coalcane bundles, 30-second maintenance burns, one service cache and the First Fire deed. Stock, fuel consumed, burn expiry and claimed rewards persist. | Streamed hands interactions and save/resume checks pass; published 0.2.4 native platform verification passed. The full city/refinery, rift, crop-fuel loop and destruction ending remain unbuilt. This is an available exploration fragment, not a completed ending. |
+| Radio, satellites and deliveryship deliveries (PR #50) | **Built**: Thirteen-satellite sky/broadcasts, frequency marks and flare-called container drops preserve the bundled native voice. All four review repairs are integrated: audible god/beacon data, active-delivery saves, persistent lit/called flares and private radio/satellite effect buses. Receiver controls, carried sound and Console announcements retain their regression coverage. | Published in 0.2.4 with native platform and build checks passed. Delivery cargo is currently **empty**; supplies/loot and their balance are not implemented by this work. |
+| Halloran’s First Fire | **Built, bounded fragment** on master: a connected Aitch–Crossing–furnace route, three finite preserved coalcane bundles, 30-second maintenance burns, one service cache and the First Fire deed. Stock, fuel consumed, burn expiry and claimed rewards persist. | Streamed hands interactions and save/resume checks pass. The full city/refinery, rift, crop-fuel loop and destruction ending remain unbuilt. This is an available exploration fragment, not a completed ending. |
 | Cheap survey receiver | **Built**: battery-powered directional signals from real ruin beacons, persistent acquisition and Follow the Signal deed. | Sanddune discovery foundation. More receiver tiers remain planned; this is not yet a camp-homing receiver. |
 | Salvager's personal shield | **Built**: carried personal shield replaces the former camp shield in this start. | Sanddune start identity; useful and reachable first salvage still needs broader opening playtests. |
 | Sailing control and physics corrections | **Built**: sole-line automatic reeling, brief strength-limited yank, Varran stake/layout changes, native freely hinged boom and ordinary routed sheet. Mixed skates/hover/keel support is integrated; scalar trim/angle targets and hidden towing helpers are removed. | Sanddune fixes. Combined Linux, Windows and macOS checks pass, including active sailing, aboard motion and rig save/resume. Unassisted handling, board catch-up/counterbalance feel and player-load acceptance remain playtest gates. |
 | Placeable rope hook and player routing | **Built**: removable physical hook fits suitable solid faces and redirects an ordinary line through one guide, preserving line identity, total length, bend load, visible route and save state. | Sanddune control clarity. Real-hand routing and restore checks pass; players still need to learn the interaction in ordinary sailing. Multiple guides per line remain outside this first implementation. |
 | Short visual sailing notes and UI consistency | **Built**: four actual gameplay screenshot pages, brief sailing-only captions and shared UI fonts. All pages were inspected at 1280×720: 533×300 px images, two-line 20 px captions and visible navigation. | Sanddune teaching. The separate Surveyor Guide retains its prose pages. Unassisted comprehension and handling acceptance remain; refresh images if the illustrated geometry changes. |
 | Deck boarding and exposed wreck traversal | **Built**: sprint/jump ledge vault, exposed wreck panel collision, board-on-roof support and the Hopper ramp repair are integrated and pass all 19 platform/build checks. | Sanddune movement polish. Physical contact, walkable tops and cut openings are covered. Near-level mixed-deck baselines reach 108 pieces; one 16-piece powered boarding and one 27-piece offset-mount battery transition passed. Steep terrain and boarding large mast/rope-loaded craft still need combined coverage and playtesting. |
-| First-person player body and boarding pose | **Built on master; platform checks passed**: gonk's rigid Surveyor suit, bounded held-item reach, torso-free riding view and vault reach/knee pose. Body/rest/headroom, powered-deck boarding and real unseen captures pass. | Sanddune visual/movement work; unassisted comfort remains a gate. Physical movement/collision remains owned by Player. Functional suit equipment, body storage and spatial inventory are future Spaceport design, not supplied by the visible body. |
-| Waist cord presentation | **Built on master; platform checks passed**: two plaited turns around the existing belt, with the visible lead following the actual selected rope endpoint and low posture. | Sanddune readability; inspected own-waist, exterior and loaded-board captures preserve rope physics and original end identities. This is not a functional equipment-slot or spatial inventory system. |
-| Ground sitting, prone crawling and sleep | **Built**: supported rest changes physical clearance and eye height; prone use offers existing safe sleep. Focused headroom, wind/rope/slip, moving-support, save/legacy and initial-eye-fit checks pass; all three eye heights were inspected on the real GPU. | Sanddune movement and rest. All 19 platform/build checks passed at `2fe581a7`; ordinary-player comfort remains a gate. |
-| Continuous rope coil | **Built**: one shared winding deforms continuously at the actual paying end, preserving fibre gauge, line identity and endpoint motion. Actual payout/gather captures were inspected. | Sanddune rope presentation. All 19 platform/build checks passed at `2fe581a7`; ordinary-player acceptance remains pending; GPU timing is not established by these captures. |
-| Pause-menu Controls | **Built**: one readable, scrollable current-bindings page reached directly from the system menu or Options; the separate overlay and persistent footer are removed. | Sanddune usability. Keyboard, wheel, bar, gamepad, live bindings, console coverage and 720p captures pass; full platform/build verification passed. |
+| First-person player body and boarding pose | **Built on master**: gonk's rigid Surveyor suit, bounded held-item reach, torso-free riding view and vault reach/knee pose. Body/rest/headroom, powered-deck boarding and real unseen captures pass. | Sanddune visual/movement work; unassisted comfort remains a gate. Physical movement/collision remains owned by Player. Functional suit equipment, body storage and spatial inventory are future Spaceport design, not supplied by the visible body. |
+| Waist cord presentation | **Built on master**: two plaited turns around the existing belt, with the visible lead following the actual selected rope endpoint and low posture. | Sanddune readability; inspected own-waist, exterior and loaded-board captures preserve rope physics and original end identities. This is not a functional equipment-slot or spatial inventory system. |
+| Ground sitting, prone crawling and sleep | **Built**: supported rest changes physical clearance and eye height; prone use offers existing safe sleep. Focused headroom, wind/rope/slip, moving-support, save/legacy and initial-eye-fit checks pass; all three eye heights were inspected on the real GPU. | Sanddune movement and rest. Ordinary-player comfort remains a gate. |
+| Continuous rope coil | **Built**: one shared winding deforms continuously at the actual paying end, preserving fibre gauge, line identity and endpoint motion. Actual payout/gather captures were inspected. | Sanddune rope presentation. Ordinary-player acceptance remains pending; GPU timing is not established by these captures. |
+| Pause-menu Controls | **Built**: one readable, scrollable current-bindings page reached directly from the system menu or Options; the separate overlay and persistent footer are removed. | Sanddune usability. Keyboard, wheel, bar, gamepad, live bindings, console coverage and 720p captures pass. |
 | Developer playtest controls | **Built**: prevailing wind speed/bearing and reset, plus real held-cell or connected-pool charge controls. Wind drift stays continuous and saves/resumes; commands mark the run as developer use. | Support repeatable Sanddune checks. These do not establish viable ordinary play or unassisted expedition acceptance. |
 | Shared terrain residency policy | **Built, foundation only**: terrain construction, collision retirement and object lifetime share the existing player-area rules. Radii, retirement margins, carried/ridden exceptions and freeze/thaw behavior are unchanged. | Sanddune preparation for a second supported area. Full Linux verification and focused origin, seam and camp warning/deletion checks pass. This does not retain a distant camp. |
-| Marked camp residency | **Built, native checks passed**: one claimed Home now retains bounded terrain, collision and history on master; a 2.1 km trip and distant save/restore pass. | Sanddune expedition priority. Real retained-ruin excavation and duplicate-sheet restoration checks pass. Combined Linux, native platform and build checks passed. Small live-powered and loaded nine-piece expeditions pass; unassisted play and broader simulation/budget acceptance remain gates. At 512 work items graph refresh alone measured 5.6 ms p95 with frozen fixture bodies; this is not full physics/render acceptance. No unlimited moon-wide retention promise. |
-| Homing beacon and basic camp return | **Built, native checks passed**: physical chassis beacon, Surveyor/salvage acquisition and requested carry-view bearing/distance with live or last-known fix. | Sanddune navigation priority leading toward Spaceport. One Home, 1 W, 2 km initial reception; combined Linux, native platform and build checks passed; unassisted playtest acceptance remains. No permanent minimap or automatic terrain survey. |
-| Continued-release line gathering and batch mooring | **Built on master; platform checks passed**: hold the existing untie action to collect separate original ends in hand, then tie, retrieve or drop the knot through ordinary interactions. | Sanddune control work. Preserve each line's identity, length, route and load, one timed untie per end, cancellation and save/restore. No dedicated binding. Actual input, ordinary anchoring/retrieval, mass, drop momentum and held/anchored/loose save checks pass. Held/anchored/context captures were inspected; close slack strands remain visually busy. Human sailing acceptance remains. |
+| Marked camp residency | **Built**: one claimed Home now retains bounded terrain, collision and history on master; a 2.1 km trip and distant save/restore pass. | Sanddune expedition priority. Real retained-ruin excavation and duplicate-sheet restoration checks pass. Small live-powered and loaded nine-piece expeditions pass; unassisted play and broader simulation/budget acceptance remain gates. At 512 work items graph refresh alone measured 5.6 ms p95 with frozen fixture bodies; this is not full physics/render acceptance. No unlimited moon-wide retention promise. |
+| Homing beacon and basic camp return | **Built**: physical chassis beacon, Surveyor/salvage acquisition and requested carry-view bearing/distance with live or last-known fix. | Sanddune navigation priority leading toward Spaceport. One Home, 1 W, 2 km initial reception; unassisted playtest acceptance remains. No permanent minimap or automatic terrain survey. |
+| Continued-release line gathering and batch mooring | **Built on master**: hold the existing untie action to collect separate original ends in hand, then tie, retrieve or drop the knot through ordinary interactions. | Sanddune control work. Preserve each line's identity, length, route and load, one timed untie per end, cancellation and save/restore. No dedicated binding. Actual input, ordinary anchoring/retrieval, mass, drop momentum and held/anchored/loose save checks pass. Held/anchored/context captures were inspected; close slack strands remain visually busy. Human sailing acceptance remains. |
 
-The integrated sailing and wreck state at `2bcba651` passed all 19 jobs in
-[combined verification](https://github.com/hunterjsb/desert/actions/runs/39480273621),
-including native Windows/macOS probes, three-platform exports and build smoke checks.
-The same fixed-sheet fixture reached 2.907/2.908/2.908 m/s at 30/60/120 Hz;
-the four-minute gust/turn/seam/origin-shift check passed without relaxing its
-existing motion bounds. These controlled results establish the integrated
-regression baseline; Hunter's unassisted playtest remains the acceptance gate
+The fixed-sheet sailing fixture holds the same speed at 30, 60 and 120 Hz; it is the
+regression baseline, and Hunter's unassisted playtest remains the acceptance gate
 for sailing feel and the complete expedition. Detailed measurements and limits
 remain in the movement, rope and menus PRDs.
-
-The radio/delivery integration and subsequent terrain-policy extraction passed
-all nine Linux groups in their respective [radio](https://github.com/hunterjsb/desert/actions/runs/39488290224)
-and [terrain](https://github.com/hunterjsb/desert/actions/runs/39489022676) verification runs.
-The published 0.2.4 source and ground-rest/coil slice passed full native and build checks.
-Home/arrival, pause-menu Controls and capsized-contact corrections passed the full
-21-job platform/build run linked above. Human expedition and handling acceptance
-remain open, alongside the measured large-capsized-camp performance follow-up.
+large-capsized-camp performance follow-up.
 
 The marked camp should include its attached chassis assembly and claimed loose
 belongings inside its attached shield's configured envelope. Shield shutdown or a
@@ -295,11 +211,11 @@ to select rather than committing to complete every origin.
 
 | Feature | Status | Intended experience and open decisions |
 | --- | --- | --- |
-| Surveyor pod arrival | **Built on verified master.** The actual Surveyor opening now connects orbit, ejection, descent, landing and physical recovery. Focused save checks and real GPU captures pass; combined Linux, native platform and build checks passed; ordinary-player acceptance remains. | Replaces the Surveyor starter-kit grant for new normal runs with a pod made from real chassis pieces and recoverable surviving equipment. Land for a purpose, then dismantle/adapt the pod into camp. Preserve phase, landing site, damage and teardown through saves. Legacy saves and other origins retain their starts. The bounded opening is selected for Sanddune development; this does not make the broader arrival ideas release gates. |
-| Ship interior, launch computer and pod loading | **Built on master; baseline platform checks passed.** [Preflight PRD](prd/surveyor-preflight.md). | New normal Surveyors walk the cabin, focus the always-visible physical scouting screen, drag and confirm a bounded departure pulse, physically load original gear, enter and launch. The nine-phase connected GPU run and preparation/flight/landed disk saves pass. Required emergency stores and actual shell readiness remain mandatory. The readiness fix exposes blockers before seating and passed all platform checks. Human discovery/packing/launch acceptance is still open. |
-| Physical launch station and continuous first-person departure | **Built on master; all platform/build checks passed.** | Physical always-on display and focused view, rotating globe and one ray-dragged departure pulse replace the modal/numeric planner. Shared saved clock/path links the window, forecast and flight. First-person entry heat/impact and visible loaded gear continue into real nearby recovery. Connected input/save checks and inspected Forward+/Compatibility sequences pass. Human comprehension/comfort remain open. No numeric angle controls or full orbital flight simulator. |
+| Surveyor pod arrival | **Built on verified master.** The actual Surveyor opening now connects orbit, ejection, descent, landing and physical recovery. Focused save checks and real GPU captures pass; ordinary-player acceptance remains. | Replaces the Surveyor starter-kit grant for new normal runs with a pod made from real chassis pieces and recoverable surviving equipment. Land for a purpose, then dismantle/adapt the pod into camp. Preserve phase, landing site, damage and teardown through saves. Legacy saves and other origins retain their starts. The bounded opening is selected for Sanddune development; this does not make the broader arrival ideas release gates. |
+| Ship interior, launch computer and pod loading | **Built on master.** [Preflight PRD](prd/surveyor-preflight.md). | New normal Surveyors walk the cabin, focus the always-visible physical scouting screen, drag and confirm a bounded departure pulse, physically load original gear, enter and launch. The nine-phase connected GPU run and preparation/flight/landed disk saves pass. Required emergency stores and actual shell readiness remain mandatory. The readiness fix exposes blockers before seating. Human discovery/packing/launch acceptance is still open. |
+| Physical launch station and continuous first-person departure | **Built on master.** | Physical always-on display and focused view, rotating globe and one ray-dragged departure pulse replace the modal/numeric planner. Shared saved clock/path links the window, forecast and flight. First-person entry heat/impact and visible loaded gear continue into real nearby recovery. Connected input/save checks and inspected Forward+/Compatibility sequences pass. Human comprehension/comfort remain open. No numeric angle controls or full orbital flight simulator. |
 | Starter camp cloth sail | **Planned candidate**, not built. | A small cloth in the existing frame makes the first camp a sailing toy and teaches the wind. Define fitting and balance before adding it to an opening. |
-| Seeded pod/loadout variation | **Built on verified master; platform checks passed.** | The manifest records stable shell roles, surviving equipment, charge, damage and recovery state; three focused determinism/save-data/viability checks pass. Physical survivors now materialize once as ordinary salvageable objects; phase and partial recovery save checks pass. Surviving equipment becomes the randomized start. Vary damage and usable pieces with viable survival and meaningful tradeoffs; exact distributions remain to be balanced. Resolve once and save it; loading must not reroll or grant a second kit. |
+| Seeded pod/loadout variation | **Built on master.** | The manifest records stable shell roles, surviving equipment, charge, damage and recovery state; three focused determinism/save-data/viability checks pass. Physical survivors now materialize once as ordinary salvageable objects; phase and partial recovery save checks pass. Surviving equipment becomes the randomized start. Vary damage and usable pieces with viable survival and meaningful tradeoffs; exact distributions remain to be balanced. Resolve once and save it; loading must not reroll or grant a second kit. |
 | Deed-unlocked origin variants | **Planned Spaceport direction**, exact model undecided. | Reuse deeds/profile unlocks for selectable variants within an origin; favor tradeoffs rather than strictly stronger kits. Define concrete variants, actions and unlocks at implementation. |
 | Salvager's first salvage opportunity | **Planned direction**, existing seeded wreck-field placement is a foundation. | Start near varied ruins/wrecks whose reachable, useful finds shape the first home. Check actual access, hazards and viability rather than proximity alone. |
 | Other origins' meaningful arrivals | **Deferred Spaceport direction; individual starts not committed**. | Give each an appropriate reason, situation and physical equipment source; do Surveyor first rather than copy its pod to every origin. |
@@ -384,17 +300,4 @@ and radio work described above. It does not mark the outstanding human sailing,
 expedition, comprehension, comfort or large-camp budget gates complete. Preserve
 those follow-ups within Sanddune rather than silently treating publication as
 acceptance. Kites, deeper suit/wrist instruments and broader origins remain
-Spaceport directions. Runtime `622cec08` passed all 21 platform/build jobs; the
-release tag repeats the full verification and packaged-build gates.
-
-### Sanddune 0.3.1 development follow-up
-
-Built on master after [all nine Linux groups passed](https://github.com/hunterjsb/desert/actions/runs/39716462147):
-interchangeable manually fitted pod roofs with named attachment refusals; an
-actual clear post-impact crawl route preserving released cargo assemblies and
-rope ends; seven glazed panels, saved mouse look and bounded phase-driven flight
-sound/motion. Focused input, movement, saves and inspected renderer captures pass.
-[All 21 native platform/build checks](https://github.com/hunterjsb/desert/actions/runs/39717579371)
-passed. This patch is not published; new-impact clearance does not rearrange
-already recovered camps. Human roof/launch clarity, escape and motion comfort
-remain playtest work. Publication of 0.3.0 did not complete those acceptance gates.
+Spaceport directions.

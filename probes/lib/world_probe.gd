@@ -132,3 +132,13 @@ func open_sand(fan := 0.0, back := 250.0, rise := 1.0) -> Vector2:
 func broadside(radio: Radio, id: StringName) -> void:
 	var bearing := deg_to_rad(radio.god_way(id).bearing)
 	radio.global_basis = Basis.looking_at(Vector3(sin(bearing), 0.0, -cos(bearing)), Vector3.UP)
+
+
+## Takes you `metres` from a god's home at world time 0, on its Tu-ward side,
+## so its signal comes in clean wherever the run began.
+func beside_god(id: StringName, metres := 300.0) -> void:
+	var history := world.shape.history
+	var home := Radio.gods_of(world).home(id, 0.0)
+	var at := Sphere.toward(home, Sphere.bearing(home, history.sub_tu), metres / history.radius)
+	world.travel(rad_to_deg(Sphere.latitude(at)), rad_to_deg(Sphere.longitude(at)), 0.0)
+	await settle()

@@ -47,9 +47,18 @@ func _overstretched(_a: Vector3, _b: Vector3) -> void:
 	pass
 
 
-## The strand draws it, sag and all.
+## The strand draws it, sag and all, through its stake too.
 func _draw(_a: Vector3, _b: Vector3) -> void:
 	_wire.visible = false
+	_leg.visible = false
+
+
+## Its rope runs through the stake's ring too, as a line through a hook does.
+func _rope_through() -> void:
+	if rope == null:
+		return
+	rope.through = through.ring if is_instance_valid(through) else null
+	rope.strand.through = rope.through
 
 
 func _on_snapped(which: Rope) -> void:

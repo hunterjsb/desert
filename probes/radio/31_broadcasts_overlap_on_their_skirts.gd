@@ -11,6 +11,8 @@ extends ShieldProbe
 
 func run() -> void:
 	await load_storm(0.0)
+	# Beside Mother Cistern, so a god comes in clean whatever the dial's plan.
+	await beside_god(&"cistern")
 	var tuning := Tuning.current()
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	radio.freeze = true
@@ -31,7 +33,8 @@ func run() -> void:
 	var t := world.time
 	var best := &""
 	var strongest := 0.0
-	for id in Gods.ids():
+	# The far gods: the near ones are on FM.
+	for id in Gods.ids().filter(func(each: StringName) -> bool: return not Fm.is_god(each)):
 		radio.frequency = gods.carrier(id, t)
 		var got: float = radio.receive(id, x, z, t).strength
 		if got > strongest:

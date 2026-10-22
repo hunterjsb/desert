@@ -4,7 +4,7 @@ extends ShieldProbe
 ## shape and size, and its route, a plane of its own. Over a few hours the dial's
 ## satellites keep changing as they rise, set and come and go on the air, and
 ## every one that comes over the horizon is heard some time. What each sends follows the world: the
-## thermal survey's pitch rises with the heat, the timing beacon's tick
+## deliveryship's pitch rises with the heat, the timing beacon's tick
 ## quickens toward the eclipse. Tuned to one overhead, the radio plays it;
 ## the night sky draws them all, those up and lit. Under clear skies everywhere.
 
@@ -95,11 +95,11 @@ func run() -> void:
 	var seen := {"elevation": 0.5}
 	var cold := _first(world.time, func(u: float) -> bool: return _temperature(radio, u) < 5.0)
 	var hot := _first(world.time, func(u: float) -> bool: return _temperature(radio, u) > 35.0)
-	var low: float = sky.shaped(&"thermal", radio, seen, x, z, cold).pitch
-	var high: float = sky.shaped(&"thermal", radio, seen, x, z, hot).pitch
-	print("the thermal survey: pitch %.2f at %.0f °C, %.2f at %.0f °C" % [low, _temperature(radio, cold), high,
+	var low: float = sky.shaped(&"deliveryship", radio, seen, x, z, cold).pitch
+	var high: float = sky.shaped(&"deliveryship", radio, seen, x, z, hot).pitch
+	print("the deliveryship: pitch %.2f at %.0f °C, %.2f at %.0f °C" % [low, _temperature(radio, cold), high,
 		_temperature(radio, hot)])
-	check(high > low, "the thermal survey's pitch rises with the heat")
+	check(high > low, "the deliveryship's pitch rises with the heat")
 	var day := world.weather.day
 	var soon := day.next_eclipse(world.time) - 20.0
 	var later := soon + 120.0
@@ -110,15 +110,15 @@ func run() -> void:
 
 	# Tuned to one overhead, it plays.
 	var up := _first(world.time, func(u: float) -> bool:
-		return sky.on_air(&"thermal", u) and sky.orbits[&"thermal"].seen_from(p, u).elevation > deg_to_rad(30.0))
+		return sky.on_air(&"deliveryship", u) and sky.orbits[&"deliveryship"].seen_from(p, u).elevation > deg_to_rad(30.0))
 	world.time = up
 	radio.on = true
-	radio.frequency = sky.carrier(&"thermal", up)
+	radio.frequency = sky.carrier(&"deliveryship", up)
 	await physics_frames(5)
-	var voice := radio.sky.voice_of(&"thermal")
-	print("the thermal survey overhead: level %.2f, %.1f dB, pitch %.2f" % [radio.sky.levels[&"thermal"],
+	var voice := radio.sky.voice_of(&"deliveryship")
+	print("the deliveryship overhead: level %.2f, %.1f dB, pitch %.2f" % [radio.sky.levels[&"deliveryship"],
 		voice.volume_db, voice.pitch_scale])
-	check(radio.sky.levels[&"thermal"] > 0.5 and voice.playing, "tuned to it overhead, the radio plays it")
+	check(radio.sky.levels[&"deliveryship"] > 0.5 and voice.playing, "tuned to it overhead, the radio plays it")
 	radio.on = false
 	await physics_frames(3)
 	check(not voice.playing, "switched off, it's gone")

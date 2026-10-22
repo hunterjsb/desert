@@ -484,7 +484,7 @@ device already stays a body of its own on the host's power pool.
     draws hangs off it below, each device with what it draws now, a dark one marked,
     and their total. Under each device that can be worked is a row of switches, the one lit saying
     how it stands, and use on one works the device through its own use: a shield off, on or smart;
-    a radio's own controls, off or on, a sweep to the next carrier as its use does, and its
+    a radio's own controls, off or on, a sweep to the next carrier (its use did the same until 2026-10-21; use now only switches it on or off), and its
     volume down or up (the dial in [Radio](radio-sound-and-atmosphere.md#the-dial-and-the-gods-on-the-air-hunter-2026-10-18-built));
     the deck's trays floating or resting; and a device's lamps
     on or off. Each switch logs what it did ("SHIELD SMART", "RADIO 262 KHZ", "DECK REST"). A device's lamps are switched only from here.
@@ -1210,7 +1210,8 @@ its own; everything else sticks on a chassis's sticky faces.
 | Helm seat | | | | use on it sits you at the helm ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)) | stands |
 | Light solar panel | | | 1 | | any face |
 | Hoverboard | 1 | | 1 | | any face; charges from a deck's pool |
-| Radio | 1 | | 1 | a radio mod on its left side (the FM converter, 2026-10-20) | any face |
+| Radio | 1 | | 1 | two radio mods on its left side (the FM and shortwave converters, 2026-10-20); a misc bay on its right for one module, and a mount on its top for a rope hook, its stem a kite lead's clip (2026-10-21, [Radio](radio-sound-and-atmosphere.md#the-antenna-kite-and-the-radios-modules-gonkhub-2026-10-21-built)) | any face |
+| Antenna kite | | | | a lead clip on its reel; use flies it and reels it in | any face |
 | Heat cutter | 1 | | | | any face |
 | Bedroll | | | | use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) | any face |
 | Survival kit | | | | a water and a food socket, 2 standard and 1 pot slot | any face |
