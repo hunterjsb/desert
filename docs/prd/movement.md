@@ -900,23 +900,25 @@ pieces posed each frame by `Body` from how you move, with no shapes of its own
   along it; tumbling or flying, nothing is drawn.
 - **Holding something:** the gloves take its sides by its back edge (its real
   collision bounds), a small thing in the right hand; a cutter by its rear
-  handle; a chassis by each shoulder's nearest real frame face. Small things
-  are held 0.5 m from your eyes (`suit_hold_small`) or as near as their size
-  allows, within the fixed 0.61 m arm. Neither arm nor object moves to fake it.
+  handle; a chassis by each shoulder's nearest real frame face. Arms keep their
+  0.61 m length and nothing moves to fake contact, so a radio or battery held
+  0.9 m ahead stays out of the gloves' reach: closing that needs either the
+  eyes nearer the trunk (bringing the chest into view) or small things held
+  about 0.35 m from the eyes. Neither is chosen yet.
 - **Vaulting:** empty hands reach for the ledge and the leading knee gathers
   in proportion to its real rise, following `LedgeVault.progress`.
-- **In first person:** your eyes stand 0.05 m ahead of your trunk. Helmet,
-  collar (with the shoulder joints), trunk and hips are drawn only for their
-  shadow and other views, so nothing fills or flickers across your own view
-  (Hunter: the chest "in your face" while boarding was "seizure inducing").
-  Looking down you see arms, gloves and boots.
+- **In first person:** your eyes stand 0.24 m ahead of your trunk's middle.
+  Hunter found the old wide chest "in your face ... seizure inducing" while
+  boarding; gonkhub chose a slimmer suit over hiding the torso, so the chest
+  sits below and behind your view while helmet and collar are drawn only for
+  their shadow and other views.
 - **Between ticks:** the suit draws with the same between-tick offset as the
   camera and the ridden board, so it never jitters against them.
 
 The limbs ease with time (`suit_ease_seconds`), the same at any frame rate.
-Probes: movement 39 (only looks, boots on the sand), 41 (a glove is on what you
-hold, level and looking down), 42 (the riding suit draws with the board at
-15 FPS and keeps its torso out of view), 44 (the climb gesture).
+Probes: movement 39 (only looks, boots on the sand), 41 (a glove is on a held
+cutter or chassis, level and looking down), 42 (the riding suit draws with the
+board at 15 FPS, helmet and collar out of view), 44 (the climb gesture).
 
 **Cost.** Nine paired rounds of 60 frames at 1920×1080 on the RTX 3070, suit
 drawn against hidden: from outside +0.144 ms median (-0.265 to +0.309); in your

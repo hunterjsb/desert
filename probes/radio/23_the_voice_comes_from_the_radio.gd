@@ -1,9 +1,10 @@
 extends WeatherProbe
-## Radio probe 23: the weather station's voice comes from the radio. It reads
+## Radio probe 23: Port Morgan Tower's voice comes from the radio. It reads
 ## a report in a few short phrases, not its line: a storm on its way is
 ## "Storm coming. From the <point>. <when>.", one on you
 ## "Storm here. Clearing, <when>.", and every phrase it can
-## say is in its bank of recordings. Breaking in on the clear-skies scenario's radio, it reads from
+## say is in its bank of recordings. On the clear-skies scenario's radio, its reading of a storm
+## just due at the tower, it reads from
 ## the radio itself, on the radio's bus, after its tones, the volume knob
 ## turning it down.
 
@@ -18,7 +19,6 @@ func run() -> void:
 	var radio: Radio = dropped[0]
 	await physics_frames(10)
 	var t := world.time
-	var due: float = radio.reading.change
 	var from: float = radio.reading.from
 	radio.reading = {"stormy": false, "change": t + 240.0, "back": t + 900.0, "wind": 40.2, "from": from}
 	var coming := radio.report(t)
@@ -40,10 +40,14 @@ func run() -> void:
 							missing[phrase] = true
 	check(missing.is_empty(), "every phrase it can say is in its bank (missing: %s)" % ", ".join(missing.keys()))
 
-	# Just inside the calm horizon the next reading breaks in, read from the radio.
+	# A storm just inside the calm horizon at the tower, as its reading has it
+	# (held, so the field doesn't read afresh): its report, read from the radio.
 	var before := radio.spoken_count
-	world.time = due - Tuning.current().radio_calm_minutes * 60.0 + 10.0
-	radio.read_at = -INF
+	radio.reading = {"stormy": false, "change": world.time + 120.0, "back": world.time + 900.0, "wind": 20.0,
+		"from": from}
+	radio.read_at = world.time
+	radio._checked_at = radio.read_at
+	radio.spoken_at = -INF
 	for i in 300:
 		await get_tree().physics_frame
 		if radio.reader.playing and radio.spoken_count > before:

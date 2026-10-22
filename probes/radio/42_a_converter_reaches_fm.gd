@@ -19,7 +19,7 @@ func run() -> void:
 	var stations := Fm.stations(Radio.gods_of(world), world.run_seed, Tuning.current())
 	var port: float = stations.filter(func(each: Dictionary) -> bool: return each.id == &"port_fm")[0].mhz
 	for each in stations:
-		radio.interact(world.player)
+		radio.sweep()
 		if radio.tuned_to() == &"port_fm":
 			break
 	check(is_equal_approx(radio.fm_mhz, port) and radio.tuned_to() == &"port_fm",

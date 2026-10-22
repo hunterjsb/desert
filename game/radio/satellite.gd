@@ -59,7 +59,7 @@ var _node: Vector3
 var _across: Vector3
 var _phase: float
 
-## Held over a place on the ground instead (the crop survey over Port
+## Held over a place on the ground instead (the deliveryship over Port
 ## Morgan): that place, its plane's other axis at the run's start, both on
 ## the moon and turning with it, and how fast its plane swings round that
 ## place, rad/s. A zero place is an orbit among the stars.
@@ -136,7 +136,7 @@ func _start_on_ellipse(run_seed: int, orbit: Dictionary) -> void:
 ## An orbit through one place on the ground every lap (gonkhub, 2026-10-21:
 ## "Update its flight path to ensure it always passes over Port Morgan,
 ## letting its path rotate around the moon otherwise"): a great circle
-## through it, flown on the moon rather than among the stars (it's a drone,
+## through it, flown on the moon rather than among the stars (it's the deliveryship,
 ## and keeps to its route), its plane swinging round that place by its
 ## precess a lap, so the rest of its track sweeps every place in time. At the
 ## start it's over `start` on the plane through both, the way the seed sends it.
@@ -248,7 +248,7 @@ func at(t: float) -> Vector3:
 ## p's latitude needs), only its plane and its place round it moved: where p
 ## will be among the stars at t, the moon's turn under it and its plane's own
 ## swing taken back, put on its plane, and it there at t. A circle's orbit
-## (the drone's); an ellipse would need its perigee moved too.
+## (the deliveryship's); an ellipse would need its perigee moved too.
 func pass_over(p: Vector3, t: float) -> void:
 	if _pole != Vector3.ZERO:
 		# Its route still through its place: the plane turned to hold p as well.

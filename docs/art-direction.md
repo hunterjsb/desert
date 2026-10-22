@@ -1094,21 +1094,23 @@ bent. A presentation correction, not a new gravity or movement scale.
 
 gonkhub: "start work on polishing, upgrading and implementing the player model you previously
 made. Need to see it in first person POV." The lab's kit-built surveyor in the game's own kit
-(`SurveyorLooks`, worn shader):
+(`SurveyorLooks`, worn shader), then cut slimmer and plainer (gonkhub: slimmer, especially in the
+chest; simpler, especially the head, with teal accents):
 
-- **The suit:** bone white, a shade darker at its seams and pockets; gunmetal where it bends
-  (shoulder yokes and joints, a collar ring, elbows, knees, belt).
-- **The helmet:** a wide dark visor under a gunmetal brow, a lamp on its right, ear pucks and a
-  stub aerial.
-- **The pack:** teal, banded in safety yellow, with fins and a hose over the right shoulder.
-- **Hands and boots:** half-closed work gloves with a knuckle guard, an amber readout on the left
-  wrist, black boots with gunmetal toe caps.
+- **The suit:** bone white, a shade darker at its pockets; gunmetal where it bends (shoulder yokes,
+  elbows, knee joints, belt); teal trim to match the pack on the collar ring, the middle bellows
+  and the knee pads. A chest 0.30 m wide and 0.19 m deep, shoulder joints 0.31 m apart.
+- **The helmet:** one rounded shell, a wide dark visor and a small lamp on its right, where the
+  headlamp shines from.
+- **The pack:** teal, banded in safety yellow, finned, a hose over the right shoulder.
+- **Hands and boots:** half-closed work gloves, an amber readout on the left wrist, black boots
+  with gunmetal toe caps.
 - **A waist tie** reads as two plaited turns round the belt with a small crossing, teal whipping
   and a lead to the real attachment, in the rope end's gauge and colour; no invented hardware.
 
-Rigid pieces on their joints, about 5,900 triangles in 16 draws. In your own view the helmet,
-collar (with the shoulder joints), trunk and hips are drawn only for their shadow and for others,
-so nothing near your eyes fills or flickers across the view; you see arms, gloves and boots. The
-gloves take what you hold by its real sides and the arms keep their lengths; vaulting, empty hands
-reach for the ledge and a knee gathers. How it moves is in [Movement](prd/movement.md#your-body-2026-10-21).
-Look-test: `look/player_body`; its cost: `look/player_body/cost.tscn`.
+Rigid pieces on their joints, 5,072 triangles in 16 draws. In your own view the helmet and collar
+are drawn only for their shadow and for others; the slim chest stays below and behind the view
+(gonkhub chose it over hiding the torso). The gloves take what you hold by its real sides and the
+arms keep their lengths; vaulting, empty hands reach for the ledge and a knee gathers. How it moves
+and what it costs are in [Movement](prd/movement.md#your-body-2026-10-21). Look-test:
+`look/player_body`.

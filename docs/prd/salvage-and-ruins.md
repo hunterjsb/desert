@@ -707,7 +707,7 @@ on probe 1's three worlds, as before).
   with a loot table, and the step that builds them replaces the notes' base case of "pillars and wall
   stubs."
 
-## The Surveyor's care packages (gonkhub, 2026-10-20; built, on the `signatures` branch)
+## The deliveryship's care packages (gonkhub, 2026-10-20; built, on the `signatures` branch)
 
 *gonkhub: "give the agricultural survey craft a care-package cannon for firing supplies down to the moon's
 surface. Add a signal flare to go with this- if the player lights the signal flare during the Surveyor's
@@ -715,22 +715,27 @@ pass overhead, it will fire the cannon (this should be both heard and seen at di
 container crashing into the surface near the flare's location. Give the cargo container's landing plenty
 of polish. I want sand kicked up in a cloud, a smooth lerp from sky to ground, and correct angular velocity
 coming from where the surveyor was when it fired the cargo. Right now don't worry about what's inside the
-cargo just get the feature in."* The Surveyor is Frontier Ag's low crop-survey craft, the H-shaped hull
-flying 6 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`).
+cargo just get the feature in."* The craft is Frontier Ag's deliveryship, the H-shaped hull flying 30 km up
+([Radio](radio-sound-and-atmosphere.md), the satellite `deliveryship`). It was called the Surveyor, then the
+drone, until gonkhub, 2026-10-21: "The Surveyor flying craft needs to be renamed. Change all references in
+docs or commands/code to call it deliveryship," and "needs to be much much higher in the air": 6 km up then,
+30 km now.
 
 - **The signal flare** (`game/survival/flare.gd`, catalog `flare`): a red tube with a black striker cap,
   0.3 kg. Use lights it, held or set down: it burns at its tip for 60 s (`flare_burn_seconds`) with a
   flickering red light reaching 16 m, sparks and a red smoke, and a fizz, then it's spent and won't light
   again (use refuses). How long it has burnt is in its stats, so a spent one stays spent through a save.
   They're surface finds (3 in the weights, beside the lamp's 2); the kits don't carry them.
-- **The cannon** (`game/salvage/airdrop.gd`). While a flare burns, the Surveyor passing 50° or more over
+- **The cannon** (`game/salvage/airdrop.gd`). While a flare burns, the deliveryship passing 50° or more over
   it (`airdrop_elevation_degrees`; 35° when it flew 1.9 km up) fires once at it. **Seen:** its muzzle flashes in the sky at the craft,
   twelve times as bright fading over half a second, by day as well as night, a white burst at the hull's
   middle. **Heard:** the boom comes from the craft's way, as long after the shot as sound takes through the
-  air there (the Rumbles' speed of sound: about 21 s from 7.3 km), quieter the farther.
+  air there (the Rumbles' speed of sound), quieter the farther: about 21 s from 7.3 km when it flew 6 km up;
+  from 30 km, 50° up is under 40 km off and the boom takes about two minutes.
 - **The fall.** The container leaves the muzzle where the craft is, carrying the craft's own motion for a
   moment, then curves down a quadratic Bezier (the muzzle, a bend 1.2 s along the craft's way, the ground)
-  over 30 s (`airdrop_fall_seconds`; from 6 km up its boom reaches you before it lands), never climbing
+  over 75 s (`airdrop_fall_seconds`, 30 s from 6 km up, when its boom reached you before it landed; from
+  30 km the boom follows the container down), never climbing
   first, eased so it starts even and gathers speed as it falls. It lands 12
   to 35 m from the flare (`airdrop_land_m`), toward the craft's side, a little either way. Behind it a smoke
   trail, drawn clear of the haze so it shows a kilometre up and shrinking near the ground; on it a red
@@ -746,14 +751,17 @@ flying 6 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`)
 - **Where it lands.** Never inside something: the spot first picked is passed over for the first clear
   one round the flare if anything stands there when the cannon fires, and if a camp moves under the
   fall it lands on top of it, felt for by a shape cast of its own box.
-- **Dev console:** `surveyor [s]` forces the Surveyor's low pass (gonkhub, 2026-10-20: "make a command to force
-  the surveyor's low pass. add a scenario for it"): its orbit turned to bring it straight over you in s
+- **Dev console:** `deliveryship [s]` forces the deliveryship's pass (gonkhub, 2026-10-20: "make a command to force
+  the surveyor's low pass. add a scenario for it"; the command was `surveyor`, then `drone`, and is
+  `deliveryship` since 2026-10-21, with no old aliases): its orbit turned to bring it straight over you in s
   seconds, 20 alone, its height, lap and tilt as they were (`Satellite.pass_over`), the clock left alone.
-  `airdrop` sets the clock to 15 s before the Surveyor's next pass high over you and puts a flare in your
+  `airdrop` sets the clock to 15 s before the deliveryship's next pass high over you and puts a flare in your
   hands; `airdrop now` fires at you at once.
-- **Scenario `surveyor`:** a clear afternoon, a flare in your hands, and the Surveyor's low pass forced
-  straight over you in 30 s (`Scenarios.SURVEYOR_LEAD`): light the flare as it comes over.
-- **Probes:** salvage 9 (the Surveyor's care package), 10 (the Surveyor forced over) and 11 (it lands
+- **Scenario:** since 2026-10-20 the one `clear` setup (Menus & UI): a clear afternoon, a weather radio, a flare in
+  your hands, and the deliveryship forced straight over you in a minute (`Scenarios.DELIVERYSHIP_LEAD`, 60 s
+  since it flies 30 km up; 30 s before): light the flare as it comes over. `deliveryship` and `clear_skies`
+  still reach it.
+- **Probes:** salvage 9 (the deliveryship's care package), 10 (the deliveryship forced over) and 11 (it lands
   clear, and brings its supplies). **Look-test:** `look/airdrop`, by day: the trail, the
   fall, the hit, the cloud and its settling.
 - **Fixed in passing:** a billboard particle drops its scale unless told to keep it, so puffs sized in

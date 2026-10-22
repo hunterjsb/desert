@@ -8,8 +8,8 @@ extends Node3D
 ## Holding something, your hands go to it; empty, your arms swing against
 ## your stride. It's only looks: no shapes, nothing to hit. A child of the player.
 
-## Helmet, collar, trunk and hips sit so near your eyes they'd fill and flicker
-## across the view, so they're drawn for their shadow and for others only.
+## Your helmet and collar, which ring your eyes: drawn for their shadow and
+## for others, on a layer your own camera leaves out.
 const OWN_LAYER := 1 << 17
 ## Each limb's length, m, joint to joint.
 const UPPER_ARM := 0.28
@@ -18,9 +18,9 @@ const THIGH := 0.42
 const SHIN := 0.41
 ## Where the hand grips, m below the wrist along the hand.
 const GRIP := 0.08
-## Your eyes stand this far in front of your trunk's middle, m, as a head
-## carries forward of the shoulders; the trunk itself is out of your own view.
-const EYES_AHEAD := 0.05
+## Your eyes stand this far in front of your trunk's middle, m: looking down
+## you see your slim chest below you, never the inside of it.
+const EYES_AHEAD := 0.24
 ## Lying face down: the hips this far behind your eyes and over the sand, m.
 const PRONE_HIPS := Vector3(0.0, 0.16, 0.62)
 
@@ -42,7 +42,7 @@ func _ready() -> void:
 		add_child(view)
 		view.set_instance_shader_parameter(&"age", Paint.ERA_NEW)
 		_parts[name] = view
-	for name: StringName in [&"head", &"collar", &"trunk", &"hips"]:
+	for name: StringName in [&"head", &"collar"]:
 		(_parts[name] as MeshInstance3D).layers = OWN_LAYER
 	if player != null and player.camera != null:
 		player.camera.cull_mask &= ~OWN_LAYER

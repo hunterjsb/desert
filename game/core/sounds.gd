@@ -42,10 +42,10 @@ const CHIME_FIRST := preload("res://assets/audio/chime_first.ogg")
 const CHIME_LAST := preload("res://assets/audio/chime_last.ogg")
 const CHIME_LOST := preload("res://assets/audio/chime_lost.ogg")
 # You on foot.
+# step_c is gone: a spike ten times its own body made it crack like a clip.
 const STEPS: Array[AudioStream] = [preload("res://assets/audio/step_a.ogg"),
-	preload("res://assets/audio/step_b.ogg"), preload("res://assets/audio/step_c.ogg"),
-	preload("res://assets/audio/step_d.ogg"), preload("res://assets/audio/step_e.ogg"),
-	preload("res://assets/audio/step_f.ogg")]
+	preload("res://assets/audio/step_b.ogg"), preload("res://assets/audio/step_d.ogg"),
+	preload("res://assets/audio/step_e.ogg"), preload("res://assets/audio/step_f.ogg")]
 const SLIDE := preload("res://assets/audio/slide.ogg")
 const LANDING := preload("res://assets/audio/impact.ogg")
 # The board, its hums also a hover tray lifting off and settling.

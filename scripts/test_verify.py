@@ -46,6 +46,8 @@ elif args[:2]==['run','view']:
     field=args[args.index('--json')+1]
     if field=='status': print('completed')
     elif field=='conclusion': print(os.environ.get('VERIFY_RESULT','success'))
+    elif field=='jobs' and os.environ.get('VERIFY_PLATFORM_RED'): print('failure 456 macOS probes/rope')
+elif args[:1]==['api']: print('2026-10-22T00:00:00.0000000Z FAIL     probes/rope/1_knot.gd (3s)')
 ''')
         self.copy = self.root / 'verify.sh'
         shutil.copyfile(VERIFY, self.copy)
@@ -128,6 +130,15 @@ elif args[:2]==['run','view']:
         self.env['VERIFY_FALLBACK'] = '1'
         self.assertEqual(self.verify().returncode, 0)
         self.assertIn(['workflow', 'run', 'probes.yml', '--ref', 'verify-test', '-f', 'full_platforms=false'], self.calls())
+
+    def test_red_platform_stops_the_line(self):
+        self.write('game/main.gd')
+        self.commit()
+        self.env['VERIFY_PLATFORM_RED'] = '1'
+        result = self.verify('--land')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('probes/rope/1_knot.gd', result.stdout)
+        self.assertEqual(self.git('rev-parse', 'origin/master').strip(), self.base)
 
     def test_docs_skip_ci(self):
         self.write('docs/report.md')

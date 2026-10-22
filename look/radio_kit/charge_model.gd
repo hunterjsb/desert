@@ -1,6 +1,6 @@
 extends SceneTree
 ## The shortwave rig's numbers, worked out before any of it's built: how a
-## kite flown high gathers charge, how the earth stake and the bleed resistor
+## kite flown high gathers charge, how a stake and the bleed resistor
 ## take it off, how often an unearthed rig burns a piece out, how fast the
 ## kite wears, and what its height does for a shortwave signal. Monte Carlo
 ## over many flights; prints tables.
@@ -54,7 +54,7 @@ const SCENES := [
 	["dust front's outflow, 13 m/s", 13.0, 0.6, 0.05],
 	["sandstorm, 22 m/s", 22.0, 1.0, 1.0],
 ]
-const SETUPS := [["unearthed", false, false], ["earth stake", true, false], ["bleed resistor", false, true],
+const SETUPS := [["unearthed", false, false], ["stake", true, false], ["bleed resistor", false, true],
 	["both", true, true]]
 const LINE_M := 120.0
 const FLIGHT_S := 1200.0

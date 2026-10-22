@@ -95,7 +95,8 @@ const TOUCHES := 64
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"face": "frame face",
-	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
+	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount",
+	&"radio_mod": "converter mount", &"radio_bay": "misc bay", &"lead": "lead clip", &"radio_top": "hook mount"}
 const RIDING := "not from the board"
 const STUNNED := "your hands won't close"
 ## What a piece of a wreck needs before it gives, said when you try it without.
@@ -408,10 +409,6 @@ func interact() -> bool:
 	_look()
 	if _player.world.stoker != null and _player.world.stoker.interact(_player):
 		return true
-	# A radio in your hands with frequencies marked: use goes to the next.
-	if held is Radio and phase == Phase.HELD and (held as Radio).next_mark():
-		_player.close_up.tuned(held)
-		return true
 	if look_bed and held == null and look_device == null and look_part == null:
 		return _player.world.sleep.offer(_player)
 	if look_work != null:
@@ -425,6 +422,14 @@ func interact() -> bool:
 		return true
 	if look_device != null and _player.world.salvage.held_fast(look_device) != "":
 		return refuse(_player.world.salvage.held_fast(look_device))
+	# A cable's plug held at a driven stake: the cable passes through its ring, or off it.
+	var through := _cable_at_stake()
+	if not through.is_empty():
+		var why := (through.cable as Cable).route(through.stake)
+		if why != "":
+			return refuse(why)
+		_play(Sounds.TIE)
+		return true
 	if look_device != null and look_device.interact(_player):
 		# Marking Home requires ownership; a refusal must not claim its host.
 		if not look_device is HomeBeacon:
@@ -453,6 +458,17 @@ func interact() -> bool:
 	if used or _player.waist.take_from_hands():
 		return true
 	return refuse("no use for it there") if look_device != null else false
+
+
+## Holding a cable's plug, looking at a driven stake: {cable, stake}, else {}.
+func _cable_at_stake() -> Dictionary:
+	if phase != Phase.HELD or not held is Part or (held as Part).kind != &"port":
+		return {}
+	var stake := look_device as Stake
+	if stake == null or not stake.driven:
+		return {}
+	var cable := Cable.of(held as Part, _player.world)
+	return {"cable": cable, "stake": stake} if cable != null else {}
 
 
 ## Continuing a waist return never takes a device's or ground work's Use.
@@ -1123,7 +1139,7 @@ func _no_fit() -> String:
 		if piece != null:
 			if each.kind != &"ring" or not target is Chassis or each.has_meta(&"socket"):
 				continue
-		elif each.kind != kind and not (held is Device and (held as Device).fits_in(each)):
+		elif not Catalog.fits(kind, each.kind) and not (held is Device and (held as Device).fits_in(each)):
 			continue
 		any = true
 		named = each.kind
@@ -1543,9 +1559,6 @@ func _grip(part: RigidBody3D) -> void:
 	refresh_held_shape()
 	_carry = _tidy(Basis(Vector3.UP, -_player.global_rotation.y) * part.global_basis.orthonormalized())
 	_away = _tuning.hold_distance
-	if not (part is Chassis or part is Cutter) and _bounds.size.length() < _tuning.pick_small:
-		# Small things come in where your arms reach them; nothing comes inside you.
-		_away = maxf(nearest_hold(_bounds), _tuning.suit_hold_small)
 	_held_at = _away
 	pull = 0.0
 	socket = null
@@ -1756,7 +1769,7 @@ func _takes(each: Socket) -> bool:
 		return false
 	if held is Device:
 		return (held as Device).fits_in(each)
-	return each.kind == held.get(&"kind") or each.kind == &"face" and Frame.takes(held)
+	return Catalog.fits(held.get(&"kind"), each.kind) or each.kind == &"face" and Frame.takes(held)
 
 
 ## Whether a hit is the sand's own surface, which a deck lifts itself clear
@@ -2231,6 +2244,9 @@ func line() -> String:
 		var laid: Line = held.get_meta(&"line")
 		return Controls.key_for(&"interact") + " · " + ("remove line from hook" if laid.rope != null \
 			and laid.rope.through == _look_hook().guide else "pass line through hook")
+	var through := _cable_at_stake()
+	if not through.is_empty():
+		return Controls.key_for(&"interact") + " · " + ("take cable off stake" if (through.cable as Cable).through 			== through.stake else "pass cable through stake")
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
 	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \

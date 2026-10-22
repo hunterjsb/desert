@@ -1,6 +1,6 @@
 extends WeatherProbe
 ## Radio probe 26: three bearings fix the living city. A Console beside the
-## Walker, a radio in its system on its carrier, notes each contact its log
+## Walker, a radio in its system on its FM station, notes each contact its log
 ## reads whole, once: two give no fix; once three cross, from far enough
 ## apart, they fix it within triangulate_m of where the city was, said in its
 ## log and marked on its chart among the bearings' lines.

@@ -128,8 +128,8 @@ func run() -> void:
 		match scenario.get("lays", &""):
 			&"clear":
 				check(world.player.hands.held is Flare and world.player.hands.held in dropped,
-					"clear: the drone flare starts in your hands")
-				check(dropped.any(func(n: Node) -> bool: return n is Radio and n.tuned_to() == &"walker"),
+					"clear: the deliveryship flare starts in your hands")
+				check(dropped.any(func(n: Node) -> bool: return n is Radio and n.channel == Radio.WEATHER),
 					"clear: the weather radio shares the delivery setup")
 			&"yours": await _ruin_finds(dropped)
 			&"survive": await _survival_starts(dropped)
@@ -186,7 +186,7 @@ func _radio_lands(dropped: Array[Node3D]) -> void:
 		and radio.battery() != null and radio.charge_share() >= 1.0, "radio: in front of you, charged and off")
 	check(not shield.on and _charged(shield), "radio: a charged shield beside it, on its plate")
 	while radio.channel != Radio.BEACON:
-		radio.interact(player)
+		radio.sweep()
 	check(not radio.target.is_empty(), "radio: a beacon in reach from there")
 
 

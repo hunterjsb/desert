@@ -7,15 +7,15 @@ extends WeatherProbe
 
 
 func run() -> void:
+	Tuning.current().fm_margin_db = 1e6
 	await load_weather()
 	world.time_warp = 0.0
 	var day := world.weather.day
 	var spawn := world.moon.longitude
 	check(is_equal_approx(day.time_of_day(0.0, spawn), world.tuning.start_time_of_day),
 		"where a run begins it's the hour the run began on")
-	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
-	while radio.channel != Radio.MUSIC:
-		radio.interact(world.player)
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"fm_converter"], [0.0, 2.0]) as Radio
+	radio.channel = Radio.MUSIC
 	var at := world.player.global_position
 	# A clear morning where a run begins: noon to the east, past midnight to the west.
 	world.time = find_time(func(t: float) -> bool:

@@ -115,5 +115,5 @@ func controls_text() -> String:
 		"{tune_fine_up} / {tune_fine_down}  fine tune",
 		"{volume_up} / {volume_down}  volume"]
 	if is_instance_valid(radio) and radio.has_dial_marks():
-		lines.append("{mark_frequency}  mark / unmark    {interact}  next mark")
+		lines.append("{mark_frequency}  mark / unmark    {interact}  on / off")
 	return "[center]%s[/center]" % Controls.bbcode("\n".join(lines))
