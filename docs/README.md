@@ -18,7 +18,11 @@ The living world references are grouped in [`world/`](world/): [Zan's lore](worl
 ## System design
 
 The current design sources are in [`prd/`](prd/), one file per system. Start with the
-relevant PRD before changing that system.
+relevant PRD before changing that system. Surveyor departure spans the
+[preflight](prd/surveyor-preflight.md) and [landing planner](prd/landing-plan.md);
+its current bounded patch accounts cover [roof fitting](prd/pod-roof-launch.md),
+[physical recovery](prd/pod-recovery-clearance.md) and
+[flight look and intensity](prd/pod-flight-feel.md).
 
 ## Supporting briefs
 

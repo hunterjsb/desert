@@ -7,6 +7,13 @@ recorded in [roof placement](pod-roof-launch.md),
 [recovery clearance](pod-recovery-clearance.md) and
 [flight look and intensity](pod-flight-feel.md).
 
+The dated implementation slices below retain their original intermediate scope
+and measurements. Their “pending”, exterior-view and modal-interface statements
+are historical; the connected physical station and final patch integration
+accounts supersede them. Use the opening and current patch accounts together
+with the linked focused PRDs, rather than treating an isolated fixture as the
+present gameplay interface.
+
 ## Playable outcome
 
 Begin a new Surveyor run inside a small walkable ship overlooking Zan. Use its
@@ -516,7 +523,8 @@ The roof, physical escape and flight-feel changes at `0e14a7b2` passed
 [all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39716462147)
 and landed on master as 0.3.1-alpha development. The
 [full platform/build follow-up](https://github.com/hunterjsb/desert/actions/runs/39717579371)
-is running. Twelve focused checks pass, including real roof placement, physical
+passed all 21 jobs, including native Windows/macOS checks and all three packaged
+build smokes. Twelve focused checks pass, including real roof placement, physical
 crawl/stand, original cargo assemblies/rope ends, actual launch sound and saved
 mouse-chosen flight view. Forward+ and Compatibility captures were inspected.
 The patch remains unpublished and Hunter's comprehension/comfort acceptance

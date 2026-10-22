@@ -1,6 +1,15 @@
 # Surveyor landing planner
 
-## Selected 2026-10-21; implementation in progress
+## Current implementation
+
+The physical rotating-globe launch station shipped in 0.3.0-alpha Sanddune.
+Its shared saved trajectory, ray-dragged single pulse and terrain validation are
+described in the physical-station revision below. The earlier site-grid and
+numeric/modal implementation notes are historical evidence, superseded by that
+revision. Current patch work and measured status are recorded in the
+[preflight PRD](surveyor-preflight.md).
+
+## Original bounded planner (selected 2026-10-21; superseded interface)
 
 The ship's launch computer offers a bounded drop corridor on the existing regional
 sheet, not a complete orbital survey. Resolve three to five seeded candidate

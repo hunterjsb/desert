@@ -43,6 +43,10 @@ Forward+/Compatibility captures pass. These are development results, not a
 Sanddune release or completed human sailing/expedition acceptance. Current design
 and measured evidence live in [preflight](prd/surveyor-preflight.md) and
 [landing-plan](prd/landing-plan.md).
+The 0.3.1 pod patch runtime at `0e14a7b2` also passed
+[all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39717579371),
+including actual escape/cargo/head-view checks on native Windows and macOS.
+It is integrated source, not a published patch or human comfort acceptance.
 The [roadmap](alpha-roadmap.md) keeps kites, deeper suit/wrist instruments and
 broader origin variants in Spaceport, with concrete designs still to select.
 
