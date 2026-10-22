@@ -6,6 +6,17 @@ func run() -> void:
 	var shown := computer._model(Console.Page.MAP, computer.pooled_readings())
 	check(shown.has("chart") and shown.chart.has("sailing") and not shown.chart.sailing.is_empty(),
 		"the sailing deck's wind reader feeds actual and ideal rig marks to Nav")
+	var camp := Scenarios.rig_at(world, [
+		[&"stick", Vector2i.ZERO, &"top", Vector2(-0.2, 0.0), 0.0, &"home_beacon", &"beacon"],
+		[&"stick", Vector2i.ZERO, &"top", Vector2(0.25, 0.0), 0.0, &"battery"]], [25.0, 25.0], false)
+	check(world.home.mark(camp.named.beacon) == "", "a separate physical camp is marked Home")
+	await physics_frames(30)
+	_press(&"sail_home")
+	var relative: Vector3 = camp.deck.global_position - world.player.global_position
+	check(computer.sailing.home and computer.sailing.target(computer).dot(Vector2(relative.x, relative.z).normalized()) > 0.95,
+		"the Home control points the recommendation toward the real camp fix")
+	_press(&"sail_course")
+	check(not computer.sailing.home, "the course control returns to a held heading")
 	_press(&"sail_control")
 	check(computer.sailing.mode == SailingAid.Mode.TRIM, "the Map's control key engages the physical sheet drum")
 	_press("nav")
