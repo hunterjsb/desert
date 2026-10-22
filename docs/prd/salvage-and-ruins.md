@@ -741,7 +741,11 @@ flying 6 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`)
 - **The hit.** A cloud of sand thrown up and swelling, 420 lit puffs 3 to 9 m across, and a ring of it
   thrown out along the ground, 220 more; the impact's boom, a clang and a thud. The container is a body
   again (catalog `cargo`, 80 kg, an orange shell banded in black), its beacon still blinking; after 7 s the
-  drop lets it go into the world. Nothing's inside it yet.
+  drop lets it go into the world. Strapped along its flank, as any kit holds them: two sealed water
+  canisters, two rations, a med kit and a full battery, taken out by hand (`Airdrop.SUPPLIES`).
+- **Where it lands.** Never inside something: the spot first picked is passed over for the first clear
+  one round the flare if anything stands there when the cannon fires, and if a camp moves under the
+  fall it lands on top of it, felt for by a shape cast of its own box.
 - **Dev console:** `surveyor [s]` forces the Surveyor's low pass (gonkhub, 2026-10-20: "make a command to force
   the surveyor's low pass. add a scenario for it"): its orbit turned to bring it straight over you in s
   seconds, 20 alone, its height, lap and tilt as they were (`Satellite.pass_over`), the clock left alone.
@@ -749,11 +753,12 @@ flying 6 km up ([Radio](radio-sound-and-atmosphere.md), the satellite `thermal`)
   hands; `airdrop now` fires at you at once.
 - **Scenario `surveyor`:** a clear afternoon, a flare in your hands, and the Surveyor's low pass forced
   straight over you in 30 s (`Scenarios.SURVEYOR_LEAD`): light the flare as it comes over.
-- **Probes:** salvage 9 (the Surveyor's care package) and 10 (the Surveyor forced over). **Look-test:** `look/airdrop`, by day: the trail, the
+- **Probes:** salvage 9 (the Surveyor's care package), 10 (the Surveyor forced over) and 11 (it lands
+  clear, and brings its supplies). **Look-test:** `look/airdrop`, by day: the trail, the
   fall, the hit, the cloud and its settling.
 - **Fixed in passing:** a billboard particle drops its scale unless told to keep it, so puffs sized in
   metres came out all the same small size (`billboard_keep_scale`).
-- **Not yet:** what's inside. Active-drop saves are handled by the repair below.
+- **Saves:** an active drop saves mid-fall and after the hit (saves 38), supplies included.
 
 ## Exposed wreck surfaces (Hunter, 2026-10-20; built)
 

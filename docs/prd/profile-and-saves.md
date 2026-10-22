@@ -857,3 +857,9 @@ These two add a candidate roster of 67 deeds in the same eleven families; the
 separate Spaceport kite prototype's deeds are not integrated in this count.
 Preflight saves retain actual object references and the selected plan/cargo,
 not a second kit grant. Integrated evidence remains pending.
+
+## Lookout (2026-10-22)
+
+Climbing into a crow's nest on a standing mast records **Lookout** (Wind, after
+Hand-Me-Down): the nest is the nomads' gear and came without one. The roster is
+68 deeds in eleven families. Devices 41 checks it.
