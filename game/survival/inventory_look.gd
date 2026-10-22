@@ -87,8 +87,9 @@ func show_thing(thing: RigidBody3D) -> void:
 		var copy := MeshInstance3D.new()
 		copy.mesh = look.mesh
 		copy.material_override = look.material_override
-		for surface in look.mesh.get_surface_count():
-			copy.set_surface_override_material(surface, look.get_surface_override_material(surface))
+		if look.mesh != null:
+			for surface in look.mesh.get_surface_count():
+				copy.set_surface_override_material(surface, look.get_surface_override_material(surface))
 		copy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		if Paint.is_worn(look) or (thing is SurveyReceiver and (thing as SurveyReceiver).painted().has(look)):
 			for param in PARAMS:
