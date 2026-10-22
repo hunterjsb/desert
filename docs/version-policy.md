@@ -1,10 +1,12 @@
 # Release numbering and milestones
 
-**Adopted 2026-10-21.** This is the canonical policy for Desert's game versions,
-release names and maturity stages. Release steps remain in
-[README](../README.md#releasing); milestone scope and acceptance live in the
-[Alpha roadmap](alpha-roadmap.md). Adopting this policy does not itself change
-a version, publish a release, or declare a maturity gate complete.
+*Hunter, 2026-10-21: "we have been using it to describe roadmap progress more-or-less
+instead of compat... keep using it for milestones and progress but actually write down
+some guidelines." On these guidelines: "perfect, i like this."*
+
+This is the one owner of Desert's game versions, release names and maturity stages.
+Release steps are in [README](../README.md#releasing); milestone scope and acceptance
+are in the [Alpha roadmap](alpha-roadmap.md).
 
 ## What the version means
 
@@ -67,5 +69,4 @@ become supported. Do not infer their compatibility from the game's milestone nam
 - Update the roadmap with built, in-progress and planned status. Selecting a
   release name does not approve every feature proposed for it.
 
-README and the roadmap summarize this policy and link here. Update this source
-when an agreed policy changes, then reconcile those summaries.
+README, AGENTS.md and the roadmap link here rather than restating it.

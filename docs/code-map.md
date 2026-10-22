@@ -37,22 +37,6 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | Saves and deeds | `game/saves/snapshot.gd` captures run state; `deeds.gd: TABLE` defines deeds; gameplay systems record the action when it happens | `probes/saves` |
 | Desktop launcher | `launcher/main.py` installs published releases and launches local Git worktrees; `.github/workflows/launcher-release.yml` packages the launcher | Standalone app; see `docs/prd/launcher.md` |
 
-The integrated large-moon/body/gathered-line/cabin baseline at `7f8e918a` and
-launch-readiness correction at `67a52115` passed all 21 platform/build jobs.
-The physical station and continuous first-person departure at `622cec08` passed
-[all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39699225787);
-[all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39700634561) passed. Connected input/saves and inspected nine-phase
-Forward+/Compatibility captures pass. These are development results, not a
-Sanddune release or completed human sailing/expedition acceptance. Current design
-and measured evidence live in [preflight](prd/surveyor-preflight.md) and
-[landing-plan](prd/landing-plan.md).
-The 0.3.1 pod patch runtime at `0e14a7b2` also passed
-[all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39717579371),
-including actual escape/cargo/head-view checks on native Windows and macOS.
-It is integrated source, not a published patch or human comfort acceptance.
-The [roadmap](alpha-roadmap.md) keeps kites, deeper suit/wrist instruments and
-broader origin variants in Spaceport, with concrete designs still to select.
-
 Probe/build performance and scheduling requirements live in `docs/prd/probes-and-builds.md`.
 The Pages observatory uses `scripts/ci_dashboard/collect.py`, `site/`, and
 `.github/workflows/performance-pages.yml`; its focused checks are
@@ -61,7 +45,7 @@ The Pages observatory uses `scripts/ci_dashboard/collect.py`, `site/`, and
 Probe hosts and system helpers live in `probes/lib/`. Use the nearest existing helper and a
 targeted probe for the failure being fixed. `scripts/probe.sh` imports assets before running;
 `scripts/verify.sh` selects game or dashboard CI and handles landing;
-`python3 scripts/test_verify.py` checks routing and failure blocking against a local remote. `AGENTS.md` describes the shared worktree,
+`python3 scripts/test_verify.py` checks routing and landing against a local remote. `AGENTS.md` describes the worktree,
 locking and capture rules.
 
 ## Reachable mountain horizons
