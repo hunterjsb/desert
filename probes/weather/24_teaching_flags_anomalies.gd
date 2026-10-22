@@ -3,8 +3,8 @@ extends HandsProbe
 ## Console holding evidence of two tells uploads and teaches nothing; with
 ## all three, its cable's plug put in the Walker's port as it passes teaches
 ## it. Before, no map shows the anomaly whose heart stands 4 km off and the
-## Walker's feed says nothing of it; after, the Console's map and its chart
-## show it, the feed flags it for a radio tuned to it, and the run's save
+## Walker's feed says nothing of it; after, the Console's map shows it with
+## the weather, the feed flags it for a radio tuned to it, and the run's save
 ## keeps that it's taught. The heart is staged.
 ## Time limit: 300 s.
 
@@ -52,12 +52,11 @@ func run() -> void:
 	check(world.taught and "WALKER TAUGHT" in console.screen_text(Console.Page.LOG), "three tells teach it")
 	await physics_frames(5)
 	var mapped := _mapped(console)
-	var chart: Dictionary = console._model(Console.Page.CHART, console.pooled_readings()).chart
 	print("its map shows %d anomaly, the feed: \"%s\"" % [mapped.size(), radio.said])
-	check(mapped.size() == 1 and chart.anomalies.size() == 1, "taught, its map and its chart show the anomaly")
+	check(mapped.size() == 1, "taught, its map shows the anomaly")
 	check("anomaly 4.0 km north-east" in radio.said, "and the Walker's feed flags it")
 	check(Snapshot.take(world).get("taught", false), "the run's save keeps it taught")
 
 
 func _mapped(console: Console) -> Array:
-	return console._model(Console.Page.RADAR, console.pooled_readings()).get("map", {}).get("anomalies", [])
+	return console._model(Console.Page.MAP, console.pooled_readings()).get("map", {}).get("anomalies", [])

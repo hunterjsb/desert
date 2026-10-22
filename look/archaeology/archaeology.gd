@@ -1,7 +1,7 @@
 extends Node
 ## Look-test: dune archaeology. A big dune's ruin a big storm laid bare, shot
 ## in the clear after it from down its lee; the archaeology setup on a deck
-## beside it, and its Console's ground radar page; and the light things a
+## beside it, and its Console's Map with the ground radar's survey; and the light things a
 ## storm let fall in a crest's lee lying round you at a slip face's foot.
 ##   scripts/unseen.sh --path . --disable-vsync res://look/archaeology/archaeology.tscn -- --capture <dir>
 ## Shots: ruin, deck, page, lee.
@@ -57,7 +57,7 @@ func _ready() -> void:
 	var kit: Kit = load("res://game/survival/archaeologist_kit.tres")
 	var rig := Scenarios.rig_at(world, kit.assembled.camp.rig, DECK, false)
 	var console: Console = rig.named.console
-	console.page = Console.Page.SURVEY
+	console.page = Console.Page.MAP
 	for i in 240:
 		world.time += 0.25
 		await get_tree().physics_frame
@@ -68,12 +68,12 @@ func _ready() -> void:
 	var eye := middle + facing * 2.6 + facing.cross(Vector3.UP) * 1.1 + Vector3.UP * 1.7
 	await _look(Vector3(world.world_x(eye.x), eye.y, world.world_z(eye.z)),
 		Vector3(world.world_x(middle.x), middle.y + 0.35, world.world_z(middle.z)))
-	_shot(out, "deck", "a Console with a ground radar on its survey, a scoop and a sieve on a deck of three")
+	_shot(out, "deck", "a Console with a ground radar on its map, a scoop and a sieve on a deck of three")
 	await RenderingServer.frame_post_draw
 	var page := console._viewport.get_texture().get_image()
 	if page != null:
 		page.save_png(out.path_join("page.png"))
-	print("archaeology: page, %s" % console.screen_text(Console.Page.SURVEY).split("\n")[0])
+	print("archaeology: page, %s" % console.screen_text(Console.Page.MAP).split("\n")[0])
 
 	var lee := await _lee_fall()
 	if lee.is_empty():
