@@ -581,7 +581,7 @@ const DEVICES := {
 		"spots": [[&"bottom", Vector2.ZERO, 0.0, &"bottom"], [&"top", Vector2(-0.22, -0.24), 0.0, &"battery"],
 			[&"top", Vector2(0.16, 0.22), 0.0, &"top"]]},
 	# The camp's computer, a rack standing tall and narrow so its whole front
-	# is a big screen, as tall as the radar page wants and its middle at your
+	# is a big screen, as tall as the Map wants and its middle at your
 	# eyes on a floating deck. Its frame is heaviest at its foot, so it stands
 	# steady. Its ports are its own: the screen the whole front, each side
 	# three computer-mod ports down it, a computer-mod top for a radar, and a

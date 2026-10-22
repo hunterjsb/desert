@@ -501,7 +501,7 @@ has the detail):
   dust's glow, whichever way it faces you, Skyline's glints let through near; and clangs on the wind now
   and then, heard to 140 m
   after the sound's trip, duller the further. `sites.newly_exposed` lists the sites a storm has newly
-  laid bare near a place; the ground radar pins them on a Console's survey page (below).
+  laid bare near a place; the ground radar pins them on a Console's Map, its survey filter (below).
 - **Probes:** kits 3 and 4, loot 7, sightlines 4, saves 23.
 
 **As built (2026-10-19), the rest** ([the world system](../world/world-system.md#what-storms-do-to-sites-now) has
@@ -1011,9 +1011,9 @@ All run without a window, with a fixed seed.
     three.
 24. **Teaching flags anomalies** (2026-10-19). The "walker" scenario: a Console with two tells uploads
     and teaches nothing; its plug put in the Walker's port as it passes, with three, teaches it. Before,
-    no map shows a staged heart 4 km off and the feed says nothing; after, the radar's map and the chart
-    show it, the Walker's feed flags it ("anomaly 4.0 km north-east, full in 10 min"), and the run's save
-    keeps it taught.
+    no map shows a staged heart 4 km off and the feed says nothing; after, the Map's weather shows it,
+    the Walker's feed flags it ("anomaly 4.0 km north-east, full in 10 min"), and the run's save keeps
+    it taught.
 
 ## Out of scope
 

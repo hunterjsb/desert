@@ -541,14 +541,14 @@ early, and that teaching it takes evidence for each tell.
 - **Noting bearings:** a Console with a radio tuned to the Walker notes each contact the log reads whole,
   once, in its log and as a line on its chart. Three that cross, none closer than `triangulate_degrees`,
   their crossings within `triangulate_m`, fix a place; on seed 1234 the six fix the city 153 m off.
-- **The chart** (`game/devices/chart.gd`, a Console page): north up, rings every 10 km, the Rim, each bearing
-  a line, the fix a ring and, once taught, the anomalies; under it the bearings, the fix and the evidence.
-  It's what the one map's navigation filter will show ([Devices & mods](devices-and-mods.md)).
+- **The chart** (`game/devices/chart.gd`) is the Console Map's navigation filter: north up, the Rim, each
+  bearing a line, the fix a ring, Home and the course; under it the bearings, the fix and the evidence
+  ([Devices & mods](devices-and-mods.md)).
 - **Evidence** (on a Console): each tell its deck witnesses through an anomaly: a compass on it 10° or more
   off north; a radio on it playing with the crackle a quarter deep or more; a shield on it loaded past a full
   storm's while its particle sensor reads ordinary sand. A save keeps it with the Console.
 - **The teach** (`Console.upload`): plugged into the Walker, a Console holding all three teaches it; from
-  then on every Console's map and chart ring each anomaly near, and its feed flags them (`World.taught`).
+  then every Console's Map rings each anomaly near with its weather, and its feed flags them (`World.taught`).
 - **Deeds:** Triangulated, The Living City (seeing its lights), Taught (hidden). **Not this round:** taking
   the Walker (its core, body, data); pilgrimage and aggro; nomad reputation as a gate on reaching it; singing
   stones as evidence; the ghost relay.

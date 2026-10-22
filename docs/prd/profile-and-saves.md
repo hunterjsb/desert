@@ -477,7 +477,7 @@ round her as there are anywhere the sand runs deep.
   each one says it opens her, and she's marked new only once the last is done.
 - **The archaeology setup on a rig** (`Rig`), beside you to your right, resting on the sand: a deck
   of three pieces in a line, a Console on the first with its screen and a ground radar fitted, its
-  survey page in reach, two batteries in front of it; the light shield and solar panel on the
+  Map's survey in reach, two batteries in front of it; the light shield and solar panel on the
   second. The third is a clear work surface. Its mass is about 58.3 kg, removing the 1.5 kg scoop
   and 1.2 kg sieve from the earlier measured 61 kg; it draws 11 W (the Console, screen and radar),
   so its two batteries, starting at 80%, keep the survey running about fourteen and a half hours

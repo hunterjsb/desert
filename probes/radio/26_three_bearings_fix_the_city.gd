@@ -37,6 +37,12 @@ func run() -> void:
 	check(console.bearings.size() == world.tuning.walker_contacts_kept, "each contact noted once (%d)" % console.bearings.size())
 	var log := console.screen_text(Console.Page.LOG)
 	check("CONTACT" in log and "FIX" in log, "its log notes each contact and the fix")
-	var chart: Dictionary = console._model(Console.Page.CHART, console.pooled_readings()).chart
-	check(chart.lines.size() == console.bearings.size() and chart.has("fix"), "its chart draws each bearing and the fix")
-	print(console.screen_text(Console.Page.CHART))
+	check(_charted(console), "its map's navigation draws each bearing and the fix")
+	console.upload()
+	check(world.taught and _charted(console), "taught, it still draws them")
+	print(console.screen_text(Console.Page.MAP))
+
+
+func _charted(console: Console) -> bool:
+	var chart: Dictionary = console._model(Console.Page.MAP, console.pooled_readings()).get("chart", {})
+	return chart.get("lines", []).size() == console.bearings.size() and chart.has("fix")

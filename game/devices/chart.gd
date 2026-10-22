@@ -7,9 +7,9 @@ extends RefCounted
 ## while its particle sensor reads the sand. Bearings: each contact the
 ## Walker's log reads that a radio in its system hears whole, noted, and
 ## three crossing fix a place. Plugged into the Walker, it uploads its
-## evidence, and with all three tells taught it the anomaly. Its chart, centred on it,
-## draws the noted bearings as lines, the fix, the Rim, and once the Walker's
-## taught, the anomalies.
+## evidence, and with all three tells taught it the anomaly. Its chart is the
+## Map's navigation: the noted bearings as lines, the fix, Home, the course
+## and the Rim; once the Walker's taught, the Map's weather shows the anomalies.
 
 ## Noted bearings kept, the latest.
 const KEPT := 12
@@ -20,8 +20,6 @@ const MARGIN := 1.15
 const LEAST := 10000.0
 ## A bearing's line is drawn in this many steps along its half of the moon.
 const STEPS := 64
-## The anomalies on the radar's map and the chart: their hearts this near, m.
-const ANOMALY_REACH := 30000.0
 
 
 ## What its system witnesses now of an anomaly's tells, each kept once, and
@@ -186,11 +184,12 @@ static func anomalies(console: Console, reach: float) -> Array:
 	return out
 
 
-## The chart page: the moon round it, north up, out as far as what's on it,
-## each noted bearing a line from where the Walker stood along its half of
-## the moon, the fix where three cross, the Rim and Tu-ward; taught, the
-## anomalies. Places as metres east and south of it.
-static func model(console: Console, shown: Dictionary) -> void:
+## Navigation, as the Map lays it over: the moon round it north up, out as
+## far as what's on it; each noted bearing a line from where the Walker
+## stood along its half of the moon, that spot a dot; the fix where three
+## cross; Home where its beacon was last heard; the deck's course; the Rim
+## and Tu-ward. Places as metres east and south of it, and its rows.
+static func layer(console: Console) -> Dictionary:
 	var world := console.world
 	var radius := world.shape.history.radius
 	var here := point_of(console)
@@ -206,13 +205,26 @@ static func model(console: Console, shown: Dictionary) -> void:
 			points.append(flat.call(Sphere.toward(from, deg_to_rad(noted.brg), PI * i / STEPS)))
 		lines.append(points)
 		farthest = maxf(farthest, points[0].length())
+	var ahead := console._root().global_basis * Vector3.FORWARD
+	# The engine's axes turn with the moon's north; the chart's don't.
+	var chart := {"lines": lines, "rim": PackedVector2Array(),
+		"course": Vector2(ahead.x, ahead.z).normalized() * -world.moon.north().z}
+	var rows := PackedStringArray()
+	rows.append(Console._row("%d BEARINGS" % lines.size()) if not lines.is_empty() else Console._row("NO BEARINGS"))
 	var found := fix(console.bearings, world.tuning)
-	var chart := {"lines": lines, "rim": PackedVector2Array(), "anomalies": []}
 	if not found.is_empty():
 		chart["fix"] = flat.call(found.p)
 		farthest = maxf(farthest, (chart.fix as Vector2).length())
-	var reach := clampf(farthest * MARGIN, LEAST, PI * radius)
-	chart["reach"] = reach
+		rows.append(_place_row("FIX", chart.fix))
+	var home: Dictionary = world.home.nav() if world.home != null else {}
+	if not is_nan(home.get("metres", NAN)):
+		chart["home"] = Vector2(sin(home.bearing), -cos(home.bearing)) * home.metres
+		chart["live"] = home.live
+		farthest = maxf(farthest, home.metres)
+		rows.append(_place_row("HOME", chart.home))
+	rows.append(Console._row("EVIDENCE", "%d/3" % console.evidence.size()))
+	chart["rows"] = rows
+	chart["reach"] = clampf(farthest * MARGIN, LEAST, PI * radius)
 	var history := world.shape.history
 	chart["tu"] = flat.call(history.sub_tu)
 	var u := history.sub_tu.cross(Vector3(0.0, 0.0, 1.0))
@@ -221,14 +233,10 @@ static func model(console: Console, shown: Dictionary) -> void:
 	for i in 97:
 		var a := TAU * i / 96.0
 		(chart.rim as PackedVector2Array).append(flat.call(u * cos(a) + v * sin(a)))
-	if world.taught:
-		chart.anomalies = anomalies(console, reach)
-	shown["chart"] = chart
-	var rows := PackedStringArray()
-	rows.append("%d BEARINGS" % console.bearings.size() if not console.bearings.is_empty() else "NO BEARINGS")
-	if chart.has("fix"):
-		var at: Vector2 = chart.fix
-		rows.append("FIX %s %s" % [Console._distance(at.length()),
-			Console.POINTS[roundi(fposmod(rad_to_deg(atan2(at.x, -at.y)), 360.0) / 22.5) % 16]])
-	rows.append("EVIDENCE %d/3" % console.evidence.size())
-	shown["rows"] = rows
+	return chart
+
+
+## A place on the chart as a row: how far, and which way.
+static func _place_row(label: String, at: Vector2) -> String:
+	var far := Console._distance_parts(at.length())
+	return Console._row(label, far[0], far[1], Console.POINTS[roundi(fposmod(rad_to_deg(atan2(at.x, -at.y)), 360.0) / 22.5) % 16])
