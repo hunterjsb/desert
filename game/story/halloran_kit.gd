@@ -14,6 +14,7 @@ static func grade(x: float) -> float:
 static func pieces() -> Array[StructureKit.Piece]:
 	var p := StructureKit.define(&"halloran_route", Vector2(330.0, 44.0), Vector2.ZERO, Vector2.ZERO)
 	p.builds = HalloranSite
+	p.distributed_collision = true
 	p.apron = 100.0
 	p.fill = PackedFloat32Array([1.6, 0.65, 0.0])
 	p.age = Vector2(0.18, 0.35)

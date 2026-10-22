@@ -11,6 +11,23 @@ The [lore account](../world/lore-research.md#hallorans-decline-and-the-ban-on-th
 owns this history. Recorded as lore; its physical expression in the ruins remains
 unbuilt. The existing first-fire encounter below is unchanged.
 
+## Halloran collision repair (Hunter, 2026-10-22)
+
+> did you not bother to add collision to the ruins in halloran or did you just fuck it up?
+
+The walls and roofs must remain solid at both ends of the route, including after
+leaving and returning. Halloran's collision currently follows its centre chunk,
+which falls outside the near ring when the player visits the outer buildings.
+Distribute its solid pieces among their local terrain chunks; keep ordinary
+ruin ownership and the existing collision radius. Each piece has one owner,
+with the near ring covering its extent. Check real physics at both ends.
+
+**As built.** Halloran opts into per-solid chunk ownership for both building
+boxes and fitted pipe spans. Drawing remains with the original site; collision
+uses the same local shapes and transforms. The streamed physics regression
+(Kits 16) failed all six roof/wall checks with centre ownership, then passed
+in 15 s with local ownership, including the return to Aitch.
+
 ## Halloran: first fire (built, 2026-10-20)
 
 Build one connected playable route from Aitch through the Crossing to one Stoker furnace bay.
