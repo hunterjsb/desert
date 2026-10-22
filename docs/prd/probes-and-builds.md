@@ -24,6 +24,17 @@ mandatory so a changed asset cannot silently use an old imported resource.
 - Runner changes prove selection, exclusive scheduling and failure propagation in
   `scripts/probe-runner-test.sh`, beside the real-engine selftest.
 
+## CI speed pass (agreed 2026-10-22)
+
+*Hunter, 2026-10-21: “we really need to speed up these probe test and build times”;
+“we cannot compromise on reliability or performance.”*
+
+- Rebalance Linux folders using recent measured group times while keeping every probe,
+  threshold, failure path and build smoke check. Shorten simulated time only when the
+  same behavior and coverage remain proved; leave sampled real-frame, travel and
+  long-duration hazard checks intact when shortening them would weaken coverage.
+- Keep native platform grouping separate unless its own measurements support a change.
+
 ### As built
 
 The ruin-opening traversal runs at `set_rate(60, 6)` with every tour and per-tick
