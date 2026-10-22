@@ -108,6 +108,10 @@ func _route(with_kite: bool) -> Dictionary:
 		"%s consumes real battery energy and finishes before flat" % label)
 	check(payload.battery().charge_wh > 0.0 and payload.battery().charge_wh < payload_wh,
 		"%s pays for its payload hover without exhausting its battery" % label)
+	var spent := initial_wh - board.battery().charge_wh + payload_wh - payload.battery().charge_wh
+	# The power tick may still owe a fraction of one interval at the finish.
+	check(absf(result.total - spent) < 0.05,
+		"%s integrated components agree with both real battery withdrawals" % label)
 	player.set_physics_process(false)
 	var retired := world
 	if is_instance_valid(retired):
