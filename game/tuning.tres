@@ -480,5 +480,6 @@ airdrop_spin = 2.6
 airdrop_roll_share = 0.5
 airdrop_skid = Vector2(7, 3)
 airdrop_settle_seconds = 7.0
+airdrop_packed_share = 0.75
 
 }

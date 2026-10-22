@@ -1,8 +1,9 @@
 extends HandsProbe
-## Salvage probe 11: the care package never comes down inside something. A
-## spot taken by a structure when the cannon fires is passed over for a clear
-## one; a structure that stands under the fall by the time it lands is landed
-## on, not into. It brings its supplies.
+## Salvage probe 11: the care package never comes down inside something, and
+## brings loot that is the drop's own. A spot taken by a structure when the
+## cannon fires is passed over for a clear one; a structure that stands under
+## the fall by the time it lands is landed on, not into. The same drop fired
+## again holds the same loot, laid in its sockets.
 ## Time limit: 120 s
 
 
@@ -11,6 +12,7 @@ func run() -> void:
 	var t := world.time
 	var first := Airdrop.fire(world, world.player.global_position)
 	var spot := first.global_position
+	var held := _loot(first.cargo)
 	first.cargo.free()
 	first.free()
 	var hut := _block(spot, 1.0)
@@ -19,6 +21,9 @@ func run() -> void:
 	var drop := Airdrop.fire(world, world.player.global_position)
 	var flat := Vector2(drop.global_position.x - spot.x, drop.global_position.z - spot.z)
 	check(flat.length() > 1.5, "a spot a structure stands on is passed over for another (%.1f m away)" % flat.length())
+	print("loot: %s" % [held])
+	check(held.size() >= Airdrop.LEAST and _loot(drop.cargo) == held,
+		"it holds loot, and the same drop holds the same")
 
 	# A structure moves in under the fall while it's on its way down.
 	hut.free()
@@ -26,10 +31,11 @@ func run() -> void:
 	_block(drop.global_position, 1.0)
 	await physics_frames(2)
 	var cargo := drop.cargo
-	var fitted := cargo.frame_sockets().filter(func(s: Socket) -> bool: return s.part != null)
-	check(fitted.size() == Airdrop.SUPPLIES.size(), "it brings its supplies (%d)" % fitted.size())
 	world.time = drop.lands_at + 0.05
-	await physics_frames(3)
+	for i in 60:
+		await get_tree().process_frame
+		if drop.landed:
+			break
 	var lowest := INF
 	for child in cargo.get_children():
 		var shape := child as CollisionShape3D
@@ -39,6 +45,15 @@ func run() -> void:
 				lowest = minf(lowest, (cargo.global_transform * shape.transform * box.get_endpoint(i)).y)
 	print("landed lowest corner %.2f m against the structure's top %.2f m" % [lowest, top])
 	check(drop.landed and lowest > top - 0.02, "it lands on what stands there, not inside it")
+
+
+## What a container holds, socket by socket.
+func _loot(cargo: Device) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for socket in cargo.frame_sockets():
+		if socket.part != null:
+			out.append(socket.part.get_meta(&"catalog"))
+	return out
 
 
 ## A solid block over the sand at a place, `tall` m high.

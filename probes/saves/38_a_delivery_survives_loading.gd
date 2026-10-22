@@ -25,6 +25,7 @@ func run() -> void:
 		check(drop.fired_at == fired and drop.lands_at == lands and drop.landed == landed and drop._boomed == boom
 			and is_instance_valid(drop.cargo) and drop.cargo.freeze == not landed,
 			"its clock, impact and cargo survive without another cannon shot")
+	var held := drop.cargo.frame_sockets().filter(func(s: Socket) -> bool: return s.part != null).size()
 	world.time = drop.lands_at + world.tuning.airdrop_settle_seconds + 0.1
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -34,4 +35,4 @@ func run() -> void:
 	check(cargo.size() == 1, "released cargo remains a single ordinary saved container")
 	if cargo.size() == 1:
 		var packed := (cargo[0] as Device).frame_sockets().filter(func(s: Socket) -> bool: return s.part != null)
-		check(packed.size() == Airdrop.SUPPLIES.size(), "with its supplies still in it")
+		check(held >= Airdrop.LEAST and packed.size() == held, "with its loot still in it")

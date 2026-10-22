@@ -1633,3 +1633,5 @@ static func current() -> Tuning:
 @export var airdrop_skid: Vector2 = Vector2(7.0, 3.0)
 ## It lingers this long after the hit, s, for its sand to settle.
 @export var airdrop_settle_seconds: float = 7.0
+## Each of its sockets holds something this often (salvage's loot fills it).
+@export var airdrop_packed_share: float = 0.75

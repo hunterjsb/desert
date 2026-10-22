@@ -506,8 +506,8 @@ const DEVICES := {
 	&"antenna_reel": {"label": "Antenna reel", "size": Vector3(0.14, 0.12, 0.08), "mass": 0.8, "antenna_reel": true,
 		"carryable": true, "sticks": true, "sockets": []},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
-	# What the deliveryship's cannon fires down (Airdrop): a drop container, its
-	# supplies strapped in a row along its flank, to take as from any kit.
+	# What the deliveryship's cannon fires down (Airdrop): a drop container, what
+	# it brings strapped in a row along its flank, to take as from any kit.
 	&"cargo": {"label": "Cargo container", "size": Vector3(0.8, 0.8, 1.3), "mass": 80.0,
 		"sockets": [
 			[&"water", Vector3(0.4, 0.18, -0.42), Vector3.RIGHT],

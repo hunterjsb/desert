@@ -746,8 +746,13 @@ docs or commands/code to call it deliveryship," and "needs to be much much highe
 - **The hit.** A cloud of sand thrown up and swelling, 420 lit puffs 3 to 9 m across, and a ring of it
   thrown out along the ground, 220 more; the impact's boom, a clang and a thud. The container is a body
   again (catalog `cargo`, 80 kg, an orange shell banded in black), its beacon still blinking; after 7 s the
-  drop lets it go into the world. Strapped along its flank, as any kit holds them: two sealed water
-  canisters, two rations, a med kit and a full battery, taken out by hand (`Airdrop.SUPPLIES`).
+  drop lets it go into the world.
+- **What's inside** (Hunter, 2026-10-22: "might add random loot"). Random loot from salvage's own
+  tables: each socket along its flank (water, food, medicine, battery) takes, by weight, what fits it
+  from every era's shelves and caches (`SiteLoot`), at least two of them filled. The pull is seeded by
+  the run and the moment the cannon fired, as the landing spot is, so the same drop always holds the
+  same and nothing more is saved. Company stock: sealed, lately charged. It is laid in the sockets and
+  taken out by hand, never granted. Flares stay in salvage's loot.
 - **Where it lands.** Never inside something: the spot first picked is passed over for the first clear
   one round the flare if anything stands there when the cannon fires, and if a camp moves under the
   fall it lands on top of it, felt for by a shape cast of its own box.
@@ -762,11 +767,11 @@ docs or commands/code to call it deliveryship," and "needs to be much much highe
   since it flies 30 km up; 30 s before): light the flare as it comes over. `deliveryship` and `clear_skies`
   still reach it.
 - **Probes:** salvage 9 (the deliveryship's care package), 10 (the deliveryship forced over) and 11 (it lands
-  clear, and brings its supplies). **Look-test:** `look/airdrop`, by day: the trail, the
+  clear, and the same drop holds the same loot). **Look-test:** `look/airdrop`, by day: the trail, the
   fall, the hit, the cloud and its settling.
 - **Fixed in passing:** a billboard particle drops its scale unless told to keep it, so puffs sized in
   metres came out all the same small size (`billboard_keep_scale`).
-- **Saves:** an active drop saves mid-fall and after the hit (saves 38), supplies included.
+- **Saves:** an active drop saves mid-fall and after the hit (saves 38), its loot included.
 
 ## Exposed wreck surfaces (Hunter, 2026-10-20; built)
 

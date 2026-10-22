@@ -36,8 +36,8 @@ const IMPACT_M := 30.0
 const TRAIL_SIZE := Vector2(10.0, 22.0)
 const TRAIL_FULL_M := 600.0
 const TRAIL_LEAST := 0.1
-## What it brings, socket by socket in the container's own order (Catalog).
-const SUPPLIES := [&"canister", &"canister", &"ration", &"ration", &"med_kit", &"battery"]
+## At least this many of its sockets hold something.
+const LEAST := 2
 ## A landing is tried this many ways round the flare before settling for the
 ## first; and is felt for from this high over it, m.
 const TRIES := 12
@@ -166,14 +166,36 @@ func _launch(craft: Dictionary, t: float) -> void:
 	_fly(t)
 
 
-## Its supplies, sealed and full, in their sockets.
+## Hunter: "might add random loot". It holds a pull of salvage's own tables,
+## seeded by the run and the moment it fired as the landing is: the same drop
+## always holds the same, so nothing more is saved, and it's only laid in its
+## sockets, never granted.
 func _pack() -> void:
+	var loot := hash([_world.run_seed, "airdrop", roundi(fired_at)])
 	var sockets := cargo.frame_sockets()
-	for i in mini(SUPPLIES.size(), sockets.size()):
-		var supply := Catalog.part(SUPPLIES[i])
-		if supply is Supply:
-			(supply as Supply).seal()
-		cargo.fit(supply, sockets[i])
+	var laid := 0
+	for i in sockets.size():
+		var rng := SiteLoot._stream(loot, i, "cargo")
+		if rng.randf() >= _world.tuning.airdrop_packed_share and sockets.size() - i > LEAST - laid:
+			continue
+		var id := pull(rng, sockets[i].kind)
+		if id == &"":
+			continue
+		# Company stock, sealed and lately charged: a find from deep, not the weather.
+		cargo.fit(Finds._part(id, rng.randf_range(0.6, 1.0), Finds.DEEP, true), sockets[i])
+		laid += 1
+
+
+## One thing a socket of this kind takes, by weight from every era's shelves
+## and caches (SiteLoot); none if nothing there fits it.
+static func pull(rng: RandomNumberGenerator, kind: StringName) -> StringName:
+	var table: Array = []
+	for era: Dictionary in SiteLoot.ERAS.values():
+		for row: StringName in [SiteLoot.SHELF, SiteLoot.CACHE]:
+			for entry: Array in era.get(row, []):
+				if Catalog.PARTS.has(entry[0]) and Catalog.PARTS[entry[0]].kind == kind:
+					table.append(entry)
+	return Finds._pick(rng, table) if not table.is_empty() else &""
 
 
 ## Only effects: loading a drop must not fire the cannon or play an impact again.
