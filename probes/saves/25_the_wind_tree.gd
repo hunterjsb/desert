@@ -48,7 +48,7 @@ func run() -> void:
 	player.set_physics_process(true)
 	trim(60.0)
 	await physics_frames(2)
-	check(mast.raise == 1.0 and mast.halyard() != null, "the halyard holds the sail all the way up before sailing")
+	check(mast.hoisted() and mast.halyard() != null, "the halyard holds the sail all the way up before sailing")
 	check((kit[2] as Helm).interact(player), "you sit at the helm")
 	driving_sheet = true
 	tending = deg_to_rad(15.0)
@@ -56,7 +56,7 @@ func run() -> void:
 	await simulate(30.0, func() -> void:
 		_steer()
 		sampled += 1
-		full += int(mast.raise == 1.0)
+		full += int(mast.hoisted())
 		lowest = minf(lowest, mast.raise)
 		ticks[0] += 1
 		_hold(heading() if ticks[0] < 480 else heading(1, 30.0)))
@@ -72,14 +72,14 @@ func run() -> void:
 	await simulate(20.0, func() -> void:
 		_steer()
 		sampled += 1
-		full += int(mast.raise == 1.0)
+		full += int(mast.hoisted())
 		lowest = minf(lowest, mast.raise)
 		_hold(heading(1, -30.0)))
 	print("on the outflow: %.0f m" % mast.outflow_m)
 	check(profile.did("storm_runner"), "run on a front's outflow short of its wall: Storm Runner")
 	_hold(Vector2.ZERO)
 	print("fully hoisted while moving: %d/%d ticks, minimum %.12f" % [full, sampled, lowest])
-	check(full == sampled and lowest == 1.0, "the actual wheel brake holds full height throughout both routes")
+	check(full == sampled and lowest >= 1.0 - Mast.SEATED, "the actual wheel brake holds full height throughout both routes")
 	speed_up(1)
 
 

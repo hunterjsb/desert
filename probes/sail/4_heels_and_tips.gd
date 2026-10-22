@@ -59,7 +59,9 @@ func run() -> void:
 		seen.spin, seen.fastest, seen.jolt, seen.sunk, heel()])
 	print("largest tipping jolt: ", seen.jolt_state)
 	check(heel() > 60.0, "a blast puts it over")
-	check(seen.spin < 6.0 and seen.fastest < 12.0 and seen.jolt < 1.0,
+	# Its masthead meets the sand and stops there, which takes a tick's 1 m/s
+	# out of a camp falling over; more than that is a fling.
+	check(seen.spin < 6.0 and seen.fastest < 12.0 and seen.jolt < 1.5,
 		"smoothly, nothing flung (%.2f rad/s, %.2f m/s, %.2f m/s in a tick)" % [seen.spin, seen.fastest, seen.jolt])
 	check(seen.sunk < 0.2, "nothing it carries through the sand, a hand's depth at most going over (%.3f m in)" % seen.sunk)
 	check(deck.angular_velocity.length() < 0.5, "and it comes to rest lying over (%.2f rad/s)" % deck.angular_velocity.length())

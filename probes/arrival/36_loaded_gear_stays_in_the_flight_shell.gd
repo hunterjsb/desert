@@ -14,7 +14,7 @@ func run() -> void:
 	var board := nodes[&"board"] as Device
 	Stick.put(ship.pod.deck, ship.pod_parts[&"side_back_b"], Chassis.TOP, Vector2.ZERO, PI * 0.5, board)
 	await physics_frames(2)
-	var sealed := PreflightCargo.seal(world, ship, state, world.tuning.surveyor_preflight.profiles.shallow)
+	var sealed := PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"shallow"))
 	check(not sealed.is_empty(), "actual stores and fitted external board seal")
 	if sealed.is_empty(): return
 	var selected := ship.pod_parts.duplicate()

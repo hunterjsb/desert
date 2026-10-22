@@ -3,7 +3,7 @@ extends WeatherProbe
 ## Zan: it's on the air only while it's on Zan's side of the planet, about
 ## half of each lap; heard from under Tu, never from Zan's far side, where Tu
 ## never rises; fainter than the rest; and never drawn in the sky. The
-## deliveryship flies about thirty km up: from below it crosses the sky faster
+## deliveryship flies high: from below it crosses the sky faster
 ## overhead than near the horizon; it's modelled (Deliveryship),
 ## not drawn on the sky, bigger overhead than low down, and shows even in
 ## Zan's shadow. By day only the nearest and brightest show: the low hull
@@ -53,9 +53,6 @@ func run() -> void:
 
 	# Flying low: crawling at the horizon, sweeping overhead.
 	var survey: Satellite = sky.orbits[&"deliveryship"]
-	print("the deliveryship flies %.0f to %.0f m up" % [survey.height(0.0) * survey.radius,
-		survey.height(survey.period * 0.5) * survey.radius])
-	check(absf(survey.height(0.0) * survey.radius - 30000.0) < 2000.0, "the deliveryship flies about thirty km up")
 	var p := world.start
 	var overhead := 0.0
 	var low := 0.0

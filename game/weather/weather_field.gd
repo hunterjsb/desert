@@ -31,9 +31,10 @@ var _mean: Vector2
 var _sway: Array[Vector3] = []
 var _generated_mean := Vector2.ZERO
 var _generated_sway: Array[Vector3] = []
-var _wind_from := 0.0
-var _wind_drift := Vector2.ZERO
-var _wind_changed := false
+## A dev wind applies from its moment on, as [from, drift there, mean, sway]:
+## before it the seed's own wind still holds, so the history behind you never
+## changes. Never saved: a resumed run has the seed's wind again.
+var _overrides: Array = []
 ## The anomaly's lattice: patches of the moving air, spans of time, and the
 ## chance each pair holds one (anomalies_near).
 var _seed: int
@@ -110,41 +111,44 @@ static func _heading(rng: RandomNumberGenerator) -> float:
 
 ## How far the air, and every storm in it, has moved since the run began.
 func drift_at(t: float) -> Vector2:
-	var d := _wind_drift + _mean * (t - _wind_from)
-	for s in _sway:
-		d += Vector2(sin(s.y * t + s.z) - sin(s.y * _wind_from + s.z),
-			cos(s.y * _wind_from + s.z) - cos(s.y * t + s.z)) * (s.x / s.y)
+	var o := _override_at(t)
+	if o.is_empty():
+		return _drift(Vector2.ZERO, 0.0, _generated_mean, _generated_sway, t)
+	return _drift(o[1], o[0], o[2], o[3], t)
+
+
+static func _drift(from_drift: Vector2, from: float, mean: Vector2, sway: Array[Vector3], t: float) -> Vector2:
+	var d := from_drift + mean * (t - from)
+	for s in sway:
+		d += Vector2(sin(s.y * t + s.z) - sin(s.y * from + s.z),
+			cos(s.y * from + s.z) - cos(s.y * t + s.z)) * (s.x / s.y)
 	return d
 
 
-## Change the test wind without teleporting the storm field it carries.
+func _override_at(t: float) -> Array:
+	for i in range(_overrides.size() - 1, -1, -1):
+		if t >= _overrides[i][0]:
+			return _overrides[i]
+	return []
+
+
+## Change the test wind from moment t on, without teleporting the storm field it carries.
 func set_test_wind(velocity: Vector2, t: float, reset := false) -> void:
 	var was := drift_at(t)
-	_mean = _generated_mean if reset else velocity
-	_sway.assign(_generated_sway if reset else [])
-	_wind_from = t
-	_wind_drift = was
-	_wind_changed = true
-
-
-func wind_state() -> Dictionary:
-	return {"mean": _mean, "sway": _sway.duplicate(), "at": _wind_from, "drift": _wind_drift} if _wind_changed else {}
-
-
-func restore_wind(state: Dictionary) -> void:
-	if state.is_empty():
-		return
-	_mean = state.mean
-	_sway.assign(state.sway)
-	_wind_from = state.at
-	_wind_drift = state.drift
-	_wind_changed = true
+	while not _overrides.is_empty() and _overrides[-1][0] >= t:
+		_overrides.pop_back()
+	var sway: Array[Vector3] = []
+	if reset:
+		sway.assign(_generated_sway)
+	_overrides.append([t, was, _generated_mean if reset else velocity, sway])
 
 
 ## The prevailing wind, m/s, in world x and z. Storms ride it.
 func prevailing_at(t: float) -> Vector2:
-	var v := _mean
-	for s in _sway:
+	var o := _override_at(t)
+	var v: Vector2 = _generated_mean if o.is_empty() else o[2]
+	var sway: Array[Vector3] = _generated_sway if o.is_empty() else o[3]
+	for s in sway:
 		v += Vector2.from_angle(s.y * t + s.z) * s.x
 	return v
 

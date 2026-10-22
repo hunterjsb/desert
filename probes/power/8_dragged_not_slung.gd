@@ -16,6 +16,9 @@ const STARTS := [[0.0, 0.0, -45.0, 2.0], [0.0, 0.0, 0.0, 1.0], [-3.0, 1.0, -45.0
 ## Closing on the port faster than this, m/s, the cable slung it: past the
 ## rope's closing speed, a tick's push it can't see coming.
 const FLUNG := 5.0
+## A sling is the cable's own pull: what the plug does this soon after the
+## cable last pulled it, s, is the cable's doing; later it's the wind's.
+const SLING := 0.05
 const SECONDS := 3.0
 
 var _wind: RopeWind
@@ -58,14 +61,19 @@ func _dragged(start: Array, downwind: Vector3, upwind: float) -> void:
 	planter.fit(fitted, planter.sockets().filter(func(s: Socket) -> bool: return s.kind == &"port")[0])
 	var plug := cable.plugs[0]
 	var port: RopeEnd = cable.rope.b
-	var seen := {"closing": -INF, "fastest": 0.0, "port": 0.0, "stretched": 0.0}
+	var seen := {"closing": -INF, "fastest": 0.0, "port": 0.0, "stretched": 0.0, "pulled": -INF}
 	for i in roundi(SECONDS * Engine.physics_ticks_per_second):
 		await get_tree().physics_frame
 		# The port whirls as the planter turns: that's what drags the plug.
 		var centre := planter.global_transform * planter.center_of_mass
 		var dragging := planter.linear_velocity + planter.angular_velocity.cross(port.global_position - centre)
 		var along := (port.global_position - plug.global_position).normalized()
-		seen.closing = maxf(seen.closing, (plug.linear_velocity - dragging).dot(along))
+		# Only the cable slings it: while it pulls, or the moment after. A
+		# whirling planter swinging its port at a slack plug is no sling.
+		if cable.rope != null and cable.rope.tension > 0.0:
+			seen.pulled = i
+		if i - seen.pulled <= SLING * Engine.physics_ticks_per_second:
+			seen.closing = maxf(seen.closing, (plug.linear_velocity - dragging).dot(along))
 		seen.fastest = maxf(seen.fastest, Vector2(plug.linear_velocity.x, plug.linear_velocity.z).length())
 		seen.port = maxf(seen.port, Vector2(dragging.x, dragging.z).length())
 		seen.stretched = maxf(seen.stretched, plug.global_position.distance_to(port.global_position) / cable.length)

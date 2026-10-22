@@ -25,7 +25,7 @@ func run() -> void:
 	world.player.suit.show_view(true)
 	world.player.suit._home_view.show_home()
 	await shot(out, "return")
-	print("HOME METRICS chunks=%d collision=%d members=%d items=%d terrain_max_ms=%.2f" % [world.terrain._chunks.size(), world.terrain.collision_count(), world.home.members.size(), world.home.item_count, world.terrain.slowest_frame_ms])
+	print("HOME METRICS chunks=%d collision=%d members=%d items=%d terrain_max_ms=%.2f" % [world.terrain._chunks.size(), world.terrain.collision_count(), world.home.members.size(), world.home.work_count(), world.terrain.slowest_frame_ms])
 
 func shot(out: String, name: String) -> void:
 	await physics_frames(8)

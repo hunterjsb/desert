@@ -1,5 +1,5 @@
 extends WorldProbe
-## Exclusive on noisy runners
+## Exclusive
 ## Structure kits probe 3: a loaded site changes as a storm works on it,
 ## smoothly, and never buries you. A house ruin stood by hand where a storm
 ## will lay it bare, its ground built while it's under the sand, watched from
@@ -14,7 +14,7 @@ extends WorldProbe
 
 const KIND := &"house_ruin"
 ## Seconds of weather a frame as you watch.
-const WARP := 6.0
+const WARP := 3.0
 
 
 func run() -> void:

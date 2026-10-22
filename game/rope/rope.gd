@@ -60,9 +60,10 @@ var gives := Callable()
 ## whatever owns it takes some of the line in another way, as a sheet hauls
 ## its sail in; returns what's left of the step for the line itself.
 var hauls := Callable()
-## While it takes the line in that way: what that pulls against, N, and how
-## much of it lies gathered on you from there, m.
-var haul_n := 0.0
+## A load hung on the line between its ends, N, as a halyard bears its
+## sail's cloth: part of its pull and of what breaks it, though no body is
+## pushed by it. And how much line a haul lies gathered on you, m.
+var carried_n := 0.0
 var haul_gathered := 0.0
 
 ## Pull this tick, never past breaking; what holding would have taken; and
@@ -199,6 +200,10 @@ func prepare(h: float, gravity: float) -> void:
 		for entry: Array in _response:
 			if entry[0] == points[i]:
 				k += linear[i].dot(entry[1]) + angular[i].dot(entry[2])
+	# Every end on one rigid body: the line can't move them apart, so it pulls
+	# only with what it carries, and what's summed above is rounding, not mass.
+	if body_a == body_b and (through == null or body_p == body_a):
+		k = 0.0
 	_mass = 1.0 / k if k > 1e-9 else 0.0
 	if h != _h or _stop == Vector3.ZERO:
 		_stop = soft_step(STOP_HERTZ, STOP_DAMPING, h)

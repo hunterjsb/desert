@@ -16,19 +16,19 @@ var _leaving := false
 var _modal_suspended := false
 var _previous_mouse := Input.MOUSE_MODE_CAPTURED
 var _saved_fov := 75.0
-var _body_was_visible := true
-var _feel_was_processing := true
+var _hold: PlayerHold
 const PIXELS := Vector2i(1152, 680)
 
-func setup(world: World, ship: SurveyorShip, plan: Dictionary, changed: Callable) -> void:
+func setup(world: World, ship: SurveyorShip, preflight: SurveyorPreflight) -> void:
 	_world = world
 	_ship = ship
+	_hold = PlayerHold.new(world.player)
 	viewport.size = PIXELS
 	viewport.handle_input_locally = true
 	viewport.gui_disable_input = false
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	add_child(viewport)
-	ui.setup(world, plan, changed)
+	ui.setup(world, preflight)
 	ui.size = PIXELS
 	viewport.add_child(ui)
 	ui.closed.connect(leave)
@@ -47,11 +47,7 @@ func enter() -> void:
 	if focused:
 		return
 	focused = true
-	_world.player.hands.display_focused = true
-	_feel_was_processing = _world.player.feel.is_processing()
-	_world.player.feel.set_process(false)
-	_body_was_visible = _world.player.body.visible
-	_world.player.body.hide()
+	_hold.take(PlayerHold.EYE | PlayerHold.FOCUS | PlayerHold.BODY)
 	_leaving = false
 	_previous_mouse = Input.mouse_mode
 	_return_pose = _world.player.camera.global_transform
@@ -85,14 +81,12 @@ func _process(delta: float) -> void:
 		_modal_suspended = false
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if not _leaving else _previous_mouse
 		ui.set_focused(not _leaving)
-	var seconds := float(_world.tuning.surveyor_preflight.get("computer_focus_s", 0.45))
+	var seconds := _world.tuning.arrival_computer_focus_s
 	_transition = minf(_transition + delta / maxf(seconds, 0.001), 1.0)
 	_world.player.camera.global_transform = _start_pose.interpolate_with(_target_pose, smoothstep(0.0, 1.0, _transition))
 	if _leaving and _transition >= 1.0:
 		focused = false
-		_world.player.feel.set_process(_feel_was_processing)
-		_world.player.hands.display_focused = false
-		_world.player.body.visible = _body_was_visible
+		_hold.release()
 		_world.player.camera.fov = _saved_fov
 		closed.emit()
 
@@ -129,16 +123,13 @@ func dispose() -> void:
 	if focused and is_instance_valid(_world) and is_instance_valid(_world.player):
 		_world.player.camera.global_transform = _return_pose
 		Input.mouse_mode = _previous_mouse
-		_world.player.feel.set_process(_feel_was_processing)
-		_world.player.hands.display_focused = false
-		_world.player.body.visible = _body_was_visible
+	if _hold != null:
+		_hold.release()
 	focused = false
 	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	queue_free()
 
 func _exit_tree() -> void:
 	if focused and is_instance_valid(_world) and is_instance_valid(_world.player):
-		_world.player.feel.set_process(_feel_was_processing)
-		_world.player.hands.display_focused = false
-		_world.player.body.visible = _body_was_visible
+		_hold.release()
 		Input.mouse_mode = _previous_mouse

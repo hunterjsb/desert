@@ -6,8 +6,9 @@ extends Node3D
 ## back into them. Tying is instant; untying takes a moment, so a gust can
 ## catch you still tied on. The first sail's sheet tied here teaches its how-to.
 
-## Where things tied on sit, in your own frame.
-const AT := Vector3(0.0, 0.95, -0.15)
+## Where things tied on sit, in your own frame: the knot at the front of the
+## suit's belt, so a line pulls where it's seen to be tied.
+const AT := SurveyorLooks.HIPS + Vector3(0.0, 0.0, Body.EYES_AHEAD) + SurveyorLooks.WAIST_KNOT
 
 ## What's tied on: line ends, or a stake with its lines.
 var tied: Array[RigidBody3D] = []
@@ -50,7 +51,7 @@ func tie(body: RigidBody3D) -> void:
 	body.collision_mask = 0
 	tied.append(body)
 	_place()
-	_player.world.ropes._towing()
+	_player.world.ropes.count_towed()
 	_sheet_on.call_deferred(body)
 
 
@@ -112,8 +113,7 @@ func release_all() -> bool:
 func release_readout() -> String:
 	if untying < 0.0 or _to_hand:
 		return ""
-	var what := "all waist lines" if _only.is_empty() else "waist lines"
-	return "Releasing %s · %.1f s · still tied" % [what, maxf(untying, 0.0)]
+	return "Releasing waist lines · %.1f s" % maxf(untying, 0.0)
 
 
 func release_progress() -> float:
@@ -221,8 +221,9 @@ func _undone() -> void:
 					and is_instance_valid(_taking) and tied.has(_taking):
 				var end := untie(_taking) as Part
 				if RopeBundle.gather(_gather_primary, end):
+					Deeds.done(_player.world, &"gather_lines")
 					hands.refresh_held_shape()
-					_player.world.ropes._towing()
+					_player.world.ropes.count_towed()
 				else:
 					tie(end)
 			_bundle_take = false

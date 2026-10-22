@@ -55,7 +55,7 @@ func run() -> void:
 	radio.on = true
 	radio.frequency = 1040.0
 	check(Hands.describe("Radio", radio.stats()).ends_with("1040 kHz"), "unmarked, the frequency alone")
-	Profile.mark(1040.0, "Windsock", Color.CYAN, 1.0)
+	DialMarks.add(world, 1040.0, "Windsock", Color.CYAN, 1.0)
 	print("marked: \"%s\"" % Hands.describe("Radio", radio.stats()))
 	check(radio.stats().tuned == "1040 kHz · Windsock", "marked, the look-at line names the mark too")
 	radio.frequency = 1042.0

@@ -1,119 +1,6 @@
 class_name SurveyorRecovery
 extends RefCounted
-## Materialize resolved survivors once. Taking them remains the normal hands action.
-
-static func materialize(world: World, state: Dictionary) -> Dictionary:
-	var existing := named(world)
-	if state.get("materialized", false) or not existing.is_empty():
-		return existing
-	if not state.has("landing_world") or not state.has("structure") or not state.has("equipment"):
-		return {}
-	var survivors := {}
-	for entry: Dictionary in state.structure:
-		survivors[StringName(entry.uid)] = bool(entry.survives)
-	if not survivors.get(&"floor_a", false) or not survivors.get(&"floor_b", false):
-		return {}
-	var at: Vector2 = state.landing_world
-	if not world.terrain.has_collision_at(at.x, at.y):
-		return {}
-	var rules := world.tuning.surveyor_arrival
-	var gap := float(rules.get("spill_gap_m", 0.18))
-	var clearance := float(rules.get("landing_clearance_m", 0.04))
-	var heading := float(state.get("heading", 0.0))
-	var facing := Basis(Vector3.UP, heading)
-	var origin := Vector3(world.engine_x(at.x), 0.0, world.engine_z(at.y))
-	var height := -INF
-	for x in [-Chassis.WIDTH * 0.5 - Chassis.THICK, Chassis.WIDTH * 1.5 + Chassis.THICK]:
-		for z in [-Chassis.WIDTH * 0.5 - Chassis.THICK, Chassis.WIDTH * 0.5 + Chassis.THICK]:
-			height = maxf(height, world.height_under(origin + facing * Vector3(x, 0, z)))
-	origin.y = height + Chassis.THICK * 0.5 + clearance
-	var before := {}
-	for child in world.content.get_children():
-		before[child.get_instance_id()] = true
-	var rig := PodShell.build(world.content, Transform3D(facing, origin), survivors)
-	var objects := rig.named.duplicate()
-	var reserved: Array[AABB] = []
-	# The actual capsule reserves a clear player footprint at the controller's exit.
-	var exit_world: Vector2 = state.get("exit_world", at + Vector2(-3.2, 0).rotated(-heading))
-	var exit_at := Vector3(world.engine_x(exit_world.x), world.height_at(exit_world.x, exit_world.y), world.engine_z(exit_world.y))
-	reserved.append((Transform3D(Basis.IDENTITY, exit_at) * Hands._shapes_box(world.player.get_children())).grow(gap))
-	for shape in rig.deck.get_children():
-		if shape is CollisionShape3D and shape.shape != null:
-			reserved.append(shape.global_transform * Catalog.bounds(shape.shape))
-	var placements := {}
-	# Roof and end hatch become real loose recovery panels before the player stands.
-	for role in [&"roof_a", &"hatch"]:
-		if objects.has(role):
-			var panel := rig.deck.detach(objects[role])
-			if not _spill(world, panel, facing, origin, reserved, gap, clearance, rules):
-				return _abort(world, before)
-			placements[role] = &"opened"
-	for entry: Dictionary in state.structure:
-		if not entry.survives:
-			continue
-		var uid := StringName(entry.uid)
-		var body: RigidBody3D = objects.get(uid)
-		if body == null:
-			body = Catalog.part(entry.id) if Catalog.PARTS.has(entry.id) else Catalog.device(entry.id)
-			world.content.add_child(body)
-			objects[uid] = body
-			if not _spill(world, body, facing, origin, reserved, gap, clearance, rules):
-				return _abort(world, before)
-			placements[uid] = &"spill"
-		else:
-			placements.get_or_add(uid, &"joined")
-		body.set_meta(&"arrival_uid", uid)
-		_apply(body, entry.get("state", {}))
-		if body is Chassis:
-			PodShell.restore_skin(body, &"heatshield" if uid in [&"floor_a", &"floor_b"] else &"armor")
-	# A joined deck shares the least sound of its real structural pieces.
-	for panel in rig.deck.joined:
-		rig.deck.durability = minf(rig.deck.durability, panel.durability)
-	rig.deck.show_wear()
-	for panel in rig.deck.pieces():
-		PodShell.restore_skin(panel)
-	var equipment := {}
-	for entry: Dictionary in state.equipment:
-		if not entry.survives:
-			continue
-		var uid := StringName(entry.uid)
-		var body: RigidBody3D
-		if entry.id == &"stake":
-			body = Catalog.stake()
-		elif entry.id == &"coil":
-			body = Line.make(world, entry.state.metres).coil
-		else:
-			body = Catalog.part(entry.id) if Catalog.PARTS.has(entry.id) else Catalog.device(entry.id)
-		if body.get_parent() == null:
-			world.content.add_child(body)
-		body.global_position = origin + Vector3.UP * Frame.TALL * 4.0
-		body.set_meta(&"arrival_uid", uid)
-		_apply(body, entry.get("state", {}))
-		objects[uid] = body
-		equipment[uid] = entry
-	if objects.has(&"board") and objects.has(&"board_cell"):
-		var board := objects[&"board"] as Device
-		for socket in board.sockets():
-			if socket.kind == &"battery" and socket.is_open():
-				board.fit(objects[&"board_cell"], socket)
-				placements[&"board_cell"] = &"fitted"
-				break
-	var order: Array = state.get("cargo_order", equipment.keys())
-	for uid: StringName in order:
-		if not equipment.has(uid) or placements.has(uid):
-			continue
-		var body := objects[uid] as RigidBody3D
-		var turn := facing * Basis(Vector3.UP, PI * 0.5) if uid == &"board" else facing
-		if _stow(world, body, turn, rig.deck, reserved, gap, clearance):
-			placements[uid] = &"pod"
-		elif _spill(world, body, turn, origin, reserved, gap, clearance, rules):
-			placements[uid] = &"spill"
-		else:
-			return _abort(world, before)
-	state["placements"] = placements
-	state["materialized"] = true
-	return objects
-
+## Lands the sealed pod's surviving bodies once. Taking them remains the normal hands action.
 
 ## Parts seated off-tree, joined panels and carried cargo still retain their roles.
 static func named(world: World) -> Dictionary:
@@ -136,41 +23,22 @@ static func named(world: World) -> Dictionary:
 	return out
 
 
+## Impact wear lands on the real body; charge and contents stay as they were packed.
 static func _apply(body: RigidBody3D, state: Dictionary) -> void:
 	if body is Device and state.has("durability"):
 		body.durability = state.durability
 		body.show_wear()
-	if body is Battery and state.has("charge_fraction"):
-		body.charge_wh = body.capacity() * state.charge_fraction
-		body.show_charge()
-	if body is Supply and state.has("fill_fraction"):
-		body.drain(body.amount * (1.0 - state.fill_fraction))
 
 
-static func _box(body: RigidBody3D) -> AABB:
+static func bounds_of(body: RigidBody3D) -> AABB:
 	return body.shape_bounds() if body is Device else Hands._box_of(body)
 
 
-static func _stow(world: World, body: RigidBody3D, facing: Basis, deck: Chassis, reserved: Array[AABB], gap: float, clearance: float) -> bool:
-	var local := Transform3D(facing, Vector3.ZERO) * _box(body)
-	for x in [-0.2, 0.2, 0.8, 1.2]:
-		for z in [-0.22, 0.22, 0.0]:
-			var at := deck.global_transform * Vector3(x, 0, z)
-			at.y = deck.global_position.y + Chassis.THICK * 0.5 - local.position.y + clearance
-			var pose := Transform3D(facing, at)
-			var inside := AABB(Vector3(-0.45, Chassis.THICK * 0.5, -0.45), Vector3(1.9, Frame.TALL - Chassis.THICK, 0.9))
-			if not inside.encloses((deck.global_transform.affine_inverse() * pose) * _box(body)):
-				continue
-			if _put(world, body, pose, reserved, gap):
-				return true
-	return false
-
-
-static func _spill(world: World, body: RigidBody3D, facing: Basis, origin: Vector3, reserved: Array[AABB], gap: float, clearance: float, rules: Dictionary) -> bool:
-	var local := Transform3D(facing, Vector3.ZERO) * _box(body)
+static func _spill(world: World, body: RigidBody3D, facing: Basis, origin: Vector3, reserved: Array[AABB], gap: float, clearance: float, rules: Tuning) -> bool:
+	var local := Transform3D(facing, Vector3.ZERO) * bounds_of(body)
 	var pitch := maxf(local.size.x, local.size.z) + gap
-	var columns := maxi(1, int(rules.get("spill_columns", 5)))
-	for i in int(rules.get("spill_attempts", 80)):
+	var columns := maxi(1, rules.arrival_spill_columns)
+	for i in rules.arrival_spill_attempts:
 		var offset := Vector3((i % columns - columns / 2) * pitch, 0, (i / columns + 1) * pitch + Chassis.WIDTH * 0.5 + gap)
 		var at := origin + facing * offset
 		var high := -INF
@@ -184,7 +52,7 @@ static func _spill(world: World, body: RigidBody3D, facing: Basis, origin: Vecto
 
 
 static func _put(world: World, body: RigidBody3D, pose: Transform3D, reserved: Array[AABB], gap: float) -> bool:
-	var box := pose * _box(body)
+	var box := pose * bounds_of(body)
 	if not world.terrain.has_collision_at(world.world_x(box.position.x), world.world_z(box.position.z)) \
 		or not world.terrain.has_collision_at(world.world_x(box.end.x), world.world_z(box.end.z)):
 		return false
@@ -197,27 +65,20 @@ static func _put(world: World, body: RigidBody3D, pose: Transform3D, reserved: A
 	return true
 
 
-static func _abort(world: World, before: Dictionary) -> Dictionary:
-	for child in world.content.get_children():
-		if is_instance_valid(child) and not before.has(child.get_instance_id()):
-			world.content.remove_child(child)
-			child.free()
-	return {}
+## Crowded ground still gets its gear: dropped above the way out, the world settles it.
+static func _drop(world: World, body: RigidBody3D, at: Vector3) -> void:
+	world.teleport(body, Transform3D(Basis.IDENTITY, at + Vector3.UP * (1.0 + bounds_of(body).size.y)))
 
 
-## A preflight landing moves the surviving saved bodies, never grants replacement gear.
-static func land_preflight(world: World, state: Dictionary) -> Dictionary:
+## Moves the surviving saved bodies, never grants replacement gear. It waits only for the
+## landing ground; anything that cannot be found or placed is let go, never a held run.
+static func land(world: World, state: Dictionary) -> Dictionary:
 	var objects := named(world)
 	if state.get("materialized", false):
 		return objects
-	if not state.get("preflight", {}).get("launched", false) or not state.has("landing_world"):
-		return {}
-	var at: Vector2 = state.landing_world
+	var at: Vector2 = state.get("landing_world", Vector2(world.player_world_x(), world.player_world_z()))
 	if not world.terrain.has_collision_at(at.x, at.y):
 		return {}
-	for entry: Dictionary in state.structure + state.equipment:
-		if entry.survives and not is_instance_valid(objects.get(StringName(entry.uid))):
-			return {}
 	var survived := {}
 	for entry: Dictionary in state.structure + state.equipment:
 		survived[StringName(entry.uid)] = entry.survives
@@ -233,7 +94,7 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 			continue
 		for k in line.ends.size():
 			var end := line.ends[k]
-			var parent_uid := PreflightCargo._parent_uid(end)
+			var parent_uid := PreflightCargo.parent_uid(end)
 			if parent_uid != &"" and not survived.get(parent_uid, false):
 				_unseat(end)
 				if end != primary:
@@ -242,10 +103,14 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 	for entry: Dictionary in state.equipment:
 		var body := objects.get(StringName(entry.uid)) as RigidBody3D
 		if entry.survives and is_instance_valid(body):
-			var parent_uid := PreflightCargo._parent_uid(body)
+			var parent_uid := PreflightCargo.parent_uid(body)
 			if parent_uid != &"" and not survived.get(parent_uid, false):
 				_unseat(body)
-	var floor := objects[&"floor_a"] as Chassis
+	var floor := objects.get(&"floor_a") as Chassis
+	if not is_instance_valid(floor):
+		state.materialized = true
+		world.arrival_nodes = objects
+		return objects
 	var deck := floor.deck if floor.deck != null else floor
 	# The opened roof and hatch are the same real panels, also if a frame is lost.
 	for role: StringName in PodShell.PANELS:
@@ -270,8 +135,8 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 	for x in [-0.65, 1.65]:
 		for z in [-0.8, 0.8]:
 			height = maxf(height, world.height_under(origin + facing * Vector3(x, 0, z)))
-	var rules := world.tuning.surveyor_arrival
-	origin.y = height + Chassis.THICK * 0.5 + float(rules.get("landing_clearance_m", 0.04))
+	var rules := world.tuning
+	origin.y = height + Chassis.THICK * 0.5 + rules.arrival_landing_clearance_m
 	var pose := Transform3D(facing, origin)
 	world.teleport(deck, pose * floor.pose().affine_inverse())
 	deck.freeze = false
@@ -309,11 +174,11 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 				_unseat(fitting)
 				if end != body and end.socket == null:
 					loose_ends[PreflightCargo.end_key(entry.uid, i)] = end
-	var gap := float(rules.get("spill_gap_m", 0.18))
-	var clearance := float(rules.get("landing_clearance_m", 0.04))
+	var gap := rules.arrival_spill_gap_m
+	var clearance := rules.arrival_landing_clearance_m
 	var reserved: Array[AABB] = []
 	reserved.append(pose * route)
-	var exit_world: Vector2 = state.get("exit_world", at + Vector2(-3.2, 0).rotated(-float(state.get("heading", 0.0))))
+	var exit_world: Vector2 = state.get("exit_world", at + Vector2(-rules.arrival_exit_offset_m, 0).rotated(-float(state.get("heading", 0.0))))
 	var exit_at := Vector3(world.engine_x(exit_world.x), world.height_at(exit_world.x, exit_world.y), world.engine_z(exit_world.y))
 	reserved.append((Transform3D(Basis.IDENTITY, exit_at) * Hands._shapes_box(world.player.get_children())).grow(gap))
 	for shape in deck.get_children():
@@ -334,7 +199,7 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 		if state.preflight.loaded_uids.has(uid):
 			inside = _put(world, body, desired, reserved, gap)
 		if not inside and not _spill(world, body, facing, origin, reserved, gap, clearance, rules):
-			return {}
+			_drop(world, body, exit_at)
 		body.freeze = false
 		body.linear_velocity = Vector3.ZERO
 		body.angular_velocity = Vector3.ZERO
@@ -343,7 +208,7 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 		var end := loose_ends[key] as RigidBody3D
 		var desired: Transform3D = pose * poses[key]
 		if not _put(world, end, desired, reserved, gap) and not _spill(world, end, facing, origin, reserved, gap, clearance, rules):
-			return {}
+			_drop(world, end, exit_at)
 		end.freeze = false
 		end.linear_velocity = Vector3.ZERO
 		end.angular_velocity = Vector3.ZERO

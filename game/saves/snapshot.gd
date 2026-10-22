@@ -29,7 +29,7 @@ static var _kept := [
 	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["hoist_enabled", "legacy_hoist", "raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Mast, ["raised", "raise", "head_speed", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
@@ -144,7 +144,6 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# A resumed run has its own things: no new run's kit is set down in it.
 	world.set_meta(&"resumed", true)
 	world.time = data.time
-	world.weather.field.restore_wind(data.get("test_wind", {}))
 	world.began = data.get("began", 0.0)
 	world.taught = data.get("taught", false)
 	world.stoker_state = data.get("stoker", {}).duplicate(true)
@@ -257,6 +256,12 @@ func finish(data: Dictionary) -> void:
 	var seat: int = data.get("helm", -1)
 	if _made.get(seat) is Helm:
 		world.player.sit(_made[seat])
+	for pair: Array in data.get("reels", []):
+		var reel := _made.get(int(pair[0])) as AntennaReel
+		var radio := _made.get(int(pair[1])) as Radio
+		if reel != null and radio != null:
+			reel.radio = radio
+	DialMarks.restore(world, data.get("dial_marks", []))
 	# The lines last: their ends are all where they belong now.
 	var strands: Array[RopeStrand] = []
 	for rec: Dictionary in data.strands:
@@ -378,9 +383,6 @@ func _take() -> Dictionary:
 		"sicknesses": player.vitals.wounds.sicknesses}
 	you.ground_pose = player.ground_pose
 	data.player = you
-	var test_wind := world.weather.field.wind_state()
-	if not test_wind.is_empty():
-		data.test_wind = test_wind
 	var things := []
 	var lines: Array[Line] = []
 	var cables: Array[Cable] = []
@@ -424,6 +426,14 @@ func _take() -> Dictionary:
 	# At the helm, you sit there again on resume.
 	if player.helm != null and _refs.has(player.helm):
 		data.helm = _refs[player.helm]
+	# A strung antenna reel stays clipped to its set: [reel, radio] by ref.
+	var reels := []
+	for reel: AntennaReel in world.get_tree().get_nodes_in_group(AntennaReel.GROUP):
+		if is_instance_valid(reel.radio) and _refs.has(reel) and _refs.has(reel.radio):
+			reels.append([_refs[reel], _refs[reel.radio]])
+	if not reels.is_empty():
+		data.reels = reels
+	data.dial_marks = DialMarks.all(world)
 	data.home = world.home.snapshot(_ref)
 	if not data.home.is_empty():
 		data.home.support_cells = world.terrain.home_support()
@@ -674,8 +684,6 @@ func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 		if absf(state.frequency - 1930.0) <= _world.tuning.receiver_band_khz:
 			state = state.duplicate()
 			state.frequency += Dial.BEACON_KHZ - 1930.0
-	if body is Mast and not state.has("hoist_enabled"):
-		body.legacy_hoist = true
 	var part := body as Part
 	if part != null and state.has("stats"):
 		part.stats = state.stats.duplicate(true)
@@ -891,7 +899,7 @@ func _solver_in(rec: Dictionary) -> void:
 		var node: Node3D
 		if entry[0] is Dictionary:
 			var mast := _made.get(entry[0].get("boom")) as Mast
-			node = mast._boom_body if is_instance_valid(mast) else null
+			node = mast.boom_body() if is_instance_valid(mast) else null
 		else:
 			node = _world.player if entry[0] is String else _made.get(entry[0])
 		if node == null:

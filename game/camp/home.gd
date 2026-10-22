@@ -1,18 +1,17 @@
 class_name CampHome
 extends Node
-## One claimed travelling camp. Ground support is confirmed by World, not the marker.
-signal changed
+## One claimed travelling camp. Ground support is confirmed by Terrain, not the marker.
 var world: World
 var beacon: HomeBeacon
 var root: Chassis
 var members: Array[RigidBody3D] = []
 var anchor: Sites.Anchor
 var bounds := Rect2()
-var revision := 0
+## Written by Terrain alone: Home's ground and collision are in place.
 var supported := false
+## Why the last growth was refused; Home itself is the only writer.
 var attention := ""
 var restoring := false
-var item_count := 0
 ## World checks the complete support budget before admission and safe retirement.
 var admit: Callable
 var release_check: Callable
@@ -21,6 +20,27 @@ var _envelopes: Array = []
 var _fix := Vector3.ZERO
 var _has_fix := false
 var _departed := false
+## Members as a set, so every body's per-tick check is a lookup.
+var _set := {}
+## A rebuild waits for something to change: bodies arriving or leaving, a rope,
+## a join, or the slow sweep that notices belongings drifting into the shield.
+var _dirty := true
+var _sweep := 0.0
+var _rope_count := -1
+## The root's place at the last rebuild; between rebuilds the footprint follows it.
+var _root_at := Vector2.ZERO
+var _rebuilt_bounds := Rect2()
+var _content: Node
+var _board: Node
+var _held: Node
+
+func _ready() -> void:
+	if world != null and world.content != null:
+		world.content.child_entered_tree.connect(_touch)
+		world.content.child_exiting_tree.connect(_touch)
+
+func _touch(_node: Node) -> void:
+	_dirty = true
 
 func has_home() -> bool:
 	return _marked
@@ -29,12 +49,12 @@ func contains(body: Node) -> bool:
 	if not is_instance_valid(body):
 		return false
 	var actual := _physical(body)
-	return actual != null and members.has(actual)
+	return actual != null and _set.has(actual)
 
 func mark(marker: HomeBeacon) -> String:
 	if not is_instance_valid(marker) or marker.wrecked():
 		return "beacon is damaged"
-	var deck := _deck(marker)
+	var deck := deck_of(marker)
 	if deck == null:
 		return "mount the beacon on a chassis first"
 	if not _owned(deck) or not _owned(marker):
@@ -51,10 +71,8 @@ func mark(marker: HomeBeacon) -> String:
 		return why
 	root = deck
 	beacon = marker
-	members = graph
-	item_count = _work_count(graph)
-	bounds = footprint
 	_envelopes = envelopes
+	_adopt(graph, footprint)
 	var player_anchor := Sites.Anchor.new(world.player_world_x(), world.player_world_z(),
 		Sphere.point(world.moon.latitude, world.moon.longitude), -world.moon.north().z, world.shape.history.radius)
 	var x := world.world_x(root.global_position.x)
@@ -66,8 +84,6 @@ func mark(marker: HomeBeacon) -> String:
 	_departed = false
 	supported = false
 	attention = ""
-	revision += 1
-	changed.emit()
 	return ""
 
 func unmark() -> String:
@@ -77,16 +93,15 @@ func unmark() -> String:
 	if why != "":
 		return why
 	_clear()
-	changed.emit()
 	return ""
 
 func _clear() -> void:
 	_marked = false
 	restoring = false
-	item_count = 0
 	beacon = null
 	root = null
 	members.clear()
+	_set.clear()
 	anchor = null
 	bounds = Rect2()
 	_envelopes.clear()
@@ -94,26 +109,40 @@ func _clear() -> void:
 	_departed = false
 	supported = false
 	attention = ""
-	revision += 1
+	_dirty = true
 
 func _release_reason() -> String:
-	if release_check.is_valid():
-		return release_check.call()
-	# Until the terrain owner supplies its exact check, retire only beside Home.
-	var player := Vector2(world.player_world_x(), world.player_world_z())
-	return "return to home before unmarking it" if bounds.get_center().distance_to(player) > world.tuning.home_return_m else ""
+	return release_check.call() if release_check.is_valid() else ""
 
-## Called before terrain planning and distant-body retirement on every physics tick.
+## Every physics tick, before terrain planning and distant-body retirement.
+func tick(delta: float) -> void:
+	if not _marked or restoring:
+		return
+	_sweep -= delta
+	var ropes := world.ropes.ropes.size()
+	if _dirty or _sweep <= 0.0 or ropes != _rope_count or (is_instance_valid(root) and root.deck != null):
+		refresh()
+		return
+	if is_instance_valid(root) and _rebuilt_bounds.has_area():
+		var at := Vector2(world.world_x(root.global_position.x), world.world_z(root.global_position.z))
+		bounds = Rect2(_rebuilt_bounds.position + at - _root_at, _rebuilt_bounds.size)
+	_receive()
+
+## Rebuilds membership now; additions that exceed the limits are refused together.
 func refresh() -> void:
 	if not _marked or restoring:
 		return
-	var previous := members.duplicate()
-	members = members.filter(func(body: RigidBody3D) -> bool: return is_instance_valid(body) and not body.is_queued_for_deletion())
+	_dirty = false
+	_sweep = world.tuning.home_sweep_s
+	_rope_count = world.ropes.ropes.size()
 	if not is_instance_valid(root) or root.is_queued_for_deletion():
 		attention = "home chassis is missing"
 		supported = false
-		if previous != members:
-			revision += 1
+		var alive: Array[RigidBody3D] = []
+		for body in members:
+			if is_instance_valid(body) and not body.is_queued_for_deletion():
+				alive.append(body)
+		_adopt(alive, bounds)
 		return
 	# A joined deck may choose another root without changing its identity.
 	root = root.deck if root.deck != null else root
@@ -121,34 +150,48 @@ func refresh() -> void:
 	if not shields.is_empty():
 		_envelopes = shields
 	var graph := _graph(root, _envelopes)
-	var proposed := _footprint(graph)
-	var why := _admission(graph, proposed)
+	var footprint := _footprint(graph)
+	var why := _admission(graph, footprint)
 	if why == "":
-		members = graph
 		attention = ""
 	else:
 		# Reject additions together; ordinary removal still works during a refusal.
 		var kept: Array[RigidBody3D] = []
+		var seen := {}
+		var proposed := {}
+		for body in graph:
+			proposed[body] = true
 		for body in members:
 			var actual := _physical(body)
-			if graph.has(actual) and not kept.has(actual):
+			if proposed.has(actual) and not seen.has(actual):
+				seen[actual] = true
 				kept.append(actual)
-		members = kept
+		graph = kept
+		footprint = _footprint(graph)
 		attention = why
-	item_count = _work_count(members)
-	var actual := _footprint(members)
-	if members != previous or not actual.is_equal_approx(bounds):
-		bounds = actual
-		revision += 1
-		changed.emit()
+	_adopt(graph, footprint)
 	_receive()
+
+func _adopt(graph: Array[RigidBody3D], footprint: Rect2) -> void:
+	members = graph
+	_set.clear()
+	for body in graph:
+		_set[body] = true
+	bounds = footprint
+	_rebuilt_bounds = footprint
+	if is_instance_valid(root):
+		_root_at = Vector2(world.world_x(root.global_position.x), world.world_z(root.global_position.z))
 
 func _admission(graph: Array[RigidBody3D], footprint: Rect2) -> String:
 	if _work_count(graph) > world.tuning.home_max_bodies:
-		return "home has too many bodies"
+		return "too much to keep as one camp"
 	if maxf(footprint.size.x, footprint.size.y) > world.tuning.home_span_m:
-		return "home is spread too far"
+		return "the camp is spread too wide"
 	return admit.call(footprint) if admit.is_valid() else ""
+
+## What Home's members cost against `home_max_bodies`.
+func work_count() -> int:
+	return _work_count(members)
 
 ## Fitted parts and joined pieces still cost work even without active rigid bodies.
 func _work_count(graph: Array[RigidBody3D]) -> int:
@@ -162,15 +205,21 @@ func _work_count(graph: Array[RigidBody3D]) -> int:
 
 func _graph(deck: Chassis, envelopes: Array) -> Array[RigidBody3D]:
 	var graph: Array[RigidBody3D] = []
-	_add_assembly(deck, graph)
+	var seen := {}
+	# Read once per rebuild: this runs for every body in the world.
+	_content = world.content
+	_board = world.player.board
+	_held = world.player.hands.held
+	_add_assembly(deck, graph, seen)
+	var to_deck := deck.global_transform.affine_inverse()
 	for child in world.content.get_children():
 		var body := child as RigidBody3D
-		if not _eligible(body):
+		if body == null or seen.has(body):
 			continue
-		var local := deck.global_transform.affine_inverse() * body.global_position
+		var local := to_deck * body.global_position
 		for envelope: Array in envelopes:
 			if local.distance_to(envelope[0]) <= envelope[1]:
-				_add_assembly(body, graph)
+				_add_assembly(body, graph, seen)
 				break
 	var expanded := true
 	while expanded:
@@ -181,41 +230,46 @@ func _graph(deck: Chassis, envelopes: Array) -> Array[RigidBody3D]:
 			var guide := _endpoint(rope.through) if is_instance_valid(rope.through) else null
 			if not _eligible(a) or not _eligible(b):
 				continue
-			if not graph.has(a) and not graph.has(b) and (guide == null or not graph.has(guide)):
+			if not seen.has(a) and not seen.has(b) and (guide == null or not seen.has(guide)):
 				continue
 			var count := graph.size()
-			_add_assembly(a, graph)
-			_add_assembly(b, graph)
-			if _eligible(guide):
-				_add_assembly(guide, graph)
+			_add_assembly(a, graph, seen)
+			_add_assembly(b, graph, seen)
+			_add_assembly(guide, graph, seen)
 			expanded = expanded or graph.size() != count
 	return graph
 
-func _add_assembly(body: RigidBody3D, graph: Array[RigidBody3D]) -> void:
+func _add_assembly(body: RigidBody3D, graph: Array[RigidBody3D], seen: Dictionary) -> void:
 	body = _physical(body)
-	if not _eligible(body) or graph.has(body):
+	if body == null or seen.has(body) or not _eligible(body):
 		return
+	seen[body] = true
 	graph.append(body)
 	if body is Device:
 		for mounted in (body as Device).mounted():
-			_add_assembly(mounted, graph)
+			_add_assembly(mounted, graph, seen)
 
 func _eligible(body: RigidBody3D) -> bool:
-	return is_instance_valid(body) and not body.is_queued_for_deletion() and _owned(body) \
-		and body != world.player.board and body != world.player.hands.held \
-		and body.is_inside_tree() and world.content.is_ancestor_of(body)
+	if not is_instance_valid(body) or body.is_queued_for_deletion() or body == _board or body == _held:
+		return false
+	if body.get_parent() != _content and not _content.is_ancestor_of(body):
+		return false
+	# A member stays claimed: nothing makes a belonging a find again.
+	return _set.has(body) or _owned(body)
 
 func _owned(body: Node) -> bool:
 	if not is_instance_valid(body) or not body.has_meta(&"catalog"):
 		return false
 	var at: Node = body
-	while at != null and at != world.content:
-		if at.has_meta(&"find") or at.has_meta(&"buried") or at.has_meta(&"stoker_slot") or at.has_meta(&"unclaimed_rig"):
+	var content := world.content
+	while at != null and at != content:
+		if at.has_meta(&"find") or at.has_meta(&"buried") or at.has_meta(&"slot") or at.has_meta(&"unclaimed_rig"):
 			return false
 		at = at.get_parent()
 	return true
 
-func _deck(marker: HomeBeacon) -> Chassis:
+## The deck a beacon is fitted to, through any devices between.
+func deck_of(marker: HomeBeacon) -> Chassis:
 	var at: Device = marker.host()
 	while at != null:
 		if at is Chassis:
@@ -249,11 +303,12 @@ func _shield_envelopes(deck: Chassis) -> Array:
 func _footprint(graph: Array[RigidBody3D]) -> Rect2:
 	var rect := Rect2()
 	var first := true
+	var origin := Vector2(world.world_x(0.0), world.world_z(0.0))
 	for body in graph:
 		if not is_instance_valid(body) or not body.is_inside_tree():
 			continue
 		var box: AABB = body.global_transform * (body.shape_bounds() if body is Device else Hands._box_of(body))
-		var own := Rect2(Vector2(world.world_x(box.position.x), world.world_z(box.position.z)), Vector2(box.size.x, box.size.z))
+		var own := Rect2(Vector2(box.position.x, box.position.z) + origin, Vector2(box.size.x, box.size.z))
 		rect = own if first else rect.merge(own)
 		first = false
 	return rect
@@ -264,7 +319,7 @@ func _receive() -> void:
 	var here := Sphere.point(world.moon.latitude, world.moon.longitude)
 	var home := anchor.point_at(world.world_x(root.global_position.x), world.world_z(root.global_position.z))
 	var distance := Sphere.angle(here, home) * anchor.radius
-	if is_instance_valid(beacon) and not beacon.wrecked() and beacon.powered and _deck(beacon) == root and distance <= world.tuning.home_signal_m:
+	if is_instance_valid(beacon) and not beacon.wrecked() and beacon.powered and deck_of(beacon) == root and distance <= world.tuning.home_signal_m:
 		_fix = home
 		_has_fix = true
 	if distance >= world.tuning.home_depart_m:
@@ -275,33 +330,23 @@ func _receive() -> void:
 
 func nav() -> Dictionary:
 	if not _marked:
-		return {"marked": false, "supported": false, "live": false, "metres": 0.0, "bearing": 0.0, "status": "No home marked"}
+		return {"marked": false, "supported": false, "live": false, "metres": NAN, "bearing": NAN}
 	var here := Sphere.point(world.moon.latitude, world.moon.longitude)
 	var home := anchor.point_at(world.world_x(root.global_position.x), world.world_z(root.global_position.z)) if is_instance_valid(root) and anchor != null else _fix
-	var live := is_instance_valid(root) and anchor != null and is_instance_valid(beacon) and not beacon.wrecked() and beacon.powered and _deck(beacon) == root \
-		and Sphere.angle(here, home) * world.shape.history.radius <= world.tuning.home_signal_m
-	var status := "Receiving" if live else "Last known fix"
-	if attention != "":
-		status += " · " + attention
-	elif not supported:
-		status += " · preparing home support"
+	var live := is_instance_valid(root) and anchor != null and is_instance_valid(beacon) and not beacon.wrecked() and beacon.powered and deck_of(beacon) == root \
+		and Sphere.angle(here, home) * anchor.radius <= world.tuning.home_signal_m
 	return {"marked": true, "supported": supported, "live": live, "metres": Sphere.angle(here, _fix) * world.shape.history.radius if _has_fix else NAN,
-		"bearing": fposmod(Sphere.bearing(here, _fix), TAU) if _has_fix else NAN, "status": status}
+		"bearing": fposmod(Sphere.bearing(here, _fix), TAU) if _has_fix else NAN}
 
 func snapshot(ref: Callable) -> Dictionary:
 	if not _marked:
 		return {}
 	var refs := []
-	var poses := []
 	for body in members:
 		if is_instance_valid(body):
-			var id: int = ref.call(body)
-			refs.append(id)
-			if anchor != null:
-				poses.append([id, Transform3D(body.global_basis, Vector3(world.world_x(body.global_position.x) - anchor.x,
-					body.global_position.y, world.world_z(body.global_position.z) - anchor.z))])
+			refs.append(ref.call(body))
 	return {"root": ref.call(root) if is_instance_valid(root) else -1,
-		"beacon": ref.call(beacon) if is_instance_valid(beacon) else -1, "members": refs, "poses": poses,
+		"beacon": ref.call(beacon) if is_instance_valid(beacon) else -1, "members": refs,
 		"bounds": bounds, "anchor": [anchor.x, anchor.z, Sphere.latitude(anchor.p), Sphere.longitude(anchor.p), anchor.facing, anchor.radius] if anchor != null else [],
 		"envelopes": _envelopes.duplicate(true), "fix": _fix, "has_fix": _has_fix, "departed": _departed}
 
@@ -326,11 +371,11 @@ func finish_restore(data: Dictionary, resolve: Callable) -> void:
 	restoring = false
 	root = resolve.call(data.get("root", -1)) as Chassis
 	beacon = resolve.call(data.get("beacon", -1)) as HomeBeacon
-	members.clear()
+	var restored: Array[RigidBody3D] = []
 	for saved in data.get("members", []):
 		var body := resolve.call(saved) as RigidBody3D
 		if is_instance_valid(body):
-			members.append(body)
+			restored.append(body)
+	_adopt(restored, bounds)
 	attention = "home chassis is missing" if not is_instance_valid(root) else ""
-	revision += 1
-	changed.emit()
+	_dirty = true

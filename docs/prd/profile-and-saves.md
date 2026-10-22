@@ -304,7 +304,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21; Plot a Course and Drop In 2026-10-21, 71 now), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): every deed in `Deeds.TABLE` in eleven families, the round-two trees with the deeds added since (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21; Plot a Course and Drop In 2026-10-21, 71 now), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -882,8 +882,20 @@ roster to 71 deeds in the same eleven families.
 Preflight saves retain actual object references and the selected plan/cargo,
 not a second kit grant. Integrated evidence remains pending.
 
+**Summit deed (2026-10-22).** Above the Dunes (`summit`, far family, summit mark)
+records standing on a mountain's summit structure; the roster is 72 deeds.
+
+## Towing and gathering deeds (2026-10-22)
+
+The board's powered towing and gathering several line ends in one hand came without deeds.
+**Pack Mule** (Board, after Frequent Flyer) is driving a loaded line along with the board's
+motor, recorded by the ride; **Bogged Down** (Board, after Pack Mule) is loading that motor
+until it sputters. **Fistful** (Wind, after Set Sail) is gathering a second line's end into the
+hand, recorded by the waist as the end joins the knot; Make Fast now follows it. Three more
+deeds in the same eleven families; with the summit deed the roster is 75.
+
 ## Lookout (2026-10-22)
 
 Climbing into a crow's nest on a standing mast records **Lookout** (Wind, after
 Hand-Me-Down): the nest is the nomads' gear and came without one. The roster is
-72 deeds in eleven families. Devices 41 checks it.
+76 deeds in eleven families. Devices 41 checks it.

@@ -106,7 +106,7 @@ func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := NAN, strand: RopeStr
 		rope.creak = Sounds.world_voice(creak, 0.0, 5.0)
 		add_child(rope.creak)
 	ropes.append(rope)
-	_towing()
+	count_towed()
 	return rope
 
 
@@ -119,7 +119,7 @@ func move_end(rope: Rope, from: RopeEnd, to: RopeEnd) -> void:
 	elif rope.b == from:
 		rope.b = to
 		rope.strand.b = to
-	_towing()
+	count_towed()
 
 
 ## An end lets go: the rope stops holding and its strand hangs from the other.
@@ -239,7 +239,7 @@ func towed() -> Array[Node3D]:
 
 
 ## A line tied or moved: two planters in tow, standing on what you tow or towed themselves.
-func _towing() -> void:
+func count_towed() -> void:
 	if not world.counts_deeds:
 		return
 	var planters := 0
@@ -322,12 +322,12 @@ func clear() -> void:
 func _process(_delta: float) -> void:
 	for rope in ropes:
 		if is_instance_valid(rope.a) and is_instance_valid(rope.b):
-			rope.strand.pin_ends(_shown_end(rope.a), _shown_end(rope.b), Engine.get_physics_interpolation_fraction())
+			rope.strand.pin_ends(shown_end(rope.a), shown_end(rope.b), Engine.get_physics_interpolation_fraction())
 
 
 ## The camera and board draw between ticks. Waist lines must start in that
 ## same frame; held ends already follow the hands' drawn pose.
-func _shown_end(end: RopeEnd, fraction := Engine.get_physics_interpolation_fraction()) -> Vector3:
+func shown_end(end: RopeEnd, fraction := Engine.get_physics_interpolation_fraction()) -> Vector3:
 	var player := world.player
 	var at := end.global_position
 	if end.holder != player and not player.waist.holds(end.holder):
@@ -396,7 +396,8 @@ func _solve(h: float) -> void:
 		for rope in live:
 			rope.solve()
 	for rope in live:
-		rope.tension = (rope.spring_impulse + rope.stop_impulse) / h
+		rope.tension = (rope.spring_impulse + rope.stop_impulse) / h + rope.carried_n
+		rope.asked += rope.carried_n
 		_deliver(rope.body_a, rope.impulse(), rope.point_a, h)
 		_deliver(rope.body_b, rope.impulse_b(), rope.point_b, h)
 		if rope.through != null:
@@ -437,9 +438,10 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 	body.expected_spin = Vector3.ZERO
 	var rigid := body.rigid
 	if rigid != null and not rigid.freeze:
-		body.center = holder.global_position
+		# Jolt's velocity is its centre of mass's, so lever arms start there too.
+		body.center = rigid.global_transform * PhysicsServer3D.body_get_direct_state(rigid.get_rid()).center_of_mass_local
 		body.inv_mass = Vector3.ONE / rigid.mass
-		body.inv_inertia = _inverse_inertia(rigid)
+		body.inv_inertia = RopeArticulation.inverse_inertia(rigid)
 		body.velocity = rigid.linear_velocity
 		body.spin = rigid.angular_velocity
 		if seen:
@@ -460,14 +462,6 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 		body.velocity = Vector3.ZERO
 		body.spin = Vector3.ZERO
 	return body
-
-
-func _inverse_inertia(rigid: RigidBody3D) -> Basis:
-	if rigid.inertia == Vector3.ZERO:
-		# The node cache is not synchronized yet on the first restored tick.
-		return PhysicsServer3D.body_get_direct_state(rigid.get_rid()).inverse_inertia_tensor
-	var turn := rigid.global_basis.orthonormalized()
-	return turn * Basis.from_scale(Vector3.ONE / rigid.inertia) * turn.transposed()
 
 
 ## Hands an end its share: an impulse at the attachment point, a drag on you,
@@ -662,26 +656,16 @@ func _articulate(live: Array[Rope], h: float) -> void:
 			if root == null or root.freeze or seen.has(root):
 				continue
 			seen[root] = true
+			var hinged := RopeArticulation.hinges(root)
+			if hinged[0].is_empty():
+				continue
 			var bodies: Array[RopeBody] = [_body(root, h)]
-			var pivots: Array[Vector3] = []
-			var axes: Array[Vector3] = []
-			var mounted: Array[Device] = [root]
-			while not mounted.is_empty():
-				var device: Device = mounted.pop_back()
-				mounted.append_array(device.mounted())
-				if device is Mast and is_instance_valid(device._boom_body) and not device._boom_body.freeze:
-					bodies.append(_body(device._boom_body, h))
-					pivots.append(device.global_transform * Mast.BOOM_AT)
-					axes.append(device.global_basis.y.normalized())
-			if bodies.size() > 1:
-				# Hinged response needs native mass centres; ordinary ropes retain their model.
-				for body in bodies:
-					var state := PhysicsServer3D.body_get_direct_state(body.rigid.get_rid())
-					body.center = body.rigid.global_transform * state.center_of_mass_local
-				var articulation := RopeArticulation.new()
-				articulation.configure(bodies, pivots, axes)
-				articulation.project_velocities()
-				_articulations.append(articulation)
+			for boom: RigidBody3D in hinged[0]:
+				bodies.append(_body(boom, h))
+			var articulation := RopeArticulation.new()
+			articulation.configure(bodies, hinged[1], hinged[2])
+			articulation.project_velocities()
+			_articulations.append(articulation)
 
 
 ## Boarding and tow discovery concern the rig; impulses still pull its boom.

@@ -72,8 +72,8 @@ func moor(upwind := 4.0) -> void:
 	Line.between(world, deck.free_tie(stake.global_position), stake.free_tie(deck.global_position), 0.3)
 
 
-## The lowest any corner of the deck or what's seated on it comes below the
-## sand under it, m: never far.
+## The lowest any corner of the deck or what's seated on it, or its masthead,
+## comes below the sand under it, m: never far.
 func sunk() -> float:
 	var deepest := -INF
 	var riding: Array[Device] = [deck]
@@ -88,6 +88,8 @@ func sunk() -> float:
 			for i in 8:
 				var corner := each.global_transform * shape.transform * box.get_endpoint(i)
 				deepest = maxf(deepest, world.height_under(corner) - corner.y)
+	if is_instance_valid(mast) and mast.host() != null:
+		deepest = maxf(deepest, world.height_under(mast.masthead()) - mast.masthead().y)
 	return deepest
 
 
@@ -105,17 +107,29 @@ func set_down(device: Device) -> void:
 	device.angular_velocity = Vector3.ZERO
 
 
-## The sail up at once, its boom free to swing as far as `degrees` either way.
+## The sail up at once on a halyard made fast at full height, its boom free
+## to swing as far as `degrees` either way. A rig with no halyard gets one to
+## a hook on its deck.
 func hoist(degrees: float) -> void:
-	# Authored fixtures carry a braked halyard; start it at its hauled length.
 	var halyard := mast.halyard()
+	if halyard == null and mast.carrier() != null:
+		var deck_of := mast.carrier()
+		# Made fast on a hook on top of a free piece, clear of the sand.
+		for cell: Vector2i in [Vector2i(1, 0), Vector2i(0, 0), Vector2i(1, 1), Vector2i(0, 1)]:
+			var piece := Rig.piece(deck_of, cell)
+			if piece != null and piece.stuck().is_empty():
+				var hook := Catalog.part(&"hook")
+				Stick.put(deck_of, piece, Chassis.TOP, Vector2.ZERO, 0.0, hook)
+				break
+		var line := mast.rig_hoist(deck_of, deck_of.free_tie(deck_of.global_transform * Vector3(0.0, 1.0, 0.0)))
+		halyard = line.rope if line != null else null
 	if halyard != null and halyard.through == mast.pulley:
 		var head := Line._tip(mast.halyard_socket().part)
 		var tail := halyard.b if halyard.a == head else halyard.a
 		halyard.length = tail.global_position.distance_to(mast.pulley.global_position) + Mast.HALYARD_CLEARANCE
 		halyard.strand.set_length(halyard.length)
-	mast.raised = true
 	mast.raise = 1.0
+	mast.raised = true
 	trim(degrees)
 
 

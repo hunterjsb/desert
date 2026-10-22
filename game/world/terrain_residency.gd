@@ -39,7 +39,8 @@ class Policy:
 
 	func same_as(other: Policy) -> bool:
 		return other != null and center == other.center and view_radius == other.view_radius \
-			and near_radius == other.near_radius and camp_collision == other.camp_collision
+			and near_radius == other.near_radius and camp_collision == other.camp_collision \
+			and camp_keep == other.camp_keep
 
 	func history_rect(side: int) -> Rect2:
 		return Rect2(Vector2(camp_keep.position) * side, Vector2(camp_keep.size) * side)

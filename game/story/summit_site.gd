@@ -3,6 +3,8 @@ extends Structure
 ## The surviving foundation was made for this summit, not a wandering ruin.
 func place_step() -> bool:
 	var shape: TerrainShape = _ctx.shape.get_ref()
+	if shape == null:
+		return super()
 	_stand(shape.dunes(x, z))
 	return true
 

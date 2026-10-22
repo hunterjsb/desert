@@ -16,7 +16,7 @@ func run() -> void:
 	look(eye(), Line._tip(sheet.ends[0]).global_position)
 	await physics_frames(2)
 	hands.reel.choose(sheet.ends[1])
-	var sheet_readout := hands.reel.waist_readout()
+	var sheet_readout := hands.reel.waist_description(sheet.ends[1])
 	check(hands.reel.waist_body() == sheet.ends[1] and not sheet_readout.is_empty(),
 		"the sheet is selected for the reel and its live readout")
 	check(hands.interact() and world.player.waist._taking == sheet.ends[1],
@@ -26,7 +26,7 @@ func run() -> void:
 	check(hands.reel.waist_body() == sheet.ends[1],
 		"looking along another rope keeps the explicit choice")
 	hands._show(1.0)
-	check(not hands._readout.text.contains(hands.reel.waist_readout()), "waist stats stay out of the crosshair readout")
+	check(not hands._readout.text.contains(sheet_readout), "waist stats stay out of the crosshair readout")
 	check(get_node(^"/root/Saves").save(world), "saved during the untie delay")
 	check(await resume(), "resumed")
 	await simulate(world.tuning.untie_seconds + 0.4)

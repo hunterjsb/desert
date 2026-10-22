@@ -19,15 +19,19 @@ func _ready() -> void:
 
 
 func line() -> Rope:
+	var laid := _laid()
+	return laid.rope if laid != null else null
+
+
+## The line tied on the drum, by its end's own record.
+func _laid() -> Line:
 	if world == null:
 		return null
 	for socket in frame_sockets():
 		if socket.kind == &"tie" and is_instance_valid(socket.part) and socket.part.has_meta(&"line"):
 			var laid: Variant = socket.part.get_meta(&"line")
-			if not is_instance_valid(laid) or not laid is Line:
-				continue
-			if laid.rope != null and world.ropes.ropes.has(laid.rope):
-				return laid.rope
+			if is_instance_valid(laid) and laid is Line and laid.rope != null and world.ropes.ropes.has(laid.rope):
+				return laid
 	return null
 
 
@@ -76,7 +80,7 @@ func _physics_process(delta: float) -> void:
 			or _operator.camera.global_position.distance_to(global_position) > world.tuning.reach:
 		wanted = rope.length
 		return
-	var load := maxf(rope.tension, rope.haul_n)
+	var load := rope.tension
 	var pace := world.tuning.winch_pace_mps
 	if wanted < rope.length:
 		pace *= 1.0 - smoothstep(world.tuning.winch_pull_n * 0.5, world.tuning.winch_pull_n, load)
@@ -85,11 +89,8 @@ func _physics_process(delta: float) -> void:
 	rope.strand.set_length(rope.length)
 	_turned -= step / world.tuning.winch_drum_radius
 	_wheel.rotation.z = _turned
-	if step < 0.0:
-		for child in world.content.get_children():
-			if child is Line and (child as Line).rope == rope:
-				for end: Part in (child as Line).ends:
-					if end.socket != null and end.socket.get_parent() is Mast:
-						var mast := end.socket.get_parent() as Mast
-						if mast.hoist_enabled and mast.raise >= world.tuning.winch_hoist_deed:
-							Deeds.done(world, &"hand_hoist")
+	if step < 0.0 and world.counts_deeds:
+		for end: Part in _laid().ends:
+			var mast := end.socket.get_parent() as Mast if end.socket != null else null
+			if mast != null and mast.raise >= world.tuning.winch_hoist_deed:
+				Deeds.done(world, &"hand_hoist")

@@ -33,7 +33,6 @@ func _ready() -> void:
 	Settings.path = away.path_join("settings.cfg")
 	SaveFile.remove(Settings.path)
 	# This surface capture retains the automatic-arrival baseline.
-	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 1234
 	_main = MAIN.instantiate()
 	add_child(_main)

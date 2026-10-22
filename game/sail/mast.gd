@@ -15,8 +15,6 @@ const HEAD := 1.0
 ## Where the sail's push acts, over the boom and back from the mast, m: up at
 ## its middle, and back about a third of its chord, where a filled sail draws.
 const MIDDLE := Vector2(1.47, 0.6)
-## Raising or furling takes this long, s.
-const RAISE_SECONDS := 1.5
 ## Seated, it stands to its full height over this long, s.
 const EXTEND_SECONDS := 0.6
 ## What the first sheet at your waist teaches, once a profile: what the
@@ -24,7 +22,7 @@ const EXTEND_SECONDS := 0.6
 ## require skill").
 const HOW_TO := "sheet"
 const HOW_TO_SAYS := "Look at the hand winch and {reel_in} to raise the sail; {pay_out} lowers it. Its brake holds when you stop.\n" \
-	+ "The sheet runs from the boom's end through a real deck hook to your waist.\n" \
+	+ "The sheet runs from the boom's end through a deck hook to your waist.\n" \
 	+ "{reel_in} takes in rope; {pay_out} gives slack. Wind and the rope move the boom.\n" \
 	+ "With several waist lines, open {inventory}, hover one and click to choose which to work."
 ## What a rig flown from both its bow corners teaches, the first time you
@@ -56,8 +54,6 @@ const RAGS := 0.15
 const LIFTS := deg_to_rad(12.0)
 const FLOGS := deg_to_rad(2.0)
 const LIGHT_AIR := 3.0
-## Lying over this far, its masthead and boom's end can rest on the sand, rad.
-const TOUCH_TILT := deg_to_rad(25.0)
 ## Standing, it takes things stuck on it as a deck's faces do: on its pole's
 ## four sides, up the reach that stands out of its stowed pole, and on its
 ## head. Its head, over its middle, m; its upper pole's half width; and the
@@ -71,21 +67,20 @@ const PULLEY_AT := Vector3(0.12, BOOM_AT.y + LUFF + HALYARD_CLEARANCE, -0.08)
 const POLE_R := 0.045
 const POLE := Vector2(0.75, HEAD_Y - 0.06)
 
-## The halyard supports the cloth at this share of its full height.
-var hoist_enabled := false
-var legacy_hoist := false
+## Hoisted this close to the pulley, its head block is seated there.
+const SEATED := 0.01
 var pulley: RopeEnd
 var _pulley_block: MeshInstance3D
 var _head_at := 0.0
 var _halyard_load: Rope
 var raised := false
+## How far up the mast its halyard holds the cloth's head, 0 to 1, and how
+## fast the head slides, shares of the luff a second.
 var raise := 0.0
+var head_speed := 0.0
 ## The boom's swing off straight back, rad, and how fast it swings.
 var boom := 0.0
 var boom_spin := 0.0
-## Legacy save field, no longer a physical trim control. The ordinary sheet
-## owns all paid length; old records may still contain this value.
-var trim := 0.0
 var sheet_n := 0.0
 ## What the wind does to the sail, felt long enough to tear it, N, as if on
 ## the whole sail: its push, or as a raised sail it beats, drawing or not, a
@@ -168,7 +163,8 @@ func _ready() -> void:
 		world.origin_shifted.connect(_shift_boom)
 
 
-## The wheel works new rigs; old saves retain their original toggle until converted.
+## A halyard end in hand passes over the masthead pulley; only hauling that
+## line raises the sail.
 func interact(by: Player) -> bool:
 	if sail() == null or wrecked() or sail_m2() <= 0.0:
 		return false
@@ -180,17 +176,13 @@ func interact(by: Player) -> bool:
 		var why := laid.route(pulley)
 		if why != "":
 			return by.hands.refuse(why)
-		hoist_enabled = true
-		legacy_hoist = false
 		by.hands.say("halyard over masthead pulley" if laid.rope.through != null else "halyard clear of pulley")
 		return true
 	if by.hands.held != null:
 		return false
-	if legacy_hoist and not hoist_enabled:
-		raised = not raised
-		Sounds.play_at(self, Sounds.BAG_OPEN if raised else Sounds.BAG_CLOSE)
-		return true
-	return by.hands.refuse("raise or lower the sail at its hand winch")
+	if halyard() == null:
+		return by.hands.refuse("pass a halyard over the masthead pulley")
+	return by.hands.refuse("haul its halyard to raise the sail")
 
 
 func halyard_socket() -> Socket:
@@ -200,26 +192,32 @@ func halyard_socket() -> Socket:
 	return null
 
 
-## Used by real rig recipes: ordinary endpoints and a saved, visible route.
-func rig_hoist(winch: ManualWinch) -> Line:
+## A rig's halyard from the cloth's head over the pulley to a tie on `to`, a
+## hand winch or the deck (its nearest free one unless `tie` is given), as
+## rig recipes build it; `hauled`, made fast with the cloth right up.
+func rig_hoist(to: Device, tie: Socket = null, hauled := false) -> Line:
 	follow_mount()
-	winch.follow_mount()
+	to.follow_mount()
 	var head := halyard_socket()
-	if head == null or not head.is_open() or winch.free_tie(global_position) == null:
+	if tie == null:
+		tie = to.free_tie(global_position)
+	if head == null or not head.is_open() or tie == null:
 		return null
-	hoist_enabled = true
-	legacy_hoist = false
 	# Authored rigs begin assembled, with rope measured over the standing mast.
 	extend = 1.0
 	_show()
 	_head_pose()
-	var line := Line.between(world, head, winch.free_tie(global_position), 0.0)
+	var line := Line.between(world, head, tie, 0.0)
 	line.rope.through = pulley
 	line.rope.strand.through = pulley
 	line.full = Line._tip(line.ends[0]).global_position.distance_to(pulley.global_position) \
 		+ pulley.global_position.distance_to(Line._tip(line.ends[1]).global_position) + LUFF * raise
 	line.rope.full = line.full
 	line.rope.length = line.full - LUFF * raise
+	if hauled:
+		line.rope.length = pulley.global_position.distance_to(Line._tip(line.ends[1]).global_position) + HALYARD_CLEARANCE
+		raise = 1.0
+		_head_pose()
 	line.rope.strand.set_length(line.rope.length)
 	return line
 
@@ -248,7 +246,7 @@ func _head_pose() -> void:
 
 func _clear_halyard_load() -> void:
 	if _halyard_load != null:
-		_halyard_load.haul_n = 0.0
+		_halyard_load.carried_n = 0.0
 	_halyard_load = null
 
 
@@ -256,17 +254,19 @@ func _exit_tree() -> void:
 	_clear_halyard_load()
 
 
+## The cloth's head hangs on its halyard over the masthead pulley: the line
+## bears its weight, hauling it raises the sail, and eased or let go the
+## cloth slides down the mast under that weight, no faster than its luff runs.
 func _hoist(delta: float, area: float) -> void:
 	_clear_halyard_load()
-	var rope := halyard()
-	if rope != null:
-		hoist_enabled = true
-		legacy_hoist = false
-	if not hoist_enabled:
-		raise = move_toward(raise, 1.0 if raised and area > 0.0 else 0.0, delta / RAISE_SECONDS)
+	# A sail on show has no world to hang in: it stands as it was set.
+	if world == null:
 		_head_pose()
 		return
-	var wanted := 0.0
+	var rope := halyard()
+	# The least the line lets the head drop to, as a share of the luff: none
+	# unless the line runs over the pulley and its far end is held.
+	var held_at := 0.0
 	if rope != null and rope.through == pulley and carrier() != null and area > 0.0:
 		var head := halyard_socket()
 		var tip := Line._tip(head.part)
@@ -275,16 +275,27 @@ func _hoist(delta: float, area: float) -> void:
 		_pulley_block.rotation.y = atan2(-toward.x, -toward.z)
 		if far.has_meta(&"socket") or world.ropes.on_you(far.holder):
 			var inboard := far.global_position.distance_to(pulley.global_position)
-			wanted = clampf(1.0 - (rope.length - inboard - HALYARD_CLEARANCE) / LUFF, 0.0, 1.0)
-			# World-pose rounding must not lift a braked head off its full-height stop.
-			if is_equal_approx(wanted, 1.0):
-				wanted = 1.0
-			# Lifting cloth is internal to the rig; the hand drum still works against its weight.
-			rope.haul_n = sail().mass * world.tuning.gravity
+			held_at = clampf(1.0 - (rope.length - inboard - HALYARD_CLEARANCE) / LUFF, 0.0, 1.0)
+	var upright := maxf(global_basis.y.normalized().dot(Vector3.UP), 0.0)
+	var g := world.tuning.gravity
+	head_speed = maxf(head_speed - g * upright / LUFF * delta, -1.0 / world.tuning.halyard_lower_seconds)
+	raise += head_speed * delta
+	if raise <= held_at:
+		raise = held_at
+		head_speed = 0.0
+		if held_at > 0.0:
+			rope.carried_n = sail().mass * g * upright
 			_halyard_load = rope
-	raise = move_toward(raise, wanted, delta / world.tuning.halyard_lower_seconds) if wanted < raise else wanted
+	if raise <= 0.0:
+		raise = 0.0
+		head_speed = 0.0
 	raised = raise > 0.0
 	_head_pose()
+
+
+## Hauled right up, its head block seated against the pulley.
+func hoisted() -> bool:
+	return raise >= 1.0 - SEATED
 
 
 ## The sail fitted to it, or null.
@@ -326,6 +337,11 @@ static func sheet_end(end: Node) -> bool:
 	return line.rope.a.get_parent() is Mast or line.rope.b.get_parent() is Mast
 
 
+## The tie at the boom's end, where its sheet is made fast.
+func boom_tie() -> Socket:
+	return _tie()
+
+
 ## The device whose body takes its push: what it's seated on, all the way down.
 func carrier() -> Device:
 	var at: Device = host()
@@ -349,6 +365,7 @@ func take(socket: Socket) -> Part:
 		_swing_nodes()
 		_base.clear()
 		raise = 0.0
+		head_speed = 0.0
 		raised = false
 		_head_pose()
 	return super(socket)
@@ -361,9 +378,6 @@ func _physics_process(delta: float) -> void:
 	var on := carrier()
 	extend = move_toward(extend, 1.0 if on != null else 0.0, delta / EXTEND_SECONDS)
 	_stand_reach(extend >= 1.0 and on != null)
-	# Off its mount, its sail comes down.
-	if on == null:
-		raised = false
 	_physical_boom(on)
 	_read_boom()
 	_swing_nodes()
@@ -375,7 +389,6 @@ func _physics_process(delta: float) -> void:
 	_felt = 0.0
 	if on != null and not on.freeze and world != null:
 		_sail(on, area, delta)
-		_touch(on, delta)
 		if world.counts_deeds:
 			_deeds(on, delta)
 	_show()
@@ -423,7 +436,7 @@ func _sail(on: Device, area: float, h: float) -> void:
 func _deeds(on: Device, h: float) -> void:
 	if not (Deeds.waiting(world, &"close_hauled") or Deeds.waiting(world, &"storm_runner")):
 		return
-	if raise < 1.0 or not sailed_by_you(on):
+	if not hoisted() or not sailed_by_you(on):
 		upwind_m = 0.0
 		outflow_m = 0.0
 		return
@@ -499,26 +512,18 @@ func _strain(h: float) -> void:
 		return
 	if bend_n > tuning.mast_snap_n:
 		wear(INF)
-		raised = false
 		_crack()
 		return
 	if load_n > tuning.sail_tear_n and raise > 0.0:
 		var full: float = Catalog.PARTS[&"sail"].stats.sail_m2
 		var was: float = on.stats.sail_m2
 		on.stats.sail_m2 = maxf(was - full * TEAR_RATE * (load_n / tuning.sail_tear_n - 1.0) * h, 0.0)
-		if sail_m2() <= 0.0:
-			raised = false
 
 
-## Lying over, its masthead and boom's end meet the sand as any end would:
-## a soft push up and a drag along it, so a capsized camp rests on its mast.
-func _touch(on: Device, h: float) -> void:
-	if global_basis.y.normalized().dot(Vector3.UP) > cos(TOUCH_TILT):
-		return
-	# The spar has its own real collider; only the uncollided upper mast needs
-	# this existing sand contact approximation.
-	var head := Vector3(0.0, BOOM_AT.y + LUFF * extend, 0.0)
-	Runners.touch(on, world, global_transform * head, 0.6, h)
+## Its head, where a camp lying over rests on its mast: the spar has its own
+## collider, the upper mast none.
+func masthead() -> Vector3:
+	return global_transform * Vector3(0.0, BOOM_AT.y + LUFF * extend, 0.0)
 
 
 ## Its sheet: the line on the boom's end, which reeling hauls through the
@@ -814,16 +819,12 @@ func _physical_boom(on: Device) -> void:
 	_boom_body.can_sleep = false
 	_boom_body.center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 	_boom_body.center_of_mass = BOOM_AT + Vector3(0.0, MIDDLE.x, -MIDDLE.y)
-	# A cloth rectangle and its spar supply the inertia around their own middle.
-	_boom_body.inertia = sail().mass / 12.0 * Vector3(LUFF * LUFF + BOOM * BOOM, BOOM * BOOM, LUFF * LUFF)
 	_boom_body.collision_layer = on.collision_layer
 	_boom_body.collision_mask = on.collision_mask
 	add_child(_boom_body)
 	# Configure the hinge in its authored rest frame, independent of saved yaw.
 	_boom_body.global_transform = global_transform
 	PhysicsServer3D.body_set_state(_boom_body.get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, _boom_body.global_transform)
-	_boom_body.linear_velocity = on.linear_velocity + on.angular_velocity.cross(_boom_body.global_position - on.global_position)
-	_boom_body.angular_velocity = on.angular_velocity + global_basis.y * boom_spin
 	_boom_body.freeze = on.freeze
 	var shape := CollisionShape3D.new()
 	var spar := BoxShape3D.new()
@@ -845,6 +846,12 @@ func _physical_boom(on: Device) -> void:
 	_boom_joint.exclude_nodes_from_collision = false
 	_boom_body.global_transform = global_transform * Transform3D(Basis(Vector3.UP, boom), Vector3.ZERO)
 	_inherit_boom_velocity()
+	RopeArticulation.forget(on)
+
+
+## The boom's own rigid body while it swings on its hinge, or null.
+func boom_body() -> RigidBody3D:
+	return _boom_body if is_instance_valid(_boom_body) else null
 
 
 func _weigh_boom() -> void:
@@ -887,6 +894,7 @@ func _release_boom() -> void:
 	if is_instance_valid(_boom_body):
 		_boom_body.free()
 	_boom_body = null
+	RopeArticulation.forget(_boom_carrier)
 	_boom_carrier = null
 	_physical_part = null
 	if had_body:
@@ -972,7 +980,7 @@ func eased_length(degrees: float, side := 0.0) -> float:
 
 ## Observe the existing trimming action without taking any of its rope length.
 func _worked(step: float) -> float:
-	if step != 0.0 and world != null and world.counts_deeds and raise >= 1.0 and carrier() != null \
+	if step != 0.0 and world != null and world.counts_deeds and hoisted() and carrier() != null \
 			and sailed_by_you(carrier()) and _streamed(carrier()):
 		Deeds.done(world, &"telltale")
 	return step

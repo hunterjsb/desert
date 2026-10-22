@@ -42,6 +42,9 @@ var _plays := {}
 var _silences := {}
 ## Which of its songs each play is, by god, as far as worked out.
 var _tracks := {}
+## The dial's carriers as worked out for one moon day (dial_carriers).
+var _carriers_day := -INF
+var _carriers: Array[Array] = []
 var _quiet := {}
 ## When the Stoker's furnace song was last called up, world time: the dev
 ## console's meltdown, for now.
@@ -209,3 +212,18 @@ func carrier(id: StringName, t: float) -> float:
 	if not _walked.has(id):
 		_walked[id] = []
 	return Dial.walk(_walked[id], [run_seed, id], floori(t / _day_seconds), band(id), BAND_MARGIN, _drift)
+
+
+## Every carrier on the AM dial at world time t, low to high, [kHz, id]: the
+## beacon's and each far god's (the near ones are on FM). They move only
+## from one moon day to the next, so they're worked out once a day.
+func dial_carriers(t: float) -> Array[Array]:
+	var day := floorf(t / _day_seconds)
+	if day != _carriers_day:
+		_carriers_day = day
+		_carriers = [[Dial.BEACON_KHZ, &"beacon"]]
+		for id in ids():
+			if not Fm.is_god(id):
+				_carriers.append([carrier(id, t), id])
+		_carriers.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
+	return _carriers

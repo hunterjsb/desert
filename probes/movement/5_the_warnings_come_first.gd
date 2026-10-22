@@ -1,5 +1,5 @@
 extends MovementProbe
-## Exclusive on noisy runners
+## Exclusive
 ## Movement probe 5: the warnings always come first. Leave a small camp, a
 ## shield generator and a chassis, in a straight line at every speed from a
 ## walk to a board flat out with a tailwind behind it, along the chunk grid

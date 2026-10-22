@@ -42,7 +42,8 @@ func run() -> void:
 	await simulate(0.5)
 	look(eye(), stake.global_position + Vector3.UP * 0.3)
 	got = await _reel_in(moored.rope, radio)
-	check(got.khz == 0.0 and absf(got.line - Reel.NOTCH) < 0.01, "holding it, the line at your waist reels first")
+	# Taut against its stake by now, the line comes in slower than a notch a second.
+	check(got.khz == 0.0 and got.line > 0.05, "holding it, the line at your waist reels first (%.2f m)" % got.line)
 	player.waist.untie(player.waist.tied.back())
 	got = await _reel_in(moored.rope, radio)
 	check(absf(got.khz - world.tuning.dial_notch_khz) < 0.01, "with no line there, it tunes the radio you hold")

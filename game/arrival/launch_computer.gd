@@ -3,8 +3,7 @@ extends Control
 ## A persistent physical display; focusing changes input, never its contents.
 signal closed
 var _world: World
-var _plan := {}
-var _changed: Callable
+var _preflight: SurveyorPreflight
 var _focused := false
 var _chart := Control.new()
 var _orbit_view := SubViewportContainer.new()
@@ -19,17 +18,14 @@ var _back := Button.new()
 var _cargo_toggle := Button.new()
 var _cargo_page := DepartureCargoPage.new()
 var _show_cargo := false
-var _clock := 0.0
 var _dragging := false
-var _sample := {}
-var _forecast := {}
-var _pending := true
-var _refresh_at := 0.0
+## The moon, ship and handle now; the drawn path and landing are the controller's forecast.
+var _frame := {}
+var _shown := {}
 
-func setup(world: World, plan: Dictionary, changed: Callable) -> void:
+func setup(world: World, preflight: SurveyorPreflight) -> void:
 	_world = world
-	_plan = plan.duplicate(true)
-	_changed = changed
+	_preflight = preflight
 	if is_node_ready():
 		refresh()
 
@@ -46,7 +42,6 @@ func _ready() -> void:
 	add_child(_title)
 	_chart.clip_contents = true
 	_chart.mouse_filter = Control.MOUSE_FILTER_STOP
-	_chart.draw.connect(_draw_chart)
 	_chart.gui_input.connect(_chart_input)
 	add_child(_chart)
 	_orbit_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -71,7 +66,7 @@ func _ready() -> void:
 		add_child(label)
 	_confirm.text = "Set launch pulse"
 	_confirm.theme_type_variation = &"MenuWordMain"
-	_confirm.pressed.connect(_commit)
+	_confirm.pressed.connect(commit)
 	add_child(_confirm)
 	_back.text = "Step back"
 	_back.theme_type_variation = &"MenuWordMain"
@@ -123,107 +118,84 @@ func _display_page() -> void:
 	_result.visible = not _show_cargo
 	_readiness.visible = not _show_cargo
 	_cargo_toggle.text = "Landing view" if _show_cargo else "Cargo"
-	if _show_cargo:
-		_update_readiness()
-	else:
-		_instruction.text = "Drag the pulse handle.\nKeep LANDING inside the survey ring." if _focused else "Use the station to plan your drop."
+	_instruction.text = "Drag the pulse. Set it when the landing is clear." if _focused else ""
+	refresh()
 
-
+## One line each: where the pod comes down, and what still stops the launch.
 func refresh() -> void:
-	if not is_node_ready():
+	if not is_node_ready() or not is_instance_valid(_preflight) or not is_instance_valid(_preflight.ship):
 		return
-	var candidate: Dictionary = _forecast.get("candidate", LandingPlan.selected(_plan))
-	if candidate.is_empty():
-		_result.text = "Outside the surveyed corridor. Adjust the pulse to bring the landing back."
-		_update_readiness()
-		return
-	_result.text = "Landing forecast\n" + ("Long approach · gentler impact" if _sample.get("profile", _plan.profile) == &"shallow" else "Short approach · harder impact" if _sample.get("profile", _plan.profile) == &"steep" else "Balanced approach")
-	var kinds: Array[String] = []
-	for reading: Dictionary in candidate.get("signals", []):
-		var kind := String(reading.kind).replace("_", " ")
-		if not kinds.has(kind):
-			kinds.append(kind)
-	_result.text += "\n\n" + ("Coarse survey: " + ", ".join(kinds) if not kinds.is_empty() else "No structure reading nearby.")
-	_result.text += "\nContents unknown."
-	if not _forecast.is_empty() and not _forecast.get("safe", false):
-		_result.text = "Unsafe ground. Adjust the pulse to find a clear landing.\n\nCoarse survey only; contents unknown."
-	_update_readiness()
-
-func _update_readiness() -> void:
-	if not is_instance_valid(_world) or not is_instance_valid(_world.arrival) or not is_instance_valid(_world.arrival.preflight):
-		_readiness.text = ""
-		return
-	var missing := _world.arrival.preflight.readiness()
-	var report := PreflightCargo.packing_report(_world, _world.arrival.preflight.ship)
-	_cargo_page.show_report(report, missing)
+	var forecast := _preflight.forecast
+	var sample: Dictionary = forecast.get("sample", {})
+	var profile: StringName = sample.get("profile", &"standard")
+	if not sample.get("inside_survey", false):
+		_result.text = "Landing outside the survey"
+	elif not forecast.get("safe", false):
+		_result.text = "Rough ground at the landing"
+	else:
+		_result.text = "Long approach · gentler impact" if profile == &"shallow" else "Short approach · harder impact" if profile == &"steep" else "Balanced approach"
+		var kinds: Array[String] = []
+		for reading: Dictionary in forecast.get("candidate", {}).get("signals", []):
+			var kind := String(reading.kind).replace("_", " ")
+			if not kinds.has(kind):
+				kinds.append(kind)
+		_result.text += "\n" + ("Seen nearby: " + ", ".join(kinds) if not kinds.is_empty() else "Nothing seen nearby")
+	var missing := _preflight.readiness()
+	_readiness.text = "Ready to launch" if missing.is_empty() else missing[0]
+	_confirm.text = "Launch pulse set" if _world.arrival_state.preflight.get("plan_confirmed", false) else "Set launch pulse"
+	var report := PreflightCargo.packing_report(_world, _preflight.ship)
+	_cargo_toggle.text = "Landing view" if _show_cargo else "Cargo · %d aboard" % report.filter(func(item: Dictionary) -> bool: return item.aboard).size()
 	if _show_cargo:
-		_instruction.text = ("Ready to board and launch." if missing.is_empty() else "Launch blocked · details below.") + "\nPacked gear may be lost on impact."
-	if not _show_cargo:
-		_cargo_toggle.text = "Cargo · %d aboard" % report.filter(func(item: Dictionary) -> bool: return item.aboard).size()
-	_readiness.text = "Ready: load, enter pod, launch." if missing.is_empty() else "Before launch\n• " + "\n• ".join(missing)
+		_cargo_page.show_report(report, missing)
 
-func _process(delta: float) -> void:
-	_clock += delta
-	if is_instance_valid(_world) and is_instance_valid(_orbit.camera):
-		_update_orbit()
-	if _clock >= _refresh_at:
-		_refresh_at = _clock + 0.3
-		if is_instance_valid(_world) and _plan.has("departure_trajectory"):
-			_forecast = DepartureTrajectory.resolve(_world.shape, _plan, _plan.departure_trajectory, _departure_time(), _world.tuning)
-		refresh()
-	_chart.queue_redraw()
-	if _chart.get_child_count() > 1:
-		_chart.get_child(1).queue_redraw()
-
-func _departure_time() -> float:
-	return float(_world.arrival_state.get("preflight", {}).get("departure_time", _world.time))
-
-func _update_orbit() -> void:
-	if not _plan.has("departure_trajectory"):
+func _process(_delta: float) -> void:
+	if not is_instance_valid(_preflight) or not _preflight.preparing() or not is_instance_valid(_orbit.camera):
 		return
-	_sample = DepartureTrajectory.sample(_plan.departure_trajectory, _departure_time(), _world.tuning)
-	if not _sample.has("camera_transform"):
-		_sample = {}
+	_frame = DepartureTrajectory.frame(_preflight.model(), _preflight.clock())
+	if _frame.is_empty():
 		return
-	var inverse: Basis = (_sample.body_basis as Basis).inverse()
-	var pose: Transform3D = _sample.camera_transform
+	var inverse: Basis = (_frame.body_basis as Basis).inverse()
+	var pose: Transform3D = _frame.camera_transform
 	_orbit.camera.transform = Transform3D(inverse * pose.basis, inverse * pose.origin * ArrivalOrbit.RADIUS)
 	_orbit.camera.fov = 45.0
-	_orbit.update_light(_departure_time())
-
-func _draw_chart() -> void:
-	pass
+	_orbit.update_light(_preflight.clock())
+	# Text changes only with a new forecast, never with the frame rate.
+	if not is_same(_preflight.forecast, _shown):
+		_shown = _preflight.forecast
+		refresh()
+	_chart.get_child(1).queue_redraw()
 
 func _project(point: Vector3) -> Vector2:
-	var inverse: Basis = (_sample.body_basis as Basis).inverse()
+	var inverse: Basis = (_frame.body_basis as Basis).inverse()
 	return _orbit.camera.unproject_position(inverse * point * ArrivalOrbit.RADIUS) / Vector2(_orbit_port.size) * _chart.size
 
 func _exposed(point: Vector3) -> bool:
-	var eye: Vector3 = _sample.camera_transform.origin
+	var eye: Vector3 = _frame.camera_transform.origin
 	var ray := point - eye
 	var along := clampf(-eye.dot(ray) / maxf(ray.length_squared(), 0.000001), 0.0, 1.0)
 	return (eye + ray * along).length() >= 0.997
 
 func _draw_overlay(canvas: Control) -> void:
-	if not _sample.has("landing_point"):
+	var sample: Dictionary = _preflight.forecast.get("sample", {}) if is_instance_valid(_preflight) else {}
+	if _frame.is_empty() or not sample.has("landing_point"):
 		return
 	var amber := Color(0.95, 0.73, 0.36)
 	var teal := Color(0.55, 0.85, 0.82)
-	var anchor: Vector3 = _plan.anchor.get("point", Vector3.RIGHT)
-	var reach := LandingPlan.RULES.corridor_radius_m / (_world.tuning.moon_circumference / TAU)
-	var body: Basis = _sample.body_basis
+	var anchor: Vector3 = _world.arrival_state.landing_plan.anchor.get("point", Vector3.RIGHT)
+	var reach := _world.tuning.arrival_corridor_m / (_world.tuning.moon_circumference / TAU)
+	var body: Basis = _frame.body_basis
 	for i in 64:
 		var a := body * Sphere.toward(anchor, TAU * i / 64.0, reach)
 		var b := body * Sphere.toward(anchor, TAU * (i + 1) / 64.0, reach)
 		if _exposed(a) and _exposed(b):
 			canvas.draw_line(_project(a), _project(b), Color(teal, 0.6), 1.5, true)
-	var path: PackedVector3Array = _sample.path
+	var path: PackedVector3Array = sample.path
 	for i in range(1, path.size()):
 		if _exposed(path[i - 1]) and _exposed(path[i]):
 			canvas.draw_line(_project(path[i - 1]), _project(path[i]), amber, 2.5, true)
-	var ship := _project(_sample.ship_position)
+	var ship := _project(_frame.ship_position)
 	canvas.draw_circle(ship, 5.0, teal)
-	var handle := _project(_sample.pulse_handle)
+	var handle := _project(_frame.pulse_handle)
 	canvas.draw_line(ship, handle, amber, 2.0, true)
 	canvas.draw_circle(handle, 12.0, amber, false, 3.0, true)
 	var font := get_theme_font(&"font", &"Label")
@@ -233,7 +205,7 @@ func _draw_overlay(canvas: Control) -> void:
 	canvas.draw_line(handle, pulse_label + Vector2(78, 6), amber, 1.0, true)
 	canvas.draw_string(font, ship_label, "SHIP", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, teal)
 	canvas.draw_string(font, pulse_label, "PULSE", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, amber)
-	var landing: Vector3 = (_sample.body_basis as Basis) * (_sample.landing_point as Vector3)
+	var landing: Vector3 = body * (sample.landing_point as Vector3)
 	if _exposed(landing):
 		var at := _project(landing)
 		canvas.draw_arc(at, 9.0, 0.0, TAU, 32, amber, 2.0, true)
@@ -256,37 +228,20 @@ func _chart_input(event: InputEvent) -> void:
 		accept_event()
 
 func _drag(at: Vector2) -> void:
-	if not is_instance_valid(_world) or _sample.is_empty():
+	if not is_instance_valid(_preflight) or _frame.is_empty():
 		return
 	var pixel := at / _chart.size * Vector2(_orbit_port.size)
-	var basis: Basis = _sample.body_basis
-	var origin := basis * _orbit.camera.project_ray_origin(pixel) / ArrivalOrbit.RADIUS
-	var direction := basis * _orbit.camera.project_ray_normal(pixel)
-	_plan.departure_trajectory = DepartureTrajectory.drag(_plan.departure_trajectory, _departure_time(), origin, direction, _world.tuning)
-	_world.arrival_state.landing_plan.departure_trajectory = _plan.departure_trajectory.duplicate(true)
-	_world.arrival_state.preflight.plan_confirmed = false
-	_pending = true
+	var basis: Basis = _frame.body_basis
+	_preflight.drag_pulse(basis * _orbit.camera.project_ray_origin(pixel) / ArrivalOrbit.RADIUS,
+		basis * _orbit.camera.project_ray_normal(pixel))
 	_confirm.text = "Set launch pulse"
-	_refresh_at = 0.0
-	_update_orbit()
-	_chart.queue_redraw()
 
-func _commit() -> void:
-	if not _focused or _plan.is_empty():
+## The set pulse is the one launch flies; unclear ground keeps it pending.
+func commit() -> void:
+	if not _focused or not is_instance_valid(_preflight):
 		return
-	var choice := _plan.duplicate(true)
-	if is_instance_valid(_world) and _plan.has("departure_trajectory"):
-		_forecast = DepartureTrajectory.resolve(_world.shape, _plan, _plan.departure_trajectory, _departure_time(), _world.tuning)
-		if not _forecast.get("safe", false):
-			_result.text = "No safe landing forecast. Adjust the pulse inside the survey corridor."
-			return
-		choice = _forecast.plan
-	_plan = choice.duplicate(true)
-	if _changed.is_valid():
-		_changed.call(choice.duplicate(true))
-	_pending = false
-	_confirm.text = "Launch pulse set"
-	_update_readiness()
+	_preflight.commit_pulse()
+	refresh()
 
 func dispose() -> void:
 	_orbit_port.render_target_update_mode = SubViewport.UPDATE_DISABLED

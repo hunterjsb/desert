@@ -328,8 +328,9 @@ func finds() -> Array[RigidBody3D]:
 ## The finds lying in the chunks round a place: what your hands look over.
 func near(at: Vector3) -> Array[RigidBody3D]:
 	var all: Array[RigidBody3D] = []
-	if _world.stoker != null:
-		all.append_array(_world.stoker.loose())
+	# Fixtures' shelves are looked over as finds are.
+	for fixture in get_tree().get_nodes_in_group(&"fixtures"):
+		all.append_array(fixture.loose())
 	var middle := _world.terrain.chunk_at(_world.world_x(at.x), _world.world_z(at.z))
 	for dz in range(-1, 2):
 		for dx in range(-1, 2):
@@ -367,8 +368,8 @@ func lying(body: Node) -> bool:
 ## from now on, loose unless the sand still holds it, running if its battery
 ## can, and its chunk won't lay it out again while it's loaded.
 func claim(body: Node) -> void:
-	if body != null and body.has_meta(&"stoker_slot"):
-		_world.stoker.claim(body)
+	if body != null and body.has_meta(&"slot"):
+		body.get_meta(&"slot")[0].claim(body)
 		_discovered(body)
 		return
 	# What's seated on a found rig is the rig's: the whole rig becomes yours.
@@ -599,8 +600,8 @@ func wreckage_near(at: Vector3) -> Wreckage:
 ## Why something you'd take is held fast in its wreck, or "": a module, or
 ## anything in or on one.
 func held_fast(body: Node) -> String:
-	if _world.stoker.locked(body):
-		return "service hatch locked"
+	if body != null and body.has_meta(&"slot") and body.get_meta(&"slot")[0].locked(body) != "":
+		return body.get_meta(&"slot")[0].locked(body)
 	var module := _module_of(body)
 	if module.is_empty():
 		return ""

@@ -78,6 +78,8 @@ var taught := false
 @onready var sleep: Sleep = $Sleep
 
 var home: CampHome
+var _local: Sites.Anchor
+var _local_at := Vector3.INF
 
 var _last_x: float
 var _last_z: float
@@ -267,9 +269,18 @@ func geographic_at(at: Vector3) -> Vector3:
 	var z := world_z(at.z)
 	if home != null and home.has_home() and home.anchor != null and home.bounds.has_point(Vector2(x, z)):
 		return home.anchor.point_at(x, z)
-	var local := Sites.Anchor.new(player_world_x(), player_world_z(),
-		Sphere.point(moon.latitude, moon.longitude), -moon.north().z, moon.radius)
-	return local.point_at(x, z)
+	return _local_map().point_at(x, z)
+
+
+## The player's own map, made again only once they or the moon position move.
+func _local_map() -> Sites.Anchor:
+	var px := player_world_x()
+	var pz := player_world_z()
+	var at := Vector3(moon.latitude, moon.longitude, moon.north().z)
+	if _local == null or _local.x != px or _local.z != pz or _local_at != at:
+		_local = Sites.Anchor.new(px, pz, Sphere.point(moon.latitude, moon.longitude), -at.z, moon.radius)
+		_local_at = at
+	return _local
 
 
 func engine_x(x: float) -> float:
@@ -371,7 +382,7 @@ func _physics_process(delta: float) -> void:
 	if absi(stray.x) >= tuning.origin_shift_chunks or absi(stray.y) >= tuning.origin_shift_chunks:
 		shift_origin(stray)
 
-	home.refresh()
+	home.tick(delta)
 	_keep_bodies_on_ground()
 	time += delta * time_warp
 	played += delta
@@ -409,6 +420,8 @@ func _step_onto(x: float, z: float) -> void:
 			Deeds.done(self, &"glint")
 		if site.kind == &"nomad_camp":
 			Deeds.done(self, &"just_missed")
+		if site is SummitSite:
+			Deeds.done(self, &"summit")
 		if site.source == &"dune":
 			Deeds.done(self, &"dune_reader")
 	if site is VentMouth and GeologyKit.from_slot(site.plan(x - site.x, z - site.z)) <= GeologyKit.CREST:
@@ -426,7 +439,7 @@ func _live_days() -> void:
 ## Marked belongings keep their own ground; ordinary loose finds follow the player.
 func _admit_home(rect: Rect2) -> String:
 	var policy := TerrainResidency.plan(terrain.chunk_at(player_world_x(), player_world_z()), tuning, rect)
-	return "home needs too much ground support" if policy.camp_keep.get_area() > tuning.home_support_chunks else ""
+	return "the camp is spread too wide" if policy.camp_keep.get_area() > tuning.home_support_chunks else ""
 
 
 func _release_home_check() -> String:

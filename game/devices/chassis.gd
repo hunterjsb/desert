@@ -850,7 +850,8 @@ func _read_contact_corners(frame: FrameContact) -> void:
 		_contact_resources.append(frame.source)
 
 
-func _rest_frame_contacts(h: float, clearance: float) -> void:
+## Its joined frames' real corners, for resting tipped over on them.
+func frame_contact_points(points: PackedVector3Array, clearances: PackedFloat32Array, clearance: float) -> void:
 	for frame in _frame_contacts():
 		var shape := frame.shape
 		# Replacing a shape has no child-order notification; use it immediately.
@@ -862,7 +863,8 @@ func _rest_frame_contacts(h: float, clearance: float) -> void:
 			_read_contact_corners(frame)
 		var to_world := global_transform * shape.transform
 		for corner in frame.corners:
-			Runners.touch(self, world, to_world * corner, 0.6, h, clearance)
+			points.append(to_world * corner)
+			clearances.append(clearance)
 
 
 func show_wear() -> void:

@@ -26,6 +26,16 @@ static var _current: Tuning
 @export_group("Stoker")
 @export var stoker_burn_s: float = 30.0
 @export var stoker_stock: int = 3
+## How often the furnace bay looks for Halloran among the laid sites, s.
+@export var stoker_poll_s: float = 0.5
+## The bay's lamp: its energy burning, the flicker on that, and its glow cold.
+@export var stoker_light_energy: float = 2.8
+@export var stoker_light_flicker: float = 0.2
+@export var stoker_light_idle: float = 0.1
+@export var stoker_light_range_m: float = 16.0
+## The burn's roar, dB, and how far it carries, m.
+@export var stoker_sound_db: float = -17.0
+@export var stoker_sound_m: float = 65.0
 
 @export_group("Spawns")
 ## Every run starts this near the equator, degrees: inside it the clear's
@@ -723,6 +733,9 @@ static var _current: Tuning
 ## this fast a turn, rad/s, by a turning push of at most this much, N·m.
 @export var helm_turn: float = 0.5
 @export var helm_torque: float = 800.0
+## A camp lying over drags along the sand at its edges and masthead by this
+## share of what holds it up there.
+@export var tipped_grip: float = 0.6
 
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line
@@ -1082,9 +1095,9 @@ static var _current: Tuning
 ## and how often it reads it again, s of world time.
 @export var radio_forecast_minutes: float = 20.0
 @export var radio_forecast_every: float = 5.0
-## The weather station reads its report aloud this often, s of world time,
-## and at once as you tune in (gonkhub, 2026-10-19: "a regular report (every 2
-## real life min)"; world time runs at real time); heard this far, m.
+## The gap between a report's composed words, s; and at most this often a
+## god's or a beacon's changing words are read again, s of world time: the
+## radio speaks only with news (Hunter, 2026-10-19: "probably announce less often").
 @export var radio_word_gap_seconds: float = 0.04
 @export var radio_report_every: float = 120.0
 ## Speech-only station character; weather and local computer speech stay unchanged.
@@ -1479,19 +1492,104 @@ static func current() -> Tuning:
 
 @export_group("Marked Home")
 ## Admission limits include the camp's owned assembly and supporting terrain halo.
-@export var home_max_bodies: int = 512
+@export var home_max_bodies: int = 160
 @export var home_span_m: float = 128.0
 @export var home_support_chunks: int = 49
 @export var home_signal_m: float = 2000.0
 @export var home_beacon_w: float = 1.0
 @export var home_depart_m: float = 700.0
 @export var home_return_m: float = 30.0
+## Between rebuilds of Home's membership a drifting belonging is noticed this late, s.
+@export var home_sweep_s: float = 1.0
+## The beacon's lamp blinks at this period while Home's ground is made ready, s.
+@export var home_beacon_blink_s: float = 1.0
 
 @export_group("Surveyor arrival")
-## Provisional recovery rules for the integrated development opening.
-@export var surveyor_arrival: Dictionary = {}
-## Cabin preparation and bounded approach/impact choices.
-@export var surveyor_preflight: Dictionary = {}
+## The cabin hangs this far over the start, sheltered, while you prepare.
+@export var arrival_ship_height_m: float = 30.0
+@export var arrival_cabin_radius_m: float = 7.0
+@export var arrival_interact_m: float = 3.0
+@export var arrival_seat_eye_m: float = 0.48
+@export var arrival_rack_pitch_m: float = 0.08
+@export var arrival_cargo_gap_m: float = 0.01
+## Gear fitted to the pod's outside still flies if it stays inside this box.
+@export var arrival_external_cargo: AABB = AABB(Vector3(-0.65, -0.2, -0.83), Vector3(2.3, 1.8, 1.66))
+@export var arrival_rope_m: float = 6.0
+@export var arrival_computer_focus_s: float = 0.45
+@export var arrival_computer_focus_m: float = 0.56
+## The carrier keeps station over the start; the pod gets one pulse. Planet radii.
+@export var arrival_departure_altitude_r: float = 0.12
+@export var arrival_free_orbit_s: float = 600.0
+@export var arrival_drift_mps: float = 0.3
+@export var arrival_loiter_m: float = 600.0
+@export var arrival_down_kick: float = 0.35
+@export var arrival_retro_max: float = 0.8
+@export var arrival_cross_max: float = 0.25
+@export var arrival_default_pulse: Vector2 = Vector2(0.4, 0.0)
+@export var arrival_step_s: float = 0.25
+@export var arrival_max_s: float = 180.0
+@export var arrival_path_stride: int = 4
+@export var arrival_handle_r: float = 1.0
+@export var arrival_view_r: float = 3.4
+## Float32 paths miss by millimetres; the default pulse needs only to land on the site.
+@export var arrival_calibration_m: float = 2.0
+## How often preparation re-forecasts the landing as the moon turns under it.
+@export var arrival_forecast_s: float = 0.25
+## The orbital survey: what can be seen, and what ground a pod can land on.
+@export var arrival_candidate_count: int = 4
+@export var arrival_corridor_m: float = 2800.0
+@export var arrival_signal_walk_m: Vector2 = Vector2(250.0, 750.0)
+@export var arrival_attempts_per_signal: int = 12
+@export var arrival_signal_limit: int = 64
+@export var arrival_footprint_half_m: float = 5.0
+@export var arrival_footprint_rise_m: float = 0.7
+@export var arrival_structure_clear_m: float = 20.0
+@export var arrival_detectable_height_m: float = 0.5
+@export var arrival_distance_band_m: float = 250.0
+@export var arrival_candidate_spacing_m: float = 180.0
+## Impact and scatter.
+@export var arrival_ejection_s: float = 2.0
+@export var arrival_landing_s: float = 1.2
+@export var arrival_exit_offset_m: float = 3.2
+@export var arrival_landing_clearance_m: float = 0.04
+@export var arrival_spill_gap_m: float = 0.18
+@export var arrival_spill_columns: int = 5
+@export var arrival_spill_attempts: int = 80
+## Per approach as (shallow, standard, steep): a steeper drop is quicker and harder.
+@export var arrival_entry_s: Vector3 = Vector3(5.0, 3.0, 2.0)
+@export var arrival_frame_survival: Vector3 = Vector3(0.95, 0.9, 0.85)
+@export var arrival_outer_survival: Vector3 = Vector3(0.9, 0.8, 0.65)
+@export var arrival_extra_survival: Vector3 = Vector3(0.9, 0.8, 0.65)
+@export var arrival_chassis_wear_low: Vector3 = Vector3(0.7, 0.45, 0.3)
+@export var arrival_chassis_wear_high: Vector3 = Vector3(0.95, 0.9, 0.75)
+@export var arrival_device_wear_low: Vector3 = Vector3(0.8, 0.6, 0.5)
+@export var arrival_device_wear_high: Vector3 = Vector3(1.0, 0.95, 0.8)
+@export var arrival_usable_min: float = 0.25
+## The seated fall: view, turbulence and sound.
+@export var arrival_limb_below_deg: float = 5.0
+@export var arrival_head_yaw_deg: float = 110.0
+@export var arrival_head_pitch_deg: float = 75.0
+@export var arrival_sway_m: float = 0.012
+@export var arrival_sway_deg: float = 0.65
+@export var arrival_sway_hz: Vector3 = Vector3(0.73, 0.91, 0.57)
+## Turbulence share in (ejection, descent, entry).
+@export var arrival_sway_share: Vector3 = Vector3(0.8, 0.22, 1.0)
+@export var arrival_entry_fade: Vector2 = Vector2(0.15, 0.85)
+@export var arrival_entry_heat: float = 0.65
+@export var arrival_air_db: float = -20.0
+@export var arrival_hull_db: float = -14.0
+@export var arrival_air_ejection: float = 0.25
+@export var arrival_air_descent: float = 0.65
+@export var arrival_air_entry_peak: float = 0.6
+@export var arrival_air_impact_fade: float = 0.4
+@export var arrival_air_pitch: Vector2 = Vector2(0.7, 1.0)
+@export var arrival_ejection_db: float = -8.0
+@export var arrival_landing_db: float = -2.0
+@export var arrival_impact_roll_db: float = -16.0
+@export var arrival_impact_jolt_s: float = 0.42
+@export var arrival_impact_offset_m: float = 0.035
+@export var arrival_impact_tilt_deg: float = 1.3
+@export var arrival_impact_dust_s: float = 1.15
 
 
 @export_group("Ground posture")
