@@ -50,6 +50,10 @@ var durability := 1.0:
 	set(to):
 		durability = to
 		show_wear()
+## Its wear by the way the weather blew, in its own frame: xyz each share of
+## its life the sand took, toward where it came from; w those shares. Its
+## paint shows it where it hit (Paint.show_blast), whatever look it wears.
+var weathered := Vector4.ZERO
 ## Its painted frame, and what turns on its mast.
 var frame_view: MeshInstance3D
 var rotor: Rotor
@@ -359,7 +363,7 @@ func production_w(t := NAN) -> float:
 		var made := minf(now["turbine_w"], world.tuning.turbine_watts_per_cubic * wind * wind * wind)
 		turbine_share = made / now["turbine_w"]
 		watts += made
-	return watts
+	return watts * efficiency()
 
 
 ## What it would draw, W, if it had the power, now or at world time t: some
@@ -391,15 +395,26 @@ func wrecked() -> bool:
 
 
 ## The weather takes a share of a new device's life, less for a tough one; at
-## nothing it's wrecked, dark for good.
-func wear(share: float) -> void:
+## nothing it's wrecked, dark for good. Sand blown from a way, world, marks the
+## faces it struck.
+func wear(share: float, from := Vector3.ZERO) -> void:
 	if share <= 0.0 or wrecked():
 		return
-	durability = maxf(durability - share / frame_stats.get("toughness", 1.0), 0.0)
+	var lost := minf(share / frame_stats.get("toughness", 1.0), durability)
+	if from != Vector3.ZERO:
+		var own := from.normalized() * global_basis * lost
+		weathered += Vector4(own.x, own.y, own.z, lost)
+	durability -= lost
 	if wrecked():
 		set_powered(false)
 		if charge_light != null:
 			ChargeLight.paint(charge_light, 0.0)
+
+
+## What of its rating its wear leaves it: sand-pitted cells and a scoured
+## rotor make less, and a shield draws more to hold the weather back.
+func efficiency() -> float:
+	return 1.0 - Tuning.current().worn_loss * (1.0 - durability)
 
 
 ## An appearance may adapt the generated lineage without replacing imported art.
@@ -425,6 +440,15 @@ func show_wear() -> void:
 	for socket in sockets():
 		if socket.marker != null:
 			socket.marker.set_instance_shader_parameter(&"age", amount)
+	_show_blast()
+
+
+## The storms' damage on everything painted on it, fitted parts and joined
+## pieces too: one deck, one condition.
+func _show_blast() -> void:
+	for child in get_children():
+		if child == rotor or Paint.is_worn(child):
+			Paint.show_blast(child, self, weathered, child == rotor)
 
 
 func parts() -> Array[Part]:
@@ -646,6 +670,8 @@ func _unfit(socket: Socket, whole: bool) -> Part:
 			node.visible = false
 		elif Paint.is_worn(node):
 			(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", 0.0)
+			# A part has no condition of its own yet: it leaves the device's marks behind.
+			(node as GeometryInstance3D).set_instance_shader_parameter(&"blasted", Vector4.ZERO)
 	socket.fitted.clear()
 	socket.part = null
 	part.socket = null
@@ -750,6 +776,7 @@ func _recompute() -> void:
 		glider.runners = runners
 	var now := stats()
 	_hovering = now["hovering"]
+	_show_blast()
 	# Lamps shine, and lenses and emitters glow, only while it has the power,
 	# and a lamp only while it's switched on.
 	if frame_view != null:

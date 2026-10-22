@@ -34,7 +34,7 @@ static var _kept := [
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
 	[Bedroll, ["laid"]],
-	[Device, ["resting", "lift_share", "lamps", "priority", "switched_off"]],
+	[Device, ["resting", "lift_share", "lamps", "priority", "switched_off", "weathered"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
 	"_jumped", "_since_ground", "_touchdown", "_jump_buffer", "_jump_was", "_jump_queued", "_crouch_was",

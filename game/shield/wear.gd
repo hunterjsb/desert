@@ -46,7 +46,10 @@ func live(seconds: float, t: float) -> void:
 
 func _tick(seconds: float, t: float) -> void:
 	for device in _world.devices():
-		device.wear(rate_at(device.global_position, t) * seconds)
+		var share := rate_at(device.global_position, t) * seconds
+		# The sand strikes the faces turned to where the wind comes from.
+		if share > 0.0:
+			device.wear(share, -_world.weather.felt_wind(device.global_position, t))
 		if device is ShieldGenerator:
 			_held(device, seconds, t)
 	_under(seconds)

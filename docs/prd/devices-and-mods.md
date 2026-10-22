@@ -815,7 +815,7 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
   felt weather. Use never wears them. A part sheltered from a harm doesn't wear from
   it, so the shield protects your parts as well as you. (Session 4, part 5 gives each era a repair
   material, which nothing here mends yet: [frames by era](#frames-by-era-agreed-session-4-part-5-not-built).)
-- **Storms leave visible damage (Hunter, 2026-10-22; agreed, not built).** "We can start with the storm
+- **Storms leave visible damage (Hunter, 2026-10-22; agreed, first step built).** "We can start with the storm
   causing visible damage to items to wear in our wear system, keeping in mind we will use it to create
   tiered gear later just like youre suggesting, with kind of the same model across eras of the same
   piece of gear but yeah different conditions and wear levels and modifications and repair needs and
@@ -823,6 +823,27 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
   shows on it, through the one wear shader, and what it costs the part is real. Later, one piece of
   gear keeps one model across eras, its era and state carried by condition, wear, modifications and
   repair needs, so the throughline reads at a glance.
+
+  *As built (2026-10-22):*
+  - **Its condition is data the look reads.** Beside its soundness, a device keeps which way the weather
+    wore it (`Device.weathered`, saved with it): each share of its life a storm or a gale took, toward
+    where the sand came from, in its own frame. Only the elements mark it; a find's years and a landing's
+    impact show as age, as before. Nothing but the look reads the marks, so an era's or a modification's
+    look shows the same damage on the same model.
+  - **It shows where it hit.** The one wear shader blasts every painted mesh on the device, fitted parts
+    and joined pieces too: the faces turned to the storms are scoured pale and matte, their edges
+    stripped and their paint pitted and thinned to bright metal, deeper with more storm, while the lee
+    keeps its paint. A turbine's rotor turns to face the wind, so it takes it all on its front. A part
+    has no condition of its own yet: taken off, it shows none.
+  - **It costs what it looks.** A worn device makes `1 - worn_loss × (1 - soundness)` of what a sound one
+    does (`worn_loss` 0.5: on the point of wreck, half), and a shield holding the weather back draws
+    that much more. Trays float at their old draw. One storm (twelve minutes of full storm) leaves a
+    turbine 70% sound, its windward edges stripped and lightly pitted, making 85%; three leave it 10%,
+    its windward faces blasted to grey metal, making 55%. An unsheltered chassis is wrecked in one.
+  - **Measured:** the blast costs about 0.1 ms a frame at 1080p on the RTX 3070, close on the worst of it
+    (noise ±0.3 ms), and nothing on what no storm has marked (`look/storm_wear`).
+  - **Not yet:** eras, tiers, modifications and repair. A piece joining a deck shows the deck's marks
+    while joined, and its own again once it comes off.
 
 ## Frames by era (Agreed, session 4, part 5; not built)
 

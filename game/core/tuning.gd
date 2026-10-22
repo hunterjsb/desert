@@ -424,6 +424,9 @@ static var _current: Tuning
 ## Wind 10 m/s past that wrecks a device by itself in this many minutes;
 ## harder wind, faster in proportion.
 @export var wind_wreck_minutes: float = 30.0
+## What wear costs: a device on the point of wreck makes this share less than
+## a sound one, and holds the weather back for that much more.
+@export var worn_loss: float = 0.5
 
 @export_group("Player")
 ## About 5 km/h, the pace the moon's size was set against.

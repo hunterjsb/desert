@@ -53,6 +53,16 @@ instance uniform float lit = 0.0;
 instance uniform float era = 0.0;
 // How far over its foot the sand stands now, m: a structure between states.
 instance uniform float foot_shift = 0.0;
+// The storms it stood out in (Device.weathered, Paint.show_blast): xyz toward
+// the faces the sand struck, in this mesh's frame, as long as how one-sided
+// it blew; w how much of its life they took.
+instance uniform vec4 blasted = vec4(0.0);
+// Pits a metre: about 2 cm cells, each holding at most one, on a lattice
+// turned off the pieces' axes so they never line up along a face.
+const float PIT_CELLS = 48.0;
+const mat3 PIT_TURN = mat3(vec3(0.788, 0.335, -0.516), vec3(-0.123, 0.909, 0.398), vec3(0.603, -0.249, 0.758));
+// Fresh-blasted metal: bright, and too rough to shine.
+const vec3 BLASTED = vec3(0.66, 0.64, 0.6);
 
 varying vec3 obj_pos;
 varying vec3 obj_n;
@@ -99,6 +109,29 @@ float tri(vec3 p, vec3 n, float s) {
 	return texture(noise, p.yz * s).r * w.x + texture(noise, p.xz * s).r * w.y + texture(noise, p.xy * s).r * w.z;
 }
 
+// An integer hash: pits stay put however far from the origin.
+uint lattice(ivec3 p) {
+	uvec3 q = uvec3(p);
+	uint h = q.x * 1597334677u ^ q.y * 3812015801u ^ q.z * 2798796415u;
+	h = (h ^ (h >> 16u)) * 2246822519u;
+	return h ^ (h >> 13u);
+}
+
+// Sand-cut pits at a depth of blasting: more cells hold one, and wider, the
+// deeper it cut. x: the pit, y: its shadowed floor. Faded to their average
+// once a pit is under a pixel, so they never sparkle.
+vec2 pits(vec3 p, float depth) {
+	vec3 q = PIT_TURN * p * PIT_CELLS;
+	vec3 cell = floor(q);
+	uint h = lattice(ivec3(cell));
+	vec4 roll = vec4(uvec4(h, h >> 6u, h >> 12u, h >> 18u) & uvec4(63u)) / 63.0;
+	float r = (0.08 + 0.24 * float((h >> 24u) & 63u) / 63.0 * depth) * float(roll.w < depth * 0.6);
+	float d = length(q - cell - 0.3 - 0.4 * roll.xyz);
+	float px = length(fwidth(q));
+	vec2 cut = vec2(1.0 - smoothstep(r - px, r + px, d), 1.0 - smoothstep(r * 0.5 - px, r * 0.5 + px, d));
+	return mix(cut, vec2(0.12, 0.03) * depth, smoothstep(0.35, 0.9, px));
+}
+
 void fragment() {
 	vec3 hs = piece.xyz;
 	vec3 d = max(hs - abs(piece_pos), vec3(0.0));
@@ -140,17 +173,30 @@ void fragment() {
 	float windward = clamp(dot(wn, -normalize(wind_dir)), 0.0, 1.0);
 	float edge = 1.0 - smoothstep(0.0, chip_width * (0.4 + 1.2 * coarse), edge_d);
 	float worn = (edge * (0.55 + 0.9 * fine) + corner * 0.4 + windward * 0.35 * fine) * amount;
+	// What the storms struck, by how squarely: they strip its edges first.
+	float struck = blasted.w > 0.0 ? blasted.w * finish.w * clamp(0.3 + dot(normalize(obj_n), blasted.xyz), 0.0, 1.0) : 0.0;
+	worn += struck * (edge * 0.9 + 0.3 * fine);
 	// Softened by a pixel's footprint, so chips finer than one don't sparkle.
 	float aa = fwidth(worn);
 	float chip = smoothstep(0.5 - aa, 0.56 + aa, worn);
 	float old = smoothstep(0.62, 0.8, worn + 0.25 * grain) * smoothstep(0.35, 0.65, coarse);
 	// Scoured: pale, flat and fine-pitted where the sand strikes.
-	float scour = windward * amount * (0.55 + 0.45 * grain);
+	float scour = max(windward * amount * (0.55 + 0.45 * grain), struck * (0.75 + 0.25 * grain));
+	// Pitted and chipped through to bright metal, its rust scoured off as it
+	// formed, dark in each pit's floor; the paint between thinned toward it.
+	vec2 pit = blasted.w > 0.0 ? pits(piece_pos, struck) : vec2(0.0);
+	float through = max(pit.x, chip * smoothstep(0.1, 0.4, struck));
+	float thin = smoothstep(0.3, 1.0, struck * (0.45 + 0.7 * coarse)) * (0.55 + 0.45 * grain);
+	old *= 1.0 - smoothstep(0.0, 0.5, struck);
 	vec3 coat = mix(base, mix(base, vec3(dot(base, vec3(0.33))), 0.5) * 1.18, scour * 0.8);
 	vec3 metal = mix(bare, rust, old);
 	vec3 col = mix(coat, metal, chip);
 	float rough = mix(mix(finish.y, 0.92, scour), mix(0.38, 0.9, old), chip);
 	float metallic = mix(finish.x, mix(0.85, 0.0, old), chip);
+	through = max(through, thin * 0.8);
+	col = mix(mix(col, BLASTED * (0.9 + 0.2 * grain), through), bare * 0.3, pit.y);
+	rough = mix(mix(rough, 0.72, through), 0.95, pit.y);
+	metallic = mix(metallic, 0.45, through);
 	rough = mix(rough, 0.32, cut_in);
 	metallic = mix(metallic, 0.9, cut_in);
 	// Sand on what faces up, and in the low band at the foot; less on what
