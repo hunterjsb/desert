@@ -15,6 +15,7 @@ var elevation := 0.0
 var sailed_m := 0.0
 var _wing: MeshInstance3D
 var _canopy: CollisionShape3D
+var _envelope: BoxShape3D
 var _rope: Rope
 
 
@@ -30,10 +31,8 @@ func _ready() -> void:
 	_wing.set_surface_override_material(_wing.mesh.get_surface_count() - 1, cloth)
 	add_child(_wing)
 	_canopy = CollisionShape3D.new()
-	var envelope := BoxShape3D.new()
-	envelope.size = Vector3(KiteLooks.SPAN, KiteLooks.TALL, 0.06)
-	_canopy.shape = envelope
-	_canopy.disabled = true
+	_envelope = BoxShape3D.new()
+	_envelope.size = Vector3(KiteLooks.SPAN, KiteLooks.TALL, 0.06)
 	add_child(_canopy)
 	angular_damp = Tuning.current().traction_spin_damp
 	_refresh()
@@ -106,10 +105,16 @@ func _refresh() -> void:
 			_rope.hauls = Callable()
 		_rope = null
 	carryable = not flying
-	set_meta(&"wind_catch", wind_catch())
 	if _wing == null:
 		return
-	_canopy.set_deferred(&"disabled", not flying)
+	var envelope: Shape3D = _envelope if flying else null
+	if _canopy.shape != envelope:
+		# Packed handling measures shapes, even disabled ones: the wing goes away.
+		_canopy.shape = envelope
+		_shapes_changed()
+		if has_meta(&"hands_box"):
+			remove_meta(&"hands_box")
+	set_meta(&"wind_catch", wind_catch())
 	_wing.visible = flying
 	frame_view.visible = not flying
 	_wing.scale = Vector3.ONE * Tuning.current().traction_scale

@@ -43,6 +43,11 @@ func run() -> void:
 	check(hands.interact() and not kite.flying, "the reachable kite folds through the ordinary use action")
 	check(kite.laid() == line and line.rope == original and world.ropes.ropes.has(original), "folding preserves the rope and both attachments")
 	check(kite.carryable and not kite.flying, "the recovered kite can be carried")
+	look(camera.global_position, kite.global_position)
+	await physics_frames(3)
+	check(hands.grab() and hands.held == kite, "the folded kite comes into hand through ordinary pickup")
+	check(kite.shape_bounds().size.length() < 1.0 and hands._bounds.size.length() < 1.0,
+		"the packed kite has no invisible wing in its carried bounds")
 	var full := line.full
 	check(kite.use(world.player, kite.global_position), "the same line launches again")
 	check(kite.laid() == line and line.full == full, "relaunch does not create or consume another line")

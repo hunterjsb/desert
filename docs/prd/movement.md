@@ -1897,6 +1897,8 @@ never issued after the first is removed. Existing carry selection, reeling,
 yanking and ordinary hook/stake transfers manage its one bridle; a flying kite
 line stays tied when boarding. In a lull the same line can be reeled back into
 reach, tied at the waist to free a hand, and the kite folded through ordinary use.
+Folding removes the deployed canopy's collision shape, so ordinary pickup and
+held clearance use only the packed item's bounds.
 Kite Rider records 100 m of actual board travel with positive work from the
 loaded line, including gathered knots and routed ends.
 
