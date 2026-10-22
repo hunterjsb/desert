@@ -893,3 +893,9 @@ motor, recorded by the ride; **Bogged Down** (Board, after Pack Mule) is loading
 until it sputters. **Fistful** (Wind, after Set Sail) is gathering a second line's end into the
 hand, recorded by the waist as the end joins the knot; Make Fast now follows it. Three more
 deeds in the same eleven families; with the summit deed the roster is 75.
+
+## Lookout (2026-10-22)
+
+Climbing into a crow's nest on a standing mast records **Lookout** (Wind, after
+Hand-Me-Down): the nest is the nomads' gear and came without one. The roster is
+76 deeds in eleven families. Devices 41 checks it.

@@ -32,7 +32,32 @@ func clear(pose: StringName) -> bool:
 	query.transform = Transform3D(player.global_basis, player.global_position + Vector3.UP * (height(pose) * 0.5 + player.safe_margin * 2.0))
 	query.collision_mask = player.collision_mask
 	query.exclude = [player.get_rid()]
-	return player.get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty()
+	var space := player.get_world_3d().direct_space_state
+	if not space.intersect_shape(query, 1).is_empty():
+		return false
+	return pose != &"prone" or _room_to_lie(space)
+
+
+## Lying down you stretch out behind your eyes, so the length of you needs
+## room as well as your shape; the sand under you doesn't count.
+func _room_to_lie(space: PhysicsDirectSpaceState3D) -> bool:
+	var radius := standing.radius
+	var long := maxf(tuning.posture_prone_length - radius, 0.1)
+	var box := BoxShape3D.new()
+	box.size = Vector3(radius * 1.4, tuning.posture_prone_height * 0.4, long)
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = box
+	query.transform = player.global_transform * Transform3D(Basis.IDENTITY,
+		Vector3(0.0, box.size.y * 0.5 + 0.1, radius + long * 0.5))
+	query.collision_mask = player.collision_mask
+	query.exclude = [player.get_rid()]
+	for hit: Dictionary in space.intersect_shape(query, 8):
+		var body := hit.collider as CollisionObject3D
+		var owner := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D \
+			if body != null else null
+		if owner == null or not owner.shape is HeightMapShape3D:
+			return false
+	return true
 
 
 func restore(pose: StringName) -> void:

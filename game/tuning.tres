@@ -462,9 +462,23 @@ posture_sit_height = 1.15
 posture_prone_height = 0.7
 posture_sit_eye = 1.0
 posture_prone_eye = 0.5
+posture_prone_length = 1.5
 posture_crawl_speed = 0.55
 posture_camera_seconds = 0.22
 posture_sit_catch = 0.6
 posture_prone_catch = 0.25
+suit_ease_seconds = 0.12
+suit_step_lift = 0.09
+suit_arm_swing = Vector2(0.25, 0.6)
+suit_lean = 0.1
+streamer_air = Vector3(0.6, 4, 18)
+streamer_flap_hz = Vector2(0.6, 0.45)
+airdrop_carry_seconds = 1.2
+airdrop_even_share = 0.35
+airdrop_spin = 2.6
+airdrop_roll_share = 0.5
+airdrop_skid = Vector2(7, 3)
+airdrop_settle_seconds = 7.0
+airdrop_packed_share = 0.75
 
 }
