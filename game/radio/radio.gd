@@ -612,7 +612,17 @@ func aerial_am() -> float:
 	return lerpf(1.0, _tuning.kite_am_most, smoothstep(0.0, _tuning.kite_am_full_m, flown.height()))
 
 
-## What its static choke leaves of the storm's hash or the garbling.
+## How much storm lies between it and a signal coming from `bearing`, `metres`
+## off (Interference.along): none at all through a static choke, which takes
+## every storm's interference out (gonkhub, 2026-10-22: "have it eliminate ALL
+## interference from storms").
+func storm_along(x: float, z: float, bearing: float, metres: float, t: float) -> float:
+	if _has(&"choke"):
+		return 0.0
+	return Interference.along(world.weather.field, x, z, bearing, metres, t, _tuning)
+
+
+## What its static choke leaves of other static (a jammer's, a kite's) or the garbling.
 func choked(amount: float, share: float) -> float:
 	return amount * share if _has(&"choke") else amount
 
@@ -1211,14 +1221,16 @@ func _listen(delta: float) -> void:
 		_listen_fm(delta, x, z, t)
 		return
 	var field := world.weather.field
-	# A storm front's static, and any a jammer overhead sprays round the dial.
-	noise = maxf(field.outflow_at(x, z, t), constellation_of(world).jamming(frequency, point_at(x, z), t))
+	# A storm front's static (none through a static choke), and any a jammer
+	# overhead sprays round the dial.
+	var front := 0.0 if _has(&"choke") else field.outflow_at(x, z, t)
+	noise = maxf(front, constellation_of(world).jamming(frequency, point_at(x, z), t))
 	# A kite flown on its lead charges up, and its static rises with it.
 	var flown := kite()
 	if flown != null:
 		noise = maxf(noise, flown.charge * _tuning.kite_static)
 	noise = choked(noise, _tuning.choke_static)
-	odd = choked(field.anomaly_at(x, z, t), _tuning.choke_static)
+	odd = 0.0 if _has(&"choke") else field.anomaly_at(x, z, t)
 	var now := channel
 	var station := tuned_to()
 	_listening_to(station)
@@ -1546,7 +1558,7 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	var ground := ground_bearing(rad_to_deg(Sphere.bearing(p, q)))
 	var night := not world.weather.day.is_day(t, Sphere.longitude(p))
 	var khz := gods.carrier(id, t)
-	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
+	var storm := storm_along(x, z, ground, metres, t)
 	var slid := Interference.warp(storm, t, id, _tuning)
 	var share := Dial.heard(frequency - khz - slid, _tuning)
 	var turned := rod(ground, Dial.by_sky(khz, metres, night, _tuning))
@@ -1745,7 +1757,7 @@ func receive_distress(x: float, z: float, t: float) -> Dictionary:
 	var p := point_at(x, z)
 	var metres := Sphere.angle(p, call.p) * world.moon.radius
 	var ground := ground_bearing(rad_to_deg(Sphere.bearing(p, call.p)))
-	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
+	var storm := storm_along(x, z, ground, metres, t)
 	var share := Dial.heard(frequency - call.khz, _tuning)
 	var power := Distress.strength(call.khz, metres, _tuning) * boost() * aerial_am() * rod(ground, false)
 	var jammed := constellation_of(world).jamming(frequency, p, t)
@@ -1800,7 +1812,7 @@ func receive_from(relay: Satellite, khz: float, id: StringName, x: float, z: flo
 	var ground := ground_bearing(rad_to_deg(sky.bearing))
 	var low := maxf(sky.elevation, deg_to_rad(2.0))
 	var through := minf(_tuning.dust_height_m / tan(low), _tuning.interference_reach_m)
-	var storm := Interference.along(world.weather.field, x, z, ground, through, t, _tuning) if sky.elevation > 0.0 else 0.0
+	var storm := storm_along(x, z, ground, through, t) if sky.elevation > 0.0 else 0.0
 	var slid: float = -_tuning.relay_doppler_khz * clampf(sky.rate / relay.top_rate(), -1.0, 1.0) \
 		+ Interference.warp(storm, t, id, _tuning)
 	var up := smoothstep(0.0, deg_to_rad(_tuning.relay_rise_degrees), sky.elevation)

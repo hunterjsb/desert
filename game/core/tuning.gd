@@ -1244,8 +1244,9 @@ static var _current: Tuning
 @export var kite_wear_wind: float = 0.0011
 @export var kite_storm_ruin_s: float = 75.0
 ## The radio's misc bay modules. The valve preamp lifts what it hears this
-## many times; the static choke leaves this share of storm static, this share
-## of the garbling, and this share of the signal; tuned within
+## many times; the static choke takes out every storm's interference and leaves
+## this share of other static (a jammer's, a kite's), this share of the
+## garbling, and this share of the signal; tuned within
 ## this far of a carrier, kHz, a frequency counter locks on; a report heard
 ## dirtier than this the wire logger plays back clean; a headset's cord
 ## reaches this far, m, and turns the wind and storm down this many dB.

@@ -409,7 +409,10 @@ now in `tuning.tres` (`kite_*`).
   - **Bleed resistor:** leaks a kite's charge off (`kite_bleed_tau`), so a breeze never arcs it unearthed; a
     dust front outruns it.
   - **Valve preamp:** lifts everything heard `preamp_gain` times, so a far god lost in the hiss comes through.
-  - **Static choke:** a storm's static at half, the garbling at 0.6, the signal at 0.8.
+  - **Static choke:** takes out all of a storm's interference: no storm static, anomaly crackle, garbling,
+    cuts or sliding between the set and what it hears (`Radio.storm_along`). Other static (a jammer's, a
+    kite's) at half, other garbling at 0.6, the signal at 0.8. Seed 1234, the Ledger through a thin storm:
+    dirt 0.62 bare, 0.16 choked (radio probe 62).
   - **Wire logger:** a report or a god's words read through a signal dirtier than `logger_dirty` it plays
     back once they're done, from the set's own speaker, clean of the storm.
   - **Frequency counter:** tuned within `counter_lock_khz` of a carrier, the dial stands right on it.
@@ -466,6 +469,8 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   the move, as the stake is at camp.
 - **The direction loop is scrapped** ("scrap this one"): the ferrite rod is the set's only direction
   finder. Saves holding one wake with a static choke (`Catalog.RENAMED`). Radio probe 61 went with it.
+- **The static choke eliminates storm interference:** "have it eliminate ALL interference from storms.
+  otherwise good." Its signal cost stays.
 - **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
   one misc bay stops forcing a choice between modules.
 
