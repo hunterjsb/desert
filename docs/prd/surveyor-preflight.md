@@ -470,3 +470,14 @@ actual source mesh instance so a fitted cell named separately from its host is
 not drawn twice. Unselected rack equipment is not copied. This changes only the
 render snapshot: no catalog bodies, gear state, physics or cargo identities are
 created or changed. Legacy nominal interiors still have no invented cargo.
+
+Cargo renderer36 passes (6 s): the actual selected mounted shield/board, loose
+water and two real off-tree fitted cells keep their exact world poses, shared
+meshes, material/visibility/shadow/layer and wear/power parameters. Each source
+mesh is copied once even when both host and fitted cell are selected; omitted
+rack equipment stays absent. Physical counts, charge, contents and fittings are
+unchanged. The connected1280×720 preparation-to-ejection GPU fixture passes and
+was inspected: the original shield/cell strips remain at the same lower edges,
+with shield3/cell2/water2 source meshes retained. This corrects the previous
+shell-only render copy; no shader, script or resource errors occurred in the
+accepted capture. No physical items or new cargo behavior were added.
