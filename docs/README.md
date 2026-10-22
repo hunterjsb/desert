@@ -32,7 +32,7 @@ settled design decisions are folded into the vision, world references, and PRDs.
 
 ### Continued Sanddune checks
 
-- [Native contact cost](prd/native-contact-cost.md)
+- [Native contact cost](prd/movement.md#final-capsized-large-camp-cost)
 
 ### Radio integration review
 

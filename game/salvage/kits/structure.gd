@@ -417,6 +417,12 @@ func taken() -> float:
 
 
 ## The weather's sand taken off it at a world time, m (Exposure.taken).
+## Its exposure now, worked out on the survey's worker: holding its ground on
+## the main thread later is a lookup, not a storm's history replayed.
+func warm() -> void:
+	pure_taken(_ctx.clock.call())
+
+
 func pure_taken(t: float) -> float:
 	return Exposure.taken(_ctx.field, x, z, t, _ctx.tuning, _memo, dune)
 

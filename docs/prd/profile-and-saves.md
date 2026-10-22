@@ -881,3 +881,6 @@ With the radio's deeds and the antenna kite's (above), these two bring the
 roster to 71 deeds in the same eleven families.
 Preflight saves retain actual object references and the selected plan/cargo,
 not a second kit grant. Integrated evidence remains pending.
+
+**Summit deed (2026-10-22).** Above the Dunes (`summit`, far family, summit mark)
+records standing on a mountain's summit structure; the roster is 72 deeds.
