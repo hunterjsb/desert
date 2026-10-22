@@ -1,5 +1,11 @@
 ## 0.3.1-alpha “Sanddune” — development, unreleased
 
+- Compare your heading and sail trim with an ideal on the Console Map's Nav layer.
+  A sheet tied to a hand winch can be trimmed by the powered Console; a supported,
+  occupied helm can steer toward the chosen course or Home through its existing
+  controls. Manual input takes priority; the aid adds no sailing force.
+
+
 - Add main-thread CPU budgets for 108-frame sailing, capsized and remote Home
   camps. Batch tipped-contact ground reads while preserving contact order and
   live impulse response. Admit the measured heavy Home camp with a 272-item cap,

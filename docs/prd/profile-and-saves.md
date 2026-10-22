@@ -893,3 +893,11 @@ motor, recorded by the ride; **Bogged Down** (Board, after Pack Mule) is loading
 until it sputters. **Fistful** (Wind, after Set Sail) is gathering a second line's end into the
 hand, recorded by the waist as the end joins the knot; Make Fast now follows it. Three more
 deeds in the same eleven families; with the summit deed the roster is 75.
+
+## Sailing learning aid deed (2026-10-22)
+
+Learning the Ropes (`sail_by_wire`) follows All Hands in the wind family. It is
+recorded at the real drum when a Console actually changes a raised, loaded sail's
+sheet; selecting a control mode alone earns nothing. The course and Home choice
+are saved with the Console, while automatic control resumes in hand mode.
+The controls are described in [Movement](movement.md#sailing-learning-aid-selected-2026-10-22-built).

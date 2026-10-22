@@ -486,9 +486,24 @@ func _push(air: Vector3, swing: float, showing: float, q: float, turned: Basis) 
 	var normal := side * signf(flow.dot(side))
 	var across := normal - flow * normal.dot(flow)
 	across = across.normalized() if across.length() > 1e-4 else Vector3.ZERO
-	var furled := FURLED_M2 * (1.0 - raise) * SQUARE * absf(sin(attack))
 	_per_m2 = q * (lift * across + drag * flow).length()
-	return q * (showing * (lift * across + drag * flow) + furled * flow)
+	return force_at(air, swing, showing, raise, q, turned)
+
+
+## Prediction and the live sail use the same polar; asking never trims the sail.
+static func force_at(air: Vector3, swing: float, showing: float, raised: float, q: float, turned: Basis) -> Vector3:
+	var speed := air.length()
+	if speed < 0.01 or q <= 0.0:
+		return Vector3.ZERO
+	var flow := air / speed
+	var chord := (turned * Vector3(-sin(swing), 0.0, -cos(swing))).normalized()
+	var side := turned.y.normalized().cross(chord)
+	var angle := atan2(flow.dot(side), flow.dot(chord))
+	var normal := side * signf(flow.dot(side))
+	var across := normal - flow * normal.dot(flow)
+	across = across.normalized() if across.length() > 1e-4 else Vector3.ZERO
+	var furled := FURLED_M2 * (1.0 - raised) * SQUARE * absf(sin(angle))
+	return q * (showing * (lift_of(absf(angle)) * across + drag_of(absf(angle)) * flow) + furled * flow)
 
 
 ## Lift by angle of attack, rad: rising to its most at the stall, falling
@@ -953,21 +968,31 @@ func rig_sheet(line: Line, eased_degrees := 55.0) -> bool:
 
 ## Actual line path at an eased departure swing, with this guide and endpoint.
 func eased_length(degrees: float, side := 0.0) -> float:
+	var path := sheet_path()
+	if path.is_empty():
+		return 0.0
+	var span := 0.0
+	for way: float in ([-1.0, 1.0] if side == 0.0 else [side]):
+		span = maxf(span, length_on_path(path, deg_to_rad(degrees) * way))
+	return span
+
+
+## The real sheet's eye and tail, sampled once for a trim calculation.
+func sheet_path() -> Dictionary:
 	var rope := sheet()
 	if rope == null:
-		return 0.0
+		return {}
 	var mine: RopeEnd = _tie().part.get_meta(&"tip")
 	var other := rope.b if rope.a == mine else rope.a
 	var guide := rope.through
-	var path := 0.0
-	for way: float in ([-1.0, 1.0] if side == 0.0 else [side]):
-		var swing := deg_to_rad(degrees) * way
-		var tip := global_transform * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
-		var span := tip.distance_to(other.global_position)
-		if is_instance_valid(guide):
-			span = tip.distance_to(guide.global_position) + guide.global_position.distance_to(other.global_position)
-		path = maxf(path, span)
-	return path
+	return {"frame": global_transform, "eye": guide.global_position if is_instance_valid(guide) else other.global_position,
+		"tail": guide.global_position.distance_to(other.global_position) if is_instance_valid(guide) else 0.0,
+		"full": rope.full}
+
+
+static func length_on_path(path: Dictionary, swing: float) -> float:
+	var tip: Vector3 = path.frame * (BOOM_AT + Vector3(-sin(swing) * BOOM, 0.0, -cos(swing) * BOOM))
+	return tip.distance_to(path.eye) + path.tail
 
 
 ## Observe the existing trimming action without taking any of its rope length.
