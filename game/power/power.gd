@@ -45,6 +45,8 @@ func _physics_process(_delta: float) -> void:
 	if _world.time < _next - step or _world.time - _next > 60.0:
 		_next = _world.time
 	while _next + step <= _world.time + 1e-9:
+		# The wear of the ticks before this one first, as a frame of one tick has it.
+		_world.wear.until(_next)
 		_tick(step, _next)
 		_next += step
 	Dev.put("power/made", "%.2fWh" % generated_wh)
