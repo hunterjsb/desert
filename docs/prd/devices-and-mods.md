@@ -840,6 +840,8 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
     that much more. Trays float at their old draw. One storm (twelve minutes of full storm) leaves a
     turbine 70% sound, its windward edges stripped and lightly pitted, making 85%; three leave it 10%,
     its windward faces blasted to grey metal, making 55%. An unsheltered chassis is wrecked in one.
+    Half worn, a turbine makes 80% and a shield's 10 W sip is 13.3 W (power probe 17); over power probe
+    4's two days the camp's turbine makes 66 Wh where it made 82, and its bank's lowest is 85.9%, not 86.9%.
   - **Measured:** the blast costs about 0.1 ms a frame at 1080p on the RTX 3070, close on the worst of it
     (noise ±0.3 ms), and nothing on what no storm has marked (`look/storm_wear`).
   - **Not yet:** eras, tiers, modifications and repair. A piece joining a deck shows the deck's marks
