@@ -810,7 +810,53 @@ the board, your dug edge its only grip across the wind: the Varran rides his boa
   sail to the ideal, and with a keel, helps you drive: driving by computer shows you what ideal
   sailing looks like.
 - **When (Hunter, 2026-10-22):** after the review fixes settle ("after"). The hand winch is built;
-  the Console's ideal and its winch control are not.
+  the Console comparison and control are implemented below.
+
+### Sailing learning aid (selected 2026-10-22; built)
+
+Hunter's ideal comparison and Console-driven winch above are the design. The
+Console Map's Nav layer compares two simple rig marks, YOU and IDEAL; each mark
+shows heading and the sheet's boom angle. A course holds the heading chosen by
+the sailor, or follows the Home fix. The recommendation uses the real sail's
+area and wear, felt apparent wind, and hull support and keel state. It is a local
+sailing estimate; terrain, obstacles and distant weather are not routed around.
+
+Control is optional and starts in hand mode. Trim mode pays or hauls only the
+ordinary sheet tied to a hand winch on the same deck, under that winch's existing
+pace and pull limits. Steer mode also works the existing helm when the deck has a
+keel. A sailor's manual winch or helm input takes priority. Loss of power, sheet,
+mount or required equipment releases control. The aid never sets boom angles,
+velocities or transforms and adds no force; the same sail, rope and helm physics
+run in every mode. Switching the Nav filter off hides its overlay, not a command
+already engaged. Saves restore the selected course but require control to be
+engaged again.
+
+**As built.** `SailingIdeal` samples the first fitted sail, its worn area and
+raised fraction, the felt apparent wind, hull catch, heel, supported weight and
+runner/keel grip and drag. It searches local heading/trim candidates for predicted
+velocity made good toward the selected course. `Mast.force_at` supplies the same
+polar to the actual sail and the estimate; `sheet_path` supplies the same real
+routed length to the drum and the estimate. This is a local equilibrium estimate,
+not an obstacle planner or a guarantee for every craft arrangement.
+
+A powered Console system with an anemometer feeds the Nav marks. Its first running
+Console commands one ordinary sheet drum; a separate halyard drum is left alone.
+An occupied helm and runner/keel support enable steering. Manual drum input returns
+to HAND; manual steering leaves only TRIM engaged. Disconnecting the sheet or
+losing power releases control. Learning the Ropes is recorded only when the real
+drum works a raised, loaded sheet, not on a mode selection.
+
+The estimate runs in 200 µs slices on render frames, starting fresh snapshots no
+more often than every 0.25 s. Physics only follows the last completed ideal through
+the existing drum and helm. On the isolated 240-frame check, sampling plus search
+was 0.302 ms p95, 0.449 ms worst observed; sail 32 enforces 0.5 ms p95 and also
+reports the worst elapsed frame. Timing is elapsed work, including scheduler
+interruptions, not GPU time. A real 26-second beam leg in 10 m/s wind made 41.1 m
+toward its course with the trimmed sheet versus -0.6 m with a fixed sheet. Sails
+28–31 cover that comparison, real drum limits and takeover/power loss, unchanged
+hand-mode physics, and the occupied helm. Devices 46 and saves 50 cover the Map's
+controls and resuming in HAND with the selected course retained. Actual GPU
+captures in `look/sailing-aid` were inspected with Nav alone and weather together.
 
 ### The dune sailboat (Agreed, session 4, part 3; superseded)
 

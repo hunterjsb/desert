@@ -27,7 +27,7 @@ static var _kept := [
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
-	[Console, ["page", "filters_off", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
+	[Console, ["page", "filters_off", "log_lines", "_alerts", "_front_near", "evidence", "bearings", "sail_course", "sail_home"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
 	[Mast, ["raised", "raise", "head_speed", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],

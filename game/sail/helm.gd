@@ -32,6 +32,17 @@ var steers := true
 var sits := true
 ## The ground its camp has covered under sail, keeled, since you sat, m.
 var sailed_m := 0.0
+var _computer: Console
+var _command_tick := -2
+var _course := Vector2.ZERO
+
+
+## The computer works this helm's turn input; it has no separate steering force.
+func steer_by(computer: Console, heading: Vector2) -> void:
+	if computer.running() and computer._root() == carrier() and steers and rider != null:
+		_computer = computer
+		_course = heading
+		_command_tick = Engine.get_physics_frames()
 
 
 ## Use sits you here, or stands you up; empty-handed, and on a camp.
@@ -87,13 +98,21 @@ func _physics_process(delta: float) -> void:
 		sailed_m = 0.0
 	elif world.counts_deeds and steers:
 		_sail_on(on, delta)
-	if not steers or rider == null or on == null or on.freeze or turning == 0.0 and absf(on.angular_velocity.y) < 1e-3:
+	var worked := turning
+	if is_instance_valid(_computer) and _computer.running() and _computer._root() == on \
+			and _computer.sailing.mode == SailingAid.Mode.STEER and Engine.get_physics_frames() - _command_tick <= 1:
+		if turning != 0.0:
+			_computer.sailing.mode = SailingAid.Mode.TRIM
+		elif on != null:
+			var error := SailingIdeal.heading_of(on).angle_to(_course)
+			worked = clampf(error / (world.tuning.sailing_aid_helm_seconds * world.tuning.helm_turn), -1.0, 1.0)
+	if not steers or rider == null or on == null or on.freeze or worked == 0.0 and absf(on.angular_velocity.y) < 1e-3:
 		return
 	var state := PhysicsServer3D.body_get_direct_state(on.get_rid())
 	var up := on.global_basis.y.normalized()
 	var spin := state.angular_velocity.dot(up)
 	var inertia := 1.0 / maxf(up.dot(state.inverse_inertia_tensor * up), 1e-6)
-	var want := -turning * world.tuning.helm_turn
+	var want := -worked * world.tuning.helm_turn
 	var most := world.tuning.helm_torque
 	on.apply_torque(up * clampf(inertia * (want - spin) / TURN_SECONDS, -most, most))
 

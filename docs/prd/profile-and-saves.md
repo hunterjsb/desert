@@ -909,3 +909,12 @@ deeds in the same eleven families; with the summit deed the roster is 75.
 Climbing into a crow's nest on a standing mast records **Lookout** (Wind, after
 Hand-Me-Down): the nest is the nomads' gear and came without one. The roster is
 76 deeds in eleven families. Devices 41 checks it.
+
+## Sailing learning aid deed (2026-10-22)
+
+Learning the Ropes (`sail_by_wire`) follows All Hands in the wind family. It is
+recorded at the real drum when a Console actually changes a raised, loaded sail's
+sheet; selecting a control mode alone earns nothing. This brings the roster to
+81 deeds in eleven families. The course and Home choice
+are saved with the Console, while automatic control resumes in hand mode.
+The controls are described in [Movement](movement.md#sailing-learning-aid-selected-2026-10-22-built).

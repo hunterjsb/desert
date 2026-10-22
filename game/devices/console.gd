@@ -66,6 +66,13 @@ var page := Page.MAP:
 		page = to if to in TABS else Page.MAP
 ## The Map's filters switched off; each other one its gear feeds shows.
 var filters_off: Array = []
+var sailing := SailingAid.new()
+var sail_course: Vector2:
+	get: return sailing.course
+	set(to): sailing.course = to
+var sail_home: bool:
+	get: return sailing.home
+	set(to): sailing.home = to
 var terminal := Terminal.new()
 ## What the save keeps of its terminal.
 var log_lines: Array:
@@ -278,6 +285,7 @@ func _physics_process(delta: float) -> void:
 	super(delta)
 	if world == null:
 		return
+	sailing.tick(self)
 	if not running():
 		if not readings.is_empty():
 			readings.clear()
@@ -298,6 +306,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(_delta: float) -> void:
+	if world != null:
+		sailing.refresh(self)
 	if not _screened or world == null:
 		return
 	var aim := -1
@@ -823,7 +833,7 @@ func filters(all: Dictionary) -> Array:
 		can.append("weather")
 	if all.has("ground"):
 		can.append("survey")
-	if not bearings.is_empty() or (world.home != null and not is_nan(world.home.nav().metres)):
+	if not bearings.is_empty() or (world.home != null and not is_nan(world.home.nav().metres)) or sailing.rig(self) != null:
 		can.append("nav")
 	return can
 
@@ -857,6 +867,19 @@ func _map_page(shown: Dictionary, all: Dictionary) -> void:
 		reach = minf(reach, all.ground.reach)
 	if "nav" in on:
 		var chart := Chart.layer(self)
+		var lead := _lead()
+		var aid := lead.sailing
+		if aid.rig(lead) != null:
+			var facing := -world.moon.north().z
+			chart["sailing"] = aid.ideal
+			chart["facing"] = facing
+			chart["course"] = aid.target(lead) * facing
+			shown["sail_keys"] = [{"text": "COURSE", "lit": not aid.home, "act": aid.aim.bind(lead, false), "device": null, "to": &"sail_course"}]
+			if world.home != null and not is_nan(world.home.nav().metres):
+				shown.sail_keys.append({"text": "HOME", "lit": aid.home, "act": aid.aim.bind(lead, true), "device": null, "to": &"sail_home"})
+			if aid.winch(lead) != null:
+				shown.sail_keys.append({"text": ["HAND", "TRIM", "STEER"][aid.mode], "lit": aid.mode != SailingAid.Mode.HAND,
+					"act": aid.cycle.bind(lead), "device": null, "to": &"sail_control"})
 		shown["chart"] = chart
 		rows.append_array(chart.rows)
 		reach = minf(reach, chart.reach)
