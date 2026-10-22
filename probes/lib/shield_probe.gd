@@ -78,6 +78,16 @@ func camp_at(middle: Vector3) -> Array[Device]:
 	return made
 
 
+## A turbine standing on the sand at a place, staked still: a gale slides a
+## loose one.
+func turbine_at(at: Vector3) -> Device:
+	var made := Catalog.device(&"turbine")
+	world.content.add_child(made)
+	made.global_position = Vector3(at.x, world.height_under(at) + Catalog.DEVICES[&"turbine"].size.y * 0.5 + 0.02, at.z)
+	made.freeze = true
+	return made
+
+
 ## A place on the sand `ahead` m east of the player.
 func ahead(metres: float) -> Vector3:
 	var p := world.player.global_position + Vector3(metres, 0.0, 0.0)

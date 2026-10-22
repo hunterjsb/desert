@@ -29,11 +29,17 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	until(_world.time)
+
+
+## Lives its ticks that end by world time t. Power asks before each of its
+## own, so what a worn device makes never hangs on how many ticks a frame holds.
+func until(t: float) -> void:
 	var step := _world.tuning.power_tick
 	# A jump in time (a scenario) isn't lived through.
-	if _world.time < _next - step or _world.time - _next > 60.0:
-		_next = _world.time
-	while _next + step <= _world.time + 1e-9:
+	if t < _next - step or t - _next > 60.0:
+		_next = t
+	while _next + step <= t + 1e-9:
 		_tick(step, _next)
 		_next += step
 
@@ -46,7 +52,10 @@ func live(seconds: float, t: float) -> void:
 
 func _tick(seconds: float, t: float) -> void:
 	for device in _world.devices():
-		device.wear(rate_at(device.global_position, t) * seconds)
+		var share := rate_at(device.global_position, t) * seconds
+		# The sand strikes the faces turned to where the wind comes from.
+		if share > 0.0:
+			device.wear(share, -_world.weather.felt_wind(device.global_position, t))
 		if device is ShieldGenerator:
 			_held(device, seconds, t)
 	_under(seconds)

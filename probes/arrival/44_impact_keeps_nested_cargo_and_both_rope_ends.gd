@@ -20,7 +20,6 @@ func run() -> void:
 	Stick.put(pod, nodes[&"floor_b"], Chassis.TOP, Vector2(0.1, 0.0), 0.0, board)
 	var cell := nodes[&"board_cell"] as Battery
 	cell.charge_wh *= 0.5
-	var charge := cell.charge_wh
 	hands.hold(nodes[&"rope"])
 	await physics_frames(4)
 	var line := (hands.held as Part).get_meta(&"line") as Line
@@ -42,6 +41,9 @@ func run() -> void:
 	var rope := line.rope
 	var length := rope.length
 	var secondary := ends[1] as Part
+	# Its packed charge: a power tick already due when time froze can still
+	# charge it from the deck it's stuck on during the frames above.
+	var charge := cell.charge_wh
 	var selected := PreflightCargo.loaded(world, ship)
 	check(selected.has(&"board") and selected.has(&"board_cell") and selected.has(&"rope"),
 		"the real bounded board/cell assembly and both fitted ends qualify as selected cargo")

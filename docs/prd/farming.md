@@ -15,6 +15,24 @@ direction, and the "as built" notes below say what stands. [Session 4, part
 fungus on the habitats history left, and wild stock is real: cut or dug from them, it grows in your
 planter and gives the wild share ([Feral plants, as built](#as-built-the-feral-layer-2026-10-18)).*
 
+## Agricultural depth before variety and portable gods (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> loop first, variety later. variety can be introduced as-needed for bigger systems for now.  we also deferred repairs.
+
+> no, ag depth and the ag complex is needed first. the mother should probably come first tbh.
+
+Work on the loop first; introduce variety as larger systems need it. The full crop
+roster is direction, not a 0.5 gate. Repairs and raw materials remain [deferred](devices-and-mods.md#repairs-and-era-mobility-selected-2026-10-22).
+Agricultural depth and the agriculture complex precede a portable Almanac; existing
+broadcasts remain built. Mother Cistern before the Almanac is Hunter's tentative
+preference, not approval of a Mother build or ending in 0.5. Crossbreeding remains
+an idea. [Survival](survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
+owns the new food/drink direction; [the roadmap](../alpha-roadmap.md#saltbush-promise-and-acceptance-deferred-2026-10-22)
+owns the open release promise. No farming code changed with this decision.
+
+
 ## Coalcane chain (agreed 2026-10-22)
 
 Hunter: "coalcane is a go". The complete grow → harvest → burner chain is owned here
@@ -37,7 +55,8 @@ bundle's catalog identity and old saves remain valid; its label now fits fresh f
 
 ## Why this system exists
 
-The farm is the engine of steady state. It turns light, warmth and time into food, and
+Farming is an optional way to deepen the camp, not a promised early survival requirement.
+It turns light, warmth and time into food, and
 some crops also give water and fuel. It's also the part of the camp that most needs
 protecting. Crops can't take the temperature swings that you can survive in a suit, so
 the farm is what pulls a thermal shield into your life.
@@ -390,6 +409,9 @@ Readings, not in the session:
   with plant slots, so a grow crate reads as a planter variant.
 
 ### The Almanac and crossbreeding (Idea, session 4, part 5; not built)
+
+**Deferred:** agricultural depth and the ag complex come first; see the
+[2026-10-22 decision](#agricultural-depth-before-variety-and-portable-gods-selected-2026-10-22).
 
 *[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 10, and its open question "Whether the
 Almanac is how crossbreeding works." The Almanac and what it enforces are **Agreed**; that it is how the

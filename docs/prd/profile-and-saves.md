@@ -4,6 +4,19 @@
 same day, written in another session; this PRD takes it on and fits it to the game as
 built.*
 
+## Secret variants and canonical starts (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> we dont need to worry about balancing variants, theyre secret unlocks for now, and wont become cannon until they have a special start like our surveyor
+
+Variants remain secret unlocks for now, with no balancing requirement. They become
+canonical only when they have a special start comparable to the Surveyor. Do not
+infer a required 0.4 sub-variant selector, balanced loadout tradeoff or commitment
+to build every origin. Existing profile, unlock and save behavior remains as built;
+older balance classifications below describe implementation/history, not a new gate.
+
+
 ## Halloran's first fire (agreed, 2026-10-20)
 
 **First Fire**, hidden in Far, is recorded when a preserved coalcane bundle is physically consumed
@@ -64,7 +77,7 @@ how many, never code. Only the default kit is built. Alternative kits and choosi
 between them are deferred until discoveries can unlock them.
 
 **Origins (Agreed, session 4, part 2; not built).** [The vision's origins and
-kits](../vision.md#player-origins-and-kits) change what is balanced: **only the first three kits
+kits](../vision.md#player-origins-and-kits) historically changed what was balanced (superseded as a design requirement by the secret-variant decision above): **only the first three kits
 (the Surveyor, the Salvager and the Homesteader) are balanced. The rest are novelty starts,
 excluded from Ironman** (the session writes "Iron Man"; it is the same mode). Each kit is data
 like the default, and each unlocks through `profile.unlock`:
