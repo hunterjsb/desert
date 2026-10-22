@@ -16,6 +16,9 @@ var _readiness := Label.new()
 var _result := Label.new()
 var _confirm := Button.new()
 var _back := Button.new()
+var _cargo_toggle := Button.new()
+var _cargo_page := DepartureCargoPage.new()
+var _show_cargo := false
 var _clock := 0.0
 var _dragging := false
 var _sample := {}
@@ -74,6 +77,12 @@ func _ready() -> void:
 	_back.theme_type_variation = &"MenuWordMain"
 	_back.pressed.connect(func() -> void: closed.emit())
 	add_child(_back)
+	_cargo_toggle.theme_type_variation = &"MenuWordMain"
+	_cargo_toggle.pressed.connect(func() -> void:
+		_show_cargo = not _show_cargo
+		_display_page())
+	add_child(_cargo_toggle)
+	add_child(_cargo_page)
 	resized.connect(_fit)
 	_fit()
 	refresh()
@@ -81,11 +90,15 @@ func _ready() -> void:
 
 func _fit() -> void:
 	_title.position = Vector2(28, 18)
-	_title.size = Vector2(size.x - 56, 40)
+	_title.size = Vector2(size.x * 0.65 - 40, 40)
 	_chart.position = Vector2(20, 68)
 	_chart.size = Vector2(size.x * 0.65 - 30, size.y - 90)
 	var x := size.x * 0.65 + 12
 	var width := size.x - x - 26
+	_cargo_toggle.position = Vector2(x, 18)
+	_cargo_toggle.size = Vector2(width, 40)
+	_cargo_page.position = Vector2(x, 186)
+	_cargo_page.size = Vector2(width, size.y - 340)
 	_instruction.position = Vector2(x, 78)
 	_instruction.size = Vector2(width, 90)
 	_result.position = Vector2(x, 186)
@@ -102,7 +115,19 @@ func set_focused(value: bool) -> void:
 	_dragging = false
 	_confirm.disabled = not value
 	_back.visible = value
-	_instruction.text = "Drag the pulse handle.\nKeep LANDING inside the survey ring." if value else "Use the station to plan your drop."
+	_cargo_toggle.disabled = not value
+	_display_page()
+
+func _display_page() -> void:
+	_cargo_page.visible = _show_cargo
+	_result.visible = not _show_cargo
+	_readiness.visible = not _show_cargo
+	_cargo_toggle.text = "Landing view" if _show_cargo else "Cargo"
+	if _show_cargo:
+		_update_readiness()
+	else:
+		_instruction.text = "Drag the pulse handle.\nKeep LANDING inside the survey ring." if _focused else "Use the station to plan your drop."
+
 
 func refresh() -> void:
 	if not is_node_ready():
@@ -110,6 +135,7 @@ func refresh() -> void:
 	var candidate: Dictionary = _forecast.get("candidate", LandingPlan.selected(_plan))
 	if candidate.is_empty():
 		_result.text = "Outside the surveyed corridor. Adjust the pulse to bring the landing back."
+		_update_readiness()
 		return
 	_result.text = "Landing forecast\n" + ("Long approach · gentler impact" if _sample.get("profile", _plan.profile) == &"shallow" else "Short approach · harder impact" if _sample.get("profile", _plan.profile) == &"steep" else "Balanced approach")
 	var kinds: Array[String] = []
@@ -128,6 +154,12 @@ func _update_readiness() -> void:
 		_readiness.text = ""
 		return
 	var missing := _world.arrival.preflight.readiness()
+	var report := PreflightCargo.packing_report(_world, _world.arrival.preflight.ship)
+	_cargo_page.show_report(report, missing)
+	if _show_cargo:
+		_instruction.text = ("Ready to board and launch." if missing.is_empty() else "Launch blocked · details below.") + "\nPacked gear may be lost on impact."
+	if not _show_cargo:
+		_cargo_toggle.text = "Cargo · %d aboard" % report.filter(func(item: Dictionary) -> bool: return item.aboard).size()
 	_readiness.text = "Ready: load, enter pod, launch." if missing.is_empty() else "Before launch\n• " + "\n• ".join(missing)
 
 func _process(delta: float) -> void:

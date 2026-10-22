@@ -93,6 +93,35 @@ static func loaded(world: World, ship: SurveyorShip) -> Array[StringName]:
 	return found
 
 
+## Report the same physical selection as launch; a nearby item is not automatically packed.
+static func packing_report(world: World, ship: SurveyorShip) -> Array[Dictionary]:
+	var aboard := loaded(world, ship)
+	var named := SurveyorRecovery.named(world)
+	var seat := seat_bounds(world, ship)
+	var report: Array[Dictionary] = []
+	for spec: Array in SurveyorManifest.EQUIPMENT:
+		var uid: StringName = spec[0]
+		var body := named.get(uid) as RigidBody3D
+		var packed := aboard.has(uid)
+		var reason := "Aboard" if packed else "On ship · not packed"
+		if not is_instance_valid(body):
+			reason = "Missing"
+		elif _carried(world, body):
+			reason = "Carried · set it in the pod"
+		elif not _whole_line(world, ship, body):
+			reason = "Secure rope ends and routing hooks to the pod"
+		elif not packed:
+			var box := bounds_in(body, ship.global_transform)
+			if seat.intersects(box):
+				reason = "Blocks the seat · move it clear"
+			elif _pod_attachment(ship, body) or ship.cargo_bounds.intersects(box):
+				reason = "Outside cargo space · move it inward"
+		var label := "Camp cell" if uid == &"camp_cell" else "Board cell" if uid == &"board_cell" else Catalog.short_label(spec[1])
+		report.append({"uid": uid, "label": label,
+			"aboard": packed, "reason": reason, "required": uid in REQUIRED})
+	return report
+
+
 static func readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
 	var missing := _structure_readiness(world, ship)
 	var aboard := loaded(world, ship)
