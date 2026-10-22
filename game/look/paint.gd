@@ -177,6 +177,27 @@ static func show_age(body: Node, amount: float) -> void:
 			(child as GeometryInstance3D).set_instance_shader_parameter(&"age", amount)
 
 
+## The storms' damage on one of a thing's meshes (Device.weathered): toward
+## the faces the sand struck, turned into the mesh's own frame, as one-sided
+## as it blew, and how deep. What turns to face the wind, a rotor, took it
+## all on its front. Any era's look reads it the same.
+static func show_blast(view: GeometryInstance3D, body: Node3D, weathered: Vector4, faces_wind := false) -> void:
+	if view == null:
+		return
+	var toward := Vector3.ZERO
+	var from := Vector3(weathered.x, weathered.y, weathered.z) / maxf(weathered.w, 1e-9)
+	if faces_wind:
+		toward = Vector3.BACK if weathered.w > 0.0 else Vector3.ZERO
+	elif from != Vector3.ZERO:
+		var basis := Basis.IDENTITY
+		var node: Node3D = view
+		while node != null and node != body:
+			basis = node.transform.basis * basis
+			node = node.get_parent() as Node3D
+		toward = (basis.inverse() * from).normalized() * from.length()
+	view.set_instance_shader_parameter(&"blasted", Vector4(toward.x, toward.y, toward.z, minf(weathered.w, 1.0)))
+
+
 static func is_worn(node: Node) -> bool:
 	var view := node as MeshInstance3D
 	return view != null and view.mesh != null and view.mesh.get_surface_count() > 0 \

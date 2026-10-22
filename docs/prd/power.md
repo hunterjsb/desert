@@ -399,8 +399,10 @@ batteries in its bays is stored power you carry or drag like anything else.
   in real time, it made power 99% of the time and drifted 1.4 m.
 - **The storm wears the turbine out.** About half an hour of full storm wrecks it, and
   nothing mends it: on the probes' seed it goes on the third day (2.45 days in at the
-  equator, 2.67 at 45°), having made about 90 Wh for the camp, less than a battery
-  holds. That's why probe 4 runs two days. A wrecked device leaves its pool, and its
+  equator, 2.67 at 45°), having made about 80 Wh for the camp, less than a battery
+  holds: it makes less as it wears ([storm wear](devices-and-mods.md#where-parts-come-from-and-how-they-wear)),
+  66 Wh over probe 4's two days where a turbine that never weakened made 82 (2026-10-22). That's why
+  probe 4 runs two days. A wrecked device leaves its pool, and its
   battery's charge with it. After that the bank carries the camp alone: the camp on the
   sand, before the deck, was down to 63% after eight days at the equator, nearly six of
   them storm, where the floating deck reached its reserve at 7.4 days (above).
