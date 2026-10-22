@@ -1,3 +1,18 @@
+## 0.3.1-alpha “Sanddune” — development, unreleased
+
+- Fit either original roof panel to either pod roof bay and launch with it in
+  place. Loose roofs close into the remaining free roof faces. Invalid placements
+  identify their actual host/face and explain the intended destination.
+- Keep the real crawl route through the opened hatch clear after impact.
+  Obstructing cargo breaks loose as its original recoverable assembly, preserving
+  fitted batteries and both rope ends instead of trapping the player.
+- Add real glazed side and roof panels, free mouse look while falling, stronger
+  phase-driven flight sound and bounded turbulence. Looking does not steer the pod.
+
+Existing run/profile formats remain supported. The escape-route repair applies
+when impact materializes; already recovered camps are not rearranged on load.
+Published 0.3.0 remains unchanged. This patch is not yet published.
+
 ## 0.3.0-alpha “Sanddune”
 
 A physical Surveyor departure, a camp you can find again, and more grounded

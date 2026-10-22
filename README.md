@@ -59,8 +59,9 @@ the middle number and resets the patch; fixes, tuning, polish and bounded
 improvements within it increment the patch. Patch names retain the milestone's
 base name, with an optional adjective. Versions change per release, not per commit.
 
-This release is **0.3.0-alpha “Sanddune”**, followed by Sanddune patches as
-playtesting continues. The next planned milestone is **0.4 “Spaceport”**.
+The latest published release is **0.3.0-alpha “Sanddune”**. Current development
+targets **0.3.1-alpha**, with fixes and polish from continued playtesting.
+The next planned milestone is **0.4 “Spaceport”**.
 **1.0.0-alpha** earns the [full Alpha roadmap gate](docs/alpha-roadmap.md#full-alpha-acceptance-gate);
 Beta and the public **1.0.0** each have later quality gates in the version policy.
 

@@ -1,7 +1,10 @@
 # Surveyor ship, scouting and pod preparation
 
 Selected 2026-10-21. Extends the Surveyor arrival in [Survival](survival.md) and
-answers to the [vision](../vision.md). In progress; no completion/release claim.
+answers to the [vision](../vision.md). The connected opening shipped in
+0.3.0-alpha Sanddune; human acceptance remains open. Current patch work is
+recorded in [roof placement](pod-roof-launch.md),
+[recovery clearance](pod-recovery-clearance.md) and the flight-feel account.
 
 ## Playable outcome
 
