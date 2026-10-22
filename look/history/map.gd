@@ -24,6 +24,7 @@ func _ready() -> void:
 	var main: Main = MAIN.instantiate()
 	main.opens_on_menu = false
 	add_child(main)
+	await SurfaceStart.begin(main)
 	await _settled(main)
 	if where != "":
 		main.ui.dev_console.run("goto " + where)

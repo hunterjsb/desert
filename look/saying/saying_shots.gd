@@ -32,6 +32,7 @@ func _ready() -> void:
 	main.opens_on_menu = false
 	add_child(main)
 	var world := main.world()
+	await SurfaceStart.begin(main)
 	while not world.has_meta(&"kit"):
 		await get_tree().physics_frame
 	while main.ui.is_fading():

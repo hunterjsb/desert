@@ -58,6 +58,7 @@ func _ready() -> void:
 	main.new_game()
 	while main.world() == null or main.ui._fading:
 		await get_tree().process_frame
+	await SurfaceStart.begin(main)
 	await _idle(main.world())
 	await _ticks(60)
 	# Two at once: the second waits its turn.
