@@ -51,6 +51,9 @@ func run() -> void:
 	press(&"interact")
 	press(&"interact")
 	check(not world.arrival.preparing() and world.arrival_state.phase == &"ejection", "use launches the prepared pod into the saved flight")
+	var flight := world.arrival._view as ArrivalView
+	check(is_instance_valid(flight) and flight._voice.playing and flight._voice.stream == Sounds.BOARD_POP,
+		"the actual launch action sounds its ejection pop immediately")
 	check(is_instance_valid(pod) and pod.get_parent() == world.content, "launch carries the original physical pod")
 	await physics_frames(2)
 	check(not is_instance_valid(board), "the optional board left on the ship is not silently granted")

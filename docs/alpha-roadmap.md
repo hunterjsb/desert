@@ -1,9 +1,32 @@
 # Toward 1.0 Alpha
 
-Release direction and status, updated 2026-10-21. This is a planning map, not a claim that
+Release direction and status, updated 2026-10-22. This is a planning map, not a claim that
 everything below is built or approved for implementation. The vision and each
 system's PRD remain the design sources. A full Alpha means a complete playable
 game loop with progression and conclusions; final art and final balance can follow.
+
+## Current release status
+
+**0.3.0-alpha “Sanddune” is published** with Linux, Windows and macOS downloads.
+**0.3.1-alpha is on verified master, not yet published**; it contains the pod roof,
+physical escape and flight-look improvements. Its [full 21-job platform/build follow-up](https://github.com/hunterjsb/desert/actions/runs/39717579371)
+passed. The published release remains
+immutable. Unassisted sailing/expedition, camera comfort and representative
+large-camp budgets remain open acceptance work.
+
+### Continued Sanddune pass
+
+The physical departure screen now reports actual packed/held/misplaced equipment.
+A connected engineering check follows original loaded pod equipment through landing,
+a powered Home, a 2.1 km scouting trip, a controlled storm, distant disk resume
+and return. It exposed and fixed saving after removing a joined custom mount.
+This scripts the loading and route; unassisted discovery and human acceptance
+remain open. See [the expedition account](prd/surveyor-expedition-check.md).
+
+A 108-piece camp experiment avoids a redundant zero-motion contact projection.
+Paired settled CPU medians improve about 3.4%; falling CPU does not improve. This
+is a bounded saving, not a representative large-camp budget acceptance. See
+[native contact cost](prd/native-contact-cost.md) for its physical checks and limits.
 
 ## Version policy
 
@@ -131,7 +154,7 @@ The 0.2.2 and 0.2.3 tags remain unpublished candidates. **0.2.4 “Creaky
 Sailboat” is published** with Linux, Windows and macOS downloads after all 19 tag
 checks and all three release smoke checks passed.
 
-**0.3 “Sanddune” is development, unreleased.** Ground rest and continuous coils
+**Earlier Sanddune integration evidence:** Ground rest and continuous coils
 landed at `2fe581a7` and passed all 19 platform/build checks. Home retention,
 return navigation and the connected Surveyor opening landed at `49af744f` after
 Linux verification. The subsequent Controls, eclipse guidance and capsized-contact
@@ -363,3 +386,15 @@ those follow-ups within Sanddune rather than silently treating publication as
 acceptance. Kites, deeper suit/wrist instruments and broader origins remain
 Spaceport directions. Runtime `622cec08` passed all 21 platform/build jobs; the
 release tag repeats the full verification and packaged-build gates.
+
+### Sanddune 0.3.1 development follow-up
+
+Built on master after [all nine Linux groups passed](https://github.com/hunterjsb/desert/actions/runs/39716462147):
+interchangeable manually fitted pod roofs with named attachment refusals; an
+actual clear post-impact crawl route preserving released cargo assemblies and
+rope ends; seven glazed panels, saved mouse look and bounded phase-driven flight
+sound/motion. Focused input, movement, saves and inspected renderer captures pass.
+[All 21 native platform/build checks](https://github.com/hunterjsb/desert/actions/runs/39717579371)
+passed. This patch is not published; new-impact clearance does not rearrange
+already recovered camps. Human roof/launch clarity, escape and motion comfort
+remain playtest work. Publication of 0.3.0 did not complete those acceptance gates.

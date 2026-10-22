@@ -61,6 +61,12 @@ func restore() -> void:
 		_release()
 		set_physics_process(false)
 
+## The actual launch action owns its one-shot; restoration only resumes the flight.
+func launch_sound() -> void:
+	if is_instance_valid(_view):
+		_view.call(&"launch_sound")
+
+
 func recover(body: Node) -> void:
 	if world.get_meta(&"arrival_restoring", false) or active() or not is_instance_valid(body):
 		return
@@ -144,8 +150,10 @@ func _physics_process(delta: float) -> void:
 					if state.phase == &"recovery":
 						_release()
 						var words := "Recover your supplies. The pod's panels can become your camp."
+						if _first_person():
+							words = "Crawl out through the open hatch. " + words
 						if is_zero_approx(world.weather.day.sun_shown(world.time)):
-							words = Controls.key_for(&"headlamp") + " · headlamp. Recover supplies; pod panels become your camp."
+							words = Controls.key_for(&"headlamp") + " · headlamp. " + words
 						world.player.hands.say(words)
 						set_physics_process(false)
 	_show()

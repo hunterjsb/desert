@@ -1,6 +1,9 @@
 shader_type canvas_item;
 uniform vec4 aperture = vec4(0.0, 0.0, 1.0, 1.0);
 uniform vec4 sand : source_color = vec4(0.0);
+uniform vec4 windows[7];
+uniform vec2 window_corners[28];
+uniform int window_count = 0;
 uniform float heat = 0.0;
 uniform float dust = 0.0;
 uniform float passage = 0.0;
@@ -20,10 +23,36 @@ float cloud(vec2 p) {
 		mix(lattice(at + ivec2(0,1)), lattice(at + ivec2(1,1)), f.x), f.y);
 }
 void fragment() {
-	vec2 q = (UV - aperture.xy) / max(aperture.zw, vec2(0.0001));
-	float inside = step(0.0, q.x) * step(q.x, 1.0) * step(0.0, q.y) * step(q.y, 1.0);
-	float edge = min(min(q.x, 1.0 - q.x), min(q.y, 1.0 - q.y));
-	float rim = 1.0 - smoothstep(0.0, 0.12, edge);
+	vec2 q = vec2(0.5);
+	float inside = 0.0;
+	float rim = 0.0;
+	for (int i = 0; i < 7; i++) {
+		if (i >= max(window_count, 1)) { break; }
+		vec4 bounds = window_count > 0 ? windows[i] : aperture;
+		vec2 at = (UV - bounds.xy) / max(bounds.zw, vec2(0.0001));
+		float hit = step(0.0, at.x) * step(at.x, 1.0) * step(0.0, at.y) * step(at.y, 1.0);
+		float edge = min(min(at.x, 1.0 - at.x), min(at.y, 1.0 - at.y));
+		if (window_count > 0) {
+			float border = 1.0;
+			float positive = 1.0;
+			float negative = 1.0;
+			for (int corner = 0; corner < 4; corner++) {
+				vec2 a = window_corners[i * 4 + corner];
+				vec2 b = window_corners[i * 4 + ((corner + 1) % 4)];
+				vec2 ab = b - a;
+				vec2 ap = UV - a;
+				float cross_edge = ab.x * ap.y - ab.y * ap.x;
+				border = min(border, abs(cross_edge) / max(length(ab), 0.0001));
+				positive *= step(0.0, cross_edge);
+				negative *= step(cross_edge, 0.0);
+			}
+			hit *= max(positive, negative);
+			edge = border / max(min(bounds.z, bounds.w), 0.0001);
+		}
+		if (hit > inside) { q = at; }
+		inside = max(inside, hit);
+		rim = max(rim, hit * (1.0 - smoothstep(0.0, 0.12, edge)));
+	}
 	vec2 ray = (q - vec2(0.5, 0.85)) * vec2(1.3, 1.0);
 	vec2 flow = ray * (8.0 / (1.0 + passage * 2.0)) - vec2(0.0, passage * 1.7);
 	float grain = cloud(flow) * 0.7 + cloud(flow * 2.7 + vec2(7.0, 3.0)) * 0.3;

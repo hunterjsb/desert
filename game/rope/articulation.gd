@@ -49,7 +49,7 @@ static func native(root: Device) -> RopeArticulation:
 		on.append(body)
 	var model := RopeArticulation.new()
 	model.configure(on, pivots, along)
-	model.project_velocities()
+	model.project_velocities(false)
 	return model
 
 
@@ -109,8 +109,10 @@ func configure(on: Array[RopeBody], pivots: Array[Vector3], along: Array[Vector3
 		body.articulation = weakref(self)
 
 
-func project_velocities() -> void:
-	for predicted in [false, true]:
+## Native snapshots have no predicted external impulse; ordinary rope steps do.
+func project_velocities(include_expected := true) -> void:
+	var projections := [false, true] if include_expected else [false]
+	for predicted in projections:
 		var linear := []
 		var angular := []
 		for i in bodies.size():

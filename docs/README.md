@@ -18,7 +18,11 @@ The living world references are grouped in [`world/`](world/): [Zan's lore](worl
 ## System design
 
 The current design sources are in [`prd/`](prd/), one file per system. Start with the
-relevant PRD before changing that system.
+relevant PRD before changing that system. Surveyor departure spans the
+[preflight](prd/surveyor-preflight.md) and [landing planner](prd/landing-plan.md);
+its current bounded patch accounts cover [roof fitting](prd/pod-roof-launch.md),
+[physical recovery](prd/pod-recovery-clearance.md) and
+[flight look and intensity](prd/pod-flight-feel.md).
 
 ## Supporting briefs
 
@@ -28,3 +32,9 @@ Settled world decisions should be read from `world/`, not inferred from a brief 
 
 Voice-session records and personal working notes are kept outside the repository. Their
 settled design decisions are folded into the vision, world references, and PRDs.
+
+### Continued Sanddune checks
+
+- [Physical departure cargo view](prd/pod-cargo-screen.md)
+- [Connected Surveyor expedition check](prd/surveyor-expedition-check.md)
+- [Native contact cost](prd/native-contact-cost.md)

@@ -11,7 +11,10 @@
 ## Worktrees and landing
 
 - Keep the main checkout on verified master. Make changes in a sibling worktree; use `codex/` for new branches.
-- The detached `desert-wt-play` worktree is the user's play build. Coordinate before moving or launching it.
+- Keep main and one worktree per active implementation task. Reuse an idle task worktree before creating another; audit existing worktrees before fanning out. Create the detached integration worktree only for landing, then remove it. Keep a separate play checkout only when the user currently needs one.
+- After landing, remove the completed task worktree and its local branch immediately. Remove its remote verification branch too. Archive abandoned unmerged commits and dirty patches outside the repository before retiring their checkouts; never accumulate parked task worktrees.
+- Before removal, inspect current changes and exact process working directories, and coordinate with other agents. Preserve actively used checkouts; coordinate changes to any play checkout the user still uses.
+- The user currently plays from master. Do not create a separate play worktree unless requested; coordinate before moving or launching any user play checkout.
 - Import a new worktree, and again after merging master: `godot --headless --path . --import`.
 - Integrate in the detached sibling `desert-wt-merge2`. Land one change at a time.
 - Push work for verification to `verify-*`. Copy `scripts/verify.sh` outside the checkout before running the copy from the worktree: `<copy> <name>` verifies, and `<copy> <name> --land` lands after green CI.

@@ -90,8 +90,8 @@ func _nominal() -> void:
 		var face: Array = Frame.FACES[PodShell.PANELS[role][1]]
 		var frame_pose := Transform3D(Basis.IDENTITY, Vector3(cell.x, 0, cell.y)) * Chassis.FACES[Chassis.TOP]
 		var pose := frame_pose * Transform3D(Catalog._facing(face[1]), face[0]) * Frame.piece_seat()
-		_mesh(PodApertureLooks.frame() if role == &"tail" else plate, pose)
-		if role == &"tail":
+		_mesh(PodApertureLooks.frame() if role in PodShell.VIEWPORTS else plate, pose)
+		if role in PodShell.VIEWPORTS:
 			for side in [-1.0, 1.0]:
 				var pane := _mesh(PodApertureLooks.glass(), pose * Transform3D(Basis.IDENTITY, Vector3(0, side * 0.05, 0)))
 				pane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

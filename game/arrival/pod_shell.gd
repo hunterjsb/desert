@@ -13,6 +13,7 @@ const PANELS := {
 	&"hatch": [Vector2i(0, 0), &"left"],
 	&"tail": [Vector2i(1, 0), &"right"],
 }
+const VIEWPORTS: Array[StringName] = [&"tail", &"side_front_a", &"side_front_b", &"side_back_a", &"side_back_b", &"roof_a", &"roof_b"]
 static var _armor: ArrayMesh
 static var _heatshield: ArrayMesh
 
@@ -44,7 +45,7 @@ static func build(parent: Node, pose: Transform3D, survives: Dictionary = {}) ->
 		for panel in deck.joined:
 			if panel.joined_at == seat:
 				rig.named[role] = panel
-				restore_skin(panel, &"viewport" if role == &"tail" else &"armor")
+				restore_skin(panel, &"viewport" if role in VIEWPORTS else &"armor")
 	for role in [&"floor_a", &"floor_b"]:
 		restore_skin(rig.named[role], &"heatshield")
 	deck.global_transform = pose
@@ -136,9 +137,10 @@ static func reseal(rig: Rig) -> void:
 
 ## Upgrade the actual retained panel, never replace its body or attachment.
 static func ensure_aperture(parts: Dictionary) -> void:
-	var tail := parts.get(&"tail") as Chassis
-	if is_instance_valid(tail):
-		restore_skin(tail, &"viewport")
+	for role: StringName in VIEWPORTS:
+		var panel := parts.get(role) as Chassis
+		if is_instance_valid(panel):
+			restore_skin(panel, &"viewport")
 
 
 static func seat_pose() -> Transform3D:

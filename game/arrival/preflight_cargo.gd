@@ -93,6 +93,35 @@ static func loaded(world: World, ship: SurveyorShip) -> Array[StringName]:
 	return found
 
 
+## Report the same physical selection as launch; a nearby item is not automatically packed.
+static func packing_report(world: World, ship: SurveyorShip) -> Array[Dictionary]:
+	var aboard := loaded(world, ship)
+	var named := SurveyorRecovery.named(world)
+	var seat := seat_bounds(world, ship)
+	var report: Array[Dictionary] = []
+	for spec: Array in SurveyorManifest.EQUIPMENT:
+		var uid: StringName = spec[0]
+		var body := named.get(uid) as RigidBody3D
+		var packed := aboard.has(uid)
+		var reason := "Aboard" if packed else "On ship · not packed"
+		if not is_instance_valid(body):
+			reason = "Missing"
+		elif _carried(world, body):
+			reason = "Carried · set it in the pod"
+		elif not _whole_line(world, ship, body):
+			reason = "Secure rope ends and routing hooks to the pod"
+		elif not packed:
+			var box := bounds_in(body, ship.global_transform)
+			if seat.intersects(box):
+				reason = "Blocks the seat · move it clear"
+			elif _pod_attachment(ship, body) or ship.cargo_bounds.intersects(box):
+				reason = "Outside cargo space · move it inward"
+		var label := "Camp cell" if uid == &"camp_cell" else "Board cell" if uid == &"board_cell" else Catalog.short_label(spec[1])
+		report.append({"uid": uid, "label": label,
+			"aboard": packed, "reason": reason, "required": uid in REQUIRED})
+	return report
+
+
 static func readiness(world: World, ship: SurveyorShip) -> PackedStringArray:
 	var missing := _structure_readiness(world, ship)
 	var aboard := loaded(world, ship)
@@ -139,7 +168,9 @@ static func _structure_readiness(world: World, ship: SurveyorShip) -> PackedStri
 		var face := frame.faces().get(spec[1]) as Socket
 		if panel == null or not is_instance_valid(face) or face.get_parent() != root:
 			return PackedStringArray(["Repair the pod shell"])
-		if panel.deck == root and root.joined.has(panel) and panel.joined_at == face:
+		var roof := role in [&"roof_a", &"roof_b"]
+		var seats := _roof_faces(ship) if roof else [face]
+		if panel.deck == root and root.joined.has(panel) and seats.has(panel.joined_at):
 			continue
 		if not role in CLOSURES:
 			return PackedStringArray(["Repair the pod shell"])
@@ -149,12 +180,51 @@ static func _structure_readiness(world: World, ship: SurveyorShip) -> PackedStri
 		if not panel.joined.is_empty():
 			return PackedStringArray(["Separate joined panels from the " + name])
 		if panel.deck != null or panel.host() != null:
-			return PackedStringArray(["Detach the pod " + name + " from its other fitting"])
+			var destination := "either pod frame's top face" if roof else "the pod front frame's left face"
+			return PackedStringArray(["Take the " + name + " off " + _mount_name(ship, panel)
+				+ "; fit it on " + destination])
 		if panel.get_parent() != world.content:
 			return PackedStringArray(["Set down the pod " + name])
-		if not face.is_open():
-			return PackedStringArray(["Clear the pod " + name + " attachment face"])
+		var needed := 1
+		if roof:
+			needed = 0
+			for roof_role: StringName in [&"roof_a", &"roof_b"]:
+				var other := ship.pod_parts.get(roof_role) as Chassis
+				if not is_instance_valid(other) or other.deck != root or not seats.has(other.joined_at):
+					needed += 1
+		# Every loose roof needs its own clear face; two cannot share one opening.
+		if seats.filter(func(seat: Socket) -> bool: return seat.is_open()).size() < needed:
+			return PackedStringArray(["Clear a pod frame's top face for the " + name] if roof
+				else ["Clear the pod front frame's left face for the hatch"])
 	return PackedStringArray()
+
+
+static func _roof_faces(ship: SurveyorShip) -> Array:
+	return [(ship.pod_parts[&"frame_a"] as Frame).faces()[&"top"],
+		(ship.pod_parts[&"frame_b"] as Frame).faces()[&"top"]]
+
+
+## Name the physical attachment, so a refusal points at something the player can change.
+static func _mount_name(ship: SurveyorShip, panel: Chassis) -> String:
+	if panel.deck == ship.pod.deck:
+		for role: StringName in [&"frame_a", &"frame_b"]:
+			var frame := ship.pod_parts[role] as Frame
+			for side: StringName in frame.faces():
+				if frame.faces()[side] == panel.joined_at:
+					return "the pod " + ("front" if role == &"frame_a" else "rear") + " frame's " + str(side) + " face"
+		return "the edge of the pod floor"
+	if panel.deck != null:
+		return "another chassis (" + panel.deck.label + ")"
+	var host := panel.host()
+	if host == ship.pod.deck:
+		var socket := host.seat_of(panel)
+		var piece := (host as Chassis).own_piece(socket)
+		for role: StringName in ship.pod_parts:
+			if ship.pod_parts[role] == piece:
+				var side := "top" if socket.out.dot(piece.pose().basis.y) > 0.0 else "underside"
+				var name := "front floor" if role == &"floor_a" else "rear floor" if role == &"floor_b" else str(role).replace("_", " ")
+				return "the " + side + " of the pod " + name
+	return "the " + host.label if host != null else "its attachment"
 
 
 ## Refusal is read-only. The controller commits its phase only after this succeeds.
@@ -191,6 +261,14 @@ static func seal(world: World, ship: SurveyorShip, state: Dictionary, profile: D
 	# The exact retained panels close through ordinary real chassis joins.
 	var counting := world.counts_deeds
 	world.counts_deeds = false
+	# Identical roofs may already occupy each other's original seats.
+	for role: StringName in [&"roof_a", &"roof_b"]:
+		var roof := ship.pod_parts[role] as Chassis
+		if roof.deck == null:
+			for face: Socket in _roof_faces(ship):
+				if face.is_open():
+					ship.pod.deck.join(roof, face)
+					break
 	PodShell.reseal(ship.pod)
 	world.counts_deeds = counting
 	for uid: StringName in named:

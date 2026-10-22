@@ -1,7 +1,18 @@
 # Surveyor ship, scouting and pod preparation
 
 Selected 2026-10-21. Extends the Surveyor arrival in [Survival](survival.md) and
-answers to the [vision](../vision.md). In progress; no completion/release claim.
+answers to the [vision](../vision.md). The connected opening shipped in
+0.3.0-alpha Sanddune; human acceptance remains open. Current patch work is
+recorded in [roof placement](pod-roof-launch.md),
+[recovery clearance](pod-recovery-clearance.md) and
+[flight look and intensity](pod-flight-feel.md).
+
+The dated implementation slices below retain their original intermediate scope
+and measurements. Their “pending”, exterior-view and modal-interface statements
+are historical; the connected physical station and final patch integration
+accounts supersede them. Use the opening and current patch accounts together
+with the linked focused PRDs, rather than treating an isolated fixture as the
+present gameplay interface.
 
 ## Playable outcome
 
@@ -505,3 +516,16 @@ A capped shared-GPU sample measured summed viewport GPU medians of 2.379 ms live
 versus 1.950 ms frozen. This is a bounded screen-cost observation, not an uncapped
 frame-rate or representative large-camp budget. Logs and captures stay outside
 source control. No version bump or release is declared by this integration.
+
+## Pod patch integration (2026-10-22)
+
+The roof, physical escape and flight-feel changes at `0e14a7b2` passed
+[all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39716462147)
+and landed on master as 0.3.1-alpha development. The
+[full platform/build follow-up](https://github.com/hunterjsb/desert/actions/runs/39717579371)
+passed all 21 jobs, including native Windows/macOS checks and all three packaged
+build smokes. Twelve focused checks pass, including real roof placement, physical
+crawl/stand, original cargo assemblies/rope ends, actual launch sound and saved
+mouse-chosen flight view. Forward+ and Compatibility captures were inspected.
+The patch remains unpublished and Hunter's comprehension/comfort acceptance
+remains open. See the three linked patch accounts above for measured behavior.
