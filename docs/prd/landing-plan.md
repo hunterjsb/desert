@@ -90,7 +90,7 @@ the actual food in hand with no duplicate inventory grant. This establishes
 legacy compatibility under the new default; it does not replace interactive
 ship/cargo/launch or modal pause/save acceptance.
 
-## Physical launch station revision (selected 2026-10-21; implementation pending)
+## Physical launch station revision (selected and built 2026-10-21)
 
 The modal site grid and numeric heading controls failed the ordinary playtest:
 selected defaults looked ready without being confirmed, the map was ambiguous,
@@ -191,3 +191,9 @@ draft. Covering the screen with the console cannot change the course, and
 returning restores the visible pointer without a stuck drag. Focus, cargo,
 legacy-flight and mid-impact disk checks pass together. Full combined/native CI
 and ordinary-player comprehension remain separate acceptance gates.
+
+Combined implementation `622cec08` passed
+[all nine Linux CI groups](https://github.com/hunterjsb/desert/actions/runs/39699225787).
+Actual Forward+ and Compatibility nine-phase captures were inspected through
+recovery. [Native verification](https://github.com/hunterjsb/desert/actions/runs/39700634561) is running; ordinary-player comprehension is
+still required. The preflight PRD records the connected acceptance and scope.

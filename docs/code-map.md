@@ -15,8 +15,8 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | Halloran and the Stoker | `game/story/halloran_kit.gd`, `halloran_site.gd` build Aitch, the Crossing and refinery ground; `stoker.gd` owns physical furnace interactions, with run state in World/Snapshot | `probes/history/7_halloran_on_the_moon.gd`, `probes/kits/10_halloran_ground.gd`, `probes/kits/11_halloran_first_fire.gd`, `probes/saves/39_stoker_stock.gd`, `look/halloran` |
 | Ruin geometry and exposure | `game/salvage/kits/structure_kit.gd` defines pieces, rooms and sockets; `structure.gd` presses them into the ground and follows `exposure.gd`; era kit files define the actual structures | `probes/kits`, `probes/salvage` |
 | Loot and wrecks | `game/salvage/site_loot.gd: draw/plan` chooses a site's finds; `finds.gd: make/pose/bounds` builds and places them; `salvage.gd` streams and claims them; `kits/wrecks.gd` defines wrecks; `StructureKit.fitted_box` adds matching oriented solid details | `probes/loot`, `probes/wrecks`, `probes/salvage` |
-| Surveyor flight and recovery | `game/arrival/surveyor_arrival.gd` coordinates saved phases; `arrival_view.gd` renders orbit/descent; `surveyor_manifest.gd` resolves seeded survivors; `surveyor_recovery.gd` materializes/reuses ordinary gear and `pod_shell.gd` supplies real reusable panels; Main/Runs select the opening and Snapshot reconnects roles | `probes/arrival` (11: legacy automatic-flight restore, 22: real preparation/flight disk saves), `look/surveyor_opening`, `look/pod_shell`, `look/orbit`, `look/arrival_camp`; baseline integrated and platform-verified, human acceptance open |
-| Surveyor cabin, planning and cargo | `game/arrival/surveyor_preflight.gd` owns preparation/seat/launch readiness; `ship_interior.gd` and `ship_looks.gd` build the cabin; `landing_plan.gd`, `landing_plan_rules.gd` and `launch_computer.gd` own the current bounded modal planner; `preflight_cargo.gd` recognizes and seals real loaded bodies | `probes/arrival/15*`, `16*`, `20*`–`26*`, `30*`, `look/surveyor_preflight`, `look/ship_preflight`; launch blockers exposed before seating, no replacement kit grant |
+| Surveyor flight and recovery | `game/arrival/surveyor_arrival.gd` coordinates saved phases; `arrival_view.gd` renders the seated first-person path, `pod_interior.gd` snapshots actual shell/cargo meshes and `impact_effects.gd` samples saved heat/recoil/dust; `surveyor_manifest.gd` resolves seeded survivors; `surveyor_recovery.gd` materializes/reuses ordinary gear and `pod_shell.gd` supplies real reusable panels; Main/Runs select the opening and Snapshot reconnects roles | `probes/arrival` (11: legacy automatic-flight restore, 22: real preparation/flight disk saves, 33–34: seated eye and mid-impact disk resume, 36–38: cargo, impact and aperture), `look/surveyor_opening`, `look/pod_shell`, `look/orbit`, `look/arrival_camp`; first-person integration Linux-verified, native and human acceptance tracked below |
+| Surveyor cabin, planning and cargo | `game/arrival/surveyor_preflight.gd` owns preparation/seat/launch readiness; `ship_interior.gd` and `ship_looks.gd` build the cabin; `departure_trajectory.gd` owns the saved rotating-moon pulse/path, `landing_plan.gd`/`landing_plan_rules.gd` validate the real footprint, and `physical_launch_station.gd`/`launch_computer.gd` own the persistent screen, camera focus and ray drag; `preflight_cargo.gd` recognizes and seals real loaded bodies | `probes/arrival/15*`, `16*`, `20*`–`26*`, `30*`–`32*`, `35*`, `look/surveyor_preflight`, `look/ship_preflight`; launch blockers exposed before seating, no replacement kit grant |
 | Marked Home and return | `game/camp/home.gd` owns claimed membership, geography and navigation state; `home_beacon.gd` marks the chassis; `terrain_residency.gd`, `terrain.gd` and `sites.gd` retain support; `game/ui/home_view.gd` presents the requested return view; Snapshot prepares support before far restore | `probes/camp`, `probes/history/9_two_history_areas.gd`, `probes/weather/26_camp_weather_stays_at_its_place.gd`, `probes/menus/49_home_is_requested_and_truthful.gd`, `look/home` |
 | Devices and decks | `game/devices/catalog.gd` creates devices and parts; `device.gd` owns sockets, mounts and pooled mass; `chassis.gd`, `stick.gd`, `rig.gd` assemble a camp | `probes/devices` |
 | Hands, movement and board | `game/player/player.gd`, `hands.gd`, `body.gd` (visual suit poses), `game/look/surveyor_looks.gd`, `ledge_vault.gd` (swept on-foot ledges), `feel.gd`, `tumble.gd`; `game/board/ride.gd` handles riding and caches reachable static support faces | `probes/movement` (39: body; 40: loaded mixed-deck boarding/touchdown; 43–44: powered vault/body pose), `probes/devices`, `look/player_body`, `look/loaded_boarding`, `look/powered_vault`, `look/body_vault`, `look/board_waist_view`; body/boarding integrated, human comfort open |
@@ -34,17 +34,15 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | Saves and deeds | `game/saves/snapshot.gd` captures run state; `deeds.gd: TABLE` defines deeds; gameplay systems record the action when it happens | `probes/saves` |
 | Desktop launcher | `launcher/main.py` installs published releases and launches local Git worktrees; `.github/workflows/launcher-release.yml` packages the launcher | Standalone app; see `docs/prd/launcher.md` |
 
-The integrated large-moon/body/gathered-line/cabin baseline at `7f8e918a` passed
-all 21 native/platform/build jobs. The `67a52115` launch-readiness correction passed
-all nine Linux groups; its native follow-up is still running. These are development
-results, not a Sanddune release or completed human sailing/expedition acceptance.
-
-**Separate work in progress:** the first-person-arrival branch replaces the modal
-planner with a physical always-on display, focused camera and ray-dragged pulse;
-it connects a shared saved departure clock/path to first-person heat/impact and
-actual gear recovery. See the current [preflight](prd/surveyor-preflight.md) and
-[landing-plan](prd/landing-plan.md) decisions when that source is integrated;
-the baseline files and checks above do not claim this new interface is on master.
+The integrated large-moon/body/gathered-line/cabin baseline at `7f8e918a` and
+launch-readiness correction at `67a52115` passed all 21 platform/build jobs.
+The physical station and continuous first-person departure at `622cec08` passed
+[all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39699225787);
+[native follow-up](https://github.com/hunterjsb/desert/actions/runs/39700634561) is running. Connected input/saves and inspected nine-phase
+Forward+/Compatibility captures pass. These are development results, not a
+Sanddune release or completed human sailing/expedition acceptance. Current design
+and measured evidence live in [preflight](prd/surveyor-preflight.md) and
+[landing-plan](prd/landing-plan.md).
 The [roadmap](alpha-roadmap.md) keeps kites, deeper suit/wrist instruments and
 broader origin variants in Spaceport, with concrete designs still to select.
 

@@ -408,7 +408,7 @@ old orbit interpolation remains a temporary renderer path until that integration
 Renderer33 passes (6 s): real shell held at one seat through orbit/ejection/
 descent/entry, projected window wholly on screen, bounded nonaccumulating ground
 recoil, exact settled/disposal camera restoration and no extra physical bodies.
-Saved-time effects28 passes (4 s). Actual GPU renderer captures at1280×720 were
+Saved-time effects37 passes (4 s). Actual GPU renderer captures at1280×720 were
 inspected for orbit, ejection, descent, hot entry, impact and settled ground.
 With the same real renderer pose/light held fixed, entry changes30,940 pixels
 inside the aperture and zero outside; the first fixture incorrectly varied
@@ -489,3 +489,19 @@ minimum tied to the earlier zoom distance. Both reported CI failures are covered
 by focused Arrival15 and the shared-theme check. Newly added checks are numbered
 after current master; the impact/aperture development checks become37/38 with
 their original UIDs retained.
+
+## Integrated verification (2026-10-21)
+
+The connected implementation at `622cec08` passed all nine Linux groups in
+[run 39699225787](https://github.com/hunterjsb/desert/actions/runs/39699225787).
+This supersedes the earlier isolated/candidate status above. [Native checks](https://github.com/hunterjsb/desert/actions/runs/39700634561) are running; Hunter's comprehension and motion-comfort acceptance remain.
+The prior readiness fix at `67a52115` passed all 21 platform/build jobs.
+
+Actual nine-phase Forward+ and Compatibility runs reach recovery with 13 surviving
+roles and zero rescues; all captures were inspected. The final loaded-gear snapshot
+was also inspected seated and after ejection. Compatibility has different lighting
+tones; this establishes functional presentation, not pixel-identical renderers.
+A capped shared-GPU sample measured summed viewport GPU medians of 2.379 ms live
+versus 1.950 ms frozen. This is a bounded screen-cost observation, not an uncapped
+frame-rate or representative large-camp budget. Logs and captures stay outside
+source control. No version bump or release is declared by this integration.
