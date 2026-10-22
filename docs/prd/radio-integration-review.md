@@ -69,3 +69,13 @@ Weather27 (9/7 s). The real console test executes both legacy commands, observes
 the requested overhead flight and confirms the old scenario aliases (21 s).
 The separate radio and kite accounts record all five reproduced runtime defects
 and their corrected focused checks. Combined CI remains required before landing.
+
+## Rendered scale calibration
+
+Actual runtime Forward+ inspection found the live shortwave needle at30 MHz
+against a printed26 MHz end tick; AM and FM also retained prototype ranges.
+Printed marks must use each live band's actual limits and their corresponding
+fraction of the same needle travel. Keep meaningful legible labels, placing
+nonuniform label intervals at their actual frequencies. This changes the face
+markings, not tuning, reception or needle response. Check all three production
+bands, and inspect the corrected shortwave maximum in the renderer.
