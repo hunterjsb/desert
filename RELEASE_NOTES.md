@@ -133,6 +133,8 @@ Includes the sailing, traversal and exploration baseline described below.
 
 ## 0.2.3-alpha “Sailboat”
 
+*Tagged, never published; 0.2.4-alpha shipped it (as with 0.2.2-alpha).*
+
 Physical sailing controls, clearer radio reception, and a first encounter at Halloran.
 
 The 0.2.2 and 0.2.3 tags remained unpublished candidates. The first failed its
@@ -182,14 +184,14 @@ Richer sand and trails, recoverable Nomad sailing gear, and fixes from sailing p
 - A physical sailing field guide in the sail scenario explains wind, trim, steering and the Varran bridle.
 - Shorter weather announcements, spoken when storm news changes.
 
-### 0.2.0-alpha
+## 0.2.0-alpha
 
 The second alpha of a cozy survival game on a dead desert moon. Your home is a bubble
 shield you carry with you, on a rig you build and tie down against the wind. Everything
 is still rough: grey boxes, placeholder sounds, numbers still moving. It's here to be
 played and broken.
 
-## New since 0.1
+### New since 0.1
 
 - **The chassis is the one structure.** Crates and slots are gone:
   - Anything sticks on a chassis's faces, and frames take walls and shelves.
@@ -226,7 +228,7 @@ played and broken.
   - grainflows down slip faces.
 - **A creative menu** in the dev console, to build anything in a test run.
 
-## What's in it
+### What's in it
 
 - **The moon:** endless dunes that the wind reshapes. A day and night with the gas giant
   Tu overhead and its eclipses, and storms you can see coming as a wall on the horizon.
