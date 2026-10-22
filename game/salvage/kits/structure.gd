@@ -634,8 +634,10 @@ func placed(at: Vector3) -> Transform3D:
 
 ## Its collision: a box for each box the sand leaves showing in a state, in
 ## its own frame. The sand and it are one ground.
-func add_shapes(body: CollisionObject3D, s: int) -> void:
+func add_shapes(body: CollisionObject3D, s: int, owner := Rect2()) -> void:
 	for i in piece.shown(s):
+		if not _owns_solid(piece.boxes[i].get_center(), owner):
+			continue
 		var holder := CollisionShape3D.new()
 		holder.shape = piece.shape(i)
 		holder.position = piece.boxes[i].get_center()
@@ -644,10 +646,19 @@ func add_shapes(body: CollisionObject3D, s: int) -> void:
 			holder.set_meta(&"bed", true)
 		body.add_child(holder)
 	for fitted in piece.fitted_boxes:
+		if not _owns_solid(fitted[1].origin, owner):
+			continue
 		var holder := CollisionShape3D.new()
 		holder.shape = fitted[0]
 		holder.transform = fitted[1]
 		body.add_child(holder)
+
+
+func _owns_solid(centre: Vector3, owner: Rect2) -> bool:
+	if not owner.has_area():
+		return true
+	var at := frame() * centre
+	return owner.has_point(Vector2(at.x, at.z))
 
 
 ## Where its frame's origin is, world metres.

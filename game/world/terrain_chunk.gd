@@ -50,6 +50,7 @@ func show_build(build: ChunkBuild) -> void:
 		add_child(_view)
 	_show_ground(build)
 	_show_structures(build.structures)
+	_sync_distributed_boxes()
 
 
 ## A build of the same ground with what stands in it pressed in afresh: each
@@ -66,6 +67,7 @@ func show_pressed(build: ChunkBuild) -> Array[Structure]:
 	for each in build.structures:
 		if not _views.has(each):
 			new.append(each)
+	_sync_distributed_boxes()
 	if new.is_empty():
 		return new
 	_show_structures(build.structures)
@@ -129,15 +131,22 @@ func follow_structures() -> bool:
 		mesh.transform = each.placed(at)
 		# Its look's sand stain was drawn at its state's sand line.
 		mesh.set_instance_shader_parameter(&"foot_shift", sink - each.piece.sink[s])
-		var boxes: Array = _boxes.get(each, [])
-		if boxes.is_empty():
+	# A landmark's bodies can live here without its single visual mesh.
+	for each: Structure in _boxes:
+		var level := each.level()
+		var s := StructureKit.Piece.shown_state(level)
+		var boxes: Array = _boxes[each]
+		var sink := each.piece.sink_at(level)
+		if boxes[1] == s and absf(sink - boxes[2]) < MOVES:
 			continue
+		moved = true
+		boxes[2] = sink
 		if boxes[1] != s:
 			for shape in (boxes[0] as Node).get_children():
 				shape.free()
-			each.add_shapes(boxes[0], s)
+			each.add_shapes(boxes[0], s, _solid_owner(each))
 			boxes[1] = s
-		(boxes[0] as StaticBody3D).transform = each.placed(at)
+		(boxes[0] as StaticBody3D).transform = each.placed(_at(each, level))
 	return moved
 
 
@@ -163,6 +172,9 @@ func add_collision_piece(size: int, sand: PhysicsMaterial) -> bool:
 		# sinks: what stands on it is lifted with it.
 		for each in _structures:
 			_add_boxes(each, body, sand)
+		for each in carved:
+			if each.piece.distributed_collision and not _boxes.has(each):
+				_add_boxes(each, body, sand)
 	add_child(body)
 	_bodies.append(body)
 	_shapes.append(shape)
@@ -170,14 +182,29 @@ func add_collision_piece(size: int, sand: PhysicsMaterial) -> bool:
 
 
 func _add_boxes(each: Structure, body: StaticBody3D, sand: PhysicsMaterial = null) -> void:
+	if _boxes.has(each):
+		return
 	var level := each.level()
 	var s := StructureKit.Piece.shown_state(level)
 	var boxes := StaticBody3D.new()
 	boxes.physics_material_override = sand if sand != null else body.physics_material_override
-	each.add_shapes(boxes, s)
+	each.add_shapes(boxes, s, _solid_owner(each))
 	boxes.transform = each.placed(_at(each, level))
 	body.add_child(boxes)
-	_boxes[each] = [boxes, s]
+	_boxes[each] = [boxes, s, each.piece.sink_at(level)]
+
+
+func _solid_owner(each: Structure) -> Rect2:
+	return Rect2(Vector2(coord) * side, Vector2.ONE * side) if each.piece.distributed_collision else Rect2()
+
+
+func _sync_distributed_boxes() -> void:
+	if _bodies.is_empty():
+		return
+	for each in carved:
+		if each.piece.distributed_collision and not _boxes.has(each):
+			_add_boxes(each, _bodies[0])
+	follow_structures()
 
 
 ## Freed now, not queued, so the cost lands inside the terrain's frame budget.

@@ -1033,6 +1033,35 @@ food. Feudal war plus a second famine breaks all three. **Agreed (part 5):** the
 volcanic vents shift beyond reach." Halloran's refinery mind, the Stoker, is left starving for the
 heat it was built to use ([section 9](#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
 
+### Halloran's decline and the ban on the Stoker (agreed, 2026-10-22)
+
+Halloran was Zan's second-largest city during the Colonial and Skimmer eras and
+peaked in the Skimmer Era. It remains a major power in the Warring Kingdoms
+(the First Kingdoms), but is already losing people. Its industrial importance
+had sustained a city in a place poorly suited to agriculture or traveller trade.
+As that economy contracts, inhabitants leave for Port Morgan and, especially,
+the fertile ring's farming settlements around Sister and Halfrise. This is the
+Rim of the existing regional geography, not a new region. The outflow precedes
+the final loss of reachable vent heat described above.
+
+The departures contribute to the Stoker's deterioration: the community and
+workforce around the refinery diminish while its production obligations remain.
+Its unmet quotas are not a failure of faith or of understanding. The severed
+supply chain leaves it without the pipe and labour needed to extend its lines
+([its surveys of unreachable heat](#the-walker-and-the-stoker-surveys-of-unreachable-heat-agreed-2026-10-20)).
+
+During the Warring Kingdoms, people still understand what the Stoker is.
+Halloran's authorities ban access because it is too volatile and dangerous.
+They restrict contact rather than encourage people to seek knowledge from it.
+The ban begins as a practical response to an industrial mind they understand.
+
+After the Dark Age, in the Feudal Era (the second age), that prohibition helps
+make the Stoker esoteric. The old restriction survives the understanding that
+justified it; later cults form around the forbidden god. Halloran's religious
+life is less institutionally organized than the order around the Ledger in
+Port Morgan. These Stoker cults do not replace Muster's Quartermaster war cult.
+Their names, doctrines and particular practices remain open.
+
 ### The houses and Crakeside, renamed (Agreed, session 5)
 
 *Session 5, "Renames": "Five names change everywhere
@@ -1115,7 +1144,8 @@ fallen Crakes, who are the IOU's descendants and fall in the second age, which f
 ([Mitchell](#mitchell-the-dead-god-agreed-session-5)). The Bastion is built round the freighter left behind ([section
 4](#the-freighter-left-behind-agreed-endings-session)).
 
-**Halloran's ruins (Han)** support three settlements:
+**Halloran's ruins (Han)** support three settlements. Their diminished population
+and the Stoker's later cults follow [Halloran's decline and the ban](#hallorans-decline-and-the-ban-on-the-stoker-agreed-2026-10-22):
 
 | Settlement | What it is |
 |---|---|
