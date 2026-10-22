@@ -143,7 +143,6 @@ func begin(data: Dictionary) -> Array[Vector2]:
 	# A resumed run has its own things: no new run's kit is set down in it.
 	world.set_meta(&"resumed", true)
 	world.time = data.time
-	world.weather.field.restore_wind(data.get("test_wind", {}))
 	world.began = data.get("began", 0.0)
 	world.taught = data.get("taught", false)
 	world.stoker_state = data.get("stoker", {}).duplicate(true)
@@ -373,9 +372,6 @@ func _take() -> Dictionary:
 		"sicknesses": player.vitals.wounds.sicknesses}
 	you.ground_pose = player.ground_pose
 	data.player = you
-	var test_wind := world.weather.field.wind_state()
-	if not test_wind.is_empty():
-		data.test_wind = test_wind
 	var things := []
 	var lines: Array[Line] = []
 	var cables: Array[Cable] = []

@@ -30,7 +30,7 @@ func run() -> void:
 	world.power.live(10.0, world.time)
 	var far_used := charge - battery.charge_wh
 	check(far_used > 0.0 and absf(far_used - near_used) < 0.000001, "the same power interval consumes equally near and far")
-	print("HOME METRICS chunks=%d collision=%d members=%d items=%d terrain_max_ms=%.2f" % [world.terrain._chunks.size(), world.terrain.collision_count(), world.home.members.size(), world.home.item_count, world.terrain.slowest_frame_ms])
+	print("HOME METRICS chunks=%d collision=%d members=%d items=%d terrain_max_ms=%.2f" % [world.terrain._chunks.size(), world.terrain.collision_count(), world.home.members.size(), world.home.work_count(), world.terrain.slowest_frame_ms])
 	check(world.home.unmark() != "", "unmark cannot discard distant camp support")
 	var saves := get_node(^"/root/Saves")
 	check(saves.save(world), "far camp saved")

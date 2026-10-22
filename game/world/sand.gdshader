@@ -288,7 +288,8 @@ void vertex() {
 		VERTEX.y += track_lift * near;
 	}
 	vec3 drawn = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	VERTEX = (inverse(MODEL_MATRIX) * vec4(surface_project(drawn), 1.0)).xyz;
+	// The drop is along world up; into model space without a per-vertex inverse.
+	VERTEX += (surface_project(drawn) - drawn) * MODEL_NORMAL_MATRIX;
 }
 
 // Depth below a ripple's crest: the integral of its rounded sawtooth slope.

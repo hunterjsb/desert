@@ -26,6 +26,16 @@ static var _current: Tuning
 @export_group("Stoker")
 @export var stoker_burn_s: float = 30.0
 @export var stoker_stock: int = 3
+## How often the furnace bay looks for Halloran among the laid sites, s.
+@export var stoker_poll_s: float = 0.5
+## The bay's lamp: its energy burning, the flicker on that, and its glow cold.
+@export var stoker_light_energy: float = 2.8
+@export var stoker_light_flicker: float = 0.2
+@export var stoker_light_idle: float = 0.1
+@export var stoker_light_range_m: float = 16.0
+## The burn's roar, dB, and how far it carries, m.
+@export var stoker_sound_db: float = -17.0
+@export var stoker_sound_m: float = 65.0
 
 @export_group("Spawns")
 ## Every run starts this near the equator, degrees: inside it the clear's
@@ -1411,13 +1421,17 @@ static func current() -> Tuning:
 
 @export_group("Marked Home")
 ## Admission limits include the camp's owned assembly and supporting terrain halo.
-@export var home_max_bodies: int = 512
+@export var home_max_bodies: int = 160
 @export var home_span_m: float = 128.0
 @export var home_support_chunks: int = 49
 @export var home_signal_m: float = 2000.0
 @export var home_beacon_w: float = 1.0
 @export var home_depart_m: float = 700.0
 @export var home_return_m: float = 30.0
+## Between rebuilds of Home's membership a drifting belonging is noticed this late, s.
+@export var home_sweep_s: float = 1.0
+## The beacon's lamp blinks at this period while Home's ground is made ready, s.
+@export var home_beacon_blink_s: float = 1.0
 
 @export_group("Surveyor arrival")
 ## Provisional recovery rules for the integrated development opening.

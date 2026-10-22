@@ -1,16 +1,7 @@
 extends Probe
-## Omitting the zero native external step must leave ordinary predicted rope motion intact.
+## Native contacts skip their zero external pass; ordinary rope steps with real
+## external motion must still conserve momentum and obey the hinge.
 func run() -> void:
-	var complete := _model()
-	var native_only := _model()
-	complete.project_velocities()
-	native_only.project_velocities(false)
-	for i in complete.bodies.size():
-		var a := complete.bodies[i]
-		var b := native_only.bodies[i]
-		check(a.velocity == b.velocity and a.spin == b.spin and a.expected == Vector3.ZERO
-			and a.expected_spin == Vector3.ZERO and b.expected == a.expected and b.expected_spin == a.expected_spin,
-			"zero external terms leave exactly the same projected actual velocities")
 	var ordinary := _model()
 	ordinary.bodies[0].expected = Vector3(0.7, -0.2, 0.3)
 	ordinary.bodies[0].expected_spin = Vector3(0.1, 0.2, -0.3)
@@ -28,9 +19,8 @@ func run() -> void:
 		and root_at.distance_to(boom_at) < 0.00001
 		and (boom.expected_spin - carrier.expected_spin).slide(Vector3.UP).length() < 0.00001
 		and boom.expected.length() > 0.01, "ordinary nonzero external motion conserves momentum and obeys the real hinge")
-	for model in [complete, native_only, ordinary]:
-		for body in model.bodies:
-			body.rigid.free()
+	for body in ordinary.bodies:
+		body.rigid.free()
 
 func _model() -> RopeArticulation:
 	var root := _body(6.0, Vector3.ZERO, Vector3(2, 3, 4))

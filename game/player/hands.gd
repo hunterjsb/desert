@@ -137,6 +137,8 @@ var look_socket: Socket
 var look_sand := false
 ## Looking at a ruin's bed, which sleeps you there.
 var look_bed := false
+## A static fitting you aim at whose `fixture` meta works it by hand.
+var look_fixture: CollisionObject3D
 var look_point := Vector3.ZERO
 var look_normal := Vector3.UP
 ## A piece of a wreck that some work takes away: a plate, a layer of sand, a
@@ -406,7 +408,8 @@ func interact() -> bool:
 	if _player.world.arrival != null and _player.world.arrival.interact():
 		return true
 	_look()
-	if _player.world.stoker != null and _player.world.stoker.interact(_player):
+	# A fitting worked by hand, such as a furnace's feed: its own Callable says what use does.
+	if look_fixture != null and look_fixture.get_meta(&"fixture").call(_player):
 		return true
 	# A radio in your hands with frequencies marked: use goes to the next.
 	if held is Radio and phase == Phase.HELD and (held as Radio).next_mark():
@@ -909,6 +912,7 @@ func _look() -> void:
 	look_wreck = null
 	look_scrap = null
 	look_bed = false
+	look_fixture = null
 	var eye := _player.camera.global_transform
 	sight_from = eye.origin
 	sight_to = eye.origin - eye.basis.z * _tuning.reach
@@ -931,6 +935,8 @@ func _look() -> void:
 	look_normal = hit.normal
 	var body: Object = hit.collider
 	look_sand = _is_sand(hit)
+	if body is CollisionObject3D and body.has_meta(&"fixture"):
+		look_fixture = body
 	if body is CollisionObject3D and body.has_meta(&"wreckage"):
 		look_wreck = body.get_meta(&"wreckage")
 		if body.has_meta(&"work"):

@@ -344,7 +344,7 @@ static func _silhouette() -> ShaderMaterial:
 ## A mark drawn in the theme's ink, faint while locked, where no thing fits:
 ## a landmark's mast with its pennant, a sail, a storm's wall, an anomaly's
 ## eye, a ruin bared, a wreck, a mast's signal, the eclipse, a glint, a vent
-## and its boom, Tu overhead, the dark side's stars, the sun's days, bearings
+## and its boom, a summit, Tu overhead, the dark side's stars, the sun's days, bearings
 ## crossing, the living city's decks and the Walker.
 static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 	var ink := on.get_theme_color(&"faint" if locked else &"text", &"Palette")
@@ -385,6 +385,12 @@ static func _draw_mark(on: Control, mark: StringName, locked: bool) -> void:
 			on.draw_colored_polygon(PackedVector2Array([Vector2(u * 0.08, foot.y), Vector2(u * 0.5, s.y * 0.22),
 				Vector2(u * 0.66, s.y * 0.26), Vector2(u * 0.8, foot.y)]), ink)
 			on.draw_rect(Rect2(u * 0.74, s.y * 0.7, u * 0.18, foot.y - s.y * 0.7), ink)
+		&"summit":
+			# A mountain over the dunes, its summit's mast on top.
+			ground.call()
+			var peak := Vector2(u * 0.52, s.y * 0.3)
+			on.draw_colored_polygon(PackedVector2Array([Vector2(u * 0.1, foot.y), peak, Vector2(u * 0.9, foot.y)]), ink)
+			on.draw_line(peak, Vector2(peak.x, top.y), ink, 2.0, true)
 		&"ruin":
 			# Broken walls standing out of a dune.
 			for x: Array in [[0.24, 0.42], [0.42, 0.22], [0.66, 0.34]]:

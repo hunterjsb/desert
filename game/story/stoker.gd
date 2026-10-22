@@ -2,6 +2,8 @@ class_name Stoker
 extends Node3D
 ## The furnace's state belongs to the run, not the streamed city. Fixtures
 ## hold real finite stock; claimed parts join the ordinary world and its saves.
+## A fixture: its targets carry a `fixture` Callable that Hands works, and its
+## shelved parts a `slot` that Salvage asks before taking them.
 
 var world: World
 var site: HalloranSite
@@ -14,10 +16,13 @@ var _sound: AudioStreamPlayer3D
 var _stock: Array[Part] = []
 var _cache: Array[Part] = []
 var _poll := 0.0
+var _frame := Transform3D()
+var _placed := false
+var _shown := -1
 
 func _ready() -> void:
 	world = get_parent() as World
-	add_to_group(&"stoker")
+	add_to_group(&"fixtures")
 	world.origin_shifted.connect(_shifted)
 
 
@@ -30,7 +35,7 @@ func _process(delta: float) -> void:
 	advance(world)
 	_poll -= delta
 	if _poll <= 0.0:
-		_poll = 0.5
+		_poll = world.tuning.stoker_poll_s
 		var found: HalloranSite
 		for unit in world.shape.sites.units():
 			for each in unit.sites:
@@ -41,20 +46,29 @@ func _process(delta: float) -> void:
 			site = found
 		if site != null and _fixtures == null and site.ground >= 0:
 			_build()
+		# Placed once, and again only if the site itself stands differently.
+		if site != null and _fixtures != null and (not _placed or not site.frame().is_equal_approx(_frame)):
+			_placed = true
+			_frame = site.frame()
+			var at := _frame
+			at.origin.x = world.engine_x(at.origin.x)
+			at.origin.z = world.engine_z(at.origin.z)
+			global_transform = at
 	if site == null or _fixtures == null:
 		return
-	var at := site.frame()
-	at.origin.x = world.engine_x(at.origin.x)
-	at.origin.z = world.engine_z(at.origin.z)
-	global_transform = at
 	var burning := active(world)
-	_light.light_energy = (2.8 + 0.2 * sin(world.time * 3.0)) if burning else 0.1
-	_fire.visible = burning
-	if burning and not _sound.playing:
-		_sound.play()
-	elif not burning and _sound.playing:
-		_sound.stop()
+	_light.light_energy = (world.tuning.stoker_light_energy + world.tuning.stoker_light_flicker * sin(world.time * 3.0)) \
+		if burning else world.tuning.stoker_light_idle
 	var opened: bool = world.stoker_state.get("opened", false)
+	var state := (1 if burning else 0) + (2 if opened else 0)
+	if state == _shown:
+		return
+	_shown = state
+	_fire.visible = burning
+	if burning:
+		_sound.play()
+	else:
+		_sound.stop()
 	_door.position.y = HalloranKit.CACHE.y + (3.8 if opened else 1.2)
 	_status.text = "STOKER / BAY 02\n" + ("MAINTENANCE BURN\nPRESSURE STABLE" if burning else
 		("BAY RELEASED\nQUOTA STILL OUTSTANDING" if opened else "FEED REQUIRED\nCOALCANE"))
@@ -67,20 +81,6 @@ static func active(of: World) -> bool:
 static func advance(of: World) -> void:
 	if of.stoker_state.get("fed", 0) > 0 and of.time >= of.stoker_state.get("until", INF):
 		of.stoker_state["opened"] = true
-
-
-## A fresh ray prevents interaction through a wall or from a stale aim point.
-func interact(by: Player) -> bool:
-	if _fixtures == null:
-		return false
-	var from := by.camera.global_position
-	var ray := PhysicsRayQueryParameters3D.create(from, from - by.camera.global_basis.z * world.tuning.reach)
-	ray.exclude = by.hands._exclusions()
-	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-	if hit.is_empty() or not hit.collider.has_meta(&"stoker_action"):
-		return false
-	var action: StringName = hit.collider.get_meta(&"stoker_action")
-	return operate(by, action)
 
 
 func operate(by: Player, action: StringName) -> bool:
@@ -112,14 +112,14 @@ func claimed(bank: StringName) -> Array:
 
 ## Called by the ordinary salvage pickup path, before the part enters the hand.
 func claim(body: Node) -> void:
-	if not body.has_meta(&"stoker_slot") or locked(body):
+	if not body.has_meta(&"slot") or locked(body) != "":
 		return
-	var slot: Array = body.get_meta(&"stoker_slot")
+	var slot: Array = body.get_meta(&"slot")[1]
 	var taken := claimed(slot[0])
 	if not taken.has(slot[1]):
 		taken.append(slot[1])
 	world.stoker_state[slot[0]] = taken.size()
-	body.remove_meta(&"stoker_slot")
+	body.remove_meta(&"slot")
 	body.reparent(world.content)
 	(body as RigidBody3D).freeze = false
 
@@ -128,14 +128,15 @@ func claim(body: Node) -> void:
 func loose() -> Array[RigidBody3D]:
 	var parts: Array[RigidBody3D] = []
 	for part in _stock + _cache:
-		if is_instance_valid(part) and part.has_meta(&"stoker_slot"):
+		if is_instance_valid(part) and part.has_meta(&"slot"):
 			parts.append(part)
 	return parts
 
 
-func locked(body: Node) -> bool:
-	return body != null and body.has_meta(&"stoker_slot") \
-		and body.get_meta(&"stoker_slot")[0] == &"cache" and not world.stoker_state.get("opened", false)
+## Why a shelved part is held where it is, or "".
+func locked(body: Node) -> String:
+	return "service hatch locked" if body != null and body.has_meta(&"slot") \
+		and body.get_meta(&"slot")[1][0] == &"cache" and not world.stoker_state.get("opened", false) else ""
 
 
 ## Fixture bodies belong to the previous snapshot, not the resumed stock state.
@@ -149,7 +150,7 @@ func _place(bank: StringName, index: int, id: StringName, at: Vector3, turn := B
 		return
 	var part := Catalog.part(id)
 	part.freeze = true
-	part.set_meta(&"stoker_slot", [bank, index])
+	part.set_meta(&"slot", [self, [bank, index]])
 	_fixtures.add_child(part)
 	var bounds := Transform3D(turn, Vector3.ZERO) * Finds.bounds(part)
 	part.transform = Transform3D(turn, at - Vector3.UP * bounds.position.y)
@@ -162,6 +163,8 @@ func _place(bank: StringName, index: int, id: StringName, at: Vector3, turn := B
 func _clear() -> void:
 	_stock.clear()
 	_cache.clear()
+	_placed = false
+	_shown = -1
 	if is_instance_valid(_fixtures):
 		_fixtures.free()
 	_fixtures = null
@@ -186,13 +189,13 @@ func _build() -> void:
 	_light = OmniLight3D.new()
 	_light.position = furnace + Vector3(-4, 2, 0)
 	_light.light_color = Color(1, 0.36, 0.08)
-	_light.omni_range = 16
+	_light.omni_range = world.tuning.stoker_light_range_m
 	_fixtures.add_child(_light)
 	_sound = AudioStreamPlayer3D.new()
-	_sound.stream = Sounds.RADIO_STOKER
+	_sound.stream = Sounds.looping(Sounds.HISS_LOOP)
 	_sound.position = furnace
-	_sound.max_distance = 65
-	_sound.volume_db = -17
+	_sound.max_distance = world.tuning.stoker_sound_m
+	_sound.volume_db = world.tuning.stoker_sound_db
 	_fixtures.add_child(_sound)
 	var store := HalloranKit.STORE
 	# Open shelves carry actual loose bundles, not an invisible dispenser target.
@@ -232,7 +235,7 @@ func _build() -> void:
 func _target(action: StringName, at: Vector3, size: Vector3, coat: Paint.Coat) -> void:
 	var body := StaticBody3D.new()
 	body.position = at
-	body.set_meta(&"stoker_action", action)
+	body.set_meta(&"fixture", operate.bind(action))
 	_fixtures.add_child(body)
 	_box(body, size, Vector3.ZERO, coat, true)
 

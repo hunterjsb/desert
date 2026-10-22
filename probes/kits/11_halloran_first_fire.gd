@@ -24,7 +24,7 @@ func run() -> void:
 	check(hands.grab(), "take the real coalcane with ordinary pickup")
 	check(hands.held != null and hands.held.get_meta(&"catalog") == &"coalcane_bundle", "the store gives a real fuel bundle")
 	await aim(HalloranKit.FURNACE + Vector3(-12, 1.65, 0), HalloranKit.FURNACE + Vector3(-2.65, 1.1, 0))
-	world.stoker.interact(world.player)
+	hands.interact()
 	check(not Stoker.active(world), "cannot feed at a distance")
 	await aim(HalloranKit.FURNACE + Vector3(-4.3, 1.65, 0), HalloranKit.FURNACE + Vector3(-2.65, 1.1, 0))
 	check(hands.interact(), "use at the feed mouth")
