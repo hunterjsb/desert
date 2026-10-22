@@ -107,6 +107,8 @@ const TABLE := {
 	&"god_heard": {"name": "First Light", "asks": "Hear a god inside its window", "family": &"signals", "icon": &"radio"},
 	&"fm_heard": {"name": "Line of Sight", "asks": "Hear an FM station come through quiet", "family": &"signals",
 		"after": [&"god_heard"], "icon": &"radio"},
+	&"over_horizon": {"name": "Over the Horizon", "asks": "Hear an FM station clear on a kite that the radio can't hear alone",
+		"family": &"signals", "after": [&"fm_heard"], "icon": &"radio"},
 	&"foxhole": {"name": "Foxhole Radio", "asks": "Hear a god inside its window on a crystal set", "family": &"signals",
 		"after": [&"god_heard"], "icon": &"radio"},
 	&"null": {"name": "Null", "asks": "Turn a radio until a god you hear falls silent", "family": &"signals",

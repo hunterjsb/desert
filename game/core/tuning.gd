@@ -1211,6 +1211,13 @@ static var _current: Tuning
 @export var kite_whip_m: float = 0.3
 @export var kite_gain_db: float = 26.0
 @export var kite_gain_most: float = 2.5
+## The kite on the AM dial (gonkhub, 2026-10-22): a long wire hung this high,
+## m, lifts what the set hears to this many times; heard all ways round, it has
+## no null. On FM its height is the set's aerial's, less this much, dB, lost
+## down its long lead.
+@export var kite_am_most: float = 2.0
+@export var kite_am_full_m: float = 60.0
+@export var kite_fm_feed_db: float = 2.0
 ## Its charge, 0 to 1 of what arcs for certain: gathered this fast a second
 ## at 100 m in clear air, and this fast in a front's full outflow; leaking off
 ## into the air over this long, s. Past the first, an arc may jump somewhere

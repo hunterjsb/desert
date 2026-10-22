@@ -1,7 +1,7 @@
 extends KiteProbe
 ## Radio probe 55: a kite flies on the wind. Used in too little wind it won't
 ## go up; in a breeze it pays its line out and flies where the wind puts it,
-## as high as its line's angle says; on a cable from the radio's top hook it's
+## as high as its line's angle says; on a cable from the radio's aerial clip it's
 ## the set's shortwave aerial, hearing far past a long wire; used again it
 ## reels in and comes down to its reel.
 
@@ -15,7 +15,7 @@ func run() -> void:
 	check(not kite.use(world.player, kite.global_position) or not kite.flying, "in a 1.5 m/s wind it won't fly")
 	weather_everywhere(0.0, 9.0)
 	await physics_frames(2)
-	check(kite.find_rig().get("radio") == radio, "its lead runs to the radio's top hook")
+	check(kite.find_rig().get("radio") == radio, "its lead runs to the radio's aerial clip")
 	radio.on = true
 	radio.switch_band()
 	check(radio.band == Radio.SW_BAND, "the radio on shortwave")

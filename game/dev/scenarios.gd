@@ -1057,15 +1057,13 @@ static func radio(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## A radio with a shortwave converter, switched on to shortwave, a rope hook
-## on its top; the antenna kite set down off it, and a cable from the hook's
-## stem to the kite reel's lead terminal through a stake driven between: use
-## the kite to fly it.
+## A radio with a shortwave converter, switched on to shortwave; the antenna
+## kite set down off it, and a cable from the radio's aerial clip to the kite
+## reel's lead terminal through a stake driven between: use the kite to fly it.
 static func kite(world: World) -> Array[Node3D]:
 	var shortwave := standing(world, &"radio", [&"battery", &"sw_converter"], RADIO_AT) as Radio
 	shortwave.on = true
 	shortwave.switch_band()
-	shortwave.fit(Catalog.part(&"hook"), _open(shortwave, &"radio_top"))
 	var flier := standing(world, &"antenna_kite", [], [RADIO_AT[0] + 4.0, RADIO_AT[1]]) as AntennaKite
 	var stake := Catalog.stake()
 	world.content.add_child(stake)

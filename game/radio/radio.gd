@@ -327,6 +327,9 @@ var _moved := 0.0
 var _last_at := Vector3.INF
 var _margins := {}
 var _margins_at := Vector3.INF
+var _margins_lifted := 0.0
+## What each station would clear on its own whip, dB, beside the kite.
+var _whip_margins := {}
 var _margins_t := -INF
 
 
@@ -597,6 +600,16 @@ func kite() -> AntennaKite:
 func boost() -> float:
 	var lift := _tuning.crystal_gain if crystal else (_tuning.preamp_gain if _runs(&"preamp") else 1.0)
 	return lift * (_tuning.choke_signal if _has(&"choke") else 1.0)
+
+
+## What a kite flown on its lead adds on the AM dial, as a long wire hung high
+## does a mediumwave set (Marconi heard the Atlantic on one): more the higher it
+## flies, to kite_am_most; 1 with none.
+func aerial_am() -> float:
+	var flown := kite()
+	if band != AM_BAND or flown == null or not flown.up():
+		return 1.0
+	return lerpf(1.0, _tuning.kite_am_most, smoothstep(0.0, _tuning.kite_am_full_m, flown.height()))
 
 
 ## What its static choke leaves of the storm's hash or the garbling.
@@ -1350,6 +1363,9 @@ func _listen(delta: float) -> void:
 ## So turning the set, or yourself with it, finds a station's line by its
 ## silence, both ways along it.
 func rod(bearing: float, sky: bool) -> float:
+	# On a kite's long wire it hears all ways round: no null to find.
+	if aerial_am() > 1.0:
+		return 1.0
 	var axis := world.player.camera.global_basis.x if carried() else global_basis.x
 	# A direction loop in its bay: its null sharp and deep, by night too.
 	var loop := _has(&"loop")
@@ -1444,6 +1460,9 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 					_transmit(reception.words, reception.get("useful", true), t)
 		if reception.id in [Fm.PORT_MUSIC, Fm.CITY_MUSIC] and reception.quiet >= WHOLE and volume > 0.0 and heard():
 			Deeds.done(world, &"fm_heard")
+		# Clear on a kite, where its own whip hears only hiss.
+		if reception.quiet >= WHOLE and _whip_margins.get(reception.id, INF) < _tuning.fm_threshold_db 				and volume > 0.0 and heard():
+			Deeds.done(world, &"over_horizon")
 	if song != null:
 		_put_on(song, t, into)
 		if _is_song(song):
@@ -1477,11 +1496,16 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 ## whole; within the capture ratio of each other they fight, and it's dirty.
 func receive_fm(x: float, z: float, t: float) -> Dictionary:
 	var here := Vector3(x, global_position.y, z)
+	# A kite flown on its lead lifts the set's aerial to its own height, less
+	# what its long lead loses at VHF (kite_fm_feed_db).
+	var flown := kite()
+	var lifted := flown.height() if flown != null and flown.up() else 0.0
 	if _margins_at == Vector3.INF or here.distance_to(_margins_at) > FM_RECKON_M \
-			or absf(t - _margins_t) > FM_RECKON_S:
+			or absf(t - _margins_t) > FM_RECKON_S or absf(lifted - _margins_lifted) > FM_RECKON_M:
 		_margins = {}
 		_margins_at = here
 		_margins_t = t
+		_margins_lifted = lifted
 	var ground := func(gx: float, gz: float) -> float: return world.height_at(gx, gz)
 	var best := {}
 	var rival := -INF
@@ -1491,8 +1515,13 @@ func receive_fm(x: float, z: float, t: float) -> Dictionary:
 			continue
 		if not _margins.has(each.id):
 			var from := ground_of(each.at)
-			_margins[each.id] = Fm.margin(from, world.height_at(from.x, from.y) + each.mast_m, Vector2(x, z),
-				global_position.y, each.mhz, world.moon.radius, ground, _tuning)
+			var mast: float = world.height_at(from.x, from.y) + each.mast_m
+			var whip := Fm.margin(from, mast, Vector2(x, z), global_position.y, each.mhz, world.moon.radius, ground,
+				_tuning)
+			var aloft := Fm.margin(from, mast, Vector2(x, z), global_position.y + lifted, each.mhz, world.moon.radius,
+				ground, _tuning) - _tuning.kite_fm_feed_db if lifted > 0.0 else -INF
+			_margins[each.id] = maxf(whip, aloft)
+			_whip_margins[each.id] = whip
 		var margin: float = _margins[each.id] + 20.0 * log(share) / log(10.0) - Fm.fade_db(_moved, each.mhz)
 		if best.is_empty() or margin > best.margin:
 			if not best.is_empty():
@@ -1525,7 +1554,7 @@ func receive(id: StringName, x: float, z: float, t: float) -> Dictionary:
 	var slid := Interference.warp(storm, t, id, _tuning)
 	var share := Dial.heard(frequency - khz - slid, _tuning)
 	var turned := rod(ground, Dial.by_sky(khz, metres, night, _tuning))
-	var broadside := Dial.strength(id, khz, metres, night, _tuning) * boost()
+	var broadside := Dial.strength(id, khz, metres, night, _tuning) * boost() * aerial_am()
 	var power := broadside * turned
 	var strength := share * power
 	# A jammer overhead buries what's near it on the dial.
@@ -1722,7 +1751,7 @@ func receive_distress(x: float, z: float, t: float) -> Dictionary:
 	var ground := ground_bearing(rad_to_deg(Sphere.bearing(p, call.p)))
 	var storm := Interference.along(world.weather.field, x, z, ground, metres, t, _tuning)
 	var share := Dial.heard(frequency - call.khz, _tuning)
-	var power := Distress.strength(call.khz, metres, _tuning) * boost() * rod(ground, false)
+	var power := Distress.strength(call.khz, metres, _tuning) * boost() * aerial_am() * rod(ground, false)
 	var jammed := constellation_of(world).jamming(frequency, p, t)
 	var through := Interference.let_through(storm, _tuning)
 	var clean := smoothstep(_tuning.signal_floor, WHOLE, share * power) * through * (1.0 - jammed)

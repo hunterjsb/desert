@@ -269,6 +269,7 @@ the frame is a part stuck on the deck.
 | Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Line of Sight** | Hear an FM station come through quiet | First Light | `Radio`'s tick on the FM band: a station over its threshold enough to be quiet, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Over the Horizon** | Hear an FM station clear on a kite that the radio can't hear alone | Line of Sight | `Radio`'s tick on the FM band: a station quiet on a flown kite's height whose margin on the set's own whip is under the threshold, the volume up and you hearing it (built 2026-10-22, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Foxhole Radio** | Hear a god inside its window on a crystal set | First Light | `Radio`'s tick on a god with a crystal set: its words useful, coming through and not cut, you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Close Listening** | Hear a god inside its window on a crystal set, through a headset | Foxhole Radio | the same tick as Foxhole Radio, with a headset in the set's bay and the set carried or in your hands (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Null** | Turn a radio until a god you hear falls silent | First Light | `Radio`'s tick on a god: one that would come through whole broadside to the set's ferrite rod, silent end-on to it, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
@@ -303,7 +304,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21; Plot a Course and Drop In 2026-10-21; Long Wire cut 2026-10-22, 71 now), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21; Plot a Course and Drop In 2026-10-21; Long Wire cut and Over the Horizon 2026-10-22, 72 now), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -873,6 +874,9 @@ deeds (Radio, sound & atmosphere): the roster is 66 in the same eleven families.
 **Long Wire cut (2026-10-22).** The antenna reel was scrapped (Radio, sound &
 atmosphere), and its deed with it; High Wire now follows First Light. The
 roster is 71. A profile that earned it keeps its record, unshown.
+
+**Over the Horizon (2026-10-22).** The kite as an FM aerial brings one signals
+deed (Radio, sound & atmosphere): the roster is 72.
 
 ## Surveyor preflight deeds (selected 2026-10-21; candidate)
 

@@ -227,7 +227,7 @@ above. So nothing in orbit is heard on the AM dial; under the ceiling is the gro
 | Band | Gets there | Hearing it | Draw | Who's on it |
 |---|---|---|---|---|
 | LW/MW, 150–280 and 530–1700 kHz (the AM dial) | ground wave, and at night past the skip | crystal set, then the field radio | 0, then 2 W | the far gods; the beacon; wrecks calling SOS; the nomads' ghost relay; beacons sending their names in Morse |
-| Shortwave, 2–30 MHz | skip, with a dead zone between | a wire, then a kite | ~1 W | every satellite; the relay repeating Port Morgan Tower; Tu's roar on a timetable; weather maps by fax; numbers stations |
+| Shortwave, 2–30 MHz | skip, with a dead zone between | the bare terminals, then a kite | ~1 W | every satellite; the relay repeating Port Morgan Tower; Tu's roar on a timetable; weather maps by fax; numbers stations |
 | VHF/UHF, 30 MHz–1 GHz | line of sight: height is range | the FM converter, then an FM set; a whip; a handheld beam | 0.5–2 W | Port Morgan Tower and the port's music; the living city's chatter and music; the near gods; ruin intercoms; the skimmer field's navigation beacon |
 | L/S, 1–4 GHz | space | dish, LNB and decoder | 5–10 W | a digital bundle; the drone's downlink |
 | X, 8 GHz and up | deep space | a big dish and a cooled amplifier | high | Varran, and the far end of the lane, from the far side's quiet |
@@ -375,10 +375,10 @@ the stake earthing it; the kite placed by the wind rather than flown by physics.
 an earlier reel-flown one.* Numbers from the radio kit lab ([look/radio_kit](../../look/radio_kit/README.md)),
 now in `tuning.tres` (`kite_*`).
 
-- **The rig.** A mount on the radio's top takes a rope hook (socket kind `radio_top`); a fitted hook has a
-  **lead clip** on its stem (kind `lead`), and so does the kite's reel. A cable's plug, plain or strong, fits a
-  lead clip as it fits a port: one plug on the hook, the other on the kite's reel, and the kite is the set's
-  shortwave aerial (`AntennaKite.find_rig`). A lead carries no power. Holding a plug at a **driven stake**,
+- **The rig.** The radio's top has an **aerial clip** (socket kind `lead`), and so do a crystal set's tray
+  and the kite's reel; no hook (Radio upgrades vetted, below). A cable's plug, plain or strong, fits a lead
+  clip as it fits a port: one plug on the set, the other on the kite's reel, and the kite is the set's aerial
+  on every band (`AntennaKite.find_rig`). A lead carries no power. Holding a plug at a **driven stake**,
   use passes the cable through the stake's ring or takes it off, one cable through set, stake and kite, its
   legs measured against its length (`Cable.route`). A snapped strong cable keeps its plugs but connects and
   earths nothing.
@@ -390,10 +390,16 @@ now in `tuning.tres` (`kite_*`).
   the world as the world's origin shifts.
 - **Height is signal:** on shortwave the kite adds about 10 dB a tenfold of height over the whip, to
   `kite_gain_db`, capped at `kite_gain_most` (1 is a satellite heard whole),
-  so a satellite low over the horizon comes through that the bare terminals lose.
+  so a satellite low over the horizon comes through that the bare terminals lose. On the AM dial it is a
+  long wire hung high (`Radio.aerial_am`): what the set hears rises to `kite_am_most` by `kite_am_full_m`
+  up, heard all ways round, so the rod's null is gone while it flies. On FM its height is the set's aerial's,
+  less `kite_fm_feed_db` down its lead (`Radio.receive_fm`). Seed 1234: the Quartermaster 0.70 on an upright
+  rod, 1.41 on the kite; Port Morgan's station 4.5 km off, -0.4 dB on the whip, 6.2 dB on the kite 86 m up
+  (radio probe 78). The deed **Over the Horizon**: hear an FM station clear on a kite that the whip can't.
 - **Static.** Flown high it gathers charge, little in clear air and fast in a front's outflow or a storm, and
-  it raises the set's static (`kite_static`). Past `kite_arc` an arc may jump; it burns out or scorches what it
-  hits: the kite's dipole, the lead, the hook, the shortwave converter, or the set. A crack of sparks, a violet
+  it raises the set's static (`kite_static`). Past `kite_arc` an arc may jump; it burns out or scorches one piece
+  of the chain, any one alike: the kite's dipole, the lead, the converter the set hears it through (none on
+  AM), or the set. A crack of sparks, a violet
   flash and a zap. **Its lead through a driven stake** dumps the charge to earth, so it never climbs to an arc
   (the deed **Grounded**). Unearthed in a 9 m/s breeze the charge arcs within minutes; staked it never does.
 - **Wear,** as a sail's, faster past `kite_harm_ms`; a sandstorm tears it to rags in about 75 s. Its sail
@@ -441,6 +447,23 @@ SW is for space stuff."*
 - **The shortwave converter is late-game:** off skimmer shelves and relay mast cabinets, onto the colonial
   and skimmer eras' best tables, the deepest sockets.
 - **No ground stations on shortwave:** the planned skip and dead zones are dropped.
+
+*Then, on the kite: "If it's reasonable from a realism perspective to use the kite to amplify AM/FM signals,
+then expand it to also be able to affect those frequencies"; "remove the hook from the setup. Allow a cable
+to connect straight to the top of the radio"; "If an arc charge happens, pick a random equipment in the
+chain. Only one piece is ever damaged"; and "There is another implementation of a kite from Hunter's
+implementations yesterday.. we should act to consolidate approaches and keep things consistent."*
+
+- **The kite on every band.** Realistic: a long wire hung high is the classic mediumwave aerial (Marconi's
+  1901 transatlantic reception hung one from a kite), louder than a ferrite rod but without its null; on
+  VHF, height is line of sight, though a long lead loses some at FM. So on AM it lifts what's heard to 2×
+  and hears all ways round; on FM it lends the set its height, less 2 dB down the lead. On a moon 24 km
+  round, 80 m of height takes Port Morgan's station from about 4 km to about 5.
+- **No hook:** a cable plugs straight into the radio's top aerial clip; a crystal set's tray has one too,
+  a crystal set on a long wire being what they were for. The `radio_top` mount and the hook's lead clip
+  are gone. The kite patch never shipped, so no player save has a hook on a radio.
+- **An arc hits one piece of the chain at random** (`AntennaKite.chain`), all alike.
+- **Consolidating with the salvage kite** (Spaceport): open; Hunter's prototype isn't in the repository.
 
 ### The ferrite rod's null (built 2026-10-20)
 
@@ -865,7 +888,8 @@ One real failure each, in `probes/radio/`:
 - **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59–66); powered modules
   need power (73).
 - **The kite:** it flies on the wind (55); one cable through the stake (56); unearthed it burns out (57); a
-  sandstorm shreds it (58); it follows the world's origin (69); a broken lead can't earth it (70).
+  sandstorm shreds it (58); it follows the world's origin (69); a broken lead can't earth it (70); it's the
+  set's aerial on AM and FM (78).
 - **The sky:** satellites distinct and heard (32), about two up at once (34), the lantern and the
   drone (38).
 - **Frame:** sets don't share effects (40); a song keeps its occurrence and catches up after a glitch (43,
