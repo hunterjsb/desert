@@ -2,6 +2,15 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Halloran's decline and the forbidden furnace (Hunter, 2026-10-22)
+
+> Halloran's decline, people leaving for the ring and Port Morgan, and the ban on
+> the Stoker becoming the basis for those later cults.
+
+The [lore account](../world/lore-research.md#hallorans-decline-and-the-ban-on-the-stoker-agreed-2026-10-22)
+owns this history. Recorded as lore; its physical expression in the ruins remains
+unbuilt. The existing first-fire encounter below is unchanged.
+
 ## Halloran: first fire (built, 2026-10-20)
 
 Build one connected playable route from Aitch through the Crossing to one Stoker furnace bay.
