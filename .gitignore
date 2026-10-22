@@ -5,3 +5,4 @@ build/
 .dashboard/
 _site/
 __pycache__/
+look/*/out/

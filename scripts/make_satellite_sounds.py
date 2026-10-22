@@ -41,7 +41,7 @@ def lowpassed(x, hz):
 
 
 def drone(t, rng):
-    # The crop-survey drone's turbines: a low hum, two engines beating slowly,
+    # The deliveryship's turbines: a low hum, two engines beating slowly,
     # and the rush of air past its hull.
     hum = sum(np.sin(2 * np.pi * f * t) / k for k, f in enumerate([55.0, 110.0, 165.0, 220.0], 1))
     beat = sum(np.sin(2 * np.pi * f * 1.012 * t) / k for k, f in enumerate([55.0, 110.0], 1))

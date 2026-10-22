@@ -71,7 +71,7 @@ func _carried(at: Vector2) -> Radio:
 	radio.freeze = true
 	await _carry(radio, at)
 	while radio.channel != Radio.BEACON:
-		radio.interact(world.player)
+		radio.sweep()
 	return radio
 
 

@@ -4,7 +4,7 @@ extends ShieldProbe
 func run() -> void:
 	await load_storm(0.0)
 	world.counts_deeds = true
-	Scenarios.surveyor_over(world, 1.0)
+	Scenarios.deliveryship_over(world, 1.0)
 	await _call()
 	check(Profile.did("care_package"), "the successful call records Care Package")
 	Profile.forget_deeds()

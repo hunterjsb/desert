@@ -1,8 +1,8 @@
 extends ShieldProbe
 ## Radio probe 13: the relay hangs beside Tu. It's at Zan and Tu's L1, so from
 ## where a run begins it stands a few degrees off Tu all day and never sets,
-## looping slowly round its point. On the FM band it sends the port's music,
-## clean, and a storm over you doesn't touch it. At night, sunlit, it shows
+## looping slowly round its point. On shortwave it repeats Port Morgan Tower,
+## so a radio far from the port hears the weather there on a wire. At night, sunlit, it shows
 ## in the sky. From the far side, where Tu never shows, it never does either.
 
 ## The clock is read this often, s.
@@ -13,7 +13,7 @@ const BESIDE := 15.0
 
 func run() -> void:
 	await load_storm(0.0)
-	var radio := Scenarios.standing(world, &"radio", [&"battery", &"fm_converter"], [0.0, 2.0]) as Radio
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	await physics_frames(3)
 	var x := world.world_x(radio.global_position.x)
@@ -35,18 +35,14 @@ func run() -> void:
 	check(lowest > 0.0 and widest < BESIDE, "from the start it stays beside Tu all day and never sets")
 	check(moved > 1.0, "looping slowly round its point")
 
-	radio.switch_band()
-	radio.on = true
-	radio.fm_mhz = _relay_mhz()
-	await physics_frames(3)
-	var clear := radio.receive_fm(x, z, world.time)
-	weather_everywhere(0.8)
-	await physics_frames(3)
-	var stormy := radio.receive_fm(x, z, world.time)
-	print("on FM: %.1f dB clear, %.1f dB under a storm" % [clear.margin, stormy.margin])
-	check(clear.id == &"relay" and clear.quiet >= Radio.WHOLE and stormy.quiet >= Radio.WHOLE,
-		"on FM it sends the music clean, a storm over you or not")
-	weather_everywhere(0.0)
+	var reel := Scenarios.standing(world, &"antenna_reel", [], [10.0, 2.0]) as AntennaReel
+	reel.freeze = true
+	reel.clip(radio)
+	radio.channel = Radio.WEATHER
+	await physics_frames(60)
+	print("on shortwave at %.0f kHz: \"%s\"" % [radio.frequency, radio.said])
+	check(radio.tuned_to() == &"relay" and radio.said.contains("Port Morgan Tower"),
+		"on shortwave it repeats Port Morgan Tower")
 
 	var day := world.weather.day
 	world.time = _first(0.0, func(u: float) -> bool:
@@ -62,14 +58,6 @@ func run() -> void:
 		seen += int(relay.seen_from(far, t).elevation > 0.0)
 		t += STEP
 	check(seen == 0, "from the far side it's never up")
-
-
-## The relay's frequency on the FM band.
-func _relay_mhz() -> float:
-	for each in Fm.stations(Radio.gods_of(world), world.run_seed, Tuning.current()):
-		if each.id == &"relay":
-			return each.mhz
-	return NAN
 
 
 func _first(from: float, wanted: Callable) -> float:

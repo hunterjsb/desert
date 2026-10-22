@@ -1,7 +1,7 @@
 extends ShieldProbe
 ## Radio probe 36: the signal lamps and the mark's name. Nothing on the radio
 ## is written but its frequency, so its face shows what it hears by its row of
-## lamps: tuned onto the music at night, nearly all lit; between
+## lamps: tuned onto a god coming in clean, nearly all lit; between
 ## carriers with nothing near, none; switched off, all dark. On a frequency
 ## you've marked, the look-at line names the mark after the frequency. The
 ## wheel spun fast goes farther a notch each time, up to dial_spin_most, and
@@ -10,6 +10,8 @@ extends ShieldProbe
 
 
 func run() -> void:
+	# The air carrying a god's ground wave clean from afar.
+	Tuning.current().ground_wave_m = 1e9
 	await load_storm(0.0)
 	var radio := Scenarios.standing(world, &"radio", [&"battery"], [0.0, 2.0]) as Radio
 	radio.freeze = true
@@ -20,11 +22,12 @@ func run() -> void:
 	var high := _first(world.time, func(u: float) -> bool: return not world.weather.day.is_day(u, world.moon.longitude))
 	world.time = high
 	radio.on = true
-	radio.frequency = Dial.MUSIC_KHZ
+	broadside(radio, &"quartermaster")
+	radio.frequency = Radio.gods_of(world).carrier(&"quartermaster", world.time)
 	await physics_frames(40)
-	var on_music := _lit(radio)
-	print("on the music at night: %.2f heard, %d of %d lamps lit" % [radio.lamp_level, on_music, Radio.LAMPS])
-	check(on_music >= Radio.LAMPS - 2, "tuned onto the music at night, nearly all lit")
+	var on_god := _lit(radio)
+	print("on a god: %.2f heard, %d of %d lamps lit" % [radio.lamp_level, on_god, Radio.LAMPS])
+	check(on_god >= Radio.LAMPS - 2, "tuned onto a god coming in clean, nearly all lit")
 
 	# The quietest place on the dial now: as far as can be from every carrier.
 	var all := radio.carriers()
@@ -42,7 +45,7 @@ func run() -> void:
 		_lit(radio)])
 	check(_lit(radio) == 0, "between carriers with nothing near, none lit")
 
-	radio.frequency = Dial.MUSIC_KHZ
+	radio.frequency = Radio.gods_of(world).carrier(&"quartermaster", world.time)
 	await physics_frames(40)
 	radio.on = false
 	await physics_frames(40)
@@ -63,14 +66,14 @@ func run() -> void:
 	# The wheel spun fast.
 	var tuning := Tuning.current()
 	var notch := tuning.dial_notch_khz
-	radio.frequency = 500.0
+	radio.frequency = 600.0
 	var went: Array[float] = []
 	for k in 7:
 		var from := radio.frequency
 		radio.tune(1)
 		went.append(radio.frequency - from)
 	print("spun fast, notch by notch: %s kHz" % [went])
-	check(went[0] == notch and went[1] == notch * 2.0 and went[6] == notch * tuning.dial_spin_most,
+	check(went[0] == notch and went[1] == notch * (1.0 + tuning.dial_spin_grow) and went[6] == notch * minf(1.0 + 6.0 * tuning.dial_spin_grow, tuning.dial_spin_most),
 		"spun fast, each notch goes farther, up to dial_spin_most")
 	await get_tree().create_timer(tuning.dial_spin_seconds * 2.0).timeout
 	var rest := radio.frequency

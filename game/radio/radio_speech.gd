@@ -10,7 +10,11 @@ const SMALL := ["zero", "one", "two", "three", "four", "five", "six", "seven", "
 	"eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 const TENS := ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
 const UNITS := {"brg": "bearing", "hdg": "heading", "km": "kilometres", "min": "minutes", "s": "seconds",
-	"c": "degrees", "rng": "range"}
+	"c": "degrees", "rng": "range",
+	# A compass point written short, as the gods' logs write it.
+	"ne": "north east", "se": "south east", "sw": "south west", "nw": "north west",
+	"nne": "north north east", "ene": "east north east", "ese": "east south east", "sse": "south south east",
+	"ssw": "south south west", "wsw": "west south west", "wnw": "west north west", "nnw": "north north west"}
 
 
 ## A queue entry is [recording, sentence ends here]. Full recorded phrases win.
@@ -20,7 +24,7 @@ static func plan(text: String, phrase: Callable) -> Array[Array]:
 	for sentence in words.replace("!", ".").replace("?", ".").replace(";", ".").split(".", false):
 		var tokens := PackedStringArray()
 		for token in sentence.replace(",", " ").replace(":", " ").replace("-", " ").split(" ", false):
-			tokens.append(UNITS.get(token, token))
+			tokens.append_array(String(UNITS.get(token, token)).split(" "))
 		var whole := phrase.call(" ".join(tokens) + ".") as AudioStream
 		if whole != null:
 			out.append([whole, true])

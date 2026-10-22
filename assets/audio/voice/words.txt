@@ -99,6 +99,7 @@ data
 day
 deep
 degrees
+deliveryship
 delta
 denied
 depot
@@ -215,6 +216,7 @@ large
 lasting
 lasting more than
 lasting past
+latitude
 ledger
 ledger balance owed
 leg
@@ -223,6 +225,7 @@ list
 logged
 long
 long range
+longitude
 low
 low dunes
 m

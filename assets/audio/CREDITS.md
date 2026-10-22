@@ -17,7 +17,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | storm.ogg | the storm's roar | Sand Game `object_sandstorm.wav`, its harsh top eased | Sand Game | -20 LUFS full, -32 in a bubble | -9 |
 | wind.ogg | the desert wind | Sand Game `ambient_desertwind.wav` | Sand Game | -30 LUFS at a gale | -11 |
 | clang.ogg | metal a storm has just laid bare, banging on the wind, heard through the dust | Sand Game `object_metal_clank-001.wav`, mono, its ring kept, under two short echoes | Sand Game | -19 at 20 m | -7 |
-| step_a–f.ogg | footsteps in sand | Sand Game's sand footsteps | Sand Game | -36 walking, -32 sprinting | -8 to -17 |
+| step_a, b, d–f.ogg | footsteps in sand | Sand Game's sand footsteps | Sand Game | -36 walking, -32 sprinting | -9 to -17 |
 | slide.ogg | sliding down a slip face | Sand Game `player_slide.wav` | Sand Game | -30 at full | -16 |
 | impact.ogg | a hard landing | Sand Game `player_impact1.wav` | Sand Game | -28 hardest | -8 |
 | seat_a.ogg, seat_b.ogg | fitting a part or mod | Sand Game `object_metal_clank-005`/`-002`, ring cut off, under Kenney Interface `click_001`/`click_003` | Sand Game + CC0 | -30 | -11, -16 |
@@ -53,7 +53,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_sat_cinder.ogg | the cinder satellite's broadcast, looping | gonkhub's `A-amb-Cinder.wav` ("Cinder"), mono, its 4 s of silence before it trimmed, its end crossfaded into its start over 3 s for a seamless loop, levelled to `radio_eye.ogg` (its loud spells' RMS) | made by gonkhub for Desert, used with his permission | -28 at 3 m | -15 |
 | radio_sat_metronome.ogg | the metronome satellite's broadcast, a 2 s loop | gonkhub's `A-mx-satellite1.wav`, mono, as it loops, levelled to `radio_eye.ogg` by its RMS | made by gonkhub for Desert, used with his permission | -28 at 3 m | -17 |
 | radio_eye_tunnel.ogg | the Eye's other drone, played in place of the first when the seed picks it | gonkhub's `A-amb-tunnel.wav`, mono, levelled to `radio_eye.ogg` (its loud spells' RMS), 0.5 s fades | made by gonkhub for Desert, used with his permission | -28 at 3 m | -19 |
-| radio_sat_drone.ogg | the drone satellite's broadcast, a 12 s loop: two turbines beating over the rush of air | made here: `scripts/make_satellite_sounds.py` (numpy and ffmpeg), its seam a 2 s crossfade | CC0 | -28 LUFS | -15 |
+| radio_sat_drone.ogg | the deliveryship satellite's broadcast, a 12 s loop: two turbines beating over the rush of air | made here: `scripts/make_satellite_sounds.py` (numpy and ffmpeg), its seam a 2 s crossfade | CC0 | -28 LUFS | -15 |
 | radio_sat_choir.ogg | the choir satellite's colony hymn, a 16 s loop swelling between two chords | made here: `scripts/make_satellite_sounds.py` | CC0 | -28 LUFS | -17 |
 | radio_sat_ghost.ogg | the ghost satellite's broadcast, a 10 s loop: a wandering whistle through swept hiss | made here: `scripts/make_satellite_sounds.py` | CC0 | -28 LUFS | -13 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |

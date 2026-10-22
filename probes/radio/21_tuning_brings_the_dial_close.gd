@@ -65,7 +65,7 @@ func run() -> void:
 	var moved := radio.needle.position.x - needle
 	print("the knob turned %.1f°, the needle %.2f mm" % [knob, moved * 1000.0])
 	check(absf(knob + 360.0 * tuning.dial_notch_khz / Radio.KHZ_A_TURN) < 0.1, "the knob turns clockwise by the notch")
-	check(absf(moved - (Radio.BAND.y - Radio.BAND.x) * tuning.dial_notch_khz / Dial.HIGHEST) < 1e-5,
+	check(absf(moved - (Radio.BAND.y - Radio.BAND.x) * tuning.dial_notch_khz / (Dial.HIGHEST - Dial.LOWEST)) < 1e-5,
 		"the needle crosses the band by the notch")
 
 	await simulate(tuning.dial_close_hold)

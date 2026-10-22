@@ -7,7 +7,8 @@ extends Node
 ## high each is, how far from Tu, and how bright it shows. One shot of the
 ## whole sky toward the most of them too. Clear skies everywhere, and your eyes
 ## up over the dunes, so nothing stands in the way of a low one.
-##   godot --path . --disable-vsync res://look/satellites/satellites.tscn -- --capture <dir>
+##   godot --path . --disable-vsync res://look/satellites/satellites.tscn -- --capture <dir> [--only <id>]
+## With --only, it waits for that one to be up and lit by night and shoots it alone.
 ## A small window that never takes focus, nothing but this script moving
 ## anything, and silence.
 
@@ -40,10 +41,12 @@ func _ready() -> void:
 	var at := args.find("--capture")
 	if at == -1:
 		return
-	_capture(args[at + 1] if args.size() > at + 1 else "user://satellites")
+	var only := args.find("--only")
+	_capture(args[at + 1] if args.size() > at + 1 else "user://satellites",
+		StringName(args[only + 1]) if only != -1 and args.size() > only + 1 else &"")
 
 
-func _capture(out_dir: String) -> void:
+func _capture(out_dir: String, only := &"") -> void:
 	var window := get_window()
 	window.unfocusable = true
 	window.size = Vector2i(960, 540)
@@ -65,8 +68,20 @@ func _capture(out_dir: String) -> void:
 	player.global_position.y += RISE
 	var sky := Radio.constellation_of(world)
 	var day := world.weather.day
-	while day.is_day(world.time, world.moon.longitude) or _lit(sky).size() < WANTED:
+	var from_night := world.time
+	while day.is_day(world.time, world.moon.longitude) or (_lit(sky).size() < WANTED if only == &""
+			else not only in _lit(sky) or not _dark()):
 		world.time += 5.0
+		if world.time > from_night + 60.0 * Tuning.current().day_minutes * 60.0:
+			print("satellites: no %s up by night within sixty days" % only)
+			break
+	if only != &"":
+		await _ticks(10)
+		_look(_dir(sky, only).rotated(Vector3.UP, deg_to_rad(OFF)))
+		await _ticks(3)
+		await _shoot(out_dir, String(only), String(only), _dir(sky, only))
+		get_tree().quit()
+		return
 	await _ticks(10)
 	var lit := _lit(sky)
 	print("satellites: night at %.0f s, %d up and lit" % [world.time, lit.size()])
@@ -82,30 +97,37 @@ func _capture(out_dir: String) -> void:
 		_look(_dir(sky, id).rotated(Vector3.UP, deg_to_rad(OFF)))
 		await _ticks(3)
 		await _shoot(out_dir, String(id), String(id), _dir(sky, id))
-	# The crop survey skimming low, its shadow: high overhead, then low down.
+	# The deliveryship skimming low, its shadow: high overhead, then low down.
 	for each: Array in [["survey_overhead", 40.0, 90.0], ["survey_low", 8.0, 16.0]]:
 		var from := world.time
-		while day.is_day(world.time, world.moon.longitude) or not _between(sky, &"thermal", each[1], each[2]):
+		while day.is_day(world.time, world.moon.longitude) or not _between(sky, &"deliveryship", each[1], each[2]):
 			world.time += 2.0
 			if world.time > from + 60.0 * Tuning.current().day_minutes * 60.0:
 				print("satellites: no %s within sixty days" % each[0])
 				break
 		await _ticks(3)
-		_look(_dir(sky, &"thermal").rotated(Vector3.UP, deg_to_rad(OFF)))
+		_look(_dir(sky, &"deliveryship").rotated(Vector3.UP, deg_to_rad(OFF)))
 		await _ticks(3)
-		await _shoot(out_dir, each[0], "thermal", _dir(sky, &"thermal"), 200)
+		await _shoot(out_dir, each[0], "deliveryship", _dir(sky, &"deliveryship"), 200)
 	# By day: the hull, a dark shape against the bright sky.
 	var from := world.time
-	while not day.is_day(world.time, world.moon.longitude) or not _between(sky, &"thermal", 30.0, 90.0):
+	while not day.is_day(world.time, world.moon.longitude) or not _between(sky, &"deliveryship", 30.0, 90.0):
 		world.time += 2.0
 		if world.time > from + 60.0 * Tuning.current().day_minutes * 60.0:
 			print("satellites: no survey_day within sixty days")
 			break
 	await _ticks(3)
-	_look(_dir(sky, &"thermal").rotated(Vector3.UP, deg_to_rad(OFF)))
+	_look(_dir(sky, &"deliveryship").rotated(Vector3.UP, deg_to_rad(OFF)))
 	await _ticks(3)
-	await _shoot(out_dir, "survey_day", "thermal", _dir(sky, &"thermal"), 200)
+	await _shoot(out_dir, "survey_day", "deliveryship", _dir(sky, &"deliveryship"), 200)
 	get_tree().quit()
+
+
+## Whether the sun is well down and Tu's light faint, so the sky is black.
+func _dark() -> bool:
+	var day := world.weather.day
+	var moon := world.moon
+	return day.sun_direction(world.time, moon.latitude, moon.longitude).y < sin(deg_to_rad(-15.0)) 		and day.tu_light(world.time, moon.latitude, moon.longitude) < 0.02
 
 
 ## Whether a satellite stands between these heights, degrees, now.

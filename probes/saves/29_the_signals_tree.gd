@@ -1,7 +1,7 @@
 extends HandsProbe
 ## Profile & saves probe 29: the gods heard. A radio on beside you, tuned to
-## each god's carrier inside its window in turn, the air clear and carrying
-## every god's ground wave this far: the first heard is First Light, and
+## each god's carrier inside its window in turn (the near gods' on FM), the
+## air clear and carrying every god's signal this far: the first heard is First Light, and
 ## Pantheon waits for the seventh. Off its window, a god's idle talk counts
 ## for nothing.
 
@@ -10,26 +10,25 @@ func run() -> void:
 	var tuning := Tuning.current()
 	tuning.storm_threshold = 2.0
 	tuning.ground_wave_m = 1e9
+	tuning.fm_margin_db = 1e6
 	await load_hands(1234)
 	world.counts_deeds = true
 	world.time_warp = 0.0
 	var profile := get_node(^"/root/Profile")
 	var radio := spawn_device(&"radio", 2.0) as Radio
+	Scenarios.fill(world, radio, [&"fm_converter"])
 	radio.on = true
-	var gods := Radio.gods_of(world)
 	await physics_frames(5)
 	# Off its window at midnight, the Ledger talks only noise.
 	world.time = _when(radio, &"ledger", false)
-	broadside(radio, &"ledger")
-	radio.frequency = gods.carrier(&"ledger", world.time)
+	_tune(radio, &"ledger")
 	await physics_frames(3)
 	check(radio.reception.get("id") == &"ledger" and radio.reception.clean > 0.0 and not profile.did("god_heard"),
 		"the Ledger off its window, heard: no First Light")
 	var heard := 0
 	for id in Gods.ids():
 		world.time = _when(radio, id, true)
-		broadside(radio, id)
-		radio.frequency = gods.carrier(id, world.time)
+		_tune(radio, id)
 		await physics_frames(3)
 		heard += 1
 		check(profile.did("god_heard"), "%s heard in its window: First Light" % Gods.title(id))
@@ -49,3 +48,16 @@ func _when(radio: Radio, id: StringName, useful: bool) -> float:
 		t += 2.0
 	check(false, "a moment %s is %s" % [Gods.title(id), "useful" if useful else "idle"])
 	return t
+
+
+## Tuned to a god: on FM for a near one, else on its AM carrier, broadside to it.
+func _tune(radio: Radio, id: StringName) -> void:
+	if Fm.is_god(id):
+		while radio.band != Radio.FM_BAND:
+			radio.switch_band()
+		radio.fm_mhz = radio.fm_of(id)
+		return
+	while radio.band != Radio.AM_BAND:
+		radio.switch_band()
+	broadside(radio, id)
+	radio.frequency = Radio.gods_of(world).carrier(id, world.time)

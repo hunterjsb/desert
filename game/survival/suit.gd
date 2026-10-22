@@ -648,7 +648,7 @@ static func _brief(things: Array) -> String:
 	var cells := device.batteries()
 	var held := "%d Wh" % floori(cells.reduce(func(sum: float, c: Battery) -> float: return sum + c.charge_wh, 0.0)) \
 		if not cells.is_empty() else ""
-	var radio := device as Receiver
+	var radio := device as Radio
 	if radio == null:
 		return held
 	var tuned: String = radio.stats()["tuned"]

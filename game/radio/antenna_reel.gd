@@ -107,7 +107,7 @@ func _physics_process(delta: float) -> void:
 	super(delta)
 	if radio == null:
 		return
-	if not is_instance_valid(radio) or not radio.is_inside_tree() or radio.wrecked():
+	if not is_instance_valid(radio) or not radio.is_inside_tree() or radio.wrecked() or wrecked():
 		radio = null
 	elif strung() > Tuning.current().antenna_reel_m:
 		# Past the end of its wire: the clip pops off the set.
@@ -139,7 +139,7 @@ func _radio_near(at: Vector3) -> Radio:
 	var nearest := CLIPS_WITHIN
 	for node in get_tree().get_nodes_in_group(Radio.GROUP):
 		var each := node as Radio
-		if each == null or not each.is_inside_tree():
+		if each == null or each is SurveyReceiver or not each.is_inside_tree():
 			continue
 		var d := each.global_position.distance_to(at)
 		if d < nearest:

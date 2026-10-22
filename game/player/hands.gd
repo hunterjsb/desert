@@ -95,7 +95,8 @@ const TOUCHES := 64
 const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "tray mount",
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"face": "frame face",
-	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount"}
+	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount",
+	&"radio_mod": "converter mount", &"radio_bay": "misc bay", &"lead": "lead clip", &"radio_top": "hook mount"}
 const RIDING := "not from the board"
 const STUNNED := "your hands won't close"
 ## What a piece of a wreck needs before it gives, said when you try it without.
@@ -408,10 +409,6 @@ func interact() -> bool:
 	_look()
 	if _player.world.stoker != null and _player.world.stoker.interact(_player):
 		return true
-	# A radio in your hands with frequencies marked: use goes to the next.
-	if held is Receiver and phase == Phase.HELD and (held as Receiver).next_mark():
-		_player.close_up.tuned(held)
-		return true
 	if look_bed and held == null and look_device == null and look_part == null:
 		return _player.world.sleep.offer(_player)
 	if look_work != null:
@@ -425,11 +422,19 @@ func interact() -> bool:
 		return true
 	if look_device != null and _player.world.salvage.held_fast(look_device) != "":
 		return refuse(_player.world.salvage.held_fast(look_device))
+	# A cable's plug held at a driven stake: the cable passes through its ring, or off it.
+	var through := _cable_at_stake()
+	if not through.is_empty():
+		var why := (through.cable as Cable).route(through.stake)
+		if why != "":
+			return refuse(why)
+		_play(Sounds.TIE)
+		return true
 	if look_device != null and look_device.interact(_player):
 		# Marking Home requires ownership; a refusal must not claim its host.
 		if not look_device is HomeBeacon:
 			_player.world.salvage.claim(look_device)
-		if look_device is Receiver:
+		if look_device is Radio:
 			_player.close_up.tuned(look_device)
 		return true
 	if held == null:
@@ -448,11 +453,22 @@ func interact() -> bool:
 		used = (held as Part).use(_player, look_point)
 	elif held is Device:
 		used = (held as Device).use(_player, look_point)
-	if used and held is Receiver:
+	if used and held is Radio:
 		_player.close_up.tuned(held)
 	if used or _player.waist.take_from_hands():
 		return true
 	return refuse("no use for it there") if look_device != null else false
+
+
+## Holding a cable's plug, looking at a driven stake: {cable, stake}, else {}.
+func _cable_at_stake() -> Dictionary:
+	if phase != Phase.HELD or not held is Part or (held as Part).kind != &"port":
+		return {}
+	var stake := look_device as Stake
+	if stake == null or not stake.driven:
+		return {}
+	var cable := Cable.of(held as Part, _player.world)
+	return {"cable": cable, "stake": stake} if cable != null else {}
 
 
 ## Continuing a waist return never takes a device's or ground work's Use.
@@ -610,8 +626,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("mark_frequency"):
 		# A radio in your hands: mark where its dial stands, or unmark it.
-		if held is Receiver and phase == Phase.HELD and (held as Receiver).has_dial_marks() and not (held as Receiver).wrecked():
-			(held as Receiver).toggle_mark()
+		if held is Radio and phase == Phase.HELD and (held as Radio).has_dial_marks() and not (held as Radio).wrecked():
+			(held as Radio).toggle_mark()
 			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("hands_throw") and held != null and not Controls.mouse_free:
 		throw()
@@ -661,30 +677,30 @@ func _tunes(event: InputEvent) -> bool:
 ## The radio the tuning actions work: the one you look at, or the first in
 ## the system of a console you look at, unless you're reeling the line in
 ## your hand; else the one you hold, while there's no line at your waist to reel.
-func dialled() -> Receiver:
+func dialled() -> Radio:
 	_look()
 	return dial()
 
 
 ## The radio the tuning actions work, as your look last fell.
-func dial() -> Receiver:
+func dial() -> Radio:
 	if reel.in_hand() != null:
 		return null
 	var radio := tuned_by_look()
-	if radio == null and held is Receiver and phase == Phase.HELD and reel.line() == null:
+	if radio == null and held is Radio and phase == Phase.HELD and reel.line() == null:
 		radio = held
 	return radio
 
 
 ## The radio your look tunes: the one you look at, or the first in the system
 ## of a console you look at.
-func tuned_by_look() -> Receiver:
-	if look_device is Receiver:
+func tuned_by_look() -> Radio:
+	if look_device is Radio:
 		return look_device
 	var console := look_device as Console
 	if console != null:
 		for device in console._system():
-			if device is Receiver:
+			if device is Radio:
 				return device
 	return null
 
@@ -849,7 +865,7 @@ func _physics_process(delta: float) -> void:
 		_stroke = 0.0
 	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
 	# A radio in your hands you tune turns its face up to your eyes, to read its dial.
-	if held is Receiver and _player.close_up.radio == held:
+	if held is Radio and _player.close_up.radio == held:
 		var to_eyes := Basis(Vector3.RIGHT, _player.camera.rotation.x)
 		_carry = _carry.slerp(to_eyes, 1.0 - exp(-HOLD_EASE * delta)).orthonormalized()
 	match phase:
@@ -1123,7 +1139,7 @@ func _no_fit() -> String:
 		if piece != null:
 			if each.kind != &"ring" or not target is Chassis or each.has_meta(&"socket"):
 				continue
-		elif each.kind != kind and not (held is Device and (held as Device).fits_in(each)):
+		elif not Catalog.fits(kind, each.kind) and not (held is Device and (held as Device).fits_in(each)):
 			continue
 		any = true
 		named = each.kind
@@ -1753,7 +1769,7 @@ func _takes(each: Socket) -> bool:
 		return false
 	if held is Device:
 		return (held as Device).fits_in(each)
-	return each.kind == held.get(&"kind") or each.kind == &"face" and Frame.takes(held)
+	return Catalog.fits(held.get(&"kind"), each.kind) or each.kind == &"face" and Frame.takes(held)
 
 
 ## Whether a hit is the sand's own surface, which a deck lifts itself clear
@@ -2228,6 +2244,9 @@ func line() -> String:
 		var laid: Line = held.get_meta(&"line")
 		return Controls.key_for(&"interact") + " · " + ("remove line from hook" if laid.rope != null \
 			and laid.rope.through == _look_hook().guide else "pass line through hook")
+	var through := _cable_at_stake()
+	if not through.is_empty():
+		return Controls.key_for(&"interact") + " · " + ("take cable off stake" if (through.cable as Cable).through 			== through.stake else "pass cable through stake")
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
 	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \

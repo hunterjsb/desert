@@ -982,6 +982,10 @@ posture from the steady eye, not the render camera's interpolation, bob or
 shake. This is a drawing correction only: no player, board, held-object or rope
 physics changes. Keep boots and arms visible while checking actual riding
 frames at low render rate with unchanged 60 Hz physics.
+*Superseded in part 2026-10-21 (gonkhub: the slimmed suit instead of "the
+no-torso version"): the slimmer suit keeps the chest out of the view, so hips
+and trunk are drawn for your own eyes again; head and collar stay excluded, and
+the between-tick ride translation stays.*
 
 Movement 42 passes in 12 s: 29 actual post-process frames at 15 FPS/60 Hz,
 reaching 18.42 m/s, have zero measured suit/board rendered-origin error. Exact

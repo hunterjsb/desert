@@ -1,15 +1,24 @@
 class_name Dial
 extends RefCounted
-## The radio's dial, 0 to 2000 kHz, and how a signal on it reaches you: which
-## carriers it holds, how near one you're tuned, how strong a god's comes in
-## from where it stands, and which way it lies. Nothing on the dial says what
-## a carrier is: you learn the dial by listening.
+## The radio's AM dial, longwave and mediumwave as a real set of the colonial
+## years has them: 150 to 280 kHz, then 530 to 1700, the gap between skipped
+## (gonkhub, 2026-10-21: "a more realistic AM radio bandwidth range"). And how
+## a signal on it reaches you: which carriers it holds, how near one you're
+## tuned, how strong a god's comes in from where it stands, and which way it
+## lies. Nothing on the dial says what a carrier is: you learn the dial by
+## listening. The AM dial is the barest band (gonkhub, 2026-10-21: "AM:
+## Distress Signals, half the gods, and long distance beacons"): the far gods,
+## the beacon and the wrecks' distress calls (Distress); the port's music, the
+## weather, the city and the near gods are on FM (Fm).
 
-const LOWEST := 0.0
-const HIGHEST := 2000.0
-## The two carriers that aren't gods: the music and the beacon.
-const MUSIC_KHZ := 1020.0
-const BEACON_KHZ := 1930.0
+const LOWEST := 150.0
+const HIGHEST := 1700.0
+## Longwave's top and mediumwave's bottom, kHz: nothing between is on the dial.
+const LW_TOP := 280.0
+const MW_BOTTOM := 530.0
+## The beacon's carrier, a ruin's still running, at mediumwave's bottom, where
+## a colonial road beacon would sit.
+const BEACON_KHZ := 530.0
 ## A ground wave carries its full reach at or under this, kHz.
 const GROUND_KHZ := 500.0
 ## Past this far round the moon, m, the opposite point is near enough that a
@@ -17,8 +26,23 @@ const GROUND_KHZ := 500.0
 const EVERYWHERE_M := 4000.0
 
 
-## Every carrier on the dial at world time t, low to high: [kHz, id]. The
-## living city's is one, heard only near it.
+## A frequency moved off the gap between the bands, kHz: up to mediumwave's
+## bottom going up, down to longwave's top going down; clamped to the dial.
+static func on_dial(khz: float, up: bool) -> float:
+	khz = clampf(khz, LOWEST, HIGHEST)
+	if khz > LW_TOP and khz < MW_BOTTOM:
+		return MW_BOTTOM if up else LW_TOP
+	return khz
+
+
+## Where a frequency stands across the dial, 0 at its bottom to 1 at its top.
+static func share(khz: float) -> float:
+	return clampf(inverse_lerp(LOWEST, HIGHEST, khz), 0.0, 1.0)
+
+
+## Every fixed carrier on the dial at world time t, low to high: [kHz, id],
+## the beacon's and the far gods'. The wrecks' calls depend on where you are
+## (Radio.distress_calls).
 static func carriers(gods: Gods, t: float) -> Array[Array]:
 	return gods.dial_carriers(t)
 

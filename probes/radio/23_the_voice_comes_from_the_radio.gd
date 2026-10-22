@@ -16,7 +16,6 @@ func run() -> void:
 	var radio: Radio = dropped[0]
 	await physics_frames(10)
 	var t := world.time
-	var due: float = radio.reading.change
 	var from: float = radio.reading.from
 	radio.reading = {"stormy": false, "change": t + 240.0, "back": t + 900.0, "wind": 40.2, "from": from}
 	var coming := radio.report(t)
@@ -39,17 +38,28 @@ func run() -> void:
 							missing[phrase] = true
 	check(missing.is_empty(), "every phrase it can say is in its bank (missing: %s)" % ", ".join(missing.keys()))
 
-	# Just inside the calm horizon the next reading breaks in, read from the radio.
-	var before := radio.spoken_count
-	world.time = due - Tuning.current().radio_calm_minutes * 60.0 + 10.0
-	radio.read_at = -INF
-	for i in 300:
+	# A storm just inside the calm horizon at the tower, as its reading has it
+	# (held, so the field doesn't read afresh): its report, read from the radio.
+	# News waits for what it's reading to finish.
+	for i in 900:
+		if radio._lines.is_empty():
+			break
 		await get_tree().physics_frame
-		if radio.reader.playing and radio.spoken_count > before:
+	var before := radio.spoken_count
+	radio.reading = {"stormy": false, "change": world.time + 120.0, "back": world.time + 900.0, "wind": 20.0,
+		"from": from}
+	radio.read_at = world.time
+	radio._checked_at = radio.read_at
+	radio.spoken_at = -INF
+	# Its deliveryship schedule may come first; its news follows.
+	for i in 900:
+		await get_tree().physics_frame
+		radio.read_at = world.time
+		if radio.reader.playing and " ".join(radio.spoken).to_lower().contains("storm coming"):
 			break
 	print("it reads \"%s\", playing %s" % [" ".join(radio.spoken), radio.reader.stream.resource_path
 		if radio.reader.stream != null else "nothing"])
-	check(radio.spoken_count == before + 1 and " ".join(radio.spoken).to_lower().contains("storm") and radio.reader.playing,
+	check(radio.spoken_count > before and " ".join(radio.spoken).to_lower().contains("storm coming") and radio.reader.playing,
 		"its news is read aloud from bundled recordings")
 	check(radio.reader.get_parent() == radio and radio.reader.global_position.is_equal_approx(
 		radio.to_global(Hands.middle_of(radio))) and radio.reader.bus == radio.signal_bus(),

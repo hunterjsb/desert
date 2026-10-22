@@ -41,10 +41,12 @@ charm:** switch it on and it gives a burst of static; bump it and it crackles.
 - **A device:** 2.5 kg, a battery slot on its back and a port. Carry it, set it down or stick it on a deck
   as the shield sticks; it plays from where it is, drawing 2 W from its battery or the deck's pool (a base
   battery runs it 50 hours). On a Console's deck it's the Console's voice, and its power-page row is the
-  dial's own controls ([Devices & mods](devices-and-mods.md)). Found on the surface and in ruins; no
-  starting kit has one.
+  dial's own controls, with a SWEEP to the next carrier ([Devices & mods](devices-and-mods.md)). Found on
+  the surface and in ruins; no starting kit has one.
+- **Use switches it on or off** where its dial stands, with a click (gonkhub, 2026-10-21: "ALWAYS toggle
+  radios on/off"), looked at or in your hands.
 - **Carried** (Survival, 2026-10-17): it rides on you out of sight on its own battery; use on it in the
-  inventory turns the dial. Its spoken bearings are by the moon's north, so past a pole they agree with the
+  inventory works it too. Its spoken bearings are by the moon's north, so past a pole they agree with the
   compass.
 - **In your ears** (gonkhub, 2026-10-19: "when the radio is inside the player's inventory, play its audio
   directly to the player," "the volume level in the inventory should match when held very close to the
@@ -55,12 +57,12 @@ charm:** switch it on and it gives a burst of static; bump it and it crackles.
 - **Static** comes in with a storm front's outflow, before the wall and full inside it, in a bubble too:
   it's the sand charging up (the lore research), not the storm's sound.
 - **An anomaly's crackle:** short pitched-up bursts as deep as its hidden term, which no forecast speaks of
-  ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)). It's the agreed tell, so it plays
-  over whatever the radio plays, never ducked under a station, and counts as the crackle tell only while
-  you can hear it.
-- **A save** keeps whether it's on, each band's place and the knob. **Code:** `game/radio/radio.gd`, with
-  `gods.gd`, `dial.gd`, `interference.gd`, `transmissions.gd`. **Not yet:** bumps crackling, lore,
-  frequencies as finds.
+  ([Wind & storms](wind-and-storms.md#the-anomaly-as-built-2026-10-18)). It's the agreed tell, so it stays
+  audible under whatever the radio plays, never ducked away by a station, and counts as the crackle tell
+  only during a burst you can hear.
+- **A save** keeps whether it's on, each band's place and the knob; an old save on the weather or the music
+  goes to its new station. **Code:** `game/radio/radio.gd`, with `gods.gd`, `dial.gd`, `interference.gd`,
+  `transmissions.gd`. **Not yet:** bumps crackling, lore, frequencies as finds.
 
 ### The dial and the gods on the air (Hunter, 2026-10-18; built)
 
@@ -72,13 +74,17 @@ between noise and useful information is if the player knows when to listen." And
 the weather station." Use the music, weather and beacon "but don't explicitly name each channel for what
 it is."* The gods broadcast, past the lore's "speak only through terminals", by Hunter's call.
 
-- **The AM dial runs 0–2000 kHz.** Tuning (reel in, pay out) moves it `dial_notch_khz` (10 kHz) a notch,
-  fine tuning 1 kHz. Spun fast, each notch goes farther than the last, up to five at once
-  (`dial_spin_seconds`, `dial_spin_most`; gonkhub, 2026-10-20: "speed up frequency scrubbing with
-  scrollwheel"); fine steps never speed up. Reel in and pay out are one rule with rope ([Rope &
-  tethering](rope-and-tethering.md)): the line in your hand first; else the radio you look at (or one on a
-  Console you look at); else the waist line you look along; else a radio you hold. Bring near and push out
-  never turn a dial. Use sweeps up to the next carrier, and past the last it goes off.
+- **The AM dial runs longwave and mediumwave, 150–280 and 530–1700 kHz** (gonkhub, 2026-10-21: "update this
+  to reflect a more realistic AM radio bandwidth range and one that fits with the setting better, just like
+  the other ones are"): a real set's two AM scales, as the colonial makers would have built it. Tuning across
+  the gap comes out on the other side (`Dial.on_dial`).
+- **Tuning** (reel in, pay out) moves it `dial_notch_khz` (10 kHz) a notch, fine tuning 1 kHz. Spun fast,
+  each notch goes farther than the last, up to sixteen at once (`dial_spin_seconds`, `dial_spin_grow`,
+  `dial_spin_most`; gonkhub, 2026-10-20: "speed up frequency scrubbing with scrollwheel", then 2026-10-21:
+  "Increase scrub speed when mouse wheel scrolling"); fine steps never speed up. Reel in and pay out are one
+  rule with rope ([Rope & tethering](rope-and-tethering.md)): the line in your hand first; else the radio you
+  look at (or one on a Console you look at); else the waist line you look along; else a radio you hold.
+  Bring near and push out never turn a dial.
 - **A volume knob** (Hunter: "give the radio also an adjustable volume knob"; "10% should be barely
   audible, and 100% should be louder than most other sounds in the game"; "100% volume needs to be much
   much louder in game"; "Sound falls off too quickly"): a tenth a notch, each the same 6 dB step
@@ -88,21 +94,22 @@ it is."* The gods broadcast, past the lore's "speak only through terminals", by 
   radio's own bus with a high-pass at `radio_highpass_hz` (400 Hz), into the world's sound.
 - **Quiet static** (Hunter: "Quiet down the ambient radio static a lot unless there is nothing currently
   playing"): the hiss is heard only while nothing comes through (Sound only, below).
-- **Carriers:** the port's AM music at 1020 kHz, the beacon at 1930, the seven gods and the living city.
-  Nothing names one: the look-at line reads only "Radio · 262 kHz", or "Radio · off". Each wanders inside
-  its band each moon day, from the seed, never more than `carrier_drift_khz` (5) from the day before
-  (gonkhub, 2026-10-20: "ensure a 'home frequency' cannot shift more than 5khz from where it was last";
-  `Dial.walk`). A signal comes in whole within `dial_width_khz` (3).
+- **On the AM dial** (`Dial.carriers`): the four far gods, the beacon at 530 kHz (mediumwave's bottom, where a
+  road beacon would sit) and wrecks calling SOS (Bands). Nothing names a carrier: the look-at line reads only
+  "Radio · 262 kHz", or "Radio · off". Each god's carrier wanders inside its band each moon day, from the
+  seed, never more than `carrier_drift_khz` (5) from the day before (gonkhub, 2026-10-20: "ensure a 'home
+  frequency' cannot shift more than 5khz from where it was last"; `Dial.walk`). A signal comes in whole
+  within `dial_width_khz` (3).
 
-| God | Band, kHz | Home | Worth hearing | What it says then |
+| God | Heard on | Home | Worth hearing | What it says then |
 |---|---|---|---|---|
-| The Quartermaster | 140–175 | The black site's bunker | Through the eclipse ("blackout drill") | Bearing and range to the nearest cache, dugout, checkpoint or bunker history laid near you |
-| The Walker | 230–290 | Where it walks on the Rim | Always | The weather where the radio stands (the weather station, below) |
-| Mother Cistern | 410–450 | Sister's temple | Dawn, 05:00–07:00 local | Frost or dew tonight with the 03:00 temperature, and the nearest cistern or stepwell |
-| The Almanac | 600–660 | Frontier Ag's farm domes nearest Halfrise | Sunrise and sunset | The day's range, and which crops would hold through it in the open |
-| The Ledger | 880–940 | The Bastion, Port Morgan | About midnight ("berth inventory") | Bearings and ranges to Halloran, the Rim depot and Starcom. It sends strongest |
-| The Stoker | 1180–1240 | Halloran's refinery terraces | The hot hours, 13:00–16:00 local | A countdown to the next eclipse, and the peak temperature in the next 5 minutes |
-| The Eye | 1720–1790 | The observatory, at the anti-Tu point | Night where the radio is | Your latitude and longitude, and the local time |
+| The Quartermaster | AM, 152–172 kHz | The black site's bunker | Through the eclipse ("blackout drill") | Bearing and range to the nearest cache, dugout, checkpoint or bunker history laid near you |
+| The Walker | FM, from where it walks | Where it walks on the Rim | Always | Its log: survey and contacts (Stations) |
+| Mother Cistern | AM, 590–630 kHz | Sister's temple | Dawn, 05:00–07:00 local | Frost or dew tonight with the 03:00 temperature, and the nearest cistern or stepwell |
+| The Almanac | AM, 680–740 kHz | Frontier Ag's farm domes nearest Halfrise | Sunrise and sunset | The day's range, and which crops would hold through it in the open |
+| The Ledger | FM, from its home | The Bastion, Port Morgan | About midnight ("berth inventory") | Bearings and ranges to Halloran, the Rim depot and Starcom. It sends strongest |
+| The Stoker | FM, from its home | Halloran's refinery terraces | The hot hours, 13:00–16:00 local | A countdown to the next eclipse, and the peak temperature in the next 5 minutes |
+| The Eye | AM, 1620–1690 kHz | The observatory, at the anti-Tu point | Night where the radio is | Your latitude and longitude, and the local time |
 
 - **Litanies.** Outside its window a god recites its litany, a line every 6 s in order, then over word for
   word, as its priests kept it once they no longer knew what the words were for (the endings session:
@@ -117,23 +124,23 @@ it is."* The gods broadcast, past the lore's "speak only through terminals", by 
   reading: within 12 km a compass point, within 40 km a rough one ("somewhere west"), past that a way
   across the moon (toward Tu, away, across its face left or right, or from everywhere near the opposite
   point).
-- **Reach.** At or under 500 kHz a ground wave carries 80 km; above, reach falls as the square of the
-  frequency by day, and at night a sky wave comes down past a 15 km skip, as real AM does. So the Eye comes
-  in only at night.
+- **Reach on AM.** Longwave's ground wave carries farthest, so it keeps the Quartermaster and the distress
+  calls; higher up, reach falls as the square of the frequency by day, and at night a sky wave comes down
+  past a 15 km skip, as real AM does. So the Eye comes in only at night.
 - **Weather between you and the god** (Hunter: "Interference must be highly directionally weighted ... If a
   storm is very close to you on your east, each signal that lies to the east should be completely
   unreachable"): the storm field is read at 12 points toward the god out to 3 km, and the **worst** counts.
   Past `storm_blocks` it **cuts the signal off**; less, it lets less through the nearer it is to that, so
   which signals you lose says which way a storm lies. More storm means more **distortion**, a carrier
   **warping** up to 6 kHz off so you chase it, and **cutting** up to 60% of the time. A weak signal frays
-  the same way.
+  the same way. FM keeps clear of storms (Bands).
 - **Songs on the air** play on their station's clock whether anyone listens, so you tune in mid-song.
-  Weather, a dropout or a glitch never restarts one: after a stutter, jump or drag it catches back up to
-  where its station is. A new play of a song (another meltdown) starts fresh.
+  Weather, a dropout or a glitch never restarts one: at a glitch's end it catches back up to where its
+  station is. A new play of a song (another meltdown) starts fresh.
 - **The Stoker's song** (Hunter: "use that segment on the Stoker mind's frequency"; "stoker track too
   quiet"): 45 s of Hunter's `modsynthpatch.wav` (`radio_stoker.ogg`), as loud at its peaks as Clear Skies,
-  its pitch sliding with a storm's warp. It never plays by itself (Hunter: "make the stoker's audio not
-  random. For now just bind it to a command called 'meltdown'"): the dev console's `meltdown` plays it once.
+  on the Stoker's FM station. It never plays by itself (Hunter: "make the stoker's audio not random. For now
+  just bind it to a command called 'meltdown'"): the dev console's `meltdown` plays it once.
 - **The Eye's drones** (Hunter: "implement this as a random ambient track that can play from 'the eye'";
   gonkhub, 2026-10-18: "put this as a random ambient track for the eye"): after a silence of
   `eye_quiet_minutes`, the Eye plays through Hunter's drone (`radio_eye.ogg`) or gonkhub's tunnel ambience
@@ -148,31 +155,31 @@ interacting," then "Bring back the pov zoom when using fine-tune shift scrolling
 visual for the knob turning match the bandwidth, so going from 0-20k is one full knob turn."*
 
 - **Up close, only for fine tuning.** Fine tuning eases the view in to the set's face (`dial_close_seconds`,
-  `dial_close_m`, `dial_close_fov`) so it fills most of the view; tuning, the sweep, the next mark and the
-  volume leave the view your own (`dial_close_up` closes in for all of them, as the dial look-test does). It
-  meets the face square, or within 30° of your line of sight, the band level. It's a camera of its own, so
-  your aim stays yours: look off and it eases out, and `dial_close_hold` after the last turn anyway. A radio
-  in your hands turns its face up to your eyes.
-- **The face** (`Dress`): a lit band window in a gunmetal bezel with a thin red needle; under it the
-  speaker's slats, the tuning knob and a smaller volume knob, black and ridged with a bone line on each cap.
-  The tuning knob goes once round across the whole AM dial; the volume knob sweeps three quarters round.
-- **A reminder of the actions:** the close view shows four short lines naming tuning, fine tuning, volume,
-  mark and next mark with their current bindings (from `Controls`, in the shared UI type), the mark line
-  only on a set with marks. It fades with the close view, hides under a menu, never covers the dial and is
-  never permanent carried-radio text.
+  `dial_close_m`, `dial_close_fov`) so it fills most of the view; tuning, use and the volume leave the view
+  your own (`dial_close_up` closes in for all of them, as the dial look-test does). It meets the face square,
+  or within 30° of your line of sight, the band level. It's a camera of its own, so your aim stays yours:
+  look off and it eases out, and `dial_close_hold` after the last turn anyway. A radio in your hands turns
+  its face up to your eyes.
+- **The face** (`Dress`): a lit band window with a thin red needle; under it the speaker's slats, the tuning
+  knob and a smaller volume knob, black and ridged with a bone line on each cap. The tuning knob goes once
+  round across the whole AM dial; the volume knob sweeps three quarters round. Each band's printed scale
+  marks its real limits along the needle's travel.
+- **A reminder of the actions:** the close view shows a few short lines naming tuning, fine tuning, volume,
+  mark and on/off with their current bindings (from `Controls`, in the shared UI type), the mark line only on
+  a set with marks. It fades with the close view, hides under a menu, never covers the dial and is never
+  permanent carried-radio text.
 - **Each god at its home** (`Gods.home`): its landmark's middle in the history, as the table says. The
   Almanac's is the history's `farm_dome` settlement nearest Halfrise; the Walker's is where it has walked
-  to (Stations). Seed 1234, from the start: the Ledger 44.0 km toward Tu, the Quartermaster 28.1 km
-  somewhere west. Code: `game/player/close_up.gd`, `game/look/dress.gd`; look-test `look/dial`.
+  to (Stations). Seed 1234, from the start: the Quartermaster 28.1 km somewhere west. Code:
+  `game/player/close_up.gd`, `game/look/dress.gd`; look-test `look/dial`.
 
 ### Sound only, skirts, marks and lamps (gonkhub, 2026-10-19; built)
 
 *gonkhub: "Remove all text dialogue from the radio. Audio only." "Ensure each broadcast can be picked up
 near its home frequency at reduced signal strength ... overlapping signals that each have a home frequency
 so the player can focus on what they are trying to listen to, but the whole frequency range is dynamic."
-"Allow the player to mark frequencies, and give them a name + color. If the player presses f when holding
-the radio, they swap to their next saved frequency." Then: "Remove the marker menu. Just place a randomly
-colored marker when m is pressed, or remove the marker if one is already present."*
+"Allow the player to mark frequencies, and give them a name + color." Then: "Remove the marker menu. Just
+place a randomly colored marker when m is pressed, or remove the marker if one is already present."*
 
 - **Sound only.** Nothing the radio says is written in the view; the look-at line names only the
   frequency, the set's own reading. What a station says is still worked out (`Radio.said`,
@@ -199,9 +206,9 @@ colored marker when m is pressed, or remove the marker if one is already present
   strongest thing heard comes through (`Radio.heard`), so you find a station by eye too.
 - **Marks** (`Radio.toggle_mark`): with a radio in your hands, mark puts a mark where its dial stands, in a
   bright random colour, with a soft click; on a mark it takes it off. No menu; a mark is named by its
-  frequency. Marks belong to the run, kept in the world's save, and show as a tick in their colour on every
-  radio's band. With marks, use on a radio in your hands goes to the next mark up, round past the highest;
-  with none, use sweeps. On a mark the look-at line reads "Radio · 1040 kHz · Windsock".
+  frequency. Marks belong to the run, kept in the run's save, and show as a tick in their colour on every
+  radio's band. On a mark the look-at line reads "Radio · 1040 kHz · Windsock". Marks are ticks and names
+  alone: use only switches the set on or off.
 
 ## Bands and tiers
 
@@ -213,19 +220,20 @@ to unlock and explore," and "I want this to feel grounded in actual tech." The p
 Two rules from real radio carry this. **The band decides how far a signal goes; the modulation decides what
 it takes to hear it and how it sounds.** And **the air has a ceiling:** the charged layer high in Zan's air
 (fed by Tu's belts) that bounces the night sky wave down also turns back anything under a few MHz sent from
-above. So nothing in orbit is heard on the AM dial; under the ceiling is the ground's: the gods, beacons,
-the nomads' relics, the living city.
+above. So nothing in orbit is heard on the AM dial; under the ceiling is the ground's.
 
-**The band map** (agreed direction; what's built is listed after it):
+**The band map** (agreed direction; what's built is in the sections after it):
 
 | Band | Gets there | Hearing it | Draw | Who's on it |
 |---|---|---|---|---|
-| Natural radio, 0–30 kHz | moon-wide | a long wire and an amplifier | ~0 | the clicks of charged-dust storms before the storm shows, whistlers, chorus near the poles; your own base's hum masks it |
-| LW/MW, 30–2000 kHz (the AM dial) | ground wave, and at night past the skip | crystal set, then the transistor set | 0, then 2 W | the gods; beacons sending their names in Morse; distress beacons on 500 kHz in wrecks; the nomads' ghost relay; the living city's homing carrier; the port's music, thin |
-| Shortwave, 2–30 MHz | skip, with a dead zone between | a wire on ropes or a kite | ~1 W | Tu's roar on a timetable; weather maps by fax; wartime numbers and the jammer; most satellites |
-| VHF/UHF, 30 MHz–1 GHz | line of sight: height is range | the FM converter, then an FM set; a whip; a handheld beam | 0.5–2 W | Port Morgan's FM stations; the living city's scouts; ruin intercoms; the skimmer field's navigation beacon; the relay at L1 |
+| LW/MW, 150–280 and 530–1700 kHz (the AM dial) | ground wave, and at night past the skip | crystal set, then the field radio | 0, then 2 W | the far gods; the beacon; wrecks calling SOS; the nomads' ghost relay; beacons sending their names in Morse |
+| Shortwave, 2–30 MHz | skip, with a dead zone between | a wire, then a kite | ~1 W | every satellite; the relay repeating Port Morgan Tower; Tu's roar on a timetable; weather maps by fax; numbers stations |
+| VHF/UHF, 30 MHz–1 GHz | line of sight: height is range | the FM converter, then an FM set; a whip; a handheld beam | 0.5–2 W | Port Morgan Tower and the port's music; the living city's chatter and music; the near gods; ruin intercoms; the skimmer field's navigation beacon |
 | L/S, 1–4 GHz | space | dish, LNB and decoder | 5–10 W | a digital bundle; the drone's downlink |
 | X, 8 GHz and up | deep space | a big dish and a cooled amplifier | high | Varran, and the far end of the lane, from the far side's quiet |
+
+Natural radio, under 30 kHz, was built and then cut with the realistic AM dial (gonkhub: "Cut it"): it's
+below any real set's scales.
 
 **Three sounds, one a technology.** AM hisses and crackles in a storm, whooshes as it fades at night, whistles
 where two carriers beat, and is thin. FM is near silent and full range; the stronger of two takes a frequency
@@ -236,15 +244,80 @@ stuttering between (the glitch chain is digital's).
 printer, each a find or a build that plugs in. Receiving is cheap, so upgrades are **gain** (antenna size and
 aim), **quiet** (amplifiers; cold nights really are quieter), **knowing** (time, place and an orbit's elements
 to aim a dish: the Eye and the Pendulum become prerequisites) and **talking back**, where the power goes:
-with machines only (no NPCs), commanding the drone's cannon or a satellite's stored dump. It's also how
-Daventry could hear you. **Decided with it:** the port sends its music thin on 1020 kHz from the ground and
-the relay sends it full on FM; the FM converter is the first step, as 1960s converters for AM car radios
-were, and a real FM set the second.
+with machines only (no NPCs), commanding the drone's cannon or a satellite's stored dump. It's also
+how Daventry could hear you. The FM converter is the first step, as 1960s converters for AM car radios were;
+a real FM set the second.
 
-**Built so far:** the AM dial; the FM converter and band; the shortwave converter and band; the antenna reel
-(the long wire); natural radio at the bottom of the AM dial on a long wire; the ferrite rod's null; and the
-survey receiver, a cheaper beacon-only loop set. **Still direction:** the crystal set, the kite, a loop for
-sharper bearings, an FM set, the dish, decoder and digital, the uplink.
+**Built so far:** the crystal set and the field radio in makers' looks; the realistic AM dial; the FM
+converter and band; the shortwave converter and band; the antenna reel and the kite; the misc bay's modules;
+the ferrite rod's null and the direction loop; the survey receiver. **Still direction:** an FM set, the
+dish, decoder and digital, the uplink.
+
+### The bands rebuilt (gonkhub, 2026-10-21; built)
+
+*gonkhub: "Let's just scrap and rebuild our radio frequencies from what we now have. Here is where
+everything should be sorted into: AM: Distress Signals, half the gods, and long distance beacons. FM: Combine
+Weather Station and deliveryship Control Tower frequencies into one Port Morgan Tower station. Also on this
+band: living city misc chatter, Living city music radio, and half the gods. Shortwave (Satellite): All
+satellites or otherwise offworld transmissions." Then: "On FM, you must be near the tower to hear the weather
+broadcast. You need Shortwave upgrade to hear a satellite rebroadcast of it, greatly increasing effective range
+for players with a nice setup. Weather channel reports should be reformatted to give the report from the
+tower's perspective. Wind speed, time, and temperature at the tower's location. When reading out reports for
+weather advisories for anomalous storms, extreme storms, etc, it should give a bearing and distance from the
+tower." Settled with it: distress means wrecks calling SOS; the far gods go on AM and the near ones on FM;
+the port's music is on FM only; the relay repeats the tower on shortwave.*
+
+- **AM, the barest:** the Quartermaster, Mother Cistern, the Almanac and the Eye; the beacon; wrecks calling
+  SOS. The port's music left AM, so it no longer reaches the far side; Hunter's ask that the music "can
+  actually be interfered when on the far side of the moon" now falls to the far gods (the "far_storm"
+  scenario tunes the Almanac's night sky wave).
+- **Wrecks calling SOS** (`game/radio/distress.gd`): of the freight pods, lifeboats, hulls, tithe haulers,
+  hoppers and nomad rigs in the sand, `distress_share` still call. A radio hears the nearest three within
+  `distress_reach_m`, each on a whole kHz within `distress_spread_khz` of 240, a low longwave ground wave
+  through the storm and the rod's null as a god is. Each `distress_every` it sends SOS in Morse (placeholder
+  pings), then speaks "S O S. S O S. Latitude … Longitude …", the wreck's own fix, so a call leads to
+  salvage. The deed **Mayday**: hear one come through whole.
+- **FM, near and clean** (`Fm.stations`): seven stations, each locked on its own odd tenth of a MHz the seed
+  picks, at least `Fm.APART` apart: Port Morgan Tower and the port's music on the port's `fm_mast_m` mast; the
+  living city's chatter and its reed music from a `fm_city_mast_m` mast wherever the city is; and the Ledger,
+  the Stoker and the Walker, each from a `fm_god_mast_m` mast at its home, so heard only near it, the Walker's
+  moving as it walks. Changing station clears the last one's queued words.
+- **Shortwave, the sky's:** every satellite and Tu's roar, and **the relay** at L1 on 7250 kHz, repeating Port
+  Morgan Tower. It's heard as a satellite is (`Radio.receive_from`): faint on a bare shortwave converter,
+  better on an antenna reel's wire, best by a kite. So the weather near the port is FM's, and anywhere on the
+  near side with a good rig.
+- **Not yet:** the sleep offer "Until a storm's called" still wakes you by the storm at your camp, while the
+  radio it tunes reads the tower's weather.
+
+### The radio's tiers and makers' looks (2026-10-21; built)
+
+*From the radio-equipment lab (`look/radio_kit`, its README the proposal): gonkhub asked for "three tiers of
+radio and several visual styles," each band its own colour (`game/look/radio_kit_looks.gd`,
+`radio_band_looks.gd`).*
+
+- **The crystal set** (`crystal_set`), tier 0: a coil wound on a can, a cat's whisker on a crystal and an
+  earpiece on a scrap tray. No power: it draws nothing and runs on what it hears, at `crystal_gain` of a field
+  radio's strength, so only strong carriers near come through. AM only, no marks, its own face. The deed
+  **Foxhole Radio**: hear a god in its window on one.
+- **Quiet, and the headset** (gonkhub, 2026-10-21: "Crystal set should have no adjustable audio, and needs to
+  be much quieter. If the player has the headphones module, they can attach it ... to hear more clearly.
+  Otherwise, transmissions should remain hardly audible and highly distorted"): no volume knob; it plays
+  `crystal_quiet_db` down and at least `crystal_dirt` dirty. Its tray has one bay; a headset jack in it, the
+  set carried or in your hands, brings it to `crystal_headset_quiet_db` and `crystal_headset_dirt`. Powered
+  modules don't run on it. The deed **Close Listening**: hear a god in its window on a crystal set through a
+  headset.
+- **The field radio in makers' looks:** the radio the game always had is company issue (teal and gunmetal),
+  and four more are their own catalog devices, the same set: colonial survey (`radio_colonial`, off-white and
+  orange), skimmer crew (`radio_skimmer`, olive, a plate riveted over a crack, tape), First Kingdoms
+  (`radio_kingdoms`, enamel red, hardwood and brass) and second age (`radio_second_age`, ceramic and saltwood,
+  cord), each wearing the lab's body with the set's own live needle, knobs, lamps and window.
+- **Its band window recolours as it switches** (`Radio._show_window`): amber for AM, sea green for FM, violet
+  for shortwave, each numbered for its band with its name in the corner; under it three tells, AM, FM and
+  SW, lit on the band it's on, dim on one its converters reach, capped black on one they don't.
+- **The survey set is scrapped** (gonkhub, 2026-10-21): a colonial three-band set with FM built in, it was
+  tier 2. Saves that had one wake it as the colonial field radio.
+- In the creative menu beside the radio. **Not yet:** the crystal set's slider turning as it tunes; finds
+  for the new sets in ruins.
 
 ### The FM band (built 2026-10-20)
 
@@ -256,29 +329,19 @@ sharper bearings, an FM set, the dish, decoder and digital, the uplink.
   radio goes back to the AM dial.
 - **The FM dial** runs 87.5–108 MHz (`fm_notch_mhz`, `fm_fine_mhz`), a station whole within `fm_width_mhz`
   and no skirt: "Radio · 96.7 MHz". Marks work on any band.
-- **Port Morgan's music station**, on its `fm_mast_m` mast, on an odd tenth of a MHz the seed picks, plays the
-  songs the relay carries. The control tower is a second station there (Stations).
 - **Line of sight** (`Fm.margin`): a station clears the noise by `fm_margin_db` a kilometre off, less 6 dB a
   doubling, less the worst edge between, the ground read along the way and raised by the moon's curve as
   radio sees it (`fm_bend`), scored by knife-edge diffraction (ITU-R P.526), so a station fades in as you
   crest a rise. Seed 1234: 29.5 dB 800 m from the port; -16 dB 9 km off on the ground; 10.9 dB 9 km off and
   2.5 km up.
-- **The relay's FM**, at least 1 MHz off the port's, comes `relay_fm_db` over it less its spreading; the
-  ground toward it is read to `fm_sky_reach_m`, so low toward the Rim a dune can hide it. Storms don't
-  touch it: with a converter the music is clean anywhere on the near side.
 - **Its sound.** Over `fm_threshold_db` it quiets over `fm_quiet_db`; under, hiss takes it. No storm static,
   no anomaly crackle. Ground bounce fades it as the radio moves (`Fm.fade_db`), so near the threshold it
-  flutters as you walk. Two within `fm_capture_db` fight. Through the converter it plays as narrow as AM.
-- **AM is narrow:** the AM dial and shortwave play up to `am_audio_hz` (5 kHz), the gap an FM set will open.
-- **The AM music** comes from the port's own mast on 1020 kHz (`Radio.receive_music`), as strongly as the
-  Ledger, through the storm between as a god's is (Hunter: "ensure the audio on the music station can
-  actually be interfered when on the far side of the moon"): faint and chewed up by day 44 km off, clean
-  at night; on the far side only at night.
-- **The look** (`Dress._converter`): another maker's add-ons after 1960s car-radio FM converters, black enamel
-  boxes bolted to the set's side, each with a chrome-rimmed bone face, small dial and needle, a knob, a
-  chrome throw and its band's colour and name, teal "FM", amber "SW"; the FM one has a three-section whip,
-  the shortwave one brass aerial and ground posts. The band window has three rows, FM, shortwave and the AM
-  dial, and the band lamp (`Dress.band_lamp`) lights in its band's colour beside the signal lamps.
+  flutters as you walk. Two within `fm_capture_db` fight. Through the converter it plays as narrow as AM:
+  the AM dial and shortwave play up to `am_audio_hz` (5 kHz), the gap an FM set will open.
+- **The converters' look** (`Dress._converter`): another maker's add-ons after 1960s car-radio FM converters,
+  black enamel boxes bolted to the set's side, each with a chrome-rimmed bone face, small dial and needle, a
+  knob, a chrome throw and its band's name; the FM one has a three-section whip, the shortwave one brass
+  aerial and ground posts.
 - **The deed** Line of Sight: hear an FM station come through quiet. **Not yet:** an FM set that plays wide.
 
 ### Shortwave and Tu's roar (built 2026-10-20)
@@ -287,8 +350,7 @@ sharper bearings, an FM set, the dish, decoder and digital, the uplink.
   side takes two mods. Found on skimmer-era shelves and in relay mast cabinets.
 - **The band** runs 2–30 MHz, the dial going on in kHz past the AM dial (`Shortwave`, `sw_notch_khz`, fine
   tuning 1 kHz): "Radio · 29.07 MHz". AM and shortwave share one `frequency`, each keeping its place
-  (`am_khz`, `sw_khz`), so skirts and the jammer work unchanged. The satellites are here and nowhere else
-  (the relay on FM); nothing on the ground sends here yet.
+  (`am_khz`, `sw_khz`), so skirts and the jammer work unchanged. Nothing on the ground sends here.
 - **Tu's roar** (`Shortwave.roar`): from 15 MHz, full from 21 (`tu_roar_khz`), wherever Tu is up. Tu storms
   only while Zan is near two points of its orbit (`tu_roar_phases`, `tu_roar_window`), as Io gates Jupiter's
   loudest storms, and while Tu's turn faces its source to Zan (`tu_roar_turn`): a timetable to learn. In a
@@ -299,8 +361,8 @@ sharper bearings, an FM set, the dish, decoder and digital, the uplink.
 ### The antenna reel (built 2026-10-21)
 
 *gonkhub, playtesting a rope line strung to a stake, 2026-10-21: "using a rope for a line to the stake
-doesn't make much sense, and using a stake in this way is not intuitive at all." Chosen: a reel now, a kite
-later to lift it.*
+doesn't make much sense, and using a stake in this way is not intuitive at all." Chosen: a reel, and a kite
+to lift a wire (below).*
 
 - **The reel** (`antenna_reel`, `AntennaReel`), after the WWII survival radios' aerial reel: copper wire on a
   drum, 0.8 kg. Use it on a radio and its wire clips to the set's aerial terminal; carry it off and the wire
@@ -310,10 +372,62 @@ later to lift it.*
 - **On shortwave the wire is gain** (`Radio.antenna_gain`, `Radio.wire`): on a converter's terminals alone
   the set hears `sw_bare` of what's sent from above the ceiling; strung `sw_wire_m` it hears all of it,
   `sw_wire_low` with both ends on the sand, fully with an end `sw_wire_high_m` up. On the AM dial a wire adds
-  nothing: the world's own noise is the floor there. Seed 1234, the drone overhead: dirt 0.65 on the
+  nothing: the world's own noise is the floor there. Seed 1234, a satellite overhead: dirt 0.65 on the
   terminals, 0.03 on 10.4 m.
-- **The deed** Long Wire: hear a satellite clear on an antenna reel's wire. **Not yet:** the kite, after the
-  Gibson Girl's box kite, to lift the reel's end on the wind.
+- **The deed** Long Wire: hear a satellite clear on an antenna reel's wire.
+
+### The antenna kite and the radio's modules (gonkhub, 2026-10-21; built)
+
+*gonkhub: "The kite needs to be able to be connected to the top of the radio with a rope hook as its
+connection point. The player can connect them using a cable or a strong cable ... a cable needs to be able to
+first be run to a stake first and then to the kite ... we can just use the normal stake that's already in the
+game ... I want you to give all of the upgrades effects. Make them functional, give them a purpose in the
+world." Asked, gonkhub chose: the kite on its own reel of line, the cable as its lead; burnouts unless earthed,
+the stake earthing it; the kite placed by the wind rather than flown by physics. The rope-hook kite won over
+an earlier reel-flown one.* Numbers from the radio kit lab ([look/radio_kit](../../look/radio_kit/README.md)),
+now in `tuning.tres` (`kite_*`).
+
+- **The rig.** A mount on the radio's top takes a rope hook (socket kind `radio_top`); a fitted hook has a
+  **lead clip** on its stem (kind `lead`), and so does the kite's reel. A cable's plug, plain or strong, fits a
+  lead clip as it fits a port: one plug on the hook, the other on the kite's reel, and the kite is the set's
+  shortwave aerial (`AntennaKite.find_rig`). A lead carries no power. Holding a plug at a **driven stake**,
+  use passes the cable through the stake's ring or takes it off, one cable through set, stake and kite, its
+  legs measured against its length (`Cable.route`). A snapped strong cable keeps its plugs but connects and
+  earths nothing.
+- **The kite** (`antenna_kite`, `AntennaKite`, `KiteLooks`): a delta 1.4 m across, shortwave violet with
+  survey-orange chevrons and a copper dipole, on a drum of `kite_line_m` of line. Use it in a wind of
+  `kite_lift_ms` or more and it goes up, paying out; use it again and it reels in. Placed by the wind: its
+  line stands steeper in its best winds and pressed back past them, sagging, so on its full line in 9 m/s it
+  flies about 90 m up (measured 87 m), and it sways. Under the lift wind it comes down. It keeps its place in
+  the world as the world's origin shifts.
+- **Height is signal:** on shortwave the kite adds about 10 dB a tenfold of height over the whip, to
+  `kite_gain_db`, capped at `kite_gain_most` times a full long wire, so a satellite low over the horizon
+  comes through that the reel's wire loses.
+- **Static.** Flown high it gathers charge, little in clear air and fast in a front's outflow or a storm, and
+  it raises the set's static (`kite_static`). Past `kite_arc` an arc may jump; it burns out or scorches what it
+  hits: the kite's dipole, the lead, the hook, the shortwave converter, or the set. A crack of sparks, a violet
+  flash and a zap. **Its lead through a driven stake** dumps the charge to earth, so it never climbs to an arc
+  (the deed **Grounded**). Unearthed in a 9 m/s breeze the charge arcs within minutes; staked it never does.
+- **Wear,** as a sail's, faster past `kite_harm_ms`; a sandstorm tears it to rags in about 75 s. Its sail
+  tears in its shader, and its dipole and edges glow as it charges.
+- **The misc bay** on the radio's right side, over its power port, takes one module (`radio_bay`,
+  `Dress._module`). Powered ones need the set's power (none on a crystal set):
+  - **Bleed resistor:** leaks a kite's charge off (`kite_bleed_tau`), so a breeze never arcs it unearthed; a
+    dust front outruns it.
+  - **Valve preamp:** lifts everything heard `preamp_gain` times, so a far god lost in the hiss comes through,
+    for 4 W more.
+  - **Direction loop:** takes the ferrite rod's place, its null deeper and narrower (`loop_width`), and as
+    deep by night's sky wave.
+  - **Static choke:** a storm's static at half, the garbling at 0.6, the signal at 0.8.
+  - **Wire logger:** a report or a god's words read through a signal dirtier than `logger_dirty` it plays
+    back once they're done, from the set's own speaker, clean of the storm.
+  - **Frequency counter:** tuned within `counter_lock_khz` of a carrier, the dial stands right on it.
+  - **Headset jack:** with the set playing and you within `headset_cord_m`, it's in your ears from where it
+    stands, and the wind and storm turned down 14 dB.
+  - **Solar lid:** `solar_w` of cells fill a switched-off set's battery by day, far less on Tu's light.
+- **Found** on skimmer-era floors (the kite), colonial and First Kingdom shelves and relay mast cabinets
+  (the modules). **High Wire:** hear a satellite clear on a kite flown 50 m up. Scenario `kite`. **Not
+  yet:** the kite's pull on its reel; a drawn arc down the lead.
 
 ### The ferrite rod's null (built 2026-10-20)
 
@@ -322,32 +436,21 @@ later to lift it.*
   end-on (`rod_width`) it falls into the null (`rod_null`). Turning finds a station's line by its silence;
   the line runs both ways.
 - **The night effect** (`Dial.by_sky`): a sky-wave station comes down from above and wanders, so its null is
-  only `rod_night_null` deep: night bearings can't be trusted, as real direction finders found.
+  only `rod_night_null` deep: night bearings can't be trusted, as real direction finders found. The direction
+  loop module keeps its null deep.
 - **The deed** Null: turn a radio until a god you hear falls silent. **Not yet:** a sense antenna for which
   way along the line; no rod on shortwave or FM.
 
-### Natural radio (built 2026-10-20)
-
-- **The bottom of the AM dial,** under 20 kHz and fading out by 30 (`Natural`): nothing is sent there; a long
-  wire hears the moon's own. The rod hears none of it; a reel's wire strung `sw_wire_m` hears all of it.
-- **Sferics:** each discharge of the sand charging up in a storm is a click, storms read along eight ways
-  out to `vlf_reach_m`, quickening across `vlf_rate`, so you hear a storm long before it shows. Seed 1234:
-  3.7 a second with a storm 20 km off, 28 at 2 km.
-- **Whistlers:** once in each `vlf_whistler_every` one may come, likelier with storms about and by night, a
-  discharge drawn out along Tu's field lines.
-- **Your camp hums over it:** gear drawing `vlf_hum_w` in the radio's pool masks it, so you walk away from
-  your gear to listen, as real VLF listeners do.
-- **The deed** Whistler: hear one on an antenna reel's wire, away from your camp's hum. **Not yet:** the dawn
-  chorus near the poles; sounds of their own for sferics and whistlers.
-
 ### The survey receiver (agreed and built 2026-10-20)
 
-An early, cheaper set that hears only real ruin loot beacons. It's its own kind of set, not a broadcast radio
-with parts switched off: no music, gods, forecast or map, and no compass bearing or distance. It works with a
-radio's actions: battery, mounting, carrying, tuning, fine tuning and volume (the `receiver_*` fields).
+An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
+bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,
+mounting, carrying, tuning, fine tuning and volume, with its draw, reach, a band `receiver_band_khz` either
+side of the beacon's 530 kHz and its needle steps in the `receiver_*` fields.
 
 - **Acquiring:** use powers it on and takes one real untaken beacon in its band and reach, kept through power
   and saves until it's invalid; taking the find or leaving range stops it, and nothing replaces it silently.
+  A receiver saved on the old 1930 kHz beacon wakes on 530, as detuned as it was.
 - **The loop:** turn the case, held, carried or on a deck: two opposite lobes move a coarse strength needle
   and the pulse's cadence and level (a quarter turn took one from 0.87 to 0.07), so you compare readings as
   you move. A soft static bed rises with detuning and dust. Off or a dead battery clears sound and needle.
@@ -360,28 +463,43 @@ radio's actions: battery, mounting, carrying, tuning, fine tuning and volume (th
 From Hunter's [storms, signals & sailing spec](../briefs/storms-signals-sailing-2026-10-18.md): a station is a
 node with a place, a frequency, a range and what it says; its signal falls off with distance.
 
-### The weather station: the Walker's feed
+### Port Morgan Tower: the weather and the drone (gonkhub, 2026-10-21; built)
+
+*gonkhub, before the bands rebuild: "the surveyor flyer's shortwave broadcast needs to inform the player of
+when its flyover will occur"; "Let's just give Port Morgan a Surveyor schedule announcement every 5mins on an
+FM channel. Port Morgan Control Tower can be an FM broadcast that we use for this and other worldbuilding
+tracks"; "Remove the 'here now' announcement from the surveyor ... For its flight plan announcement, it should
+report its current speed, altitude (fluff ...) and ETA to Port Morgan." The rebuild then combined the weather
+station into it (The bands rebuilt).*
+
+- **One FM station on the port's mast** (`Fm.TOWER`, `Radio._tower_air`), heard by line of sight, and
+  repeated on shortwave by the relay. It reads the storm field at the tower (`Radio.tower_at`), 20 minutes
+  ahead, every `radio_forecast_every`: the weather where the tower stands, not where the radio does. What it
+  says, and when, is in Speech.
+- **Clear Skies** (Hunter, 2026-10-18: a "'hold' transmission on the weather channel that plays during clear
+  weather with nothing to report," "a feel good you have nothing to worry about sound that only plays under
+  conditions when that is true"; "no storm for 20 minutes is basically impossible"): with no storm on the
+  tower and none due within `radio_calm_minutes`, it plays Hunter's "Clear Skies" (`radio_clear_skies.ogg`)
+  and says no weather; a storm coming breaks it off through static. Over six hours on three seeds a place's
+  sky is clear about a quarter of the time, clear 5 minutes ahead 12–13%, 20 minutes ahead 0–1%.
+- **The drone's schedule:** its altitude (wandering about its true 30 km, for flavour), its true speed
+  and how long until it's over the port: the deed **Flight Plan**. Other worldbuilding tracks are to come.
+
+### The Walker's feed (FM)
 
 The spec: moon-wide, the strongest after the Ledger's; a dry log of bearings, wind readings and terrain, hard
 to read but very useful, found by scanning. Its contact log records every signal it hears, indifferent to its
-flock: a nomad praying to it is a bearing.
+flock: a nomad praying to it is a bearing. As built it's an FM station from a mast on the Walker, heard only
+near it as it walks, so its feed is the trail to it.
 
-- **On the dial:** the Walker's 230–290 kHz band, whose ground wave crosses the moon, found by sweeping.
-- **The forecast** reads the storm field where the radio stands, 20 minutes ahead, every 5 s: a forecast for
-  staying put, since walking into the wind brings the storm sooner. What it says, and when: Speech.
-- **Clear Skies** (Hunter, 2026-10-18: a "'hold' transmission on the weather channel that plays during clear
-  weather with nothing to report," "a feel good you have nothing to worry about sound that only plays under
-  conditions when that is true"; "no storm for 20 minutes is basically impossible"): with no storm on you and
-  none due within `radio_calm_minutes`, it plays Hunter's "Clear Skies" (`radio_clear_skies.ogg`) and says
-  nothing; a storm coming breaks it off through static. Over six hours on three seeds the sky is clear about
-  a quarter of the time, clear 5 minutes ahead 12–13%, 20 minutes ahead 0–1%.
-- **Its log is the trail:** sent weaker, whole within 8 km and lost past 40 (`walker_log_m`), an entry each
-  `walker_log_every`: its survey, then its last `walker_contacts_kept` contacts, latest first.
+- **Its log:** an entry each `walker_log_every`, its survey, then its last `walker_contacts_kept` contacts,
+  latest first.
   - **The survey log:** its leg (km walked), heading, the steady wind at its feet, the ground under it and
     its fix: true, and the weather far off on the Rim.
   - **The contact log:** when a nomad prayed, where the Walker stood and the bearing from there to the city,
     to a degree. A nomad prays once in `city_prayer_days`; each bearing passes within about 160 m of the city.
-- **Taught** (below), it flags the nearest anomaly within `walker_flag_m` of the radio.
+- **Taught** (below), it flags the nearest anomaly within `walker_flag_m`, and the tower adds an anomaly
+  advisory.
 
 ### The Walker's quest (agreed 2026-10-19, Hunter: "perfect"; built)
 
@@ -423,9 +541,8 @@ on a radio in the dead city), its codes learned by noticing what follows them.
 - **The city** (`game/radio/city.gd`), seeded and stateless: on the far side, 105° to 160° from under Tu,
   moored `city_moored_days`, then a leg of `city_leg_m` away from Tu at `city_speed`, the storms' own pace.
   It doesn't read the storms to move, or it couldn't be pure; its chatter reads them.
-- **Its chatter,** in `city_band_khz` (1480–1520), whole within 3 km and gone past `city_heard_m`, garbled by
-  storms between, no sky wave: a motif each `city_chatter_every`, three or four reed tones (high ¯, middle -,
-  low _):
+- **Its chatter,** an FM station from the city's own mast, so line of sight sets how near you must be: a
+  motif each `city_chatter_every`, three or four reed tones (high ¯, middle -, low _):
   - **storm coming** `¯ - _`: a storm reaches it within `city_warn_s`; first, over all;
   - **city moving** `_ - ¯`: under way;
   - **tether in** `_ _ - -`: a storm on it, moored;
@@ -434,26 +551,12 @@ on a radio in the dead city), its codes learned by noticing what follows them.
     latitude) and how far the stars have turned since its midnight (its longitude), each to a degree.
   Each tells the truth: 91 slots over a day and a half, every one so at the city. Reed tones made here
   (`make_city_motifs.py`, CC0), A minor pentatonic over 440 Hz to clear the speaker's high-pass.
+- **Its music,** a second FM station beside the chatter, strings the motifs into a phrase every 1.6 s on a
+  pentatonic scale, in an order the seed and the hour pick (`Radio._reed`).
 - **Seeing it** (`CityLights`): at night within `city_heard_m`, lamps along its rafts, a turbine's red lamp at
   each hub, its shields' pale blue and its decks' glow, hidden by a storm; against the glow its rafts,
   turbines, domes and people in ink, never a face. Within `city_douse_m` its lights go out: it isn't found
   by walking up to it. Being found by it, its tether landing at camp, stays the nomad city ending.
-
-### Port Morgan Control Tower, on FM (gonkhub, 2026-10-21; built)
-
-*gonkhub: "the surveyor flyer's shortwave broadcast needs to inform the player of when its flyover will
-occur"; "Satellites should still have heavy interference/not be heard at all when they cross far below the
-horizon. Let's just give Port Morgan a Surveyor schedule announcement every 5mins on an FM channel. Port
-Morgan Control Tower can be an FM broadcast that we use for this and other worldbuilding tracks"; and
-"Remove the 'here now' announcement from the surveyor. Simply announce its update every 5 min ... For its
-flight plan announcement, it should report its current speed, altitude (fluff ...) and ETA to Port
-Morgan."*
-
-An FM station of its own on the port's mast (`Fm.TOWER`), heard by line of sight, a MHz or more off the music
-and the relay. It reads the drone's schedule in short sentences as you tune in and every
-`survey_report_every`: "Port Morgan tower. Drone. Altitude six thousand. Speed four hundred. Port Morgan, two
-minutes." Its speed over the ground is true; its altitude wanders about the true 6 km, for flavour. No music;
-its other worldbuilding tracks are to come. Hearing it is the deed Flight Plan.
 
 ### Stations agreed in lore, not built
 
@@ -495,40 +598,48 @@ just make the sentences shorter still. and probably announce less often." Decide
 sentence, and a report spoken only when it has news: a storm newly due or arriving, or its clearing. A calm
 repeat stays unspoken.
 
-- **The weather station** (the Walker's feed) reads its short report (`Radio.report`) when you tune in to
-  news and whenever its news changes, clear → storm coming → storm here → clear: "Storm coming. From the
-  north-east. Four minutes." / "Storm here. Clearing, ten minutes." / "All clear." Tuned in to calm, Clear
-  Skies plays and it says nothing. There is no timed regular report.
-- **Advisories:** a fast or a large sandstorm breaks in once per event, in short sentences ending "Take
-  shelter." (`advisory_fast_ms`, `advisory_long_minutes`, `advisory_look_minutes`, from the upper tenth of a
-  twelve-seed survey). A forecast never invents an anomaly warning.
-- **The Walker's log:** each new contact it logs is read once; survey lines aren't spoken.
-- **A god** in its window reads its words when you tune in, and again only when they change, at most once
-  per `radio_report_every`; an unchanged line is never repeated. Outside its window it reads its litany's
-  current line once as you tune in, then only its tones sound. A god's song doesn't silence its words. A
-  **beacon's** bearing works like a god's words. **The tower:** Stations.
+- **Port Morgan Tower** reads its short report (`Radio.report`) of the tower's sky when you tune in to news
+  and whenever its news changes, clear → storm coming → storm here → clear: "Storm coming. From the
+  north-east. Four minutes." / "Storm here. Clearing, ten minutes." / "All clear. Next storm, twenty
+  minutes." Tuned in to calm, Clear Skies plays and no weather is said. There is no timed report.
+- **Advisories** (`game/radio/advisories.gd`): a fast or a large sandstorm breaks in once per event, in short
+  sentences from the tower's place: "Weather advisory. Fast sandstorm. From the north. Bearing …, …
+  kilometres from the tower. In four minutes. Lasting … minutes. Take shelter." (`advisory_fast_ms`,
+  `advisory_long_minutes`, `advisory_look_minutes`, from the upper tenth of a twelve-seed survey). Once the
+  Walker's taught, an anomalous storm within `walker_flag_m` of the tower gets one too, ending "Keep clear."
+  A forecast never invents an anomaly warning.
+- **The drone's schedule:** "Drone. Altitude 30000. Speed …. Port Morgan, two minutes.", read
+  as you tune in and once for each new pass over the port.
+- **A god, and the Walker's log,** read their words when you tune in, and again only when they change, at
+  most once per `radio_report_every`; an unchanged line is never repeated. Outside its window a god reads its
+  litany's current line once as you tune in, then only its tones sound. A god's song doesn't silence its
+  words. A **beacon's** bearing works like a god's words.
 - **From the set:** each radio's reader plays from its middle, or as carried, through its knob, speaker filter
   and own interference chain. It speaks only while the signal reaches you, and reads whole: interference
   roughens the sound but never drops words. An ordinary reading waits for the one playing; an advisory breaks
-  in. Options' Radio voice stops all speech. A Console's own announcements ("Battery low.", "Battery
-  critical.") use full recordings and skip over-air interference and station voices.
+  in; a new station clears the last one's queue. Options' Radio voice stops all speech. A Console's own
+  announcements ("Battery low.", "Battery critical.") use full recordings and skip over-air interference and
+  station voices.
 - **Station voices** (Hunter: "let's get some variety in the voice we use! match the lore"): each speaking
   station has its own machine treatment of the same voice, pitch, cadence and speech-only EQ on the radio's
   own bus (`radio_voice_profiles`), not new actors: Mother Cistern warmer and slower, the Quartermaster
   clipped and commanding, the Ledger lower and measured, the Almanac brisk, the Stoker urgent and metallic,
-  the beacon its own. The weather station and the Console keep the plain voice; the Eye stays silent; the
+  the beacon its own. The tower, the Walker and the Console keep the plain voice; the Eye stays silent; the
   living city stays coded tones. Every profile stayed intelligible to speech recognition, without clipping
   (`look/radio_voices/record.tscn`).
 - **The words** (`RadioSpeech`): full recorded phrases where they exist, otherwise sentences composed from one
   QOA-compressed word bank (`assets/audio/voice/word_bank.res`, a clip per word), rendered by `make_words.py`
-  and packed by `pack_words.gd` from a hand-kept list (`assets/audio/voice/words.txt`). Numbers are exact, assembled from recorded words; an
-  unknown name is spelled out, never dropped. As built (2026-10-22): 484 entries, 3.1 MB on disk (24.4 MB as
-  the uncompressed PCM bank it replaced, 783 entries scraped from code); it loads in about 10 ms (60 ms
-  before) when a set is made, and a word's first use costs about 1 µs.
+  and packed by `pack_words.gd` from a hand-kept list (`assets/audio/voice/words.txt`). Numbers are exact,
+  assembled from recorded words; an unknown name is spelled out, never dropped. As built (2026-10-22): 484
+  entries, 3.1 MB on disk (the uncompressed PCM bank it replaced was 24.4 MB); it loads in about 10 ms when a
+  set is made, and a word's first use costs about 1 µs.
 
 ## Satellites
 
-*The satellites' names, makers and eras are gonkhub's and **loose lore until Hunter formalises them**.*
+*The satellites' names, makers and eras are gonkhub's and **loose lore until Hunter formalises them**.* So is
+his retcon (2026-10-21: "all the satellites are colonial era in age"): StarCom and Frontier Ag are colonial
+makers, babel is Port Morgan's spectrum guard still jamming unlicensed traffic, the cinder a Halloran ore tug,
+the ghost on no registry.
 
 *gonkhub, 2026-10-19: "Let's have many satellites orbiting the moon, each with different broadcasts on
 different frequency ranges." "Most broadcasts should be cosmetic ... Many ambient tracks will be tied to some
@@ -539,27 +650,28 @@ rolling back to '2 in the sky at once' rule"; then "scrap tollgate, sounder, and
 
 **The relay** (Hunter, 2026-10-18: "Tie the existing music channel to an orbiting satellite, loosely simulate
 this satellite's position in orbit and give it interference just like the other freqs based on it's
-simulated position," and "Make the satellite visible in the night sky if it's overhead"): an old colonial
-relay still plays the port's music. Hunter's fast orbit for it ("The music satellite should move faster than
-the other stars, to create a noticeable parallax effect") gave way to L1 in the bands session.
+simulated position," and "Make the satellite visible in the night sky if it's overhead"; and "The music
+satellite should move faster than the other stars, to create a noticeable parallax effect"): an old colonial
+relay. The bands session hung it at L1; the bands rebuild has it repeat Port Morgan Tower on shortwave rather
+than carry the music (Open questions).
 
 Eleven are in the sky (`ROSTER` in `game/radio/constellation.gd`): the relay at L1 and the Pendulum at L2;
-the lantern round Tu, never seen; and eight crossing the sky on orbits of their own: the drone, the ghost,
-the cinder, the sextant, the windsock, the choir, babel and the metronome. A radio with a shortwave converter
-hears each while it's up and on the air, through the storm on the way, all at once (`SkyVoices`).
+the lantern round Tu, never seen; and eight crossing the sky on orbits of their own: the drone, the
+ghost, the cinder, the sextant, the windsock, the choir, babel and the metronome. A radio with a shortwave
+converter hears each while it's up and on the air, through the storm on the way, all at once (`SkyVoices`).
 
-| Satellite | Era | Band, kHz | Looks | Orbit | Sound | Turned by |
+| Satellite | Maker | Band, kHz | Looks | Orbit | Sound | Turned by |
 |---|---|---|---|---|---|---|
-| The relay | colonial | the FM band | white point, glinting | hung at L1 beside Tu, a halo 0.9 radii across, 10 min | the port's music | a slow tumble: its glint |
-| The drone | Frontier Ag | 14200–14300 | the modelled H-shaped craft | 6 km up, 7.95 min, over Port Morgan every lap, its route swinging 37° a lap | its own | pitch by the temperature; tone by how high it stands |
+| The relay | colonial | 7250 | white point, glinting | hung at L1 beside Tu, a halo 0.9 radii across, 10 min | Port Morgan Tower, repeated | a slow tumble: its glint |
+| The drone | Frontier Ag | 14200–14300 | the modelled H-shaped craft | 30 km up, 7.95 min, over Port Morgan every lap, its route swinging 37° a lap | its own (`radio_sat_drone.ogg`) | pitch by the temperature; tone by how high it stands |
 | The Pendulum | StarCom | 10000 exactly (a time signal, as WWV's is) | cyan cross | hung at L2 over the far side's middle, on a halo | a ping, pulsed | its tick quickening toward the eclipse |
 | The lantern | StarCom | 21500–21600 | never seen | round Tu, 60 radii off, 11 min | the day song, slowed | faint; heard only on Zan's side of Tu, clearest straight between |
 | The sextant | StarCom | 29030–29050 | pale blue point | ellipse (0.35), 1.8 radii, 26.6 min | a quick double ping | pitch by how high it stands |
-| The windsock | StarCom | 29060–29080 | green ring | circle, 0.9 radii, 14.9 min | the wind | loudness and tone by the wind; grit by a storm |
-| The choir | colonial | 29090–29110 | lavender pair | circle, 1.4 radii, 21.1 min | its own | pitch sinking with the sun; tone drifting |
-| Babel | the war | 29120–29150 | red diamond, blinking | ellipse (0.2), 1.2 radii, 18.5 min | tones, chirped | pulse and pitch wandering; grit by an anomaly; jams |
-| The ghost | unknown | 3200–3500 | dim blue ring, flashing | wild ellipse (0.75), 0.75 to 11 radii, 23 min | its own | in fits, hopping its band, tumbling; loudest in a storm; lower far out |
-| The cinder | the war | 7100–7175 | large ember point | decaying: sinks 1.6 radii over 5 laps of 4.4 min, then burns back up | gonkhub's "Cinder" (`radio_sat_cinder.ogg`) | brighter, louder and higher as it sinks; spinning |
+| The windsock | StarCom | 29060–29080 | a tiny green ring (gonkhub, 2026-10-21: "much, much smaller") | circle, 0.9 radii, 14.9 min | the wind | loudness and tone by the wind; grit by a storm |
+| The choir | colonial | 29090–29110 | lavender pair | circle, 1.4 radii, 21.1 min | its own (`radio_sat_choir.ogg`) | pitch sinking with the sun; tone drifting |
+| Babel | Port Morgan's spectrum guard | 29120–29150 | red diamond, blinking | ellipse (0.2), 1.2 radii, 18.5 min | tones, chirped | pulse and pitch wandering; grit by an anomaly; jams |
+| The ghost | on no registry | 3200–3500 | dim blue ring, flashing | wild ellipse (0.75), 0.75 to 11 radii, 23 min | its own (`radio_sat_ghost.ogg`) | in fits, hopping its band, tumbling; loudest in a storm; lower far out |
+| The cinder | a Halloran ore tug | 7100–7175 | large ember point | decaying: sinks 1.6 radii over 5 laps of 4.4 min, then burns back up | gonkhub's "Cinder" (`radio_sat_cinder.ogg`) | brighter, louder and higher as it sinks; spinning |
 | The metronome | Frontier Ag | 29220–29240 | mint bar | near-polar circle, 1.0 radii, 16.1 min | gonkhub's "satellite1" (`radio_sat_metronome.ogg`, a 2 s loop) | pitch rising a little with the sun; tone by how high it stands |
 
 - **About two in the sky.** The crossing orbits differ in height, lap (by Kepler's third law), tilt and plane
@@ -574,52 +686,56 @@ hears each while it's up and on the air, through the storm on the way, all at on
 - **The irregular ones** fly ellipses by Kepler's equation (`Satellite.at`), their planes and perigees
   swinging each lap (`precess`, `apsides`), looser than a real moon's pull; their Doppler follows how fast
   each nears or draws away. **The ghost** is on the air in fits, about 30% of the time, its carrier hopping
-  every 14 to 27 s, tumbling about every 3 s. **The cinder,** a spent wartime tug, sinks over five laps
-  (`decay`), then fires, flaring six times as bright for four seconds (`Constellation.burning`), and climbs.
-  **Babel jams:** while up it sprays static round its carrier over 60 kHz (`Constellation.jamming`),
-  burying its neighbours; the five at 29 MHz sit 30 kHz apart, so their skirts overlap.
+  every 14 to 27 s, tumbling about every 3 s. **The cinder** sinks over five laps (`decay`), then fires,
+  flaring six times as bright for four seconds (`Constellation.burning`), and climbs. **Babel jams:** while
+  up it sprays static round its carrier over 60 kHz (`Constellation.jamming`), burying its neighbours; the
+  five at 29 MHz sit 30 kHz apart, so their skirts overlap.
 - **The lantern** (gonkhub, 2026-10-19: "a satellite orbiting Tu, its broadcast accessible when it is on the
   side of the planet facing Zan. Not visible though"): StarCom's Tu survey probe, on the air only on Zan's
   side of Tu and where Tu is up, at 0.6 strength, clearest straight between (the LFO source `facing`).
 - **Brighter near:** each looks as bright as the square of its nearness against its mean distance, and a
   little bigger (`Satellite.nearness`). **By day** (gonkhub, 2026-10-20: "the closest and brightest
   satellites should still be visible during the daytime"): one shows once it looks bright enough
-  (`SkyView.DAY_FROM`, `DAY_FULL`, `DAY_BOOST`): the ghost at perigee, the cinder sinking low, the drone
-  always.
+  (`SkyView.DAY_FROM`, `DAY_FULL`, `DAY_BOOST`): the ghost at perigee, the cinder sinking low, the
+  drone always.
 - **The LFOs** map a source onto a target. Sources: the temperature, the sun, night, the wind, the time to the
   eclipse, the storm, an anomaly, how high it stands in your sky, its height in its orbit, facing, a slow
-  drift. Targets: pitch, loudness, tone, grit, tremolo and pulse rate, on the satellite's own bus. The drone,
-  the Pendulum and the windsock are useful by ear; the rest flavour or gibberish. Most sounds are
-  placeholders, one line each in the roster (`sound.track`, `sound.db`).
+  drift. Targets: pitch, loudness, tone, grit, tremolo and pulse rate, on the satellite's own bus. The
+  drone, the Pendulum and the windsock are useful by ear; the rest flavour or gibberish. Most sounds
+  are placeholders, one line each in the roster (`sound.track`, `sound.db`).
 - **gonkhub's tracks** ("Cinder", "satellite1" and the tunnel ambience) are made by gonkhub for Desert, used
   with his permission ([credits](../../assets/audio/CREDITS.md)). Look-test: `look/satellites`. **Not
   yet:** gonkhub's sounds for the rest; satellites carrying spoken or encoded data.
 
 ### The drone
 
-*Hunter: "the drone for now," for Frontier Ag's crop-survey drone. gonkhub, 2026-10-19: "an extremely low
-orbiting object. Low enough that its silhouette is partially visible against its own lighting, and it's much
-larger in the night sky than the others ... moving slowly near the horizon then quickly crossing the center
-of the sky"; 2026-10-20: "make it H shaped," "a thin connecting hull attached to two sharp uprights"; "It
-looks too low to the ground when flying", then "6km is better"; "remove the surveyor's lights"; and "ship
-appearance still too flat. Needs to be modeled out fully this low to the ground, especially with how clearly
-it can be seen in the daytime." 2026-10-21: "Update its flight path to ensure it always passes over Port
-Morgan, letting its path rotate around the moon otherwise."*
+*gonkhub, 2026-10-21: "The Surveyor flying craft needs to be renamed. Change all references in docs or
+commands/code to call it deliveryship" (Hunter: "the drone for now", so it is the drone in what you hear and read; the code keeps `deliveryship`). Frontier Ag's
+craft. gonkhub, 2026-10-19: "an extremely low orbiting object. Low enough that its silhouette is partially
+visible against its own lighting, and it's much larger in the night sky than the others ... moving slowly
+near the horizon then quickly crossing the center of the sky"; 2026-10-20: "make it H shaped," "a thin
+connecting hull attached to two sharp uprights"; "remove the surveyor's lights"; "ship appearance still too
+flat. Needs to be modeled out fully this low to the ground, especially with how clearly it can be seen in
+the daytime"; and of its height, "6km is better", then 2026-10-21: "needs to be much much higher in the air";
+and "Update its flight path to ensure it always passes over Port Morgan, letting its path rotate around the
+moon otherwise."*
 
-- **Its flight:** 6 km up, a lap in 7.95 minutes; from below it crawls near the horizon (about 1.2°/s) and
-  sweeps overhead (about 4.8°/s). A run begins with it passing over the start.
+- **Its flight:** 30 km up, a lap in 7.95 minutes, about 710 m/s, crossing overhead at roughly 1.4°/s (worked
+  out, not measured). A run begins with it passing over the start. The old drone and surveyor dev commands
+  and scenario names still reach it.
 - **Its route:** a great circle through Port Morgan, flown on the moon rather than among the stars
   (`Satellite._through`), its plane swinging 37° a lap round the port so its track sweeps every place in
-  time (`Satellite.until_through`: when it's next over the port). It's above the horizon within about 17 km
+  time (`Satellite.until_through`: when it's next over the port). It's above the horizon within about 27 km
   of its track. Its care-package cannon is [Salvage's](salvage-and-ruins.md).
-- **Its model** (`CropSurveyLooks`, drawn by `CropSurvey` from `SkyView`): the H, two faceted nacelles sharp at
-  both ends, survey lenses under each keel, a fin and dome on top, tanks outboard; between them a ribbed spine
-  with trusses, four solar arrays, an uplink dish and the cannon, a drum ringed with packages, its muzzle
-  flashing as it fires. No lights of its own: by night a shadow blotting out the stars, by day a dusky H.
+- **Its model** (`DeliveryshipLooks`, drawn by `Deliveryship` from `SkyView`): the H, two faceted nacelles
+  sharp at both ends, survey lenses under each keel, a fin and dome on top, tanks outboard; between them a
+  ribbed spine with trusses, four solar arrays, an uplink dish and the cannon, a drum ringed with packages,
+  its muzzle flashing as it fires. No lights of its own: by night a shadow blotting out the stars, by day a
+  dusky H.
 - **How it's drawn:** at its true angular size inside the camera's reach, belly to Zan's centre and nose along
-  its track; `crop_survey_scale` makes it about 940 m tip to tip, 9° across overhead. An overlay
-  (`crop_survey.gdshader`) adds the sand's light on its belly, the sky's on its sides and the dust along the
-  real line of sight, crisp overhead and pale low down. Its depth against the ground is
+  its track; `deliveryship_scale` makes it about 940 m tip to tip, under 2° across overhead from 30 km. An
+  overlay (`deliveryship.gdshader`) adds the sand's light on its belly, the sky's on its sides and the dust
+  along the real line of sight, crisp overhead and pale low down. Its depth against the ground is
   [World & terrain's](world-and-terrain.md#combined-surface-sky-and-atmosphere-acceptance-2026-10-21).
 - **Its cost:** a far mesh under 260 px across (3,222 triangles) adds 0.7% to a ground-view frame's
   primitives, a near one over 320 px (13,304) 2.9%. It casts no shadow.
@@ -694,10 +810,11 @@ with distance, and a big plume marking a vent's direction to steer by. Built as 
 4. **The important things are audible:** rope load, shield power, a storm on its way.
 5. **A set is cheap to leave playing.** It reads the gods, the sky, the weather and the ground every physics
    tick on the main thread, so each lookup that changes slowly is worked out only when it changes: the dial's
-   carriers once a moon day, the Walker's log once a second, a line's distortion once a slice, the jammer once a tick, and the sky not at all on the AM dial,
-   under the ceiling. Measured 2026-10-22 on the shared dev machine under load, a tick's mean cost: on the
-   weather station 378 µs (1340 before), on a god 365 (969), on FM 138 (289), on shortwave under a
-   satellite 534. Reading the forecast, every `radio_forecast_every`, costs about 250 µs more once.
+   carriers once a moon day, the Walker's log once a second, a line's distortion once a slice, the jammer once
+   a tick, and the sky not at all on the AM dial, under the ceiling. A tick's mean cost, measured
+   2026-10-22 on the shared dev machine under load: on Port Morgan Tower 530 µs, on a far god 397, on
+   shortwave under a satellite 625 (on the weather 1340 and a god 969 before these were cached). Reading
+   the forecast, every `radio_forecast_every`, costs about 250 µs more once. Probe 76 holds it under 900 µs.
 
 ## Skeleton version
 
@@ -722,20 +839,25 @@ One real failure each, in `probes/radio/`:
 
 - **Honest stations:** forecasts match the storm field (1); beacons lead to finds (2); each god in its band
   and home, useful only in its window (6, 8, 9, 22, 24); the living city's motifs and fixes tell the truth
-  (25–28); litanies keep their shape (29).
+  (25–28); litanies keep their shape (29); each band holds its own stations (68).
 - **What you hear:** static with the storm, only when nothing plays (4, 18); storms garble and cut (7, 15,
   19); day and night music, the relay at L1 (5, 13, 17); Clear Skies and the Stoker (11, 12, 14); the Eye's
   drones (16); skirts overlap (31); the jammer and the burn (37); FM line of sight and capture (42, 48);
-  Tu's roar (50); the long wire, the rod's null and natural radio (51–54).
+  Tu's roar (50); the long wire, the rod's null and the reel (51, 52, 54).
 - **Speech:** only with news, short sentences, advisories once (14); every phrase recorded, from the set's
   own speaker (23); a god's and a beacon's words reach speech (39); station voices keep their timing (46);
-  the tower's drone schedule (47).
+  the tower's drone schedule (47); a new FM station clears the old one's words (72).
 - **The set in your hands:** volume (10), tuning and the close view (20, 21), carried in your ears (30),
-  marks kept with the run (33, 36), the survey receiver its own set (41).
-- **The sky:** satellites distinct and heard (32), about two up at once (34), the lantern and the drone (38).
+  marks and lamps (33, 36), the survey receiver's controls (41), the printed dial (74).
+- **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59–66); powered modules
+  need power (73).
+- **The kite:** it flies on the wind (55); one cable through the stake (56); unearthed it burns out (57); a
+  sandstorm shreds it (58); it follows the world's origin (69); a broken lead can't earth it (70).
+- **The sky:** satellites distinct and heard (32), about two up at once (34), the lantern and the
+  drone (38).
 - **Frame:** sets don't share effects (40); a song keeps its occurrence and catches up after a glitch (43,
-  44); a strung reel and the run's marks survive a save (55); the tick stays cheap on every band (56,
-  runs alone).
+  44); an old survey receiver keeps its tuning (71); a strung reel and the run's marks survive a save (75);
+  the tick stays cheap on every band (76, runs alone).
 
 ## Out of scope
 
@@ -743,11 +865,19 @@ One real failure each, in `probes/radio/`:
 
 ## Open questions
 
+- **The weather station: the Walker's feed, or Port Morgan Tower?** Hunter, 2026-10-18: "use the weather god
+  for the weather station," and the weather station was agreed as the Walker's feed. gonkhub's bands rebuild
+  (2026-10-21) combined it into Port Morgan Tower on FM, reporting from the tower, with the Walker an FM
+  station heard only near it; it also moved the music off the relay Hunter tied it to. Built as gonkhub's;
+  Hunter to confirm or reverse.
+- **The craft's name.** *Decided:* the drone (Hunter: "the drone for now"), heard and read so; gonkhub's
+  rename to "deliveryship" (2026-10-21) stays the code's id (`deliveryship`, `Deliveryship`) until Hunter
+  names it for good.
 - **How are broadcasts delivered?** *Answered:* sound only (gonkhub, 2026-10-19), in the bundled voice with a
   machine treatment per station, and in tones (Speech).
 - **How far does a radio reach, and how much does an antenna add?** A beacon is heard from 3 km. Under the
   ceiling a bigger antenna adds little, since the world's noise sets the floor; above it an antenna is gain
-  (the reel), and the price of gain is aim.
+  (the reel, the kite), and the price of gain is aim.
 - **Do religious broadcasts have a voice?** Left open: whether they "still have a voice or are just tones and
   numbers," and whether the Ledger still broadcasts. *Answered for the gods:* they are on the air and speak,
   by Hunter's call. Open: whether a second-age broadcast is a god's or its priests'.
@@ -767,7 +897,7 @@ One real failure each, in `probes/radio/`:
   Cistern's calls "tied to rations and rain" when it has never rained, and the Quartermaster's
   "authentication challenge nobody can answer." Not said whether these are real documents or invented ritual.
 - **The Walker's bearings against "never early."** *Answered by its route:* it starts far and stays far for
-  the first ten days or more.
+  the first ten days or more, and its FM feed is heard only near it.
 - **A plant the radio hears, and a radio that carries better in some storms** (session 4, part 4; direction):
   "with a console nearby the radio picks up faint patterns" from quietbloom
   ([Farming](farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)), and "the radio carries

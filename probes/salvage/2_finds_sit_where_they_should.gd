@@ -7,6 +7,7 @@ extends SalvageProbe
 ## it, and rests there, never through it. Over the ground round the start, a
 ## ruin's, and places a kilometre out; and any kind the sand or a site holds
 ## that none of those turned up, laid by hand.
+## Time limit: 420 s
 
 ## Your eyes look at a find from this far off, from any of these many sides.
 const EYE_OFF := 1.3

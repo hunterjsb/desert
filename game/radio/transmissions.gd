@@ -112,19 +112,16 @@ static func _quartermaster(radio: Radio, x: float, z: float) -> String:
 		roundi(radio.true_bearing(Radio.bearing(Vector2(cache.x - x, cache.z - z)))), cache.distance_to(x, z) / 1000.0]
 
 
-## The weather station: the routine forecast for where the radio is; taught,
-## an anomaly near the radio flagged after it. Under it its log, read an entry
-## at a time (`log`). What it reads aloud is shorter (Radio.report).
-static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, local: float) -> Dictionary:
-	var said := _walker_report(radio, t)
+## The Walker on FM, heard only near it as it passes (the weather went to
+## Port Morgan Tower, 2026-10-21): its log, read an entry at a time, its
+## survey where it walks and the contacts it keeps; taught, an anomaly near
+## the radio flagged after it.
+static func _walker(radio: Radio, gods: Gods, x: float, z: float, t: float, _local: float) -> Dictionary:
+	var kept := walker_log(radio.world, gods, t)
+	var text: String = kept.log
 	if radio.world.taught:
-		said.text += _flag(radio, x, z, t)
-	said.merge(walker_log(radio.world, gods, t))
-	return said
-
-
-static func _walker_report(radio: Radio, t: float) -> Dictionary:
-	return {"text": radio.weather_words(t), "useful": true, "calm": calm(radio.reading, t)}
+		text += _flag(radio, x, z, t)
+	return {"text": text, "useful": true, "contact": kept.contact}
 
 
 ## The anomaly whose heart stands nearest the radio within walker_flag_m,

@@ -17,12 +17,12 @@ func run() -> void:
 	process_priority = 100
 	player.camera.rotation_degrees.x = -58.0
 	var body := player.body
-	for name: String in ["hips", "trunk", "collar", "head"]:
+	for name: String in ["collar", "head"]:
 		var mesh := body.get_node(NodePath(name)) as MeshInstance3D
 		check(mesh.layers & player.camera.cull_mask == 0 and mesh.layers & 1 == 0
 			and mesh.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,
 			"the %s stays out of your view but retains external rendering and shadows" % name)
-	for name: String in ["hand_r", "hand_l", "foot_r", "foot_l"]:
+	for name: String in ["hips", "trunk", "hand_r", "hand_l", "foot_r", "foot_l"]:
 		var mesh := body.get_node(NodePath(name)) as MeshInstance3D
 		check(mesh.layers & player.camera.cull_mask != 0, "the %s remains visible" % name)
 	hold(["move_forward"])

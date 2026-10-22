@@ -3,7 +3,7 @@ extends Node3D
 ## Run with scripts/unseen.sh and pass the capture directory after --.
 var scene: Node3D
 var camera: Camera3D
-var craft: CropSurvey
+var craft: Deliveryship
 var ridge: MeshInstance3D
 var out := "user://drone-horizon"
 func _ready() -> void:
@@ -50,7 +50,7 @@ func run() -> void:
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	ridge.material_override = mat
 	scene.add_child(ridge)
-	craft = CropSurvey.new(Tuning.current())
+	craft = Deliveryship.new(Tuning.current())
 	scene.add_child(craft)
 	craft.place(camera.global_position, Vector3(0,.0,-1).normalized(),6000,Vector3.RIGHT,Vector3.UP)
 	craft.light(Vector3(0,1,0),Color.WHITE,Color(.3,.3,.3))

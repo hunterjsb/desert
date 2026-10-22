@@ -1,5 +1,5 @@
 extends ShieldProbe
-## Radio probe 37: the jammer and the burn. While babel, the wartime jammer,
+## Radio probe 37: the jammer and the burn. While babel, the port's colonial jammer,
 ## is overhead, it sprays static over the dial round its carrier: tuned near
 ## it the static rises and what's there is buried, coming through less clean;
 ## far along the dial there's none of it, and babel doesn't bury itself. The

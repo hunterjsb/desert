@@ -1,14 +1,16 @@
 extends Node3D
 ## Look-test: the shortwave rig set up on the sand and what static does to
 ## it. The field radio with a shortwave converter and the kite's hook; its
-## aerial lead to the earth stake's ring, the kite's line on up to the kite.
+## aerial lead to a stake's ring (the game's own stake: gonkhub, 2026-10-21,
+## "we can just use the normal stake that's already in the game"), the kite's
+## line on up to the kite.
 ## Shots:
 ##   rig_day        the whole rig by day, the kite flying
 ##   charging       dusk, charge gathering: a corona at the hook and along
 ##                  the kite's dipole, a crackle of sparks
 ##   arc            unearthed: it arcs from the hook down into the converter
 ##   burnt          after: the converter burnt out, soot, smoke, its lamps dark
-##   earthed        staked: the charge leaps the stake's spark gap to earth
+##   earthed        staked: the charge leaps from the stake's ring to earth
 ##   storm_kite     the kite in a sandstorm, half its sail gone
 ##   scripts/unseen.sh --path . --resolution 960x600 res://look/radio_kit/rig.tscn -- <out dir> [filter]
 
@@ -112,9 +114,12 @@ func _shoot(shot: String, out: String) -> void:
 	var radio_xf := Transform3D(Basis(Vector3.UP, 0.5), RADIO_AT + Vector3(0.0, LOOKS.FIELD.y * 0.5, 0.0))
 	var hook: Vector3 = radio_xf * LOOKS.HOOK_EYE
 	var port: Vector3 = radio_xf * LOOKS.SW_PORT
-	_mesh(LOOKS.earth_stake(shot == "earthed"), Transform3D(Basis.IDENTITY, STAKE_AT), 0.2)
-	var ring: Vector3 = STAKE_AT + LOOKS.STAKE_RING
-	var gap: Vector3 = STAKE_AT + LOOKS.STAKE_GAP
+	var stake := Catalog.stake()
+	props.add_child(stake)
+	stake.freeze = true
+	stake.global_position = STAKE_AT
+	var ring: Vector3 = STAKE_AT + Stake.RING
+	var gap: Vector3 = ring
 	var torn := 0.5 if shot == "storm_kite" else 0.0
 	var kite_xf := Transform3D(Basis.looking_at(-(KITE_AT - ring).normalized(), Vector3.UP) * Basis(Vector3.RIGHT, -0.5),
 		KITE_AT)
