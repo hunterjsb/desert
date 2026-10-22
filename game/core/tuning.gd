@@ -1483,6 +1483,17 @@ static func current() -> Tuning:
 @export var winch_drum_radius: float = 0.09
 @export var halyard_lower_seconds: float = 1.5
 @export var winch_hoist_deed: float = 0.95
+@export_group("Sailing learning aid")
+@export var sailing_aid_every: float = 0.25
+@export var sailing_aid_budget_us: int = 200
+@export var sailing_aid_heading_steps: int = 16
+@export var sailing_aid_sheet_steps: int = 12
+@export var sailing_aid_speed_steps: int = 6
+@export var sailing_aid_speed_ratio: float = 4.0
+@export var sailing_aid_turn_cost: float = 0.1
+@export var sailing_aid_calm_mps: float = 0.2
+@export var sailing_aid_arrive_m: float = 15.0
+@export var sailing_aid_helm_seconds: float = 2.5
 @export_group("Expedition horizons")
 ## Foot radius and summit rise, metres. Gentle broad approaches remain walkable.
 @export var starcom_mountain := Vector2(2400.0, 600.0)
