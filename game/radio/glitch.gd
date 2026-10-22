@@ -71,11 +71,11 @@ func tick(delta: float, dirt: float) -> Vector2:
 func _start() -> void:
 	var long := voice.stream.get_length() > 1.0
 	var pick := _rng.randf()
+	_anchor = voice.get_playback_position()
 	if pick < 0.35 and long:
 		kind = &"stutter"
 		_period = _rng.randf_range(0.04, 0.12)
 		_length = _period * _rng.randi_range(2, 6)
-		_anchor = voice.get_playback_position()
 	elif pick < 0.6:
 		kind = &"drop"
 		_length = _rng.randf_range(0.03, 0.18)
@@ -91,10 +91,16 @@ func _start() -> void:
 	_since = 0.0
 
 
+## Over, a stutter, jump or drag leaves it where it would have been had it
+## never stuck or slid, so its station keeps time through the glitch.
 func _end() -> void:
-	if kind == &"stutter":
-		# Caught up with where it would have been, as if it never stuck.
-		_seek(fposmod(_anchor + _length, voice.stream.get_length()))
+	var length := voice.stream.get_length()
+	if kind != &"drop" and length > 1.0:
+		var at := _anchor + _length
+		if voice.stream.get("loop") == true:
+			_seek(fposmod(at, length))
+		elif at < length:
+			_seek(at)
 	kind = &""
 
 

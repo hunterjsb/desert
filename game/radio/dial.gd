@@ -44,12 +44,7 @@ static func share(khz: float) -> float:
 ## the beacon's and the far gods'. The wrecks' calls depend on where you are
 ## (Radio.distress_calls).
 static func carriers(gods: Gods, t: float) -> Array[Array]:
-	var out: Array[Array] = [[BEACON_KHZ, &"beacon"]]
-	for id in Gods.ids():
-		if not Fm.is_god(id):
-			out.append([gods.carrier(id, t), id])
-	out.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
-	return out
+	return gods.dial_carriers(t)
 
 
 ## A home frequency that wanders inside its band from one spell to the next
@@ -60,6 +55,8 @@ static func carriers(gods: Gods, t: float) -> Array[Array]:
 ## spell's frequency as far as worked out, the caller's own for this carrier;
 ## `key` seeds it. Spells before the first are the first.
 static func walk(walked: Array, key: Array, spell: int, band: Vector2, margin: float, step: float) -> float:
+	if not walked.is_empty() and walked.size() > spell:
+		return walked[maxi(spell, 0)]
 	var low := band.x + margin
 	var high := band.y - margin
 	var rng := RandomNumberGenerator.new()

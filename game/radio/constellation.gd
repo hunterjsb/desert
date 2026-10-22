@@ -16,8 +16,10 @@ extends RefCounted
 ## back to '2 in the sky at once' rule"; radio probe 34). The relay, which
 ## carries the music, is one of them. Pure in the seed and world time.
 ##
-## Tracks are placeholders, sounds the game already has, until gonkhub's own:
-## the cinder's and the metronome's are in.
+## Their names, makers and eras are gonkhub's, loose lore until Hunter
+## formalises them. Some tracks are placeholders, sounds the game already has,
+## until gonkhub's own: the cinder's and the metronome's are in. None borrows
+## the Eye's drones, which are the Eye's alone.
 
 ## How each shows, as the sky draws it (HULK, the deliveryship, is modelled: Deliveryship).
 enum Shape { POINT, CROSS, BAR, RING, PAIR, DIAMOND, HULK }
@@ -80,7 +82,7 @@ const ROSTER := [
 		"orbit": {"altitude": 1.2566, "minutes": 7.95, "tilt": Vector2(20.0, 70.0), "backward": 0.5, "over_start": true,
 			"precess": 37.0, "through_port": true},
 		"look": {"color": Color(1.0, 0.55, 0.15), "size": 16.0, "shape": Shape.HULK, "light": 0.6, "low": true},
-		"sound": {"track": Sounds.RADIO_EYE_TUNNEL, "db": -2.0, "pulse": 0.0},
+		"sound": {"track": Sounds.RADIO_SAT_DRONE, "db": -2.0, "pulse": 0.0},
 		"lfo": [[&"temperature", &"pitch", 0.7, 1.4], [&"elevation", &"cutoff", 700.0, 7000.0]], "duty": []},
 	# StarCom's timing beacon, hung at L2 over the far side's middle, where the
 	# observatory stands: its tick quickens as the eclipse comes.
@@ -110,7 +112,7 @@ const ROSTER := [
 	{"id": &"choir", "era": "colonial", "band": Vector2(29090.0, 29110.0),
 		"orbit": {"altitude": 1.4, "minutes": 21.1, "tilt": Vector2(60.0, 80.0), "backward": 0.5, "precess": -15.0},
 		"look": {"color": Color(0.8, 0.7, 1.0), "size": 1.0, "shape": Shape.PAIR, "light": 0.3},
-		"sound": {"track": Sounds.RADIO_EYE, "db": 0.0, "pulse": 0.0},
+		"sound": {"track": Sounds.RADIO_SAT_CHOIR, "db": 0.0, "pulse": 0.0},
 		"lfo": [[&"sun", &"pitch", 0.85, 1.0], [&"drift", &"cutoff", 1200.0, 5000.0]], "duty": []},
 	# Port Morgan's spectrum guard, put up to jam unlicensed traffic off the port's
 	# channels, still jamming with nobody left to license: chirps that never mean
@@ -131,7 +133,7 @@ const ROSTER := [
 		"orbit": {"altitude": 6.0, "minutes": 23.0, "tilt": Vector2(60.0, 85.0), "backward": 0.5,
 			"eccentricity": 0.75, "precess": 110.0, "apsides": 80.0},
 		"look": {"color": Color(0.45, 0.55, 1.0), "size": 0.7, "shape": Shape.RING, "light": 0.18},
-		"sound": {"track": Sounds.RADIO_EYE_TUNNEL, "db": 0.0, "pulse": 0.0},
+		"sound": {"track": Sounds.RADIO_SAT_GHOST, "db": 0.0, "pulse": 0.0},
 		"lfo": [[&"storm", &"volume", -20.0, 0.0], [&"height", &"pitch", 0.75, 0.5]], "duty": [],
 		"behave": {"bursts": 0.3, "hop": 17.0, "tumble": [0.37, 0.8]}},
 	# A spent colonial ore tug, Halloran's, its orbit decaying: it sinks lap by lap, roaring brighter as it
@@ -205,19 +207,29 @@ func _init(seed_value: int, tuning: Tuning, start: Vector3, port := Vector3.ZERO
 
 
 static func ids() -> Array[StringName]:
-	var out: Array[StringName] = []
-	for row: Dictionary in ROSTER:
-		out.append(row.id)
-	return out
+	if _ids.is_empty():
+		for row: Dictionary in ROSTER:
+			_ids.append(row.id)
+	return _ids
 
 
 ## The satellites that broadcast a sound of their own: all but the relay.
 static func voiced() -> Array[StringName]:
-	var out: Array[StringName] = []
-	for row: Dictionary in ROSTER:
-		if not (row.sound as Dictionary).is_empty():
-			out.append(row.id)
-	return out
+	if _voiced.is_empty():
+		for row: Dictionary in ROSTER:
+			if not (row.sound as Dictionary).is_empty():
+				_voiced.append(row.id)
+	return _voiced
+
+
+## The roster's ids, and the voiced ones, as asked every tick: listed once.
+static var _ids: Array[StringName] = []
+static var _voiced: Array[StringName] = []
+
+
+## The last jamming worked out, and for what (jamming).
+var _jam_key := []
+var _jam := 0.0
 
 
 func relay() -> Satellite:
@@ -286,15 +298,28 @@ func glint(id: StringName, t: float) -> float:
 ## up and on the air, by how near its carrier the dial stands and how high
 ## it is. `except` leaves one out: a jammer doesn't bury itself.
 func jamming(khz: float, p: Vector3, t: float, except := &"") -> float:
+	# Asked twice a tick for the same dial, place and time: worked out once.
+	var key := [khz, p, t, except]
+	if key == _jam_key:
+		return _jam
+	_jam_key = key
+	_jam = _jamming(khz, p, t, except)
+	return _jam
+
+
+func _jamming(khz: float, p: Vector3, t: float, except: StringName) -> float:
 	var most := 0.0
 	for id: StringName in voiced():
 		var behave: Dictionary = rows[id].get("behave", {})
 		if id == except or not behave.has("jam") or not on_air(id, t):
 			continue
+		var jam: Array = behave.jam
+		# Far off the dial, there's no static of it to find in the sky.
+		if absf(khz - carrier(id, t)) > jam[1] * 3.0:
+			continue
 		var elevation: float = orbits[id].seen_from(p, t).elevation
 		if elevation <= 0.0:
 			continue
-		var jam: Array = behave.jam
 		var up := smoothstep(0.0, deg_to_rad(10.0), elevation)
 		most = maxf(most, jam[0] * up * Dial.pull(khz - carrier(id, t), jam[1]))
 	return most

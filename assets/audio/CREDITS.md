@@ -50,9 +50,12 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | radio_clear_skies.ogg | the weather station's hold music, "Clear Skies", while there's nothing to report | Hunter's `A-Mx-ClearSkies.wav`, mono, levelled to the music, 50 ms fades for a seamless loop | Hunter's own | about the music's, peak-limited | -6 |
 | radio_stoker.ogg | the Stoker's furnace song on its frequency | Hunter's `modsynthpatch.wav` from 11:15 to 12:00, mono, peaks at the clear-skies song's (louder than the music, by Hunter's ear), 50 ms fades | Hunter's own | about -18 at 3 m | -6 |
 | radio_eye.ogg | the Eye's drone, now and then on its frequency | Hunter's `A-Mx-Drone.wav`, mono, levelled to the music, 0.5 s fades | Hunter's own | -28 at 3 m | -9 |
-| radio_sat_cinder.ogg | the cinder satellite's broadcast, looping | gonkhub's `A-amb-Cinder.wav` ("Cinder"), mono, its 4 s of silence before it trimmed, its end crossfaded into its start over 3 s for a seamless loop, levelled to `radio_eye.ogg` (its loud spells' RMS) | gonkhub's own | -28 at 3 m | -15 |
-| radio_sat_metronome.ogg | the metronome satellite's broadcast, a 2 s loop | gonkhub's `A-mx-satellite1.wav`, mono, as it loops, levelled to `radio_eye.ogg` by its RMS | gonkhub's own | -28 at 3 m | -17 |
-| radio_eye_tunnel.ogg | the Eye's other drone, played in place of the first when the seed picks it | gonkhub's `A-amb-tunnel.wav`, mono, levelled to `radio_eye.ogg` (its loud spells' RMS), 0.5 s fades | gonkhub's own | -28 at 3 m | -19 |
+| radio_sat_cinder.ogg | the cinder satellite's broadcast, looping | gonkhub's `A-amb-Cinder.wav` ("Cinder"), mono, its 4 s of silence before it trimmed, its end crossfaded into its start over 3 s for a seamless loop, levelled to `radio_eye.ogg` (its loud spells' RMS) | made by gonkhub for Desert, used with his permission | -28 at 3 m | -15 |
+| radio_sat_metronome.ogg | the metronome satellite's broadcast, a 2 s loop | gonkhub's `A-mx-satellite1.wav`, mono, as it loops, levelled to `radio_eye.ogg` by its RMS | made by gonkhub for Desert, used with his permission | -28 at 3 m | -17 |
+| radio_eye_tunnel.ogg | the Eye's other drone, played in place of the first when the seed picks it | gonkhub's `A-amb-tunnel.wav`, mono, levelled to `radio_eye.ogg` (its loud spells' RMS), 0.5 s fades | made by gonkhub for Desert, used with his permission | -28 at 3 m | -19 |
+| radio_sat_drone.ogg | the deliveryship satellite's broadcast, a 12 s loop: two turbines beating over the rush of air | made here: `scripts/make_satellite_sounds.py` (numpy and ffmpeg), its seam a 2 s crossfade | CC0 | -28 LUFS | -15 |
+| radio_sat_choir.ogg | the choir satellite's colony hymn, a 16 s loop swelling between two chords | made here: `scripts/make_satellite_sounds.py` | CC0 | -28 LUFS | -17 |
+| radio_sat_ghost.ogg | the ghost satellite's broadcast, a 10 s loop: a wandering whistle through swept hiss | made here: `scripts/make_satellite_sounds.py` | CC0 | -28 LUFS | -13 |
 | menu_move/confirm/back.ogg | the menus | Kenney Interface `click_002`, `select_002`, `back_002` | CC0 | -49, -40, -43 | -21, -16, -19 |
 | menu_theme.ogg | the main menu's theme, "Salt" | Hunter's `A-Mx-salt.wav`, stereo, levelled to about -20 dBFS, 20 ms fades for a seamless loop | Hunter's own | about -20 LUFS, on the UI bus | -5 |
 | boom.ogg | a vent's burst or a gas pocket's blowout, from far off; softly under the Surveyor's hull impact | made here: a short thump of air over a falling 42 Hz drop, then the blast rolling back duller nine times and a long low tail | CC0 | -18.5 (its loudest 400 ms); played by distance, -2 dB at a kilometre, 6 dB less each doubling, never over 0 dB, and low-passed | -6 |
@@ -164,10 +167,11 @@ Original mono sounds generated for Desert by `scripts/make_receiver_sounds.py`
 | receiver_tick.wav | the field receiver tuning detent | -35.3 LUFS | -9.1 dBTP |
 | receiver_pulse.wav | the directional field receiver contact pulse | -33.9 LUFS | -19.6 dBTP |
 
-`voice/word_bank.wav` extends that same public-domain LJ Speech voice with
-bundled words and common fragments for exact dynamic radio readouts. It uses
-the same model, trimming and levels (`voice/make_words.py`); `VoiceWords` keeps
-the sample ranges. Generation tools and voice weights remain offline.
+`voice/word_bank.res` extends that same public-domain LJ Speech voice with
+the words and fragments in `voice/words.txt` for exact dynamic radio readouts,
+each its own QOA-compressed clip. It uses the same model, trimming and levels
+(`voice/make_words.py`, packed by `voice/pack_words.gd`). Generation tools and
+voice weights remain offline.
 
 The speaking stations also reuse this LJ Speech source. Their individual machine
 voices are runtime pitch, cadence and EQ treatments of those same recordings;

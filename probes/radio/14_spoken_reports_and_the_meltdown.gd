@@ -3,13 +3,12 @@ extends ShieldProbe
 ## plays by itself: its frequency carries only its talk and tones until a
 ## meltdown (the dev console's, for now) calls it up, when it plays through
 ## once from its start and stops; called up again while it plays, it starts
-## over. Port Morgan Tower, heard on shortwave through the relay on a wire,
-## reports aloud the moment you tune in, Clear Skies or not, and every
-## radio_report_every s after: the local time, the wind and the temperature
-## at the tower, read from the world, then
-## its outlook, units in words, every word and number of it, through a dirty
-## signal too; and your ears hear it. A fast storm breaks in at once with an
-## advisory, out of turn, read over whatever was being read, and only once.
+## over. The weather station speaks only with news (Hunter, 2026-10-19:
+## "probably announce less often"): tuned in to calm, Clear Skies plays and it
+## says nothing, however long the calm holds; a storm that comes and lasts
+## breaks in with an advisory, read whole through the dirty signal, then
+## nothing while its news holds; its clearing is a short report your ears
+## hear; and a fast storm's advisory comes once.
 
 
 func run() -> void:
@@ -59,75 +58,75 @@ func run() -> void:
 	await physics_frames(5)
 	check(radio.on_air() == null and gods.stoker_song(world.time + 600.0, length) < 0.0, "then it stops, and stays stopped")
 
-	# Count weather reports after the Stoker's own transmissions.
-	var earlier := radio.spoken_count
+	# Port Morgan Tower, after the Stoker's own transmissions. Its schedule of the
+	# deliveryship is news of its own, so only its weather lines are counted.
 	world.time = 0.0
 	radio.channel = Radio.WEATHER
 	var broadcast := world.player.get_node(^"Broadcast") as Broadcast
-	await _heard(radio, earlier + 1)
-	var tower := radio.tower_at()
-	var heat := roundi(world.weather.field_temperature(Vector3(world.engine_x(tower.x), world.height_at(tower.x, tower.y),
-		world.engine_z(tower.y)), radio.spoken_at))
-	var local := world.weather.day.time_of_day(radio.spoken_at, Sphere.longitude(radio.point_at(tower.x, tower.y)))
-	var minutes := roundi(local * 24.0 * 60.0) % (24 * 60)
-	print("tuned in: \"%s\"; you hear \"%s\"" % [" ".join(radio.spoken), broadcast.reading])
-	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and radio.spoken_count == earlier + 1, "tuned in, it reports at once, Clear Skies or not")
-	check(" ".join(radio.spoken).contains("Local time %d:%02d" % [minutes / 60, minutes % 60])
-		and " ".join(radio.spoken).contains("Temperature %s degrees" % (str(heat) if heat >= 0 else "minus %d" % -heat))
-		and (" ".join(radio.spoken).contains("Wind") or " ".join(radio.spoken).contains("Calm")),
-		"the local time, the temperature and the wind at the tower, read from the world, units in words")
-	check(not " ".join(radio.spoken).contains("..."), "every word of it")
-	check(broadcast.reading == " ".join(radio.spoken) and not radio.spoken_urgent, "and your ears hear it, in its turn")
-	var first := radio.spoken_at
-	world.time = first + tuning.radio_report_every * 0.5
-	await physics_frames(5)
-	check(radio.spoken_count == earlier + 1, "not again before %d s" % roundi(tuning.radio_report_every))
-	world.time = first + tuning.radio_report_every + 1.0
-	await _heard(radio, earlier + 2)
-	check(radio.spoken_count == earlier + 2, "and again after")
+	var said := await _weather_over(radio, 10)
+	check(radio.on_air() == Sounds.RADIO_CLEAR_SKIES and said.is_empty(),
+		"tuned in to calm, Clear Skies plays and it gives no weather report")
+	for k in 3:
+		world.time += tuning.radio_report_every
+		radio.read_at = -INF
+		said.append_array(await _weather_over(radio, 3))
+	check(said.is_empty(), "however long the calm holds: no timed report")
 
 	# A storm the same everywhere never ends: large, so an advisory at once,
-	# read whole through the dirty signal; then the report in its turn, whole.
+	# read whole through the dirty signal; then nothing while it holds.
 	weather_everywhere(0.3)
 	radio.read_at = -INF
-	await _heard(radio, earlier + 3)
-	print("a thin storm that never ends (dirt %.2f): \"%s\"" % [radio.dirt, " ".join(radio.spoken)])
-	check(radio.spoken_urgent and " ".join(radio.spoken).contains("large") and not " ".join(radio.spoken).contains("..."),
+	said = await _weather_over(radio, 900, true)
+	print("a thin storm that never ends (dirt %.2f): %s" % [radio.dirt, said])
+	check(said.size() == 1 and radio.spoken_urgent and not said[0].contains("..."),
 		"a storm that lasts and lasts: an advisory, read whole")
-	world.time = radio.spoken_at + tuning.radio_report_every + 1.0
-	await _heard(radio, earlier + 4)
-	print("its report: \"%s\"" % " ".join(radio.spoken))
-	check(radio.dirt > 0.3 and not radio.spoken_urgent and " ".join(radio.spoken).contains("Temperature")
-		and " ".join(radio.spoken).contains("In a storm") and not " ".join(radio.spoken).contains("..."),
-		"through a dirty signal, the report still read whole")
+	said = []
+	for k in 3:
+		world.time += tuning.radio_report_every
+		radio.read_at = -INF
+		said.append_array(await _weather_over(radio, 3))
+	check(said.is_empty(), "while its news holds, nothing more")
 
-	# Out of it, then a fast storm: an advisory at once, out of turn, and once.
+	# Its clearing is news: a short report, heard.
 	weather_everywhere(0.0)
 	radio.read_at = -INF
-	await physics_frames(3)
-	var before := radio.spoken_count
-	weather_everywhere(0.3, tuning.advisory_fast_ms + 1.5)
-	radio.read_at = -INF
-	await _heard(radio, before + 1)
+	said = await _weather_over(radio, 900, true)
+	var longest := 0
+	for sentence in " ".join(said).split(".", false):
+		longest = maxi(longest, sentence.split(" ", false).size())
 	for i in 3:
 		await get_tree().process_frame
-	print("a fast storm: \"%s\"" % " ".join(radio.spoken))
-	check(radio.spoken_count == before + 1 and radio.spoken_urgent and " ".join(radio.spoken).begins_with("Weather advisory.")
-		and " ".join(radio.spoken).contains("fast"), "a fast storm breaks in with an advisory at once, out of turn")
-	check(broadcast.reading == " ".join(radio.spoken), "and your ears hear it over what was being read")
+	print("cleared: %s; you hear \"%s\"" % [said, broadcast.reading])
+	check(said.size() == 1 and not radio.spoken_urgent and longest <= 5, "its clearing is news, in short sentences")
+	check(broadcast.reading == said[-1] if not said.is_empty() else false, "and your ears hear it")
+
+	# A fast storm: an advisory at once, and once.
+	weather_everywhere(0.3, tuning.advisory_fast_ms + 1.5)
+	radio.read_at = -INF
+	said = await _weather_over(radio, 900, true)
+	print("a fast storm: %s" % [said])
+	check(said.size() == 1 and radio.spoken_urgent, "a fast storm breaks in with an advisory at once")
+	said = []
 	for k in 4:
 		radio.read_at = -INF
 		world.time += tuning.radio_forecast_every
-		await physics_frames(3)
-	check(radio.spoken_count == before + 1, "warned of once, not again while it lasts")
+		said.append_array(await _weather_over(radio, 3))
+	check(said.is_empty(), "warned of once, not again while it lasts")
 
 
-## Ticks until the radio has read its `count`th report aloud, or a while.
-func _heard(radio: Radio, count: int) -> void:
-	for i in 600:
+## The weather lines it reads aloud over `frames` physics frames, its
+## deliveryship schedule left out; with `first`, only until the first.
+func _weather_over(radio: Radio, frames: int, first := false) -> Array[String]:
+	var out: Array[String] = []
+	var count := radio.spoken_count
+	for i in frames:
 		await get_tree().physics_frame
-		if radio.spoken_count >= count:
-			break
-	# The voice is the view's: it hears the radio on a drawn frame, not a tick.
-	for i in 3:
-		await get_tree().process_frame
+		if radio.spoken_count == count:
+			continue
+		count = radio.spoken_count
+		var line := " ".join(radio.spoken)
+		if line != Radio.spoken_words(radio.survey_words(radio.spoken_at)):
+			out.append(line)
+			if first:
+				break
+	return out

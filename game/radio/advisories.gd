@@ -74,13 +74,14 @@ static func _sandstorm(radio: Radio, reading: Dictionary, x: float, z: float, t:
 	var large := lasts >= tuning.advisory_long_minutes * 60.0
 	if not fast and not large:
 		return {}
-	var what := "a fast and large sandstorm" if fast and large else ("a fast sandstorm" if fast else "a large sandstorm")
-	var when := "on you now" if reading.stormy else "in %s" % Radio.span(comes - t)
-	var long := "lasting more than %d minutes" % roundi(tuning.advisory_look_minutes) if lasts == INF \
-		else "lasting %d minutes" % roundi(lasts / 60.0)
+	var what := "Fast and large sandstorm" if fast and large else ("Fast sandstorm" if fast else "Large sandstorm")
+	var when := "On you now" if reading.stormy else "In %s" % Radio.span(comes - t)
+	var long := "Lasting more than %d minutes" % roundi(tuning.advisory_look_minutes) if lasts == INF \
+		else "Lasting %d minutes" % roundi(lasts / 60.0)
 	# Its front, riding the wind toward the tower: as far off as it'll come in.
-	var where := "over the tower" if reading.stormy else from_tower(reading.from, speed * (comes - t))
+	var off := from_tower(reading.from, speed * (comes - t))
+	var where := "Over the tower" if reading.stormy else off[0].to_upper() + off.substr(1)
+	# Short sentences, as every report is (Hunter, 2026-10-19).
 	return {"kind": &"sandstorm", "at": NOW if reading.stormy else comes,
-		"words": "Weather advisory. %s from the %s, %s, %s, %s%s. Take shelter." % [
-			what[0].to_upper() + what.substr(1), radio.say_point(reading.from), where, when,
-			"moving %d metres a second, " % roundi(speed) if speed >= 1.0 else "", long]}
+		"words": "Weather advisory. %s. From the %s. %s. %s. %s. Take shelter." % [what, radio.say_point(reading.from),
+			where, when, long]}
