@@ -91,7 +91,7 @@ func operate(by: Player, action: StringName) -> bool:
 			return hands.refuse("maintenance burn in progress")
 		var fuel := hands.held
 		if not is_instance_valid(fuel) or fuel.get_meta(&"catalog", &"") != &"coalcane_bundle":
-			return hands.refuse("feed a preserved coalcane bundle")
+			return hands.refuse("feed a coalcane bundle")
 		hands.stow()
 		world.stoker_state["fed"] = world.stoker_state.get("fed", 0) + 1
 		world.stoker_state["until"] = world.time + world.tuning.stoker_burn_s

@@ -1608,3 +1608,11 @@ static func current() -> Tuning:
 @export var posture_camera_seconds: float = 0.22
 @export var posture_sit_catch: float = 0.6
 @export var posture_prone_catch: float = 0.25
+
+
+@export_group("Coalcane")
+## One shared crop row, read by Plant, the feral layer and crop advisories.
+@export var coalcane_crop: Dictionary = {}
+@export var burner_w: float = 45.0
+@export var burner_stalk_seconds: float = 120.0
+@export var coalcane_bundle_stalks: int = 6

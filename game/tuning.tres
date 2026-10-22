@@ -469,3 +469,13 @@ posture_crawl_speed = 0.55
 posture_camera_seconds = 0.22
 posture_sit_catch = 0.6
 posture_prone_catch = 0.25
+
+coalcane_crop = {
+"family": &"day", "light": &"sun", "lit": Vector2(0.25, 0.6), "minutes": 7.0, "litres": 1.5,
+"yields": [[&"coalcane_bundle", 1]], "wind": Vector2(20, 40), "particles": Vector2(0.7, 1),
+"heat": Vector2(55, 70), "cold": Vector2(-5, -20), "radiation": Vector2(1, 1),
+"propagule": &"cutting", "stages": {"regrows": 0.25}
+}
+burner_w = 45.0
+burner_stalk_seconds = 120.0
+coalcane_bundle_stalks = 6

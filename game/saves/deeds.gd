@@ -93,6 +93,8 @@ const TABLE := {
 	&"power": {"name": "Power Trip", "asks": "Make %s W in one system", "family": &"camp", "after": [&"deck_home"],
 		"icon": &"turbine", "goal": "deed_power_w", "unit": "W", "step": 10.0},
 	&"crop": {"name": "Green Thumb", "asks": "Grow a crop", "family": &"farm", "icon": &"crop"},
+	&"coalcane_power": {"name": "Night Harvest", "asks": "Burn coalcane to power your camp", "family": &"farm",
+		"after": [&"crop"], "icon": &"burner"},
 	&"crops": {"name": "Crop Rotation", "asks": "Grow %s kinds of crop", "family": &"farm", "after": [&"crop"],
 		"icon": &"planter", "goal": "deed_crop_kinds", "parts": true, "unit": "kinds"},
 	&"planters_towed": {"name": "Meals on Wheels", "asks": "Have %s planters in tow at once", "family": &"farm",

@@ -362,6 +362,12 @@ func production_w(t := NAN) -> float:
 	return watts
 
 
+## Energy actually supplied this tick; finite sources consume their store here,
+## never when the Console merely asks for a watts reading.
+func generate_wh(seconds: float, t: float) -> float:
+	return production_w(t) * seconds / 3600.0
+
+
 ## What it would draw, W, if it had the power, now or at world time t: some
 ## devices draw by the weather they hold back, and parts that compute draw
 ## while they run.
