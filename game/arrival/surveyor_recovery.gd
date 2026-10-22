@@ -289,8 +289,26 @@ static func land_preflight(world: World, state: Dictionary) -> Dictionary:
 	# The impact frees fittings across the occupant's route, not their saved identities.
 	for entry: Dictionary in state.equipment:
 		var body := objects.get(StringName(entry.uid)) as RigidBody3D
-		if entry.survives and is_instance_valid(body) and route.intersects(PreflightCargo.bounds_in(body, pose)):
-			_unseat(body)
+		if not entry.survives or not is_instance_valid(body):
+			continue
+		if route.intersects(PreflightCargo.bounds_in(body, pose)):
+			var fitting := _pod_attachment(body, deck)
+			if fitting != null:
+				_unseat(fitting)
+		if not body.has_meta(&"line"):
+			continue
+		var line := body.get_meta(&"line") as Line
+		if not is_instance_valid(line) or line.state != Line.State.LAID:
+			continue
+		for i in line.ends.size():
+			var end := line.ends[i]
+			if not route.intersects(PreflightCargo.bounds_in(end, pose)):
+				continue
+			var fitting := _pod_attachment(end, deck)
+			if fitting != null:
+				_unseat(fitting)
+				if end != body and end.socket == null:
+					loose_ends[PreflightCargo.end_key(entry.uid, i)] = end
 	var gap := float(rules.get("spill_gap_m", 0.18))
 	var clearance := float(rules.get("landing_clearance_m", 0.04))
 	var reserved: Array[AABB] = []
@@ -362,3 +380,18 @@ static func _recovery_route(world: World) -> AABB:
 	var hatch := -Chassis.WIDTH * 0.5 - Chassis.THICK - radius
 	return AABB(Vector3(hatch, seat.y, seat.z - radius),
 		Vector3(seat.x + radius - hatch, world.player.posture.height(&"prone") + margin, radius * 2.0))
+
+
+## Break the assembly's pod fitting, retaining its own batteries and other internals.
+static func _pod_attachment(body: RigidBody3D, deck: Chassis) -> RigidBody3D:
+	var member := body
+	while is_instance_valid(member):
+		var parent: RigidBody3D
+		if member is Part and member.socket != null:
+			parent = member.socket.get_parent() as RigidBody3D
+		elif member is Device:
+			parent = member.host()
+		if parent == deck:
+			return member
+		member = parent
+	return null

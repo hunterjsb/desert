@@ -31,3 +31,9 @@ both failures. With the actual escape route reserved during scatter, the same
 through the original open hatch, then stands through the normal posture check.
 This checks physical escape, not just input/camera flags. The new check runs on
 native platforms as well as Linux.
+
+Keep nested fittings intact: when an assembly obstructs the escape route, release
+its pod attachment once, not its internal battery or modules. Check both physical
+ends of a laid rope and place any independently released secondary end through
+the existing loose-end path. Already materialized recovery saves are not replayed
+or rearranged; this clearance repair applies when an impact is materialized.
