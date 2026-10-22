@@ -621,7 +621,7 @@ a ground radar fitted to a Console, a sand scoop and a sieve, all on one deck.
   (`sites.newly_exposed`), solid once it's out. Under it the nearest five, each its name, how far and which
   way, and a row under that: the sand over it, "bared" or "dug out".
 - **The chart, and the Walker** (built 2026-10-19, the Walker's quest in
-  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-agreed-2026-10-19-hunter-perfect-built)):
   a Console with a radio in its system tuned to the Walker notes each contact its log reads whole, and
   its bearings show on the Map (its navigation filter) once it has noted one: the moon round it north
   up, each bearing a line, three crossing a fix. It keeps evidence of each anomaly tell its system

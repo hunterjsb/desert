@@ -2,7 +2,8 @@ extends ShieldProbe
 ## Radio probe 13: the relay hangs beside Tu. It's at Zan and Tu's L1, so from
 ## where a run begins it stands a few degrees off Tu all day and never sets,
 ## looping slowly round its point. On shortwave it repeats Port Morgan Tower,
-## so a radio far from the port hears the weather there on a wire. At night, sunlit, it shows
+## so a radio far from the port hears the weather there on a wire; on FM it
+## sends the port's music down, as Hunter tied it. At night, sunlit, it shows
 ## in the sky. From the far side, where Tu never shows, it never does either.
 
 ## The clock is read this often, s.
@@ -13,7 +14,7 @@ const BESIDE := 15.0
 
 func run() -> void:
 	await load_storm(0.0)
-	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter"], [0.0, 2.0]) as Radio
+	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter", &"fm_converter"], [0.0, 2.0]) as Radio
 	radio.freeze = true
 	await physics_frames(3)
 	var x := world.world_x(radio.global_position.x)
@@ -43,6 +44,13 @@ func run() -> void:
 	print("on shortwave at %.0f kHz: \"%s\"" % [radio.frequency, radio.said])
 	check(radio.tuned_to() == &"relay" and radio.said.contains("Port Morgan Tower"),
 		"on shortwave it repeats Port Morgan Tower")
+	while radio.band != Radio.FM_BAND and radio.switch_band():
+		pass
+	radio.fm_mhz = radio.fm_of(Fm.RELAY)
+	await physics_frames(10)
+	print("on FM at %.1f MHz: %s, on air %s" % [radio.fm_mhz, radio.tuned_to(), radio.on_air()])
+	check(radio.tuned_to() == Fm.RELAY and radio.channel == Radio.MUSIC and radio.on_air() != null,
+		"on FM it sends the port's music down")
 
 	var day := world.weather.day
 	world.time = _first(0.0, func(u: float) -> bool:
