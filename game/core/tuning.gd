@@ -92,6 +92,8 @@ static var _current: Tuning
 ## Ground made against the wind under one sail, m, through its tacks: a
 ## keeled yacht's half a day close-hauled, a camp on skates' most of one.
 @export var deed_upwind_m: float = 500.0
+## Real board travel while a loaded kite does work on its rider, m.
+@export var deed_kite_m: float = 100.0
 ## Sailed in one sitting at a keeled camp's helm, m: half a day on its reaches.
 @export var deed_yacht_m: float = 5000.0
 ## Sailed on a front's outflow ahead of its wall, m, without leaving it: a
