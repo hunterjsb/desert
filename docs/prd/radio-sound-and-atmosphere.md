@@ -447,6 +447,18 @@ now in `tuning.tres` (`kite_*`).
 
 ### The survey receiver (agreed and built 2026-10-20)
 
+**Acquisition decision, 2026-10-22 (SANDGAME, delegated by Hunter).** Hunter's
+Spaceport direction is "we should make it obt and und". Add the existing receiver
+to physical Surveyor ship stores, retaining optional cargo risk, and to ordinary
+nomad/wreck loot as a replacement. Existing wrecks, lifeboats and nomad rigs with
+real unclaimed loot may carry the same 530 kHz loot beacon as house ruins. Add
+missing crystal sets, maker variants and antenna/band gear to plausible existing
+loot tables; do not create a cache around the landing or move the landing to gear.
+Audit seeds 1234, 1 and 2 within 4 km; the expedition objective remains 1–2 km.
+Report remaining gaps before promising guaranteed placements. Existing readouts
+and short hints explain uses and limits, with explicit LIVE / LAST KNOWN Home
+labels on the Console Map. No new tier, signal service, asset or Home range.
+
 An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
 bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,
 mounting, carrying, tuning, fine tuning and volume, with its draw, reach, a band `receiver_band_khz` either

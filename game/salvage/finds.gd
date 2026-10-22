@@ -196,23 +196,31 @@ static func on_way(sites: Sites, x: float, z: float, scatter: float) -> bool:
 	return false
 
 
-## What the nearest beacon within reach of a world place points at: the
-## device in a house ruin's hall, which every one holds whatever the weather,
-## in one of the ruins the seed left a beacon running in, passing over any
-## whose hall `taken(site id, socket)` says is yours already; picked through
-## the site index. {x, z, coord, index, site} in world metres, or {} if none
-## is in reach.
+## A surviving loot beacon points at a real unclaimed socket. Houses keep
+## their hall target; wrecks and nomad rigs can advertise their own stores.
 static func beacon(_run_seed: int, sites: Sites, x: float, z: float, tuning: Tuning, taken: Callable, reach_m := -1.0) -> Dictionary:
 	var size := float(tuning.chunk_size)
 	var reach := tuning.radio_reach_m if reach_m < 0.0 else reach_m
-	var ruin := sites.nearest(x, z, reach, func(site: Site) -> bool:
-		return site is Ruin and SiteLoot._stream(site.loot, BEACON).randf() < tuning.beacon_share \
-			and not taken.call(site.id, 0)) as Ruin
-	if ruin == null:
+	var found := sites.nearest(x, z, reach, func(site: Site) -> bool:
+		return site is Structure and (site is Ruin or site.kind in Distress.KINDS) \
+			and SiteLoot._stream(site.loot, BEACON).randf() < tuning.beacon_share \
+			and _beacon_socket(site, taken) >= 0) as Structure
+	if found == null:
 		return {}
-	var at := ruin.to_world(Ruin.SPOTS[0])
-	return {"x": at.x, "z": at.y, "coord": Vector2i(floori(ruin.center.x / size), floori(ruin.center.y / size)),
-		"index": 0, "site": ruin.id}
+	var index := _beacon_socket(found, taken)
+	var socket: StructureKit.SiteSocket = found.piece.sockets[index]
+	var at := found.to_world(Vector2(socket.at.x, socket.at.z))
+	return {"x": at.x, "z": at.y, "coord": Vector2i(floori(found.x / size), floori(found.z / size)),
+		"index": index, "site": found.id}
+
+
+static func _beacon_socket(site: Structure, taken: Callable) -> int:
+	if site is Ruin:
+		return -1 if taken.call(site.id, 0) else 0
+	for i in site.piece.sockets.size():
+		if not taken.call(site.id, i) and not SiteLoot.draw(site, i).is_empty():
+			return i
+	return -1
 
 
 ## Where a find lies and which way, then its layer and whether it's a

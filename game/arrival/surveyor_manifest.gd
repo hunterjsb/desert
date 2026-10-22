@@ -36,6 +36,7 @@ const EQUIPMENT := [
 	[&"tray_a", &"hover_tray", false],
 	[&"tray_b", &"hover_tray", false],
 	[&"hook", &"hook", false],
+	[&"receiver", &"survey_receiver", false],
 ]
 
 
