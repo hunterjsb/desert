@@ -58,7 +58,7 @@ remaining effect rather than replaying an impact event.
 
 The existing `surveyor_arrival` tuning dictionary supplies a 0.42 s recoil,
 0.035 m maximum offset, 1.3 degree maximum pitch, 1.15 s dust clearance and 0.65
-entry edge heat. Arrival28 passes (3 s): movement stays within those bounds,
+entry edge heat. Arrival37 passes (3 s): movement stays within those bounds,
 saved impact sampling is identical, and later restore/recovery has no fresh jolt.
 
 The isolated unseen GPU fixture uses the real shell with its hatch open, pending
@@ -306,7 +306,7 @@ serves legacy flight without spawning bodies or supplies. The orbital controller
 owns placement and camera continuity; the geometry helper never moves equipment.
 
 The viewing panel is implemented in the isolated first-person geometry branch.
-Arrival29 passes (9 s): complete twelve-role pod, unchanged mass/collision shape
+Arrival38 passes (9 s): complete twelve-role pod, unchanged mass/collision shape
 count, genuine opening through the opaque mesh, idempotent skin update, mesh-only
 actual/legacy interiors, ordinary detach, real disk save/resume, and rejoining the
 same saved window. Existing dismantled-pod8 and reroot-save12 pass (9/10 s).
@@ -481,3 +481,11 @@ was inspected: the original shield/cell strips remain at the same lower edges,
 with shield3/cell2/water2 source meshes retained. This corrects the previous
 shell-only render copy; no shader, script or resource errors occurred in the
 accepted capture. No physical items or new cargo behavior were added.
+
+The corrected integration uses the project font on the physical bay sign. The
+focus-clearance check measures0.579m to the actual console and verifies that the
+camera near plane remains outside it and faces the screen. It replaces a fixed
+minimum tied to the earlier zoom distance. Both reported CI failures are covered
+by focused Arrival15 and the shared-theme check. Newly added checks are numbered
+after current master; the impact/aperture development checks become37/38 with
+their original UIDs retained.
