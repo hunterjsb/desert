@@ -402,6 +402,12 @@ func wear(share: float) -> void:
 			ChargeLight.paint(charge_light, 0.0)
 
 
+## An appearance may adapt the generated lineage without replacing imported art.
+func apply_frame_look(mesh: ArrayMesh) -> void:
+	if frame_view != null:
+		frame_view.mesh = mesh
+
+
 ## What of it wears its paint: its frame and what turns on its mast.
 func painted() -> Array[MeshInstance3D]:
 	return [frame_view, rotor]
