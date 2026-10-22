@@ -1,4 +1,4 @@
-## 0.3.1-alpha “Sanddune” — development, unreleased
+## 0.3.1-alpha “Leeward Sanddune” — development, unreleased
 
 - Compare your heading and sail trim with an ideal on the Console Map's Nav layer.
   A sheet tied to a hand winch can be trimmed by the powered Console; a supported,
