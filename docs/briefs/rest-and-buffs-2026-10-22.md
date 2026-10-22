@@ -1,9 +1,9 @@
 # Rest, food and drink: prepare to explore
 
-*Concept for Hunter, 2026-10-22. Everything proposed below needs approval; no build
-or release assignment. Baseline: `8b0e305b`. [Survival](../prd/survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
-owns Hunter's decision: stamina buffs for certain, health only maybe; farming is
-not promised. 0.4 versus after Spaceport remains his call.*
+*Concept for Hunter, 2026-10-22, baseline `8b0e305b`. **Approved for 0.4 the same day**
+(“1. 0.4 2. deliberate 3. stamina only 4. yes”): deliberate use and stamina only.
+[Survival](../prd/survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
+owns the decision. The values below are tuning starting points.*
 
 **The moment:** a storm pins you under shelter. The radio plays, the condenser
 fills a canister, you sit and eat something you found. When the weather breaks,

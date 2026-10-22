@@ -11,7 +11,13 @@ Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, 
 >
 > so this raises what is the p&a? we will revisit it after the spaceport release.
 
-**Current direction, not built by this decision:** hunger and thirst are not surfaced
+**Approved for 0.4, 2026-10-22.** Hunter, on the [rest and buffs concept](../briefs/rest-and-buffs-2026-10-22.md):
+
+> 1. 0.4 2. deliberate 3. stamina only 4. yes
+
+So the concept's three buffs (Rested, Fed, Hydrated) ship in 0.4. You eat and drink deliberately, with no auto-top-up. The buffs touch stamina only, and the three rewards, visible labels and rough durations fit. The numbers stay tuning.
+
+**Direction:** hunger and thirst are not surfaced
 as bars. Rest, food and drink give exploration buffs: definitely stamina, possibly
 health. Farming is not a promised prerequisite to surviving the early game; storm
 shelter should be time to enjoy rest and meals, not a race to establish agriculture.
