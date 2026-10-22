@@ -44,5 +44,11 @@ func run() -> void:
 	check(player.own.length() > 1.0, "closed, the same hold walks you (%.2f m/s)" % player.own.length())
 	Input.action_release(&"move_forward")
 	press(&"console")
+	for alias in ["drone", "surveyor"]:
+		type(alias + " 10")
+		press(&"ui_text_submit")
+		var soon := Airdrop.deliveryship(world, player.global_position, world.time + 10.0)
+		check(rad_to_deg(soon.up) > 85.0 and Scenarios.by_key(alias) == Scenarios.by_key("clear"),
+			"the former delivery command and scenario still reach the actual overhead flight")
 	press(&"console")
 	check(not console.visible and console._line.text == "", "the console action closes it too, typing nothing")

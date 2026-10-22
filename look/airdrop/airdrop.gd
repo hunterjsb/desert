@@ -1,5 +1,5 @@
 extends Node
-## Look-test: the Surveyor's care package, on seed 1234, by day. Its cannon
+## Look-test: the deliveryship's care package, on seed 1234, by day. Its cannon
 ## fired at you; you stand off where it comes down, looking at the spot, and
 ## up the sky the way it comes: its trail high in the sky, the last seconds of
 ## its fall, the hit, and its sand cloud spreading and settling.
@@ -48,10 +48,10 @@ func _capture(out_dir: String) -> void:
 	Dev.hide_overlays()
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	await _ground()
-	# Midday, the Surveyor high over you.
+	# Midday, the deliveryship high over you.
 	var day := world.weather.day
 	while not day.is_day(world.time, world.moon.longitude) \
-			or Airdrop.surveyor(world, player.global_position, world.time).up < deg_to_rad(50.0):
+			or Airdrop.deliveryship(world, player.global_position, world.time).up < deg_to_rad(50.0):
 		world.time += 1.0
 	player.set_physics_process(false)
 	player.flying = true

@@ -10,7 +10,7 @@ extends Node3D
 ## shoulder yokes) are drawn for their shadow and for others only, on a
 ## layer your own eyes skip. It's only looks: no shapes, nothing to hit. A child of the player.
 
-## Near-camera suit surfaces stay available to external views and shadows.
+## Your helmet's layer, which your camera leaves out.
 const OWN_LAYER := 1 << 17
 ## Each limb's length, m, joint to joint.
 const UPPER_ARM := 0.28
@@ -49,7 +49,7 @@ func _ready() -> void:
 		add_child(view)
 		view.set_instance_shader_parameter(&"age", Paint.ERA_NEW)
 		_parts[name] = view
-	for name: StringName in [&"head", &"collar", &"trunk", &"hips"]:
+	for name: StringName in [&"head", &"collar"]:
 		(_parts[name] as MeshInstance3D).layers = OWN_LAYER
 	if player != null and player.camera != null:
 		player.camera.cull_mask &= ~OWN_LAYER

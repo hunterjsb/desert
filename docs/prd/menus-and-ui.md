@@ -654,12 +654,12 @@ counts must include each real starter sheet guide declared by the kit, matching
 the removable hook installed when that waist sheet is laid.
 
 
-## Clear-sky scenario consolidation and drone naming (agreed 2026-10-20)
+## Clear-sky scenario consolidation and deliveryship naming (agreed 2026-10-20; renamed 2026-10-21)
 
 Consolidate the overlapping clear-day, clear-skies radio and delivery-craft
 setups into one listed clear scenario. It provides a weather-tuned radio,
-charged shield and signal flare, with the drone passing overhead shortly
-after arrival. Preserve the existing weather search and upcoming-storm
+charged shield and signal flare, with the deliveryship passing overhead shortly
+after arrival (in a minute since it flies 30 km up, 2026-10-21). Preserve the existing weather search and upcoming-storm
 conditions needed to hear both hold music and a later advisory. Old scenario
 names remain console aliases rather than duplicate list entries. Distinct
 storm, nighttime, sailing and other focused scenarios retain their purpose.
@@ -668,6 +668,13 @@ Call the delivery craft “the drone” for now to avoid confusion with the
 Surveyor origin and its Guide. Rename player-facing craft descriptions and
 provide a drone console command; keep old technical ids and command aliases
 compatible. This renames no starter kit.
+
+*Superseded 2026-10-21* (gonkhub: "The Surveyor flying craft needs to be renamed. Change all
+references in docs or commands/code to call it deliveryship"): the craft is the deliveryship in
+code, commands and probes (`Deliveryship`, the satellite `deliveryship`), and the console command is
+`deliveryship`. The old `drone` and `surveyor` commands and the `surveyor` and `drone` scenario
+aliases are gone; `clear_skies` and `deliveryship` reach the clear scenario. The Surveyor origin,
+its pod, suit and Guide keep their names.
 
 
 ### Sailing hoist picture (2026-10-20; focused checks pass)

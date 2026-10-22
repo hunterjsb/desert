@@ -15,7 +15,7 @@ const SEED := 1234
 ## Standing over it: your eyes this far back from it, m, and this high.
 const STANDING := Vector2(1.1, 1.65)
 ## Closed in at these places on the band, kHz, and the volume each time.
-const BANDS := [[160.0, 1.0], [430.0, 0.7], [1020.0, 0.4], [1930.0, 0.1]]
+const BANDS := [[160.0, 1.0], [600.0, 0.7], [1020.0, 0.4], [1650.0, 0.1]]
 ## Dusk, local time as a share of the day.
 const DUSK := 0.742
 

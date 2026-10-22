@@ -26,30 +26,15 @@ owns the behavior and the probes that exercise it. Paths below are relative to t
 | Rope and towing | `game/rope/rope.gd` simulates a line; `bundle.gd` groups original ends through nested fittings; `ropes.gd` coordinates ropes in the world; `game/player/reel.gd` owns hand/waist reeling and remaining-coil display; `game/look/coil_looks.gd` and `coil.gdshader` supply shared continuous winding geometry; sailing and board movement consume rope loads | `probes/rope` (29–30 cover gathering and ordinary anchoring/retrieval), `probes/saves/46*`, `probes/sail`, `look/rope_hand`, `look/rope_bundle`, `look/waist_wrap`; gathering, ordinary batch mooring and visual belt cord are integrated, not future control proposals |
 | Sailing and mast mounts | `game/sail/mast.gd` owns sail force, sheet, boom, halyard and mast faces; `manual_winch.gd` winds a tied ordinary line; `helm.gd` seats and steers; `crows_nest.gd` seats a lookout; `game/devices/streamer.gd` reads felt wind; `game/sail/sailing_notes.gd` teaches sailing through physical notes | `probes/sail`, `probes/devices`, `look/nomad`, `look/varran` |
 | Weather and vents | `game/weather/weather.gd`, `weather_field.gd`; `rumbles.gd` schedules vent sound and tremble; `game/player/feel.gd` applies felt motion | `probes/weather`, `look/rumble` |
-| Radio and the Walker | `game/radio/radio.gd` owns tuning, marks, reception and its speaker; `radio_speech.gd` and `voice_words.gd` assemble bundled native speech; `survey_receiver.gd` owns directional ruin pickup; `fm.gd` (the FM band: stations and line of sight), `shortwave.gd` (the shortwave band and Tu's roar), `natural.gd` (natural radio: sferics and whistlers), `antenna_reel.gd` (the antenna reel); `transmissions.gd`, `gods.gd`, `walker.gd`, `city.gd`, `city_lights.gd`; `game/devices/chart.gd` reads bearings | `probes/radio`, `probes/devices/30_the_console_says_its_battery_is_low.gd`, `look/walker`, `look/dial` |
-| Satellites and radio interference | `game/radio/constellation.gd` defines the roster, carriers and schedules; `satellite.gd` owns orbital motion; `sky_voices.gd`, `garble.gd` and `glitch.gd` own per-radio satellite playback and effects; `game/weather/sky_view.gd` and `sky.gdshader` draw the sky; `crop_survey.gd` and `game/look/crop_survey_looks.gd` model the crop survey; `crop_survey_worn.gdshader` gives only its angular proxy finite camera-ray depth through the shared `game/look/worn_surface.gdshaderinc` | `probes/radio/32_the_constellation.gd`, `probes/radio/34_about_two_in_the_sky.gd`, `probes/radio/35_the_irregular_ones.gd`, `probes/radio/37_the_jammer_and_the_burn.gd`, `probes/radio/38_round_tu_and_skimming_low.gd`, `probes/radio/47_the_surveyors_schedule.gd`, `probes/radio/40_radios_do_not_change_each_others_sound.gd`, `look/satellites` |
-| Surveyor flare and deliveries | `game/survival/flare.gd` owns lighting, burn time and the one-time call; `game/salvage/airdrop.gd` owns the cannon, trajectory, impact, empty cargo and release; `game/saves/snapshot.gd` restores active drops and flare state | `probes/salvage/9_the_surveyors_care_package.gd`, `probes/salvage/10_the_surveyor_forced_over.gd`, `probes/saves/37_a_flare_keeps_its_call.gd`, `probes/saves/38_a_delivery_survives_loading.gd`, `probes/saves/40_a_flare_records_its_delivery.gd`, `look/airdrop`, `look/flare`, `look/drone_horizon` |
+| Radio and the Walker | `game/radio/radio.gd` owns tuning, marks, reception and its speaker; `radio_speech.gd` and `voice_words.gd` assemble bundled native speech; `survey_receiver.gd` owns directional ruin pickup; `dial.gd` (the AM dial: longwave and mediumwave, the gap skipped), `fm.gd` (the FM band: Port Morgan Tower, the port's music, the city's two stations and the near gods, and line of sight), `distress.gd` (wrecks calling SOS on longwave), `advisories.gd` (the tower's advisories), `shortwave.gd` (the shortwave band and Tu's roar), `antenna_reel.gd` (the antenna reel), `antenna_kite.gd` (the antenna kite: flight, charge, arcs), `game/look/kite_looks.gd` and `kite.gdshader` (its looks); `game/power/cable.gd` routes a lead through a stake; `game/look/radio_kit_looks.gd` (the radio tiers and makers' looks); `transmissions.gd`, `gods.gd`, `walker.gd`, `city.gd`, `city_lights.gd`; `game/devices/chart.gd` reads bearings | `probes/radio` (55–58 the antenna kite, 59–66 the misc bay modules, 67 the radio tiers, 68 the bands), `probes/devices/30_the_console_says_its_battery_is_low.gd`, `look/walker`, `look/dial`, `look/kite` |
+| Satellites and radio interference | `game/radio/constellation.gd` defines the roster, carriers and schedules; `satellite.gd` owns orbital motion; `sky_voices.gd`, `garble.gd` and `glitch.gd` own per-radio satellite playback and effects; `game/weather/sky_view.gd` and `sky.gdshader` draw the sky; `deliveryship.gd` and `game/look/deliveryship_looks.gd` model the deliveryship; `deliveryship_worn.gdshader` opts only its angular proxy into background depth through the shared `game/look/worn_surface.gdshaderinc` | `probes/radio/32_the_constellation.gd`, `probes/radio/34_about_two_in_the_sky.gd`, `probes/radio/35_the_irregular_ones.gd`, `probes/radio/37_the_jammer_and_the_burn.gd`, `probes/radio/38_round_tu_and_skimming_low.gd`, `probes/radio/47_the_deliveryships_schedule.gd`, `probes/radio/40_radios_do_not_change_each_others_sound.gd`, `look/satellites` |
+| Signal flare and deliveryship deliveries | `game/survival/flare.gd` owns lighting, burn time and the one-time call; `game/salvage/airdrop.gd` owns the cannon, trajectory, impact, empty cargo and release; `game/saves/snapshot.gd` restores active drops and flare state | `probes/salvage/9_the_deliveryships_care_package.gd`, `probes/salvage/10_the_deliveryship_forced_over.gd`, `probes/saves/37_a_flare_keeps_its_call.gd`, `probes/saves/38_a_delivery_survives_loading.gd`, `probes/saves/40_a_flare_records_its_delivery.gd`, `look/airdrop`, `look/flare`, `look/drone_horizon` |
 | Marked Home | `game/camp/home.gd` claims members and requests bounded remote support; `game/world/terrain_residency.gd` shares terrain/collision retention; Snapshot restores physical references | `probes/camp`, `probes/weather/26*`, `look/home/expedition.tscn`, `look/home/medium.tscn`; live-powered and loaded nine-piece expedition checks |
 | Survival and carried gear | `game/survival/suit.gd`, `kit.gd`, `runs.gd`, `bedroll.gd`, `inventory_look.gd` | `probes/survival`, `probes/saves`, `look/bedroll` |
 | Power, water and farming | `game/power/power.gd`, `power_box.gd`; `game/water/`; `game/farming/farm.gd`, `planter.gd`, `plant.gd`; `game/shield/` holds weather out | `probes/power`, `probes/farming`, `probes/shield` |
 | Menus and pictures | `game/ui/ui_root.gd`, `controls_page.gd` for the bounded controls reader, `creative_grid.gd: GROUPS`, `deeds_grid.gd`, `item_icons.gd`, `page_bar.gd`; `game/look/dress.gd` and themed look builders draw catalog gear | `probes/menus`, `probes/dev` |
 | Saves and deeds | `game/saves/snapshot.gd` captures run state; `deeds.gd: TABLE` defines deeds; gameplay systems record the action when it happens | `probes/saves` |
 | Desktop launcher | `launcher/main.py` installs published releases and launches local Git worktrees; `.github/workflows/launcher-release.yml` packages the launcher | Standalone app; see `docs/prd/launcher.md` |
-
-The integrated large-moon/body/gathered-line/cabin baseline at `7f8e918a` and
-launch-readiness correction at `67a52115` passed all 21 platform/build jobs.
-The physical station and continuous first-person departure at `622cec08` passed
-[all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39699225787);
-[all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39700634561) passed. Connected input/saves and inspected nine-phase
-Forward+/Compatibility captures pass. These are development results, not a
-Sanddune release or completed human sailing/expedition acceptance. The opening's
-design and measured costs live in [Surveyor opening](prd/surveyor-opening.md).
-The 0.3.1 pod patch runtime at `0e14a7b2` also passed
-[all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39717579371),
-including actual escape/cargo/head-view checks on native Windows and macOS.
-It is integrated source, not a published patch or human comfort acceptance.
-The [roadmap](alpha-roadmap.md) keeps kites, deeper suit/wrist instruments and
-broader origin variants in Spaceport, with concrete designs still to select.
 
 Probe/build performance and scheduling requirements live in `docs/prd/probes-and-builds.md`.
 The Pages observatory uses `scripts/ci_dashboard/collect.py`, `site/`, and
@@ -59,7 +44,7 @@ The Pages observatory uses `scripts/ci_dashboard/collect.py`, `site/`, and
 Probe hosts and system helpers live in `probes/lib/`. Use the nearest existing helper and a
 targeted probe for the failure being fixed. `scripts/probe.sh` imports assets before running;
 `scripts/verify.sh` selects game or dashboard CI and handles landing;
-`python3 scripts/test_verify.py` checks routing and failure blocking against a local remote. `AGENTS.md` describes the shared worktree,
+`python3 scripts/test_verify.py` checks routing and landing against a local remote. `AGENTS.md` describes the worktree,
 locking and capture rules.
 
 ## Reachable mountain horizons
@@ -72,3 +57,13 @@ locking and capture rules.
   receiving array and broken elevator foot, laid by `Sites` at their history landmarks.
 - Focused checks: history 8, kits 12/13; existing exposure, burial and spawn probes.
   Captures: `look/horizons/horizons.tscn`. First-hour audit: `look/exposure/first_hour.tscn`.
+
+## Radio integration follow-up
+
+`Radio` supplies the passive crystal and field sets, actual band/station identity
+and powered module actions. `Snapshot` tags the survey receiver beacon carrier
+and restores legacy detuning. `AntennaKite` follows origin displacement and checks
+its live cable before granting gain or grounding. Radio69–73 cover those bounded
+corrections; Radio74 compares printed frequencies with the live band needle.
+Existing radio55–68, Power7 and saves13 retain the feature checks.
+See [the integration account](prd/radio-integration-review.md).

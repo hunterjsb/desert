@@ -169,7 +169,9 @@ paused: "Through the storm", only while one's on you or due within the weather's
 "Until a storm's called", offered while the weather station holds its calm (no storm on you and none
 due within five minutes, six hours of the day): the radio comes on to the Walker's carrier as you lie
 down, its dial kept on it as it moves from day to day, and the Walker breaking its calm to report a
-storm wakes you if the radio hears it, the report on its line as you wake. A god's broadcast at a fixed
+storm wakes you if the radio hears it, the report on its line as you wake. *Since 2026-10-21 the weather
+is Port Morgan Tower's (Radio, The bands rebuilt): the radio goes to the relay on shortwave or the tower
+on FM, if it has the converter, and the wake still follows the storm at your camp, not at the tower.* A god's broadcast at a fixed
 hour, the session's sleep clock, isn't built. Through the storm needs a running shield over you.
 
 **Only a still camp sleeps**, read off the physics as it runs: you on your feet and still, your hands

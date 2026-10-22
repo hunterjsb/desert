@@ -1,11 +1,11 @@
 class_name Flare
 extends Part
 ## A signal flare (gonkhub, 2026-10-20: "a signal flare to go with this- if
-## the player lights the signal flare during the drone's pass overhead, it
+## the player lights the signal flare during the deliveryship's pass overhead, it
 ## will fire the cannon"). Use lights it, held or not; it burns at its tip
 ## for flare_burn_seconds, a flickering red light, sparks and a red smoke, and
 ## a fizz, then it's spent and won't light again. While it burns, the
-## Surveyor passing high enough over it (Airdrop.overhead) fires its
+## deliveryship passing high enough over it (Airdrop.overhead) fires its
 ## care-package cannon at it, once. How long it has burnt is kept in its
 ## stats, so a spent one stays spent through a save.
 
