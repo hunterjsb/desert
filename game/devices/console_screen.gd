@@ -101,6 +101,12 @@ static func lay_out(model: Dictionary) -> void:
 		var k := Console.FILTERS.keys().find(each.to)
 		each["box"] = Rect2(Vector2(MARGIN + k * third + 4.0, canvas.x + 10.0), Vector2(third - 8.0, FILTER_ROW - 16.0))
 		keys.append(each)
+	var sailing: Array = model.get("sail_keys", [])
+	for i in sailing.size():
+		var each: Dictionary = sailing[i]
+		var width := (canvas.x - 2.0 * MARGIN) / sailing.size()
+		each["box"] = Rect2(Vector2(MARGIN + i * width + 4.0, 58.0), Vector2(width - 8.0, 44.0))
+		keys.append(each)
 	var panel: Dictionary = model.get("panel", {})
 	if not panel.is_empty():
 		var y := TOP
@@ -348,6 +354,14 @@ func _draw_chart(chart: Dictionary, middle: Vector2, scale: float, side: float) 
 	var course: Vector2 = chart.get("course", Vector2.ZERO)
 	if course != Vector2.ZERO:
 		draw_dashed_line(middle, _pin(middle + course * side, side), Color(text, 0.7), 2.0, 14.0)
+	var sailing: Dictionary = chart.get("sailing", {})
+	if not sailing.is_empty():
+		var facing: float = chart.get("facing", 1.0)
+		var along := course.normalized() if course != Vector2.ZERO else Vector2.UP
+		var centre := middle + along * 80.0
+		var apart := along.orthogonal() * 65.0
+		_rig_mark(centre + apart, sailing.actual * facing, sailing.actual_sail * facing, "YOU", text)
+		_rig_mark(centre - apart, sailing.heading * facing, sailing.ideal_sail * facing, "IDEAL", _color(&"accent"))
 	if chart.has("home"):
 		var spot: Vector2 = on.call(chart.home)
 		var at := _pin(spot, side)
@@ -360,6 +374,13 @@ func _draw_chart(chart: Dictionary, middle: Vector2, scale: float, side: float) 
 		var at := _pin(spot, side)
 		draw_arc(at, 16.0, 0.0, TAU, 24, URGENT, 3.0)
 		_label_at(at, "FIX" if at == spot else "FIX %s" % Console._distance((chart.fix as Vector2).length()), MID, URGENT, side)
+
+
+func _rig_mark(at: Vector2, heading: Vector2, boom: Vector2, called: String, color: Color) -> void:
+	_arrow(at - heading * 20.0, at + heading * 28.0, color, 3.0)
+	draw_line(at, at + boom * 32.0, color, 6.0)
+	draw_circle(at, 5.0, color)
+	_label_centred(at + Vector2(0.0, 52.0), called, KEY, color)
 
 
 ## A line of map places, kept to the map's square.
@@ -707,6 +728,8 @@ func _draw_keys() -> void:
 		var box: Rect2 = key.box
 		var aimed: bool = _model.aim == k
 		var font_size := TAB if key.device == null else KEY
+		if str(key.to).begins_with("sail_"):
+			draw_rect(box, GLASS)
 		draw_rect(box, Color(accent, 0.9) if aimed else (Color(accent, 0.35) if key.lit else Color(accent, 0.08)))
 		draw_rect(box, Color(accent, 0.9 if key.lit else 0.45), false, 3.0 if key.lit else 2.0)
 		draw_string(FONT, Vector2(box.position.x, box.position.y + (box.size.y + FONT.get_ascent(font_size)) * 0.5 - 3.0),

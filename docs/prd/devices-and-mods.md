@@ -709,8 +709,13 @@ As built (`Console._map_page`, `ConsoleScreen._draw_map`, `Chart.layer`):
 - **Under the map:** the weather's gyro and readings while weather's on; otherwise the survey's
   nearest sites, then navigation's bearings, fix, Home and evidence. Nothing is drawn that no
   filter asked for: with every filter off, the map is empty.
-- **The sail's ideal** (an ideal sheet and heading) is not built; by Hunter's call it comes
-  later, on navigation beside the course.
+- **The sail's ideal** lives beside the course as YOU and IDEAL rig marks on Nav,
+  each showing heading and boom angle. A powered wind-reading Console on a sailing
+  deck also feeds Nav. COURSE takes the deck's current heading as the desired course;
+  HOME follows its recorded fix. The control key cycles HAND, TRIM and, while a sailor
+  sits at a supported helm, STEER. A sheet tied to a separate hand winch on this deck
+  enables that key; the halyard drum remains independent. The calculation and physical
+  control contract belong to [Movement](movement.md#sailing-learning-aid-selected-2026-10-22-built).
 - **Checks:** devices 45 (each filter with its gear, and off when switched off), radio 26 (the
   bearings and fix stay once taught), saves 33 (the survey lists the ruin), weather 24; captures
   in `look/map`.

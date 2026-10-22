@@ -53,6 +53,8 @@ const TABLE := {
 		"after": [&"gather_lines"], "icon": &"stake"},
 	&"hand_hoist": {"name": "All Hands", "asks": "Raise a sail with a hand winch", "family": &"wind",
 		"after": [&"sail_waist"], "icon": &"hand_winch"},
+	&"sail_by_wire": {"name": "Learning the Ropes", "asks": "Let a Console trim your sail through a winch", "family": &"wind",
+		"after": [&"hand_hoist"], "icon": &"hand_winch"},
 	&"cast_off": {"name": "Cast Off", "asks": "Release %s waist lines together", "family": &"wind",
 		"after": [&"sail_waist"], "icon": &"sail", "goal": "deed_release_lines", "unit": "lines", "step": 1.0},
 	&"hand_me_down": {"name": "Hand-Me-Down", "asks": "Take the sail off a wrecked nomad rig", "family": &"wind",
