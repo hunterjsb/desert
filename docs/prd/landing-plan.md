@@ -195,5 +195,5 @@ and ordinary-player comprehension remain separate acceptance gates.
 Combined implementation `622cec08` passed
 [all nine Linux CI groups](https://github.com/hunterjsb/desert/actions/runs/39699225787).
 Actual Forward+ and Compatibility nine-phase captures were inspected through
-recovery. [Native verification](https://github.com/hunterjsb/desert/actions/runs/39700634561) is running; ordinary-player comprehension is
+recovery. [All 21 platform/build checks](https://github.com/hunterjsb/desert/actions/runs/39700634561) passed; ordinary-player comprehension is
 still required. The preflight PRD records the connected acceptance and scope.

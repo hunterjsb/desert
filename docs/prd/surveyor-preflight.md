@@ -494,7 +494,7 @@ their original UIDs retained.
 
 The connected implementation at `622cec08` passed all nine Linux groups in
 [run 39699225787](https://github.com/hunterjsb/desert/actions/runs/39699225787).
-This supersedes the earlier isolated/candidate status above. [Native checks](https://github.com/hunterjsb/desert/actions/runs/39700634561) are running; Hunter's comprehension and motion-comfort acceptance remain.
+This supersedes the earlier isolated/candidate status above. [All 21 platform/build checks](https://github.com/hunterjsb/desert/actions/runs/39700634561) passed; Hunter's comprehension and motion-comfort acceptance remain.
 The prior readiness fix at `67a52115` passed all 21 platform/build jobs.
 
 Actual nine-phase Forward+ and Compatibility runs reach recovery with 13 surviving

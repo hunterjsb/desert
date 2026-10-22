@@ -149,7 +149,7 @@ The launch-readiness correction at `67a52115` passed
 [all 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39696673498).
 The physical planner and continuous first-person departure at `622cec08` passed
 [all nine Linux groups](https://github.com/hunterjsb/desert/actions/runs/39699225787).
-[Native verification](https://github.com/hunterjsb/desert/actions/runs/39700634561) is running. Connected input, disk saves and
+[All 21 platform/build jobs](https://github.com/hunterjsb/desert/actions/runs/39700634561) passed. Connected input, disk saves and
 inspected nine-phase Forward+ and Compatibility captures pass; human understanding,
 packing and motion comfort remain open acceptance gates.
 
@@ -274,7 +274,7 @@ to select rather than committing to complete every origin.
 | --- | --- | --- |
 | Surveyor pod arrival | **Built on verified master.** The actual Surveyor opening now connects orbit, ejection, descent, landing and physical recovery. Focused save checks and real GPU captures pass; combined Linux, native platform and build checks passed; ordinary-player acceptance remains. | Replaces the Surveyor starter-kit grant for new normal runs with a pod made from real chassis pieces and recoverable surviving equipment. Land for a purpose, then dismantle/adapt the pod into camp. Preserve phase, landing site, damage and teardown through saves. Legacy saves and other origins retain their starts. The bounded opening is selected for Sanddune development; this does not make the broader arrival ideas release gates. |
 | Ship interior, launch computer and pod loading | **Built on master; baseline platform checks passed.** [Preflight PRD](prd/surveyor-preflight.md). | New normal Surveyors walk the cabin, focus the always-visible physical scouting screen, drag and confirm a bounded departure pulse, physically load original gear, enter and launch. The nine-phase connected GPU run and preparation/flight/landed disk saves pass. Required emergency stores and actual shell readiness remain mandatory. The readiness fix exposes blockers before seating and passed all platform checks. Human discovery/packing/launch acceptance is still open. |
-| Physical launch station and continuous first-person departure | **Built on master; Linux CI passed, native follow-up pending.** | Physical always-on display and focused view, rotating globe and one ray-dragged departure pulse replace the modal/numeric planner. Shared saved clock/path links the window, forecast and flight. First-person entry heat/impact and visible loaded gear continue into real nearby recovery. Connected input/save checks and inspected Forward+/Compatibility sequences pass. Human comprehension/comfort remain open. No numeric angle controls or full orbital flight simulator. |
+| Physical launch station and continuous first-person departure | **Built on master; all platform/build checks passed.** | Physical always-on display and focused view, rotating globe and one ray-dragged departure pulse replace the modal/numeric planner. Shared saved clock/path links the window, forecast and flight. First-person entry heat/impact and visible loaded gear continue into real nearby recovery. Connected input/save checks and inspected Forward+/Compatibility sequences pass. Human comprehension/comfort remain open. No numeric angle controls or full orbital flight simulator. |
 | Starter camp cloth sail | **Planned candidate**, not built. | A small cloth in the existing frame makes the first camp a sailing toy and teaches the wind. Define fitting and balance before adding it to an opening. |
 | Seeded pod/loadout variation | **Built on verified master; platform checks passed.** | The manifest records stable shell roles, surviving equipment, charge, damage and recovery state; three focused determinism/save-data/viability checks pass. Physical survivors now materialize once as ordinary salvageable objects; phase and partial recovery save checks pass. Surviving equipment becomes the randomized start. Vary damage and usable pieces with viable survival and meaningful tradeoffs; exact distributions remain to be balanced. Resolve once and save it; loading must not reroll or grant a second kit. |
 | Deed-unlocked origin variants | **Planned Spaceport direction**, exact model undecided. | Reuse deeds/profile unlocks for selectable variants within an origin; favor tradeoffs rather than strictly stronger kits. Define concrete variants, actions and unlocks at implementation. |
@@ -352,3 +352,14 @@ passes, not when every branch has a commit.
 Next planning step: turn the scope audit into a checked built/partial/missing table
 with the required ending routes chosen. This proposal does not schedule every
 loose lore idea or promise a release date.
+
+## Sanddune release decision (2026-10-21)
+
+Hunter approved publishing 0.3.0-alpha “Sanddune” and patching during continued
+playtesting. This ships the integrated Surveyor opening, Home, traversal, rope
+and radio work described above. It does not mark the outstanding human sailing,
+expedition, comprehension, comfort or large-camp budget gates complete. Preserve
+those follow-ups within Sanddune rather than silently treating publication as
+acceptance. Kites, deeper suit/wrist instruments and broader origins remain
+Spaceport directions. Runtime `622cec08` passed all 21 platform/build jobs; the
+release tag repeats the full verification and packaged-build gates.
