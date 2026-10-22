@@ -99,7 +99,8 @@ board tie while preserving its other anchor passes (7 s).
   moving"; then, 2026-10-18, the other way round, as lines matter more: the wheel bare reels,
   held with control it moves what you hold): on anything you hold or have hold of, they bring it nearer or push it farther,
   within reason, and never touch a line. *As built:* a notch is 0.25 m. What you carry goes from
-  0.5 m to 2 m in front of your eyes, never nearer than clears you, and still stops short
+  0.5 m to 2 m in front of your eyes, never nearer than clears you (a small thing
+  all the way in rests low in your arms, [Movement](movement.md)), and still stops short
   of the sand or anything in the way; what you have hold of goes from just clear of you
   out to your 2.5 m reach, following only as far as your strength and the slip allow.
 - **Rotate** (Hunter, 2026-10-16): held down, the mouse turns what you hold, or what you

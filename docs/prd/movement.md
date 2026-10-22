@@ -884,9 +884,11 @@ pieces posed each frame by `Body` from how you move, with no shapes of its own
   but we can hold them down maybe to keep them out of our face? it really like
   our hands/arms to grib the item and move mechanically"). A small thing (a
   radio, battery, canister, ration, med kit, compass, scoop, sealant, flare, the
-  Guide, anything under `pick_small` across) rides low in your arms, 0.45 m
-  below your eyes and 0.27 m out (`suit_carry`), swinging a fifth of your look
-  (`suit_carry_follow`): out of your face looking level, in view looking down.
+  Guide, anything under `pick_small` across) rides low in your arms, 0.5 m
+  from your eyes and 59° below their line (`suit_carry_drop`), swinging a fifth
+  of your look (`suit_carry_follow`): out of your face looking level, in view
+  looking down. Pushed out it rises to straight ahead by 0.9 m; brought all the way
+  in, it's back in your arms.
   Both gloves close on its real sides by its back edge and stay on it as it
   moves; once on, they move with it exactly, and only reaching for it or
   letting go eases. Read while held, it comes up into view (`suit_read`): a
