@@ -48,15 +48,21 @@ func drop_in() -> void:
 	await fly_to(&"recovery")
 
 
-## Out of the landed pod through its hatch and standing, by the ordinary moves.
+## Out of the landed pod and standing, by the ordinary moves: back through the hatch
+## first, as the pod lands you facing away from it, then any way a player would try.
 func crawl_out() -> void:
-	Input.action_press(&"move_back")
-	for i in 600:
-		await get_tree().physics_frame
-		if i > 90 and world.player.posture.clear(&"stand"):
+	var from := world.player.global_position
+	for move: StringName in [&"move_back", &"move_left", &"move_right", &"move_forward"]:
+		Input.action_press(move)
+		for i in 300:
+			await get_tree().physics_frame
+			if i > 60 and world.player.posture.clear(&"stand"):
+				break
+		Input.action_release(move)
+		if world.player.posture.clear(&"stand"):
 			break
-	Input.action_release(&"move_back")
-	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands")
+	check(world.player.posture.change(&"stand"), "the landed Surveyor crawls out and stands (%.2f m, %s)"
+		% [world.player.global_position.distance_to(from), world.player.ground_pose])
 	await physics_frames(2)
 
 
