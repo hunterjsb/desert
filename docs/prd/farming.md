@@ -15,6 +15,26 @@ direction, and the "as built" notes below say what stands. [Session 4, part
 fungus on the habitats history left, and wild stock is real: cut or dug from them, it grows in your
 planter and gives the wild share ([Feral plants, as built](#as-built-the-feral-layer-2026-10-18)).*
 
+## Coalcane chain (agreed 2026-10-22)
+
+Hunter: "coalcane is a go". The complete grow → harvest → burner chain is owned here
+and in [Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22).
+
+**As built.** Coalcane uses the shared crop growth, felt-weather and tank-water rules.
+A new deep planter has one deep-bed slot, a water socket, harvester mount and cable
+port, and stands on a deck. Existing planter socket ordering is unchanged. Seven
+minutes of full daylight growth spends 1.5 L and yields one existing six-stalk
+coalcane bundle; the cut stump retains a quarter of its growth. It needs shelter
+from storm wind/dust and grows no fuel in darkness or with an empty tank. All crop
+figures live in `coalcane_crop` in tuning. Manual harvest and the existing harvester
+split/storage path apply; automated replanting still spends its configured seed share.
+
+Clean cuttings, deep planters and burners enter colonial salvage. The existing
+cistern habitat now grows wild coalcane and provides cuttings through the ordinary
+feral harvest path. The ringed growing stems match the existing cut fuel, which
+Halloran still consumes through its unchanged maintenance-burn encounter. The
+bundle's catalog identity and old saves remain valid; its label now fits fresh fuel too.
+
 ## Why this system exists
 
 The farm is the engine of steady state. It turns light, warmth and time into food, and
@@ -188,7 +208,7 @@ the main remote colonial contractors and made some, not all, of the original cro
   sugar, and heavy lignin makes it near-wood. *Feral drift:* rare, since it is thirsty, and it
   survives only near old water. Ancient stands build into thick, near-petrified groves. *Hooks:* the
   only renewable fuel crop, a night and storm counterpart to solar, burned in a new burner device
-  ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built)). Old groves are a big one-time
+  ([Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22)). Old groves are a big one-time
   fuel haul and a sign of ancient water. It trades water for power.
 - **Vat fungus.** *Ancestry:* oyster mushroom crossed with mycoprotein strains. *Engineering:* the
   colony's original food, grown in sealed vats in dark hab tunnels and fed on waste; it fruits when
@@ -342,7 +362,7 @@ plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4).
   and filtering other than by boiling is not said. Still open.
 - **New equipment implied:** a burner or generator for coalcane fuel, a humidifier and, from part 5, a
   kiln (above). Both are
-  crate parts like the existing devices ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built),
+  crate parts like the existing devices ([Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22),
   [Devices & mods](devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)). The
   office fern needs a lamp as its light source: since the chassis rework a lamp sticks on a deck as
   anything does, and a planter, which stands on its own, has no place for one, so how the lamp
@@ -674,7 +694,7 @@ that ignored the weather.
 
 - **Yucca,** with its water and regrowing fruit. Superseded in the roster by dewleaf and stormcup
   (open questions).
-- **Fuel crops:** coalcane and the burner (above, [Power](power.md#fuel-crops-and-the-burner-proposed-not-built)).
+- **Fuel crops:** coalcane and the burner (above, [Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22)).
 - **Planter grids** on a single tether.
 - **Big carriers,** like the walker farmer, that can carry the shield too.
 - **More crops,** each carrying its history (above). Session 4, part 4 makes this the roster of

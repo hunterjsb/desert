@@ -16,6 +16,7 @@ extends RefCounted
 
 ## What each kind of thing keeps besides where it is, by property.
 static var _kept := [
+	[Burner, ["on", "fuel_seconds"]],
 	[Flare, ["lit", "called"]],
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
 	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],

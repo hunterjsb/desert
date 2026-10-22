@@ -90,7 +90,7 @@ func _tick(seconds: float, t: float) -> void:
 		var cells: Array[Battery] = []
 		var givers: Array[Battery] = []
 		for device: Device in pool:
-			made += device.production_w(t) * seconds / 3600.0
+			made += device.generate_wh(seconds, t)
 			wants[device] = device.demand_w(t) * seconds / 3600.0
 			cells.append_array(device.pooled())
 			givers.append_array(device.supplies())

@@ -85,6 +85,8 @@ const TABLE := {
 		"after": [&"deck_home"], "icon": &"chassis", "goal": "deed_deck_pieces", "unit": "pieces", "step": 1.0},
 	&"power": {"name": "Power Trip", "asks": "Make %s W in one system", "family": &"camp", "after": [&"deck_home"],
 		"icon": &"turbine", "goal": "deed_power_w", "unit": "W", "step": 10.0},
+	&"coalcane_power": {"name": "Night Harvest", "asks": "Burn coalcane to power your camp", "family": &"farm",
+		"after": [&"crop"], "icon": &"burner"},
 	&"crop": {"name": "Green Thumb", "asks": "Grow a crop", "family": &"farm", "icon": &"crop"},
 	&"crops": {"name": "Crop Rotation", "asks": "Grow %s kinds of crop", "family": &"farm", "after": [&"crop"],
 		"icon": &"planter", "goal": "deed_crop_kinds", "parts": true, "unit": "kinds"},
