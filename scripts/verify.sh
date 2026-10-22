@@ -8,6 +8,14 @@
 # DESERT_LAND_WAIT caps the wait for another driver's landing, DESERT_CI_WAIT
 # the wait for a run, both in seconds.
 set -euo pipefail
+# Bash reads a script as it runs, so editing or recopying this file under a
+# live run garbles it: every run first moves to a private copy of itself.
+if [[ -z ${VERIFY_PRIVATE_COPY:-} ]]; then
+	copy=$(mktemp "${TMPDIR:-/tmp}/desert-verify.XXXXXX")
+	cp "$0" "$copy"
+	VERIFY_PRIVATE_COPY=$copy exec bash "$copy" "$@"
+fi
+trap 'rm -f -- "${VERIFY_PRIVATE_COPY:?}"' EXIT
 name=${1:?a name for the verify branch}
 land=${2:-}
 land_wait=${DESERT_LAND_WAIT:-2700}
