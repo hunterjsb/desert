@@ -2,6 +2,18 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Near and far side readability (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> We shouldnt require far side expositions for water/ice yet but should at least start to visually differentiate between the two side somehow
+
+Start visually distinguishing the near and far sides. The visual treatment is still
+open; this does not select an ice biome, change the climate simulation or require
+far-side water expeditions. Frost/ice collection and its travel economy remain later
+direction. No terrain or weather code changed with this decision.
+
+
 ## Reachable horizons (built, 2026-10-20)
 
 Starcom's relay mountain and the observatory's far-side volcano (at the anti-Tu

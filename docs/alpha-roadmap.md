@@ -5,6 +5,32 @@ everything below is built or approved for implementation. The vision and each
 system's PRD remain the design sources. A full Alpha means a complete playable
 game loop with progression and conclusions; final art and final balance can follow.
 
+## Saltbush promise and acceptance deferred (2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+On the proposed renewable camp promise, Hunter: “It is not. Farming is not promised.”
+On promise and acceptance:
+
+> so this raises what is the p&a? we will revisit it after the spaceport release.
+
+The ten-day sustain gate is **rejected**, not awaiting acceptance. 0.5's promise and
+acceptance stay open until after Spaceport. [Survival](prd/survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
+records the full answer and new rest/food/drink direction. Repairs/raw materials are
+[deferred](prd/devices-and-mods.md#repairs-and-era-mobility-selected-2026-10-22);
+[farming](prd/farming.md#agricultural-depth-before-variety-and-portable-gods-selected-2026-10-22)
+is loop first, with depth and the ag complex before a portable Almanac. Mother-first
+is tentative. [Near/far visual differentiation](prd/world-and-terrain.md#near-and-far-side-readability-selected-2026-10-22)
+is selected direction without a required water expedition.
+
+For Spaceport, Hunter answered “Yes.” to the salvage expedition outcome, and
+“we should make it obt and und” about existing navigation. The accepted trip has
+no food/water deadline; candidate payloads are a farm box, chassis, console,
+condenser, large mast or sail. [The Spaceport decisions](briefs/spaceport-0.4-plan-2026-10-22.md#recorded-decisions-2026-10-22)
+own exact trip wording and SANDGAME's delegated energy gate. No wrist instrument
+is required, and variant balancing is not a release requirement.
+
+
 ## Versions
 
 Numbers, names and maturity stages follow the [version policy](version-policy.md).
@@ -36,14 +62,14 @@ proposal for Alpha. The release sequence below chooses outcomes from this invent
 | System | Built now | Remaining work or scope choice |
 | --- | --- | --- |
 | [World and terrain](prd/world-and-terrain.md) | Streaming dunes, stable origins/spherical travel, generated history/paths/sites, sand and tracks. | Destination-specific landforms/interactions; decide shifting dunes and ambient creatures. Full landmark interiors remain excluded. |
-| [Wind and storms](prd/wind-and-storms.md) | Weather field, visible walls/lee, forecasts/instruments, anomalies, vents/plumes/rumbles, exposure and archaeology. | Finish agreed storm-planning crop/repair dependencies. A condenser humidity-yield boost remains proposed. Forecasts, sleep, audio and saltbush's barometer already work; deferred mechanics stay deferred. |
+| [Wind and storms](prd/wind-and-storms.md) | Weather field, visible walls/lee, forecasts/instruments, anomalies, vents/plumes/rumbles, exposure and archaeology. | Crop additions follow larger-system needs; repair work is deferred. A condenser humidity-yield boost remains proposed. Forecasts, sleep, audio and saltbush's barometer already work; deferred mechanics stay deferred. |
 | [Shield and camp](prd/bubble-shield-and-camp.md) | Travelling protection, load/collapse, radar auto-on and Varran personal shield. | Thermal/combo protection and nested late-game setups. Do not confuse the working personal shield with older carried-shield proposals. |
 | [Movement](prd/movement.md) | Foot traversal, ledge vaulting, visible suit body, sitting/prone crawling, boards, dig/carve/tumble, skate rigs, yacht/helm/keel and board-as-keel sailing. | Finish current load/control playtests. Patrol-board superchassis is an agreed unbuilt direction; select whether mechanical haulers/carriers belong in Alpha. |
 | [Rope](prd/rope-and-tethering.md) | Stakes/hooks/waist ties, load/breaking/drag, reeling/towing, physical sheet/bridle, selected-line handling, timed gathering of original ends and ordinary batch mooring. | Upgrade/anchor variety and winch automation; settle player-load behavior from playtests. Reeling itself is built. |
-| [Devices](prd/devices-and-mods.md) | Sticky chassis/frame assembly, pooled mass, Console/screens/sensors, radar/sieve, mast gear, lineage/era stats. | Repair actions/materials, per-part wear and agreed filtered Map page. General god modules/state/dispatches are a separate incomplete package. |
+| [Devices](prd/devices-and-mods.md) | Sticky chassis/frame assembly, pooled mass, Console/screens/sensors, radar/sieve, mast gear, lineage/era stats. | Repair actions/materials deferred; per-part wear and the filtered Map have their own as-built accounts. General god modules/state/dispatches are a separate incomplete package. |
 | [Power](prd/power.md) | Solar/turbine/cells, deck/cable pools, board charging, era boxes/banks, priorities, reference camp and a finite stationary Stoker maintenance burn. | Crop-fuel burner/kiln chain; the Halloran burn is not a portable generator or sustainable fuel loop. Decide tracked solar/heavy generators; do not rebuild existing bank/priority/charging foundations. |
 | [Survival](prd/survival.md) | Needs/harms, suit burden, food/drink, condenser/canisters/hoses, death, physical bedroll/ruin-bed sleep and safe bare-ground sleep while prone. | Thermal suit/travel gear and full frost/dew/open-water rhythm; crop water depends on the remaining farm roster. |
-| [Farming](prd/farming.md) | Shared crop data/growth, three crops, typed sockets, feral lineage/habitats, harvest automation and saltbush weather response. | Eight agreed crops, deep-bed hardware, going-to-seed/clean-to-wild details and processors. Keep crossbreeding's Idea status separate from the agreed Almanac role. |
+| [Farming](prd/farming.md) | Shared crop data/growth, three crops, typed sockets, feral lineage/habitats, harvest automation and saltbush weather response. | Loop first, variety as needed; portable Almanac deferred until agricultural depth and ag complex. Crossbreeding remains an idea. |
 | [Salvage](prd/salvage-and-ruins.md) | Era kits/loot/exposure, walkable ruins, excavation/scrapping/wrecks, nomads, distant signs/glints and Halloran’s bounded First Fire encounter. | Seed vaults/Sister and further ending-linked interactions. Most landmark shells remain without functional encounters; First Fire is not a completed ending. |
 | [Radio and atmosphere](prd/radio-sound-and-atmosphere.md) | Signals/broadcasts, bundled weather/god/beacon speech, frequency marks, thirteen satellites, world audio, Walker evidence/teaching, triangulation and living-city lights. | Reputation/pilgrimage/aggro, Walker taking/copying and general god-state interactions. City discovery is not a completed city ending; proposed variants stay proposed. |
 | [Profile and saves](prd/profile-and-saves.md) | Run/profile/assembly persistence, Normal/Ironman, deeds/unlocks and five origins including Varran/Archaeologist. | Selected ending axes/flags/completion/unlocks and novelty starts. Steam/cloud are separate integration choices. |
@@ -56,8 +82,8 @@ proposal for Alpha. The release sequence below chooses outcomes from this invent
 | --- | --- | --- |
 | 0.2.1 patch | Current sand/Nomad work and reported playtest fixes work together. | Combined CI, real trail/rope captures, start/save checks and smoke-tested builds on three OSes. |
 | 0.3 “Sanddune” minimum | A new player can travel, sail, salvage and maintain a camp without developer guidance. | Tutorial playtest; explicit line management and understood board/rig speeds; storm preparation and recovery; measured rendering budget. |
-| 0.4 “Spaceport” | One-line salvage kite as a defining feature; deeper suit/wrist instruments and broader origin variants are deferred here, with their concrete scope still to select. | Demonstrate launch, board travel, recovery and camp anchoring; select the remaining scope and acceptance checks. |
-| Camp progression | Salvage and farming make the camp progressively self-sufficient. | Audit remaining crop roster, propagation, processing and equipment against the farming PRD; demonstrate sustainable clear/night/storm power, water and food. |
+| 0.4 “Spaceport” | A wind-powered salvage expedition that comes home, using obtainable and understandable existing navigation. | Accepted 1–2 km trip on three fixed worlds plus a separate camp-kite scouting leg; no food/water deadline. See [decisions and energy gate](briefs/spaceport-0.4-plan-2026-10-22.md#recorded-decisions-2026-10-22). |
+| 0.5 “Saltbush” | Promise open; farming is not promised. Revisit after Spaceport. | Ten-day renewable-camp sustain gate rejected; repairs deferred. See [decision](#saltbush-promise-and-acceptance-deferred-2026-10-22). |
 | Exploration progression | Better gear opens meaningful new journeys across latitude and history. | Audit biome/era loot and thermal gates; complete agreed instrument and navigation dependencies; prove viable trips and returns with ordinary finds. |
 | Conclusions | Long runs have discoverable destinations and outcomes. | Choose and implement a coherent ending ladder and its prerequisites; save/resume each route and record completion/unlocks. |
 | 1.0 Alpha candidate | Those systems form one understandable, persistent game. | Fresh-profile runs, long-run reliability, accessible controls and menus, supported-platform release gates, then Hunter's playtest acceptance. |
@@ -91,7 +117,7 @@ blocking Sanddune.
 
 | Candidate | Playable benefit | Dependencies to settle |
 | --- | --- | --- |
-| Repair and salvage progression | A recovered part can be maintained and earns its place in the camp. | Devices PRD repair acts/materials and era tradeoffs; choose one complete path. |
+| Repair and salvage progression | **Deferred, 2026-10-22.** | Repair actions and raw materials are not current build scope; see Devices. |
 | A farming and processing chain | Growing something new makes the camp more self-sufficient. | Choose crops, planter hardware and processing from the farming/devices PRDs as a usable chain. |
 | Navigation and discovery | Players can plan a salvage trip and find their way through it. | Agreed Console Map page and instrument/world dependencies. |
 
@@ -169,9 +195,9 @@ membership changes, distant terrain/collision, origin precision, weather, power,
 farming, save/resume and a bounded simulation budget. Full-detail distant rendering
 is not required; simply preventing item deletion is not sufficient.
 
-Repair/salvage progression, one complete farming/processing chain and further
-navigation remain the stretch candidates listed above. They can move to Spaceport;
-the full crop roster is not a Sanddune gate.
+Repairs/raw materials are deferred. Farming follows loop first, variety as larger
+systems need it; the full roster is not a release gate. Spaceport navigation focuses
+on obtaining and understanding existing gear.
 
 ### 0.4 “Spaceport”: one-line kite and the next exploration layer
 
@@ -187,14 +213,13 @@ and antenna reels are part of the current runtime radio progression.
 | Salvage kite | **In progress**: isolated prototype and verification exist; not integrated or accepted as finished. **Agreed Spaceport defining feature.** | Found, contained light rig using existing rope/attachment systems. One controllable tether, item-owned bridle, board/rider as keel and counterbalance. Wind, line length and rider position govern flight; looking around must not secretly steer it. |
 | Kite at camp | **In progress in the isolated kite prototype; not integrated.** | Tie it to camp as a moving decorative landmark with possible small pull. Demonstrate launch, board travel, reel/recovery, camp anchoring and finding it again from a nearby dune. Weather and terrain may still obscure it; it complements electronic navigation. |
 | Wind-powered board energy behavior | **Planned requirement**, existing motor/hover accounting is a foundation. | Wind supplies propulsion; hover/equipment still draw power and powered catch-up remains available. Measure energy under real towing, steering and motor assistance rather than assuming speed alone determines draw. |
-| Camp navigation equipment and receiver progression | **Planned direction**, with the cheap survey receiver already built. | Extend the Sanddune camp-return foundation; select additional tiers and supported signals without replacing the existing radio. Starcom expansion is a possible later connection, not a built quest dependency. |
-| Suit and wrist instrument | **Planned Spaceport direction; concrete design remains open**. | Carry-view equipment could give the headlamp, harness, protection and beacon receiver physical homes. A wrist field instrument could show self and known beacons on an initially blank/no-data display instead of a permanent minimap. No full HUD rewrite, fixed device or extra survival meter is approved. |
+| Camp navigation equipment | **Selected 2026-10-22.** | Make existing equipment obtainable and understandable. New receiver tiers and Starcom repair are not selected release requirements. |
+| Suit and wrist instrument | **No wrist instrument required for 0.4, 2026-10-22.** | Inventory rework and suit modules are open design in [Menus](prd/menus-and-ui.md#inventory-and-suit-modules-open-design-2026-10-22), not release dependencies. |
 
-**Accepted deferral, 2026-10-21:** keep kites, deeper suit/wrist instruments and
-broader origin variants in Spaceport rather than expanding Sanddune around them.
-This records release direction, not a full HUD redesign, fixed wrist-device
-specification or commitment to implement every other origin. Sanddune still
-needs human expedition/sailing acceptance and representative large-camp budgets.
+**Updated scope, 2026-10-22:** the earlier suit/wrist and broader-variant deferral
+into Spaceport is superseded by the [recorded decisions](briefs/spaceport-0.4-plan-2026-10-22.md#recorded-decisions-2026-10-22).
+Keep the kite expedition, current navigation acquisition/readability and its selected
+energy gate. No wrist instrument or balanced-variant package is required.
 
 Multi-line kite controls are outside the first kite. They require a deeper control
 design and quicker line selection before adoption. Suit battery costs, upgrades,
@@ -205,9 +230,9 @@ spaceport destination or an orbital travel system.
 
 ### Meaningful arrivals and repeat runs — Surveyor in Sanddune
 
-The bounded Surveyor opening is selected for Sanddune. Broader origin variants
-are deferred to Spaceport; their exact implementation and release gates remain
-to select rather than committing to complete every origin.
+The bounded Surveyor opening is selected for Sanddune. Variants remain secret unlocks
+without a balancing requirement; they become canonical only with a special start
+like the Surveyor. [Profile](prd/profile-and-saves.md#secret-variants-and-canonical-starts-selected-2026-10-22) owns this decision.
 
 | Feature | Status | Intended experience and open decisions |
 | --- | --- | --- |
@@ -216,7 +241,7 @@ to select rather than committing to complete every origin.
 | Physical launch station and continuous first-person departure | **Built on master.** | Physical always-on display and focused view, rotating globe and one ray-dragged departure pulse replace the modal/numeric planner. Shared saved clock/path links the window, forecast and flight. First-person entry heat/impact and visible loaded gear continue into real nearby recovery. Connected input/save checks and inspected Forward+/Compatibility sequences pass. Human comprehension/comfort remain open. No numeric angle controls or full orbital flight simulator. |
 | Starter camp cloth sail | **Planned candidate**, not built. | A small cloth in the existing frame makes the first camp a sailing toy and teaches the wind. Define fitting and balance before adding it to an opening. |
 | Seeded pod/loadout variation | **Built on master.** | The manifest records stable shell roles, surviving equipment, charge, damage and recovery state; three focused determinism/save-data/viability checks pass. Physical survivors now materialize once as ordinary salvageable objects; phase and partial recovery save checks pass. Surviving equipment becomes the randomized start. Vary damage and usable pieces with viable survival and meaningful tradeoffs; exact distributions remain to be balanced. Resolve once and save it; loading must not reroll or grant a second kit. |
-| Deed-unlocked origin variants | **Planned Spaceport direction**, exact model undecided. | Reuse deeds/profile unlocks for selectable variants within an origin; favor tradeoffs rather than strictly stronger kits. Define concrete variants, actions and unlocks at implementation. |
+| Deed-unlocked origin variants | **Secret unlock direction, 2026-10-22.** | No balancing requirement; special starts precede canonical status. Not a required 0.4 balanced-variant package. |
 | Salvager's first salvage opportunity | **Planned direction**, existing seeded wreck-field placement is a foundation. | Start near varied ruins/wrecks whose reachable, useful finds shape the first home. Check actual access, hazards and viability rather than proximity alone. |
 | Other origins' meaningful arrivals | **Deferred Spaceport direction; individual starts not committed**. | Give each an appropriate reason, situation and physical equipment source; do Surveyor first rather than copy its pod to every origin. |
 | Choices during descent | **Exploratory, back burner**. | An optional way to express opening variation. No decision interface or random reward selection is approved. |
@@ -299,5 +324,5 @@ playtesting. This ships the integrated Surveyor opening, Home, traversal, rope
 and radio work described above. It does not mark the outstanding human sailing,
 expedition, comprehension, comfort or large-camp budget gates complete. Preserve
 those follow-ups within Sanddune rather than silently treating publication as
-acceptance. Kites, deeper suit/wrist instruments and broader origins remain
-Spaceport directions.
+acceptance. The 2026-10-22 Spaceport decisions retain the kite expedition and
+existing navigation; wrist and balanced-variant requirements are superseded.

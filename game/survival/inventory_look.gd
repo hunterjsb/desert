@@ -22,7 +22,7 @@ const FOV := 30.0
 const ROOM := 0.8
 ## The needle turns this far, rad, before it's drawn again.
 const NEEDLE_STEP := 0.004
-const PARAMS: Array[StringName] = [&"age", &"era", &"lit"]
+const PARAMS: Array[StringName] = [&"age", &"era", &"lit", &"blasted"]
 
 ## What it shows now, and what it showed it by (Suit), to draw again only
 ## when that changes.

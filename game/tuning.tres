@@ -104,6 +104,7 @@ shield_warning_seconds = 120.0
 storm_wreck_minutes = 10.0
 wind_harm_speed = 20.0
 wind_wreck_minutes = 30.0
+worn_loss = 0.5
 walk_speed = 1.8
 sprint_speed = 3.9
 uphill_slowdown = 1.5

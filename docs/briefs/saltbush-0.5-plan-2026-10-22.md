@@ -1,7 +1,18 @@
-# 0.5 Saltbush: the camp lives off the land
+# 0.5 Saltbush: original proposal, promise deferred
 
 *Proposal for Hunter, 2026-10-22. Pre-planning only: no build approval, release commitment,
 PRD amendment or vision change. Hunter requested “let's pre-plan 0.5 saltbush”.*
+
+**Decision update, 2026-10-22:** Hunter rejected the proposed renewable-camp promise
+and ten-day sustain gate in submission `1bbceea8` (questionnaire revision 126).
+0.5's promise and acceptance will be revisited after Spaceport. The proposal below
+is historical analysis, not current release scope or a build plan. Canonical answers:
+[roadmap](../alpha-roadmap.md#saltbush-promise-and-acceptance-deferred-2026-10-22),
+[survival](../prd/survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22),
+[farming](../prd/farming.md#agricultural-depth-before-variety-and-portable-gods-selected-2026-10-22),
+[repairs and era mobility](../prd/devices-and-mods.md#repairs-and-era-mobility-selected-2026-10-22),
+[four kiln forms](../prd/devices-and-mods.md#four-kiln-forms-selected-2026-10-22), and
+[near/far readability](../prd/world-and-terrain.md#near-and-far-side-readability-selected-2026-10-22).
 
 **Proposed outcome:** salvage establishes the camp; growing, processing and repairing let
 it endure. Food, water, fuel and maintenance become deliberate renewable budgets rather
@@ -144,7 +155,9 @@ Console-map integration, one reachable site. Keep survival viable without its pe
 Recommended stretch: useful existing broadcasts support the core milestone without requiring
 a complete portable-god framework. No new Walker dependency; coordinate overlaps with Gonk.
 
-## Proposed release boundary and order
+<a id="proposed-release-boundary-and-order"></a>
+
+## Historical proposed release boundary and order (superseded)
 
 **Spaceport:** keep its selected salvage kite, travel/recovery/camp anchoring and navigation
 outcome; suit/wrist and origin details remain separate choices in the roadmap. Its name does
@@ -164,11 +177,13 @@ water → storage/treatment → farm/player; (4) propagation/drift and remaining
 (5) selected geography/Almanac additions. Share physical sockets, water/power ledgers and saves.
 No workstream should ship only a recipe name whose inputs cannot be obtained in normal play.
 
-## Proposed acceptance: establish, then sustain, then recover
+<a id="proposed-acceptance-establish-then-sustain-then-recover"></a>
+
+## Rejected acceptance proposal: establish, then sustain, then recover
 
 **N = 10 complete local days after setup**, across three fixed ordinary world seeds, with
 at least two naturally occurring storms in each observation window. This is a proposed
-screen for a renewable budget, not proof of ten-year survival. Hunter must accept N and scope.
+screen for a renewable budget, not proof of ten-year survival. Hunter rejected this gate on 2026-10-22; it is retained only as proposal history.
 Start each run from a fresh profile and normal Surveyor arrival, without dev grants, unlocked
 advantages, forced weather or hand-built camp fixtures. Record setup time and every source.
 Normal salvage/starting stores may bootstrap hardware and propagules; define a visible start
@@ -194,7 +209,9 @@ play and real GPU captures of growth, damage, repair and processing. A dry bed, 
 wrong repair input or interrupted firing must have a legible recoverable failure. Broader CI,
 platform checks and performance budgets remain release gates; no full suite for this brief.
 
-## Hunter's scope decisions
+<a id="hunters-scope-decisions"></a>
+
+## Original questions (answered 2026-10-22; see canonical links above)
 
 1. Is 0.5's promise the renewable camp loop above, and does the ten-day acceptance fit?
 2. Must all eight main crops and going-to-seed/drift ship, or can the complete loop lead?

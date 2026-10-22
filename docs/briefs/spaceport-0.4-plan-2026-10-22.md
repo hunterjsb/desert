@@ -1,14 +1,15 @@
 # 0.4 Spaceport: a wind-powered expedition that comes home
 
 *Proposal for Hunter, 2026-10-22. Docs only. Existing agreements are identified below;
-release scope, acceptance numbers and recommended deferrals remain proposed.*
+scope decisions below were recorded on 2026-10-22. Unselected implementation details
+remain proposals; this record does not claim they are built.*
 
 SANDGAME suggests “you can go far and find your way home”. That is a useful direction,
 but Home already promises return navigation and a persistent camp. Spaceport needs a
 new playable outcome: **find a salvage kite, travel under wind with useful cargo, land
 and recover it, and find your living camp again through honest signals and landmarks.**
 The wind changes the expedition's power budget and handling; the trip brings something
-worth carrying home. A wrist display can support that journey without defining it.
+worth carrying home. A wrist display is not required.
 
 The [roadmap](../alpha-roadmap.md#04-spaceport-one-line-kite-and-the-next-exploration-layer)
 selects the one-line salvage kite as Spaceport's defining feature. It explicitly does
@@ -68,8 +69,9 @@ pulling; honest hover/load draw, powered catch-up and readable remaining reserve
 and kite towing; log propulsion, hover and attached-equipment energy separately. Use a
 motor-disabled segment to prove the kite supplies real motion, then restore assistance.
 **Dependencies:** one real force path, motor demand reflecting actual assistance, load
-and stall behavior. Propose at least 50% lower propulsion energy per distance on a suitable
-wind-powered leg; set a total battery budget only after measuring the rig. Hover is not free.
+and stall behavior. The selected gate is at least 50% lower propulsion energy per km on the same route
+with the same load and matched weather/wind. Total battery use must also be lower,
+without a fixed percentage target. Hover is not free; see the delegated decision below.
 Do not grant charging or zero draw merely because a kite is attached or the board is moving.
 
 ## 3. Camp landmark and return navigation: useful when visible, honest when lost
@@ -117,7 +119,7 @@ and saved evidence. Coordinate radio assets/behavior with Gonk and Nav work with
 Radio can lead to Starcom; it cannot independently make an interstellar call. No fictional
 new transmission should masquerade as a finished Starcom quest or free global navigation.
 
-## 5. Suit and wrist instrument: a physical place for information
+## 5. Suit and wrist instrument: historical candidate, not selected for 0.4
 
 **Hunter, quoted in [Home](../prd/bubble-shield-and-camp.md#marked-home-a-camp-that-does-not-despawn-selected-2026-10-20):**
 “Maybe it's pretty much blank and it says no data, but if you put a beacon down, you at
@@ -136,47 +138,51 @@ this demonstrably works. If it shows a point map, do not imply surveyed terrain 
 **Dependencies:** input/pose ownership, field of view, readable real rendering, baseline
 accessibility and the same Home signal contract. Protection/harness/battery systems remain
 separate choices; a display must not silently remove existing survival or navigation abilities.
-**Recommendation:** optional polish unless Hunter makes one narrow wrist interaction a gate.
+**Decision, 2026-10-22:** no wrist instrument required. Inventory/suit-module thinking
+is open design in [Menus](../prd/menus-and-ui.md#inventory-and-suit-modules-open-design-2026-10-22).
 A convincing instrument is valuable; a complete suit/inventory redesign would dominate 0.4.
 
-## 6. Origins and repeat runs: distinct equipment choices, not stronger starter kits
+## 6. Origins and repeat runs: secret variants, special starts before canon
 
 **Hunter, [Surveyor opening](../prd/surveyor-opening.md#hunters-decisions):** “We do want some
 randomization. So some drop pod randomization, and that could be part of the unlock tree
 too… We gotta keep our deeds in mind.” SANDGAME also relays his direction for sub-unlocks
 within a class and the Salvager near randomized ruins; those details are not quoted here
-as a complete agreed spec. The roadmap lists origin variants as Spaceport direction.
+as a complete agreed spec. The original roadmap listed origin variants as Spaceport direction; the decision below
+supersedes its balancing requirement.
 
 **Built:** profile/deed unlocks, selectable origins, seeded Surveyor pod manifest/damage and
 persisted recovery. Salvager has its own kit/personal shield and seeded world placement.
 None of that demonstrates a sub-variant selector or guaranteed useful reachable starting ruins.
-**Needed:** exact variants, unlocking deeds, balanced equipment tradeoffs, selection UI/save
+**Needed:** exact variants, unlocking deeds, selection UI/save
 identity, and Salvager access/viability checks. Don't give a fresh profile a locked kit merely
 to make the kite acceptance easier. Don't reroll equipment when reloading the opening.
 **Smallest complete path, proposed if selected:** one earned Surveyor loadout variant with
-an explicit tradeoff and saved choice; separately, a Salvager start whose nearby real ruins
+a saved choice; balancing is not required. Separately, a Salvager start whose nearby real ruins
 provide a usable first salvage opportunity. Neither needs a unique cinematic opening.
 **Dependencies:** profile/run compatibility, loot/spawn guarantees and meaningful deed actions.
-**Recommendation:** defer broader variants to a later replay pass unless Hunter selects one
-bounded example. This is a proposed change to release scope, not an already accepted move
-out of Spaceport, and not a promise to finish every origin for 1.0.
+**Decision, 2026-10-22:** secret unlocks need no balancing and are not canonical until
+they have special starts like the Surveyor. [Profile](../prd/profile-and-saves.md#secret-variants-and-canonical-starts-selected-2026-10-22)
+owns the exact words; no balanced-variant package is a 0.4 gate.
 
-## Proposed acceptance: acquire, travel, recover, return
+<a id="proposed-acceptance-acquire-travel-recover-return"></a>
+
+## Accepted trip and selected energy gate: acquire, travel, recover, return
 
 Use a fresh profile and normal Surveyor start on three fixed ordinary seeds. No dev grants,
 forced wind, prebuilt rig or unlocked origin. Record how the player acquires the kite and
 navigation gear; acquisition is part of the check, not a debug precondition.
 
-After a safe camp is established, propose a real salvage objective 1–2 km away, beyond normal
-local retention but initially within the beacon's designed range. Carry water, food and an
-agreed useful payload; return with a real find. Distance is a provisional test scale, not a
-world boundary or universal safety recommendation. Record load, wind, travel time and reserve.
+After a safe camp is established, use a real salvage objective 1–2 km away, beyond normal
+local retention but initially within the beacon's designed range. Carry a useful payload—a farm box, chassis, console, condenser, large mast or sail—
+and return with a real find. There is no food/water deadline. Distance is a test scale, not a
+world boundary or universal safety recommendation. Record load, wind, travel time and remaining board charge.
 Launch, travel, land, release/recover and relaunch through ordinary controls. Looking aside
 must leave control unchanged. Demonstrate useful crosswind progress and a recoverable lull
 or aborted launch; choose a viable route instead of demanding flight directly into the wind.
 
 Meet the wind-leg propulsion criterion above without hiding hover/gear consumption. Return
-before supplies expire with a recorded emergency motor reserve. Player and camp should live
+before the board's battery runs flat. There is no separate emergency-motor-reserve feature. Player and camp should live
 because they were prepared, not because remote simulation paused or weather was disabled.
 On a separate nearby scouting leg, anchor the kite at camp and find its silhouette again.
 Test a genuinely lost beacon signal: label last-known data, then reacquire it on return.
@@ -186,25 +192,59 @@ Save/resume with kite carried, flying/tethered and camp-anchored; cross streamin
 boundaries and return without lost anchors, duplicate gear or frozen Home consumption.
 Inspect real day/haze/night captures and active-play performance. Use focused physical/
 energy/save checks plus human unassisted play; a stationary screenshot cannot accept flight.
-Scope any wrist or variant gate separately if selected. Full CI, supported-platform checks
+No wrist instrument or balanced-variant package is required. Full CI, supported-platform checks
 and the version policy still apply before release; this brief needs docs checks only.
 
-## Scope boundary and Hunter's decisions
+<a id="scope-boundary-and-hunters-decisions"></a>
 
-**Core recommendation:** salvage traction kite, its board energy behavior, recovery and camp
-anchoring, using current navigation with only necessary acquisition/usability fixes.
-**Optional:** a narrowly scoped wrist view, a justified new receiver capability, one origin
-variant. **Out by default:** multi-line flight controls, global terrain minimap, HUD/suit
-rewrite, orbital travel, launch-site gameplay, Starcom repair, full god quests, and Saltbush's
-repair/farming/processing package. Existing antenna kite and radio systems remain compatible.
+## Scope boundary
 
-1. Does the wind-powered salvage expedition and return define 0.4, rather than general travel?
-2. Accept the proposed 1–2 km three-seed trip and separate camp-kite scouting check? What useful
-   payload and emergency reserve should the trial require?
-3. Should navigation work focus on acquiring/understanding existing gear, or is a specific new
-   receiver capability required? If new, what information or range does it unlock?
-4. Is the wrist instrument a gate? If so, is a requested Home display enough, or which exact
-   additional functions belong on it without making the whole suit a release dependency?
-5. Keep broader origin variants in 0.4, select one bounded variant, or defer them to a replay pass?
-6. What measured total battery advantage should count as “not really take much battery”, after
-   preserving real hover and equipment costs? Accept the provisional propulsion-only criterion?
+Selected: salvage traction kite, board energy behavior, recovery and camp anchoring,
+using existing navigation with acquisition/readability improvements. No wrist device,
+balanced origin-variant package, orbital travel, launch site or Starcom repair is
+required. Inventory/suit modules are open design. Repairs are deferred; Saltbush's
+promise and acceptance will be revisited after Spaceport.
+
+## Recorded decisions (2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+### 1. Expedition outcome
+
+> Yes.
+
+### 2. Trip and payload
+
+> yes except the food/water respecting the changes i mentioned above. what emergency motor power though? payload could be farm box or chassis or console/condenser/large/mast/sail.
+
+The accepted trip excludes the old food/water deadline. SANDGAME clarified the
+return condition as before the board's battery runs flat, not a separate reserve mechanic.
+
+### 3. Navigation
+
+> we should make it obt and und
+
+Make existing navigation gear obtainable and understandable; no new tier is required.
+
+### 4. Wrist and suit
+
+> it does not need that, but we do want to star thinking about an inventory rework and suit module system.
+
+Open inventory/suit design is owned by [Menus](../prd/menus-and-ui.md#inventory-and-suit-modules-open-design-2026-10-22); no wrist is required for 0.4.
+
+### 5. Variants
+
+> we dont need to worry about balancing variants, theyre secret unlocks for now, and wont become cannon until they have a special start like our surveyor
+
+[Profile](../prd/profile-and-saves.md#secret-variants-and-canonical-starts-selected-2026-10-22) owns secret variants and the special-start condition for canon.
+
+### 6. Energy acceptance
+
+> your call
+
+**SANDGAME's delegated decision, 2026-10-22:** propulsion energy per km must be
+at least 50% lower than motor-only on the same route with the same load and matched
+weather and wind. A motor-off segment proves the wind moves the board. Log propulsion,
+hover and equipment separately; total battery use must be lower, but has no fixed
+percentage target. The kite replaces propulsion, not hover or equipment draw. These
+are selected acceptance criteria, not measured results or a claim of implementation.
