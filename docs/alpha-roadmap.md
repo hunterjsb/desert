@@ -26,7 +26,7 @@ remain open. See [the expedition account](prd/surveyor-expedition-check.md).
 A 108-piece camp experiment avoids a redundant zero-motion contact projection.
 Paired settled CPU medians improve about 3.4%; falling CPU does not improve. This
 is a bounded saving, not a representative large-camp budget acceptance. See
-[native contact cost](prd/native-contact-cost.md) for its physical checks and limits.
+[native contact cost](prd/movement.md#final-capsized-large-camp-cost) for its physical checks and limits.
 
 ## Version policy
 

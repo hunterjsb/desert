@@ -396,134 +396,52 @@ starting arrangement for new Salvager runs. The personal shield retains its exis
 2.5 m radius, 3 W clear/50 W storm draw and 85% wind protection. No shield tuning or
 protection mechanic changes. Its portability supports scouting before finding a home.
 
-## Marked Home: first local expedition slice (selected 2026-10-20; in progress)
+## Marked Home: a camp that does not despawn (selected 2026-10-20)
 
-A small Home beacon fits a chassis through ordinary mounting. Use it with free
-hands to mark one travelling Home. The Surveyor carries one; ordinary surface
-salvage can supply another. Marking explicitly claims no untouched loot.
+Hunter, on leaving the camp behind: "we should honestly try and not despawn the camp
+when the player zooms away... maybe you can put, like, a homing beacon on the
+chassis... it really just prevents everything on that chassis from despawning... your
+chassis plus everything within the shield."
 
-Membership includes the marked chassis assembly, claimed loose belongings inside
-its attached shield's configured envelope, and the owned stakes, lines, guides
-and cables needed by those belongings. The player and ridden board do not extend
-this graph. Membership survives shield shutdown, battery failure and beacon loss;
-those affect protection/reception, not ownership. Refresh moving assemblies and
-remove genuinely destroyed members. Removing an item from the camp must remain an
-ordinary physical action. Replacing/unmarking Home is allowed only when its old
-support can safely return to the player area, without immediately deleting it.
+On a Home view: "a map or mini-map type thing. Maybe it's pretty much blank
+and it says no data, but if you put a beacon down, you at least have that one point
+and yourself", and later, riffing, "maybe it's like a Pip-Boy-type thing".
 
-Admit the whole graph before reporting Home ready. Initial engineering limits are
-512 bodies, a 128 m horizontal span and 49 additional support chunks including a
-one-chunk collision halo and one retirement margin. A maximum aligned footprint
-can cover three-by-three chunks; collision support expands that to five-by-five,
-and safe retirement keeps at most seven-by-seven. Store these in tuning; measure before accepting them as
-an operating budget. Refuse an oversized mark visibly rather than keeping a
-partial camp. Later motion/extension must not delete an existing admitted member
-or introduce magnetic forces; retain its last supported footprint while reporting
-that it needs attention and prepare new support before retiring the old support.
+**Decisions.**
+- A small Home beacon fits a chassis through ordinary mounting, and with free hands it
+  marks that chassis as the one travelling Home. The Surveyor carries one; surface
+  salvage can supply another. Marking claims no untouched loot.
+- The members are the marked chassis assembly, the claimed loose belongings inside its
+  shield's envelope, and the stakes, lines, guides and cables they need; the player and
+  the ridden board do not extend the set. Members are never despawned: membership
+  survives shield shutdown, battery failure and beacon loss, which affect protection and
+  reception, not ownership. Removing an item stays an ordinary physical action.
+- Home's ground, collision and history are kept as a second bounded area (a 128 m span
+  and 49 extra support chunks, in Tuning), ready before Home reports ready. An oversized
+  mark is refused visibly, never kept as a partial camp. The camp keeps its ordinary
+  physics, weather, power, water and crops: not frozen, not invulnerable, no second
+  catch-up simulation. Saves keep member references and the geographic anchor, and
+  request remote support before restore waits on a distant body.
+- The Home view shows bearing, distance and a live or clearly labelled last-known fix.
+  It is known-point navigation: no terrain survey, no permanent HUD or minimap. The
+  beacon draws 1 W and receives out to 2 km at first, subject to measurement. Returning
+  from beyond the ordinary retention area records one camp-family deed.
+- Done means marking, admission, remote simulation, return navigation and far restore
+  work together; a marker alone does not make scouting safe.
 
-Retain actual terrain, collision and history as a second bounded area. Keep the
-existing physics, weather, wear, power, water and crop operation. Do not freeze a
-remote camp, grant invulnerability or introduce a second catch-up simulation.
-Save stable member references, geographic anchor and local member poses; request
-remote support before restore waits for distant bodies. Old saves without Home
-retain their existing behavior. Check a two-kilometre scouting round trip,
-including origin/history changes and a distant save/resume; that check does not
-establish an unlimited moon-wide operating range.
-
-The beacon draws 1 W through ordinary device power. Its first reception range is
-2 km, subject to measurement. A requested Home view in the carry interface shows
-bearing, distance and reception/support status. Keep a clearly labelled last-known
-fix when power or range prevents updates. This is known-point navigation with no
-automatic terrain survey or permanent HUD/minimap. A moving camp updates its fix
-when received. A return after leaving the ordinary player retention area records
-one camp-family deed at arrival; tune departure and arrival distances centrally.
-
-This feature is complete only when marking, admission, remote simulation, return
-navigation and far restore work together. A marker alone does not make scouting
-safe. The current travelling camp and baseline suit protection remain usable.
-
-**Initial implementation evidence (2026-10-20):** The physical beacon, requested
-return view, explicit claimed membership, second support region and far-save
-references are connected. A 2.1 km round trip/restore and remote battery draw pass.
-The beacon model is one cached surface (1,164 triangles), inspected in real GPU
-captures. These checks cover a small camp; combined CI, larger camp budgets and
-unassisted expedition play remain acceptance gates.
-
-The Surveyor guide's scouting page now teaches taking out and mounting the packed
-beacon, marking with free hands, waiting for ready support and opening Home for
-return navigation. Compass, landmarks, mooring and weather preparation remain
-relevant; a saved fix does not provide shield power or protection.
-
-**Admission-limit measurement:** An isolated real CampHome graph with 512 work
-items (511 rigid members, 25 support cells) took 5.462 ms p50 / 5.601 ms p95 to
-refresh across 240 samples after 30 warm-ups; maximum 6.237 ms, initial mark
-6.949 ms. Item 513 refused the whole mark. The fixture used frozen catalog hooks
-and a small footprint, isolating graph CPU cost. It does not establish full
-physics/GPU, heterogeneous-device or maximum-span performance acceptance.
-
-### Live expedition acceptance (2026-10-21; focused checks passed)
-
-The bounded follow-up keeps a small marked shield/solar/battery camp and a
-claimed loose supply physically active during a 2.1 km scouting departure.
-Power must continue through ordinary ticks, including generation and demand,
-and shutdown must not erase the loose member. Save while far, restore the
-actual supported objects, then return to the same camp and inspect its GPU view.
-Existing focused history checks remain the duplicate-sheet acceptance; this
-check adds the live-resource and membership combination rather than a second
-remote catch-up simulation. It does not establish the maximum camp budget or
-boarding/hoverboard travel acceptance.
-
-**Measured result:** Camp 9 passes in 24 s. It marks through the ordinary hands
-use path, keeps the unfrozen chassis and loose supply while 2.1 km away, samples
-Home's own geography/day/temperature, and runs ordinary automatic power ticks.
-The remote camp cell gains charge; total stored energy matches generation minus
-demand and spill. Shield shutdown, far save/restore and return preserve exactly
-one loose supply and one shield, with no ground rescues before or after restore.
-
-The matching Forward+ 1280×720 return capture passes and was inspected. Its 10 s
-remote interval generated 0.139396 Wh, consumed 0.008333 Wh and added 0.131063 Wh
-to the actual camp cell. After returning it reports four physical members, 289
-loaded chunks and 25 collision chunks. These are one clear-day, still-air,
-two-piece stationary camp measurements. The scripted scout relocation and camera
-helper do not establish hoverboard travel, human comprehension, storms, moving
-rigs or the maximum camp budget. No remote simulation code change was needed.
-
-**Medium-camp acceptance (2026-10-21; focused checks passed):** Exercise a nine-piece
-joined deck with mixed hover/skate mounts, powered shield and beacon, solar,
-battery dock, condenser and radio, plus a separate tethered planter with stored
-produce and a loose claimed supply. Keep ordinary body physics and support
-contacts active through a 2.1 km departure and return. Compare the same near camp
-unmarked and marked before measuring the retained distant camp; an unmarked
-distant camp would be deleted and is not an equivalent baseline. Record engine
-main-thread/physics frame times and active-body counts without imposing a new
-machine-dependent threshold. Inspect a real unseen return capture. This is a
-medium assembly check, not acceptance of the maximum admission count or span.
-
-Camp 10 and the actual unseen `look/home/medium` fixture pass with nine joined
-pieces, seven hover trays, two skate mounts, a four-cell dock, two solar panels,
-shield, beacon, radio, condenser, tethered planter with four stored coalcane
-bundles, one loose bundle, two stakes and three physical lines. This is **10
-physical Home members / 46 work items**, with a 189.1 kg joined deck. The skates
-are raised clear by powered hover; this checks mixed mounts and actual hover
-support, not simultaneous loaded skate contacts. The planter retains its own
-real battery/tray and tether, rather than being artificially frozen or mounted.
-
-The focused headless check passed in 28 s. Two actual 1280×720 GPU return views
-were inspected: the deck remained assembled and level, with the planter and loose
-supply still beside it inside the shield. The fixture samples 240 ordinary
-physics frames per phase and watches deck motion continuously after initial
-settling, including streaming and origin changes. World resources keep their
-normal ticks. Travel is scripted and player physics is disabled by the shared
-hands fixture; this does not validate an unassisted hoverboard route, long storm
-survival, maximum admission count/span or a general frame-time budget.
-
-In the final GPU run the continuously observed deck stayed below 0.0012 rad/s
-spin, 0.0063 m/s speed and 0.780° tilt, with zero ground rescues. Near the same
-camp, unmarked then marked, median sampled engine process estimates were
-13.904 / 14.218 ms; physics estimates were 6.921 / 7.284 ms. Distant marked
-estimates were 14.087 / 8.045 ms, with 314 terrain / 50 collision chunks instead
-of 289 / 25 near camp. These are **coarse engine-monitor observations on a
-shared desktop**, not independent per-tick timings or isolated Jolt solver cost.
-The physics active-object monitor returned zero despite the live bodies, so it
-does not establish an active-body count. Remote and near scenes differ; their
-whole-frame difference cannot be attributed solely to Home membership.
+**As built.** `HomeBeacon` is the device and `CampHome` the explicit claim, owned by
+`World.home`; `HomeView` is the carry-interface page. Membership is a set rebuilt only
+when something changes (bodies entering or leaving the world, ropes, mounts) plus a slow
+sweep for belongings drifting into the shield; between rebuilds the footprint follows the
+chassis, and the per-tick body check is constant time. The cap is 160 work items, sized
+so a rebuild at the cap stays under 1 ms (0.55 ms median measured, camp probe 12; the
+ticks between cost about 5 µs, where every tick once rebuilt the whole camp). Home's state shows on the beacon itself:
+off when unmarked or unpowered, blinking while its ground is being prepared, steady when
+ready, with a short tone as it becomes ready. Unmarking happens only at the beacon. The
+Home view shows only bearing, distance and the live or last-known fix; streaming
+internals never reach the player. A camp that moves faster than its support can follow
+keeps collision at its new place rather than pinning support at the old one. The ground
+side is in [World & terrain](world-and-terrain.md#marked-camp-preparation-2026-10-20).
+The Surveyor guide's scouting page teaches taking out and mounting the beacon, marking,
+waiting for ready support and opening Home; compass, landmarks, mooring and weather
+preparation still matter, and a saved fix gives no shield power or protection.

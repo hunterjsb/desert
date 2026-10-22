@@ -2226,6 +2226,13 @@ does not enter this added chassis path. Further optimization should investigate
 geometry/height-query reuse while preserving impulse order and fresh projected
 velocities; caching the full physics snapshot changes sequential contact response.
 
+**Native projection skip.** A fresh native contact model (`RopeArticulation.native`)
+has zero external velocity, so its predicted/external projection pass is skipped; the
+projection of fresh actual velocities still runs on every call, and ordinary rope
+models keep both passes. On the 108-piece capsized camp this cut settled CPU about 3%
+(12.58 to 12.16 ms per tick) with identical contact outputs, and gave no benefit
+while falling. Rope32 checks the skip against the full projection.
+
 ### Cache the chassis's ordered frame geometry (2026-10-21; selected experiment)
 
 A preceding scoped last-chunk/sample-array experiment preserved the printed

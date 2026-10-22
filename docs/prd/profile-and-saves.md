@@ -857,3 +857,6 @@ These two add a candidate roster of 67 deeds in the same eleven families; the
 separate Spaceport kite prototype's deeds are not integrated in this count.
 Preflight saves retain actual object references and the selected plan/cargo,
 not a second kit grant. Integrated evidence remains pending.
+
+**Summit deed (2026-10-22).** Above the Dunes (`summit`, far family, summit mark)
+records standing on a mountain's summit structure; the roster is 68 deeds.
