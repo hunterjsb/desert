@@ -18,7 +18,7 @@ func run() -> void:
 		view.present({"phase": phase, "elapsed": 0.5, "progress": 0.5})
 		var window: Vector4 = view._effects._look.get_shader_parameter(&"aperture")
 		var rect := Rect2(Vector2(window.x, window.y), Vector2(window.z, window.w))
-		check(view._interior == shell and shell.transform.is_equal_approx(view._seat_eye.affine_inverse())
+		check(view._interior == shell and view._orbit.camera.global_position.distance_to(shell.to_global(view._seat_eye.origin)) <= world.tuning.surveyor_arrival.flight_offset_m + 0.000001
 			and view._screen.visible and rect.size.x > 0.1 and rect.size.y > 0.1
 			and screen.encloses(rect), "each flight phase looks through the same real seated shell window")
 	world.player.restore_ground_pose(&"prone")

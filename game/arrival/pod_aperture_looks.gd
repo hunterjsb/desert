@@ -1,6 +1,6 @@
 class_name PodApertureLooks
 extends RefCounted
-## A double-glazed tail panel; the opaque rim leaves a real opening through it.
+## A double-glazed recoverable panel; the opaque rim leaves a real opening through it.
 
 # Tail-local X is vertical and Z is across the seated view.
 const OPENING := Vector2(0.56, 0.68)

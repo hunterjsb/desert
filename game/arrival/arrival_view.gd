@@ -15,6 +15,9 @@ var _voice := AudioStreamPlayer.new()
 var _impact_roll := AudioStreamPlayer.new()
 var _heard_phase: StringName
 var _has_phase := false
+var _state: Dictionary
+var _air := AudioStreamPlayer.new()
+var _hull := AudioStreamPlayer.new()
 
 func setup(world: World) -> void:
 	_world = world
@@ -22,6 +25,16 @@ func setup(world: World) -> void:
 	add_child(_voice)
 	_impact_roll.bus = Sounds.WORLD
 	add_child(_impact_roll)
+	_air.bus = Sounds.WORLD
+	_air.stream = Sounds.WIND.duplicate()
+	(_air.stream as AudioStreamOggVorbis).loop = true
+	add_child(_air)
+	_hull.bus = Sounds.WORLD
+	var hull := Sounds.BOARD_RUSH.duplicate() as AudioStreamWAV
+	hull.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	hull.loop_end = roundi(hull.get_length() * hull.mix_rate)
+	_hull.stream = hull
+	add_child(_hull)
 	# Cover the suit and HUD, while system menus and console remain above flight.
 	layer = 100
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -52,11 +65,13 @@ func setup(world: World) -> void:
 func present(state: Dictionary) -> void:
 	if not is_instance_valid(_world):
 		return
+	_state = state
 	var phase: StringName = state.get("phase", &"orbit")
 	var seconds := float(state.get("elapsed", 0.0))
 	var duration := maxf(float(state.get("phase_seconds", 1.0)), 0.001)
 	var progress := clampf(float(state.get("progress", seconds / duration)), 0.0, 1.0)
 	_phase_audio(phase, progress)
+	_air_audio(phase, progress)
 	_root.visible = phase != &"recovery"
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED if phase in [&"landing", &"recovery"] else SubViewport.UPDATE_ALWAYS
 	_screen.visible = phase not in [&"landing", &"recovery"]
@@ -109,20 +124,79 @@ func present(state: Dictionary) -> void:
 	# Effects are pure saved-time samples; computing the window twice triggers no events.
 	_effects.present(state, Rect2())
 	var recoil := Transform3D(Basis.from_euler(_effects.camera_rotation), _effects.camera_offset)
+	var angles := head_angles()
+	var head := Transform3D(Basis(Vector3.UP, angles.x) * Basis(Vector3.RIGHT, angles.y), Vector3.ZERO)
 	if phase == &"landing":
 		var camera := _world.player.camera
 		if not _ground_camera_active:
 			_ground_camera_base = camera.transform
 			_ground_camera_active = true
-		camera.transform = _ground_camera_base * recoil
+		camera.transform = _ground_camera_base * head * recoil
 		var tail := _world.arrival_nodes.get(&"tail") as Chassis
 		var intact := is_instance_valid(tail) and tail.deck != null
-		_effects.present(state, _aperture(camera, _ground_pod_pose()) if intact else Rect2(Vector2.ZERO, Vector2.ONE))
+		if intact:
+			_present_windows(state, camera, _ground_pod_pose())
+		else:
+			_effects.present(state, Rect2(Vector2.ZERO, Vector2.ONE))
 	else:
 		var base := _orbit.camera.transform
-		_orbit.camera.transform = base * recoil
-		_interior.transform = recoil.affine_inverse() * _seat_eye.affine_inverse()
-		_effects.present(state, _aperture(_orbit.camera, base * _seat_eye.affine_inverse()))
+		_orbit.camera.transform = base * head * recoil
+		_interior.transform = (head * recoil).affine_inverse() * _seat_eye.affine_inverse()
+		_present_windows(state, _orbit.camera, base * _seat_eye.affine_inverse())
+
+
+func head_angles() -> Vector2:
+	var angles: Vector2 = _state.get("head_look", Vector2.ZERO)
+	if not angles.is_finite():
+		return Vector2.ZERO
+	var rules := _world.tuning.surveyor_arrival
+	return Vector2(clampf(angles.x, -deg_to_rad(rules.head_yaw_deg), deg_to_rad(rules.head_yaw_deg)),
+		clampf(angles.y, -deg_to_rad(rules.head_pitch_deg), deg_to_rad(rules.head_pitch_deg)))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_instance_valid(_world) or not Controls.playing() or Controls.mouse_free \
+		or not event is InputEventMouseMotion or not _state.get("phase", &"") in [&"orbit", &"ejection", &"descent", &"entry", &"landing"]:
+		return
+	var angles: Vector2 = head_angles() - event.relative * _world.tuning.mouse_sensitivity
+	_state.head_look = angles
+	_state.head_look = head_angles()
+	get_viewport().set_input_as_handled()
+
+
+func _present_windows(state: Dictionary, camera: Camera3D, pod_pose: Transform3D) -> void:
+	var windows: Array[Rect2] = []
+	var points := PackedVector2Array()
+	for role: StringName in PodShell.VIEWPORTS:
+		if not _world.arrival_nodes.is_empty() and not is_instance_valid(_world.arrival_nodes.get(role)):
+			continue
+		var cell: Vector2i = PodShell.PANELS[role][0]
+		var face: Array = Frame.FACES[PodShell.PANELS[role][1]]
+		var frame := Transform3D(Basis.IDENTITY, Vector3(cell.x, 0, cell.y)) * Chassis.FACES[Chassis.TOP]
+		var panel := pod_pose * frame * Transform3D(Catalog._facing(face[1]), face[0]) * Frame.piece_seat()
+		var actual := _world.arrival_nodes.get(role) as Chassis
+		var floor := _world.arrival_nodes.get(&"floor_a") as Chassis
+		if is_instance_valid(actual) and is_instance_valid(floor):
+			var root := floor.deck if floor.deck != null else floor
+			var owner := actual.deck if actual.deck != null else actual
+			var physical_pod := root.global_transform * floor.pose()
+			panel = pod_pose * physical_pod.affine_inverse() * owner.global_transform * actual.pose()
+		var corners := PackedVector2Array()
+		var low := Vector2(INF, INF)
+		var high := Vector2(-INF, -INF)
+		for corner in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
+			var point := panel * Vector3(corner.x * PodApertureLooks.OPENING.x * 0.5, 0, corner.y * PodApertureLooks.OPENING.y * 0.5)
+			if camera.is_position_behind(point):
+				corners.clear()
+				break
+			var pixel := camera.unproject_position(point) / Vector2(camera.get_viewport().get_visible_rect().size)
+			corners.append(pixel)
+			low = low.min(pixel)
+			high = high.max(pixel)
+		if corners.size() == 4:
+			windows.append(Rect2(low, high - low))
+			points.append_array(corners)
+	_effects.present(state, _aperture(camera, pod_pose), windows, points)
 
 
 func _ground_pod_pose() -> Transform3D:
@@ -159,8 +233,7 @@ func _phase_audio(phase: StringName, progress: float) -> void:
 		_voice.stop()
 		var stream: AudioStream
 		match phase:
-			&"ejection": stream = Sounds.UNSEAT
-			&"entry": stream = Sounds.BOARD_RUSH
+			&"ejection": stream = Sounds.BOARD_POP
 			&"landing": stream = Sounds.BOARD_SLAM
 		if stream != null:
 			_voice.stream = stream
@@ -170,23 +243,42 @@ func _phase_audio(phase: StringName, progress: float) -> void:
 			_impact_roll.stream = Sounds.BOOM
 			_impact_roll.volume_db = float(settings.get("impact_roll_db", -16.0))
 			_impact_roll.play()
-	if phase == &"entry" and _voice.playing:
-		var envelope := smoothstep(0.0, 0.15, progress) * (1.0 - smoothstep(0.8, 1.0, progress))
-		_voice.volume_db = float(settings.get("entry_db", 0.0)) + linear_to_db(maxf(envelope, 0.001))
-
 	if phase == &"landing" and _impact_roll.playing:
 		var fade := 1.0 - smoothstep(0.35, 1.0, progress)
 		_impact_roll.volume_db = float(settings.get("impact_roll_db", -16.0)) + linear_to_db(maxf(fade, 0.00001))
 
 
+func _air_audio(phase: StringName, progress: float) -> void:
+	var weight := 0.0
+	var rules := _world.tuning.surveyor_arrival
+	match phase:
+		&"ejection": weight = smoothstep(0.0, 1.0, progress) * float(rules.flight_air_ejection)
+		&"descent": weight = lerpf(rules.flight_air_ejection, rules.flight_air_descent, progress)
+		&"entry": weight = lerpf(rules.flight_air_descent, 1.0, smoothstep(0.0, rules.flight_air_entry_peak, progress))
+		&"landing": weight = 1.0 - smoothstep(0.0, rules.flight_air_impact_fade, progress)
+	for bed: AudioStreamPlayer in [_air, _hull]:
+		if weight <= 0.0:
+			bed.stop()
+		else:
+			bed.volume_db = float(rules.flight_air_db if bed == _air else rules.flight_hull_db) + linear_to_db(weight)
+			bed.pitch_scale = lerpf(rules.flight_audio_pitch.x, rules.flight_audio_pitch.y, weight)
+			if not bed.playing:
+				bed.play()
+
+
 func dispose() -> void:
+	_air.stop()
+	_hull.stop()
 	_voice.stop()
 	_voice.stream = null
 	_impact_roll.stop()
 	_impact_roll.stream = null
 	if _ground_camera_active and is_instance_valid(_world) and is_instance_valid(_world.player) \
 		and is_instance_valid(_world.player.camera):
-		_world.player.camera.transform = _ground_camera_base
+		_world.player.camera.transform = _ground_camera_base * Transform3D(Basis(Vector3.UP, head_angles().x) * Basis(Vector3.RIGHT, head_angles().y), Vector3.ZERO)
+		var yaw := _world.player.camera.rotation.y
+		_world.player.rotate_y(yaw)
+		_world.player.camera.rotation.y = 0.0
 	_ground_camera_active = false
 	_world = null
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED

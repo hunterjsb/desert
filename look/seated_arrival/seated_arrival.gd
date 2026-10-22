@@ -37,6 +37,8 @@ func run() -> void:
 	view.present({"phase": &"entry", "elapsed": 2.8, "progress": 0.95})
 	var window: Vector4 = view._effects._look.get_shader_parameter(&"aperture")
 	var aperture := Rect2(Vector2(window.x, window.y), Vector2(window.z, window.w))
+	var windows := int(view._effects._look.get_shader_parameter(&"window_count"))
+	var corners: PackedVector2Array = view._effects._look.get_shader_parameter(&"window_corners")
 	# Hold the real renderer's pose/light fixed to isolate only its aperture overlay.
 	view._effects.present({"phase": &"entry", "elapsed": 0.0, "progress": 0.0}, aperture)
 	var clear := await capture("entry_clear")
@@ -47,10 +49,10 @@ func run() -> void:
 		for x in clear.get_width():
 			if clear.get_pixel(x,y) == hot.get_pixel(x,y): continue
 			var uv := Vector2(x + 0.5, y + 0.5) / Vector2(clear.get_size())
-			if not aperture.grow(0.003).has_point(uv): outside += 1
+			if not _inside_window(uv, corners, windows, aperture): outside += 1
 			else: heated += 1
 	print("SEATED_ENTRY_GPU aperture=%s outside=%d changed=%d" % [aperture, outside, heated])
-	check(outside == 0 and heated > 100, "entry changes the real viewing aperture while the surrounding shell stays fixed")
+	check(outside == 0 and heated > 100, "entry changes the actual visible windows while the surrounding shell stays fixed")
 	await shot("impact", &"landing", world.tuning.surveyor_arrival.impact_jolt_s * 0.25, 0.1)
 	await shot("settled", &"landing", 1.2, 1.0)
 	view.dispose()
@@ -66,3 +68,15 @@ func capture(label: String) -> Image:
 	capture.save_png(out.path_join(label + ".png"))
 	print("SEATED_VIEW_CAPTURE ", label)
 	return capture
+
+func _inside_window(uv: Vector2, corners: PackedVector2Array, count: int, fallback: Rect2) -> bool:
+	if count == 0:
+		return fallback.grow(0.003).has_point(uv)
+	for i in count:
+		var polygon := corners.slice(i * 4, i * 4 + 4)
+		if Geometry2D.is_point_in_polygon(uv, polygon):
+			return true
+		for edge in 4:
+			if Geometry2D.get_closest_point_to_segment(uv, polygon[edge], polygon[(edge + 1) % 4]).distance_to(uv) <= 0.003:
+				return true
+	return false
