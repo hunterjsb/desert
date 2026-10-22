@@ -13,7 +13,6 @@ func run() -> void:
 	var old := kite.laid()
 	check(old.rope.hauls.is_valid(), "the flying kite pays its current line")
 	var loose := kite.take(kite.bridle())
-	world.content.add_child(loose)
 	loose.global_position = kite.global_position
 	await physics_frames(2)
 	check(not old.rope.hauls.is_valid(), "the disconnected rope loses the kite's reel callback")

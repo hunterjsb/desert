@@ -25,7 +25,21 @@ func run() -> void:
 	metric("camp pull", line.rope.tension, "N")
 	check(height > 15.0 and apart < line.full * 1.15, "the kite flies high over camp on its ordinary line")
 	check(line.rope.tension > 10.0, "the camp hook bears real pull")
-	check(kite.use(world.player, kite.global_position), "the kite folds")
+	# Recover in a lull with the ordinary line in hand, then free that hand.
+	blow(downwind * 4.0)
+	var tail := camp.take(line.ends[1].socket)
+	hands.hold(tail)
+	check(hands.reel.notch(220), "the ordinary rope in hand reels the kite back")
+	speed_up(4)
+	await simulate(65.0)
+	speed_up(1)
+	check(world.player.waist.take_from_hands(), "the recovered line ties at the waist")
+	var camera := world.player.camera
+	check(camera.global_position.distance_to(kite.global_position) < world.tuning.reach,
+		"ordinary reeling brings the kite within reach")
+	look(camera.global_position, kite.global_position)
+	await physics_frames(3)
+	check(hands.interact() and not kite.flying, "the reachable kite folds through the ordinary use action")
 	check(kite.laid() == line and world.ropes.ropes.has(line.rope), "folding preserves the rope and both attachments")
 	check(kite.carryable and not kite.flying, "the recovered kite can be carried")
 	var full := line.full

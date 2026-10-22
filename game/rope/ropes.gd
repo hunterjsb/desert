@@ -54,6 +54,7 @@ var _bent := Vector3.ZERO
 var _tuning: Tuning
 var _articulations: Array[RopeArticulation] = []
 var _bodies := {}
+var _before := {}
 var _tick := 0
 var _pulls := {}
 var _drag := Vector3.ZERO
@@ -340,9 +341,20 @@ func shown_end(end: RopeEnd, fraction := Engine.get_physics_interpolation_fracti
 	return at - moved * (1.0 - fraction)
 
 
+## A known external load arrives before the lines brake it. Its impulse is
+## already in the server's velocity, not another push for the predictor to add.
+func push_before_solve(body: RigidBody3D, impulse: Vector3) -> void:
+	if not is_instance_valid(body) or body.freeze:
+		return
+	body.apply_central_impulse(impulse)
+	var id := body.get_instance_id()
+	_before[id] = _before.get(id, Vector3.ZERO) + impulse / body.mass
+
+
 func _physics_process(delta: float) -> void:
 	var started := Time.get_ticks_usec()
 	_solve(delta)
+	_before.clear()
 	_bear(delta)
 	_draw(delta)
 	tick_ms = (Time.get_ticks_usec() - started) / 1000.0
@@ -442,10 +454,11 @@ func _body(holder: Node3D, h: float) -> RopeBody:
 		body.center = rigid.global_transform * PhysicsServer3D.body_get_direct_state(rigid.get_rid()).center_of_mass_local
 		body.inv_mass = Vector3.ONE / rigid.mass
 		body.inv_inertia = RopeArticulation.inverse_inertia(rigid)
-		body.velocity = rigid.linear_velocity
+		body.velocity = PhysicsServer3D.body_get_direct_state(rigid.get_rid()).linear_velocity \
+			if _before.has(id) else rigid.linear_velocity
 		body.spin = rigid.angular_velocity
 		if seen:
-			body.expected = (body.velocity - body.left).limit_length(MAX_EXPECTED * h)
+			body.expected = (body.velocity - body.left - _before.get(id, Vector3.ZERO)).limit_length(MAX_EXPECTED * h)
 			body.expected_spin = (body.spin - body.left_spin).limit_length(MAX_EXPECTED_SPIN * h)
 			body.velocity += body.expected
 			body.spin += body.expected_spin

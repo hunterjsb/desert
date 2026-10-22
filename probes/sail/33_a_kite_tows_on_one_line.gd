@@ -4,6 +4,7 @@ extends SailProbe
 
 func run() -> void:
 	await load_sailing()
+	world.counts_deeds = true
 	blow(downwind * 10.0)
 	var player := world.player
 	player.set_physics_process(true)
@@ -34,6 +35,7 @@ func run() -> void:
 	metric("peak pull", seen.peak, "N")
 	check(moved > 10.0 and seen.peak > 20.0 and player.board == board, "wind tows the rider with no motor input")
 	check(height > 5.0 and kite.flying, "the kite flies above the rider")
+	check(get_node(^"/root/Profile").did(&"kite_board"), "actual loaded board travel earns Kite Rider")
 	var was := line.rope.length
 	check(hands.reel.notch(1), "the sole waist line reels without selecting it")
 	await simulate(1.0)

@@ -23,7 +23,7 @@ static var _kept := [
 	# A save from before the dial kept "channel": setting it places the dial.
 	[Radio, ["on", "frequency", "band", "fm_mhz", "am_khz", "sw_khz", "volume", "target"]],
 	[SurveyReceiver, ["acquired_from", "scan_pending"]],
-	[SalvageKite, ["flying", "line_issued", "paying", "phase", "load_n", "sailed_m"]],
+	[SalvageKite, ["flying", "line_issued", "paying", "phase", "load_n", "elevation", "sailed_m"]],
 	[AntennaKite, ["flying", "line_out", "charge"]],
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],

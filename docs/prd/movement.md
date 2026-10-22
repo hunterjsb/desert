@@ -1873,6 +1873,11 @@ the salvage kite adds an ordinary rope and aerodynamic load coupling for tractio
 The radio's flight, gain, charge, grounding and wear behavior remain their own.
 Keep the reusable flight law shared rather than making another kite simulator.
 
+The light wing's aerodynamic impulse arrives before the ordinary rope solve,
+so that solve can brake its wind load within the same tick. Register the already
+applied velocity change so the rope predictor does not count it twice. Existing
+rope strength, stretch and closing limits remain in force.
+
 **Energy direction (approved gate, SANDGAME 2026-10-22).** Motor draw follows
 propulsion the motor supplies, including powered catch-up and work against a
 loaded line. Wind propulsion itself costs no motor power. Hover and equipped

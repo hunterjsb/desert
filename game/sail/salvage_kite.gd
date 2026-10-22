@@ -11,6 +11,7 @@ var line_issued := false
 var paying := false
 var phase := 0.0
 var load_n := Vector3.ZERO
+var elevation := 0.0
 var sailed_m := 0.0
 var _wing: MeshInstance3D
 var _canopy: CollisionShape3D
@@ -19,6 +20,7 @@ var _rope: Rope
 
 func _ready() -> void:
 	super()
+	process_physics_priority = -15
 	phase = float(hash(get_instance_id()) % 1000) * 0.01
 	_wing = MeshInstance3D.new()
 	_wing.mesh = KiteLooks.kite()
@@ -99,6 +101,10 @@ func _toggle(by: Player) -> bool:
 
 
 func _refresh() -> void:
+	if not flying and _rope != null:
+		if _rope.hauls == _hauled:
+			_rope.hauls = Callable()
+		_rope = null
 	carryable = not flying
 	set_meta(&"wind_catch", wind_catch())
 	if _wing == null:
@@ -151,15 +157,40 @@ func _physics_process(delta: float) -> void:
 		line.rope.length = minf(line.rope.length + world.tuning.traction_payout_ms * delta, line.full)
 		line.rope.strand.set_length(line.rope.length)
 		paying = line.rope.length < line.full
-	var air := world.weather.felt_wind(global_position) - linear_velocity
+	# Read the physics velocity before supplying this tick's wind impulse.
+	var state := PhysicsServer3D.body_get_direct_state(get_rid())
+	var air := world.weather.felt_wind(global_position) - state.linear_velocity
 	var across := Vector2(air.x, air.z)
 	var tuning := world.tuning
 	var direction := KiteFlight.direction(across, world.time, phase, tuning)
-	var pressure := across.length_squared() * tuning.traction_area_m2 * tuning.traction_catch * durability
-	var force := direction * pressure
-	force.y += air.y * absf(air.y) * tuning.traction_vertical_drag
-	load_n = load_n.lerp(force, KiteFlight.settling(delta))
-	apply_central_force(load_n)
+	var catch_area := tuning.traction_area_m2 * tuning.traction_catch * durability
+	# Cloth settles in angle; drag follows today's air, so delayed drag cannot
+	# feed an oscillation back into a light wing at a coarser physics step.
+	elevation = lerpf(elevation, direction.y, KiteFlight.settling(delta))
+	var horizontal := sqrt(maxf(1.0 - elevation * elevation, 0.0))
+	var speed := air.length()
+	load_n = Vector3.ZERO
+	if speed > 0.001:
+		var along := air / speed
+		var lift := Vector3.UP - along * along.y
+		var lift_share := elevation
+		if lift.length_squared() > 0.001:
+			lift = lift.normalized()
+			var sway := across.angle_to(Vector2(direction.x, direction.z)) if across.length_squared() > 0.001 else 0.0
+			lift = lift.rotated(along, sway)
+		else:
+			lift = Vector3.RIGHT
+			lift_share = 0.0
+		# Keep the lift/drag angle while averaging the impulse over the tick.
+		# This dissipative step cannot increase the relative air's energy.
+		var response := catch_area * speed * delta / mass
+		var pressure := catch_area * speed * speed / (1.0 + response / (2.0 * horizontal))
+		load_n = (along * horizontal + lift * lift_share) * pressure
+		var remaining_y := air.y - load_n.y * delta / mass
+		load_n.y += tuning.traction_vertical_drag * remaining_y * absf(remaining_y) \
+			/ (1.0 + tuning.traction_vertical_drag * absf(remaining_y) * delta / mass)
+
+	world.ropes.push_before_solve(self, load_n * delta)
 	_orient()
 	if global_position.y - world.height_under(global_position) > AntennaKite.LOW:
 		var storm := world.weather.field.raw_storm_at(world.world_x(global_position.x), world.world_z(global_position.z), world.time)
