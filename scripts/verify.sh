@@ -7,6 +7,15 @@
 set -euo pipefail
 name=${1:?a name for the verify branch}
 land=${2:-}
+# A landing holds the shared lock for its whole run, so two drivers never land
+# over each other: the second waits, then must merge what the first landed.
+if [[ $land == --land ]] && command -v flock >/dev/null; then
+	lock=${DESERT_LAND_LOCK:-$(git rev-parse --show-toplevel)/../.desert-land.lock}
+	exec 9>"$lock"
+	flock -n 9 || { echo "another landing holds $lock: waiting for it"; flock 9; }
+	git fetch -q origin
+	git merge-base --is-ancestor origin/master HEAD || { echo "master moved past it: merge master and verify again" >&2; exit 1; }
+fi
 sha=$(git rev-parse HEAD)
 git fetch -q origin
 # Docs alone run no CI (probes.yml ignores them): nothing to wait for.

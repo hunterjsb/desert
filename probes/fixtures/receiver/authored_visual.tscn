@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/look/receiver/receiver_visual.gd" id="1"]
+
+[sub_resource type="BoxMesh" id="Body"]
+size = Vector3(0.28, 0.32, 0.18)
+
+[node name="AuthoredReceiver" type="Node3D" node_paths=PackedStringArray("shell", "meter", "tuning", "volume", "reading")]
+script = ExtResource("1")
+shell = NodePath("Model/Case")
+meter = NodePath("Model/PointerPivot")
+tuning = NodePath("Model/TuningPivot")
+volume = NodePath("Model/VolumePivot")
+reading = NodePath("Model/ReadHere")
+
+[node name="Model" type="Node3D" parent="."]
+position = Vector3(0.01, 0.02, 0)
+
+[node name="Case" type="MeshInstance3D" parent="Model"]
+mesh = SubResource("Body")
+
+[node name="PointerPivot" type="Node3D" parent="Model"]
+position = Vector3(-0.03, 0.04, 0.1)
+rotation = Vector3(0, 0.2, 0)
+
+[node name="Pointer" type="MeshInstance3D" parent="Model/PointerPivot"]
+scale = Vector3(0.02, 0.18, 0.02)
+mesh = SubResource("Body")
+
+[node name="TuningPivot" type="Node3D" parent="Model"]
+position = Vector3(0.08, -0.06, 0.1)
+
+[node name="VolumePivot" type="Node3D" parent="Model"]
+position = Vector3(-0.08, -0.06, 0.1)
+
+[node name="ReadHere" type="Marker3D" parent="Model"]
+position = Vector3(0, 0.03, 0.12)
