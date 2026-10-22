@@ -949,7 +949,10 @@ static func inherit(body: Node, line: Array) -> void:
 	var view := _look_of(body)
 	var look := Dress.lineage(id, line)
 	if view != null and look != null:
-		view.mesh = look
+		if device != null:
+			device.apply_frame_look(look)
+		else:
+			view.mesh = look
 	if device != null:
 		device.show_wear()
 		# Its frame's weight changed, which its middle is worked out from.

@@ -1,5 +1,8 @@
 ## 0.3.1-alpha “Sanddune” — development, unreleased
 
+- Make the survey receiver appearance replaceable independently of gameplay,
+  retaining its current procedural model, wear, controls and saved identity.
+
 - Fit either original roof panel to either pod roof bay and launch with it in
   place. Loose roofs close into the remaining free roof faces. Invalid placements
   identify their actual host/face and explain the intended destination.

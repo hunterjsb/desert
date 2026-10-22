@@ -87,13 +87,17 @@ func show_thing(thing: RigidBody3D) -> void:
 		var copy := MeshInstance3D.new()
 		copy.mesh = look.mesh
 		copy.material_override = look.material_override
+		if look.mesh != null:
+			for surface in look.mesh.get_surface_count():
+				copy.set_surface_override_material(surface, look.get_surface_override_material(surface))
 		copy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		if Paint.is_worn(look):
+		if Paint.is_worn(look) or (thing is SurveyReceiver and (thing as SurveyReceiver).painted().has(look)):
 			for param in PARAMS:
 				copy.set_instance_shader_parameter(param, look.get_instance_shader_parameter(param))
 		copy.transform = _within(thing, look)
-		if thing is SurveyReceiver and look == (thing as SurveyReceiver).needle:
-			copy.transform = (thing as SurveyReceiver).meter_pose()
+		if thing is SurveyReceiver and (thing as SurveyReceiver).visual != null \
+				and (thing as SurveyReceiver).visual.is_ancestor_of(look):
+			copy.transform = (thing as SurveyReceiver).preview_pose(look)
 		_model.add_child(copy)
 		if thing is Compass and look == (thing as Compass).needle:
 			needle = copy
