@@ -89,7 +89,10 @@ stand outside, in the storm, and take the damage. The alternative is a shield th
 lets wind through, like the late-game temperature shield. That trade-off comes free from
 the felt-weather rule.
 
-## Fuel crops and the burner (proposed, not built)
+## Fuel crops and the burner (agreed 2026-10-22, not built)
+
+**Hunter, 2026-10-22:** "coalcane is a go", the roadmap's farming-and-processing stretch goal, as one
+complete chain: grow coalcane, burn it in the burner, power at night and through storms.
 
 *[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md); implied equipment, direction only, with no
 number set. It is the fuel half of "Fuel grown from plants" above.*
