@@ -14,8 +14,8 @@ func run() -> void:
 		var rope := line.rope
 		var before := rope.strand.points.duplicate()
 		for fraction: float in [0.0, 0.25, 0.5, 0.75, 1.0]:
-			var a := ropes._shown_end(rope.a, fraction)
-			var b := ropes._shown_end(rope.b, fraction)
+			var a := ropes.shown_end(rope.a, fraction)
+			var b := ropes.shown_end(rope.b, fraction)
 			rope.strand.pin_ends(a, b, fraction)
 			var shown := rope.strand.shown()
 			var near := shown[-1]

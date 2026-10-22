@@ -1,12 +1,15 @@
 extends SailProbe
-## Existing saves lacking hoist fields retain working controls without new hardware.
+## A save from before the physical hoist holds a raised sail with no halyard
+## and the old toggle's fields. It loads whole, its cloth comes down for want
+## of a line, and nothing raises it but one over the masthead pulley.
 
 func run() -> void:
 	await load_sailing()
 	rig(open, heading())
 	deck.freeze = true
-	hoist(45.0)
 	await physics_frames(3)
+	mast.raise = 1.0
+	mast.raised = true
 	var data := Snapshot.take(world)
 	old_records(data)
 	var saves := get_node(^"/root/Saves")
@@ -18,18 +21,20 @@ func run() -> void:
 	for child in deck.mounted():
 		if child is Mast:
 			mast = child
-	check(mast.legacy_hoist and mast.raise > 0.99 and mast.halyard() == null,
-		"the old rig retains its raised cloth without inserted hardware")
-	check(mast.interact(world.player), "its old mast control remains available")
-	await simulate(1.8)
-	check(mast.raise < 0.01, "the restored old mast still furls")
+	mast.interact(world.player)
+	await physics_frames(2)
+	check(mast.halyard() == null and mast.raise < 1.0, "the old mast has no toggle to raise it")
+	await simulate(2.0)
+	check(mast.raise < 0.01, "with no halyard holding it, the old raised cloth comes down")
 
 
 func old_records(value: Variant) -> void:
 	if value is Dictionary:
 		if value.get("id", &"") == &"mast" and value.has("state"):
-			value.state.erase("hoist_enabled")
-			value.state.erase("legacy_hoist")
+			value.state.erase("head_speed")
+			value.state["hoist_enabled"] = false
+			value.state["legacy_hoist"] = true
+			value.state["trim"] = 1.2
 		for child in value.values():
 			old_records(child)
 	elif value is Array:

@@ -29,7 +29,7 @@ static var _kept := [
 	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["hoist_enabled", "legacy_hoist", "raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Mast, ["raised", "raise", "head_speed", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
@@ -684,8 +684,6 @@ func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 		if absf(state.frequency - 1930.0) <= _world.tuning.receiver_band_khz:
 			state = state.duplicate()
 			state.frequency += Dial.BEACON_KHZ - 1930.0
-	if body is Mast and not state.has("hoist_enabled"):
-		body.legacy_hoist = true
 	var part := body as Part
 	if part != null and state.has("stats"):
 		part.stats = state.stats.duplicate(true)
@@ -901,7 +899,7 @@ func _solver_in(rec: Dictionary) -> void:
 		var node: Node3D
 		if entry[0] is Dictionary:
 			var mast := _made.get(entry[0].get("boom")) as Mast
-			node = mast._boom_body if is_instance_valid(mast) else null
+			node = mast.boom_body() if is_instance_valid(mast) else null
 		else:
 			node = _world.player if entry[0] is String else _made.get(entry[0])
 		if node == null:

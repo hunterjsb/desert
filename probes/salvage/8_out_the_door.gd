@@ -104,7 +104,7 @@ func _towed_out() -> void:
 	await simulate(1.0 / 60.0)
 	check(hands.interact() and world.player.waist.holds(line.ends[1]), "you tie the line at your waist")
 	var walked := await _walk([Vector2(2.6, -1.0), Vector2(5.0, -2.4), Vector2(5.0, -4.0),
-		Vector2(5.0, -Ruin.HALF.y - OUT - line.rope.length - 1.0)], false)
+		Vector2(5.0, -Ruin.HALF.y - OUT - line.rope.length - 1.5)], false)
 	_moving(false)
 	var out := -Ruin.HALF.y - _plan_of(find).y
 	print("a found chassis of %.1f kg towed out of the back door on a %.1f m line: %.1f m out"

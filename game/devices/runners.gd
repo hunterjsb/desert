@@ -28,6 +28,8 @@ const SETTLED := Vector2(0.02, 0.2)
 ## tick, never faster than this, m/s: it settles back up, never flung.
 const TOUCH_OUT := 0.3
 const TOUCH_SPEED := 0.5
+## Resting on several points, they're met together this many times over.
+const REST_SWEEPS := 3
 
 ## Each runner as [corners of its face, its length's way, glide, plough, grip,
 ## hold], in its device's frame.
@@ -164,7 +166,7 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 		v = coupled.velocity + Vector3.DOWN * world.gravity * h
 		w = coupled.spin
 		supported_mass = model.total
-		var mobility := model.root_mobility()
+		var mobility := model.mobility()
 		linear_force = mobility[0]
 		angular_force = mobility[1]
 		linear_torque = mobility[2]
@@ -344,10 +346,10 @@ static func _mass(inv_mass: float, turn: Basis, arm: Vector3, way: Vector3) -> f
 ## dead there, pushed back out of the sand over a few ticks with no bounce,
 ## and drags along it `grip` of that push whichever way it slides. A camp
 ## going over comes to rest on its masthead so.
-static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float, clearance := 0.0) -> void:
+static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, h: float, clearance := 0.0) -> bool:
 	var gap := point.y - world.height_at(world.world_x(point.x), world.world_z(point.z)) - clearance
 	if gap > REACH:
-		return
+		return false
 	var state := PhysicsServer3D.body_get_direct_state(body.get_rid())
 	var inv_mass := 1.0 / body.mass
 	var turn := state.inverse_inertia_tensor
@@ -364,10 +366,10 @@ static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, 
 	var moving := velocity + Vector3.DOWN * world.gravity * h + spin.cross(arm)
 	var normal := _contact_response(model, inv_mass, turn, arm, Vector3.UP)
 	if normal.y <= 0.0:
-		return
+		return false
 	var pushed := maxf(0.0, -(moving.y + (gap / h if gap > 0.0 else maxf(gap * TOUCH_OUT / h, -TOUCH_SPEED))) / normal.y)
 	if pushed <= 0.0:
-		return
+		return false
 	var supported := moving + normal * pushed
 	var flat := Vector3(supported.x, 0.0, supported.z)
 	var way := flat.normalized() if flat.length() > 1e-4 else Vector3.ZERO
@@ -385,6 +387,27 @@ static func touch(body: RigidBody3D, world: World, point: Vector3, grip: float, 
 				drag = minf(drag, grip * pushed / cone)
 			pushed += drag * friction.y / normal.y
 	body.apply_impulse(Vector3.UP * pushed - way * drag, point - body.global_position)
+	return true
+
+
+## Several points of one body meeting the sand at once, as a camp lying over
+## rests on its frame edges and masthead: each met in turn, and swept again,
+## so the last one met never undoes the first. Only those within reach of
+## the sand are met, and only those pushing are swept again; `clearances`
+## pairs with `points`.
+static func rest_on(body: RigidBody3D, world: World, points: PackedVector3Array, clearances: PackedFloat32Array,
+		grip: float, h: float) -> void:
+	var near: Array[int] = []
+	for i in points.size():
+		var p := points[i]
+		if p.y - world.height_at(world.world_x(p.x), world.world_z(p.z)) - clearances[i] <= REACH:
+			near.append(i)
+	for sweep in REST_SWEEPS:
+		var pushing: Array[int] = []
+		for i in near:
+			if touch(body, world, points[i], grip, h, clearances[i]):
+				pushing.append(i)
+		near = pushing
 
 
 ## A point's velocity response includes its freely hinged load through the joint.
@@ -392,5 +415,5 @@ static func _contact_response(model: RopeArticulation, inv_mass: float, turn: Ba
 	var lever := arm.cross(way)
 	if model == null:
 		return way * inv_mass + (turn * lever).cross(arm)
-	var response: Array = model.response([model.bodies[0]], [way], [lever])[0]
-	return response[1] + response[2].cross(arm)
+	var blocks := model.mobility()
+	return blocks[0] * way + blocks[2] * lever + (blocks[1] * way + blocks[3] * lever).cross(arm)

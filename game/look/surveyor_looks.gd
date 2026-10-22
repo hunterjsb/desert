@@ -13,6 +13,8 @@ extends RefCounted
 ## side is the right's mirror.
 const HIPS := Vector3(0.0, 0.98, 0.0)
 const WAIST := Vector3(0.0, 1.16, 0.0)
+## The belt's front knot, from the hips, where waist lines are tied.
+const WAIST_KNOT := Vector3(0.0, 0.07, -0.17)
 const NECK := Vector3(0.0, 1.56, -0.01)
 const SHOULDER := Vector3(0.155, 1.46, 0.0)
 const ELBOW := Vector3(0.195, 1.18, 0.03)
@@ -215,9 +217,9 @@ static func waist_wrap() -> ArrayMesh:
 			b.drum(float(rules.end_strand_radius), span.length(), (ends[0] + ends[1]) * 0.5, fibre,
 				Basis(Quaternion(Vector3.UP, span.normalized())), int(rules.sides))
 	# A small crossing and muted whipping make the forward tie readable.
-	b.drum(float(rules.gauge), 0.065, Vector3(0, 0.07, -0.17), fibre, Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
+	b.drum(float(rules.gauge), 0.065, WAIST_KNOT, fibre, Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
 	for x in [-0.022, -0.014, 0.014, 0.022]:
-		b.drum(float(rules.end_wrap_radius), float(rules.end_wrap_width), Vector3(x, 0.07, -0.17), binding,
+		b.drum(float(rules.end_wrap_radius), float(rules.end_wrap_width), WAIST_KNOT + Vector3(x, 0.0, 0.0), binding,
 			Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
 	_made[&"waist_wrap"] = b.commit()
 	return _made[&"waist_wrap"]
