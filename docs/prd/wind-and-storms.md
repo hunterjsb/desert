@@ -1162,3 +1162,65 @@ with `look/exposure/first_hour.tscn`, adding `--baseline` for the old refill. Th
 opportunity to notice and investigate, not a guaranteed find next to every camp. A
 controlled fifteen-minute stripping storm leaves a 6 m-deep site partly visible ten
 calm minutes later and buried again after ninety minutes.
+
+## Large-moon atmosphere consumer contract (agreed, 2026-10-21; implementation pending)
+
+Sky ground masks follow SurfaceProjection's visual radius and the observer's nonnegative
+height above the local datum. Celestial angular directions, compressed routes and sizes
+remain unchanged. The crop-survey veil uses that radius and the observer's height when
+integrating its thinning dust column. Storm depth remains render-ray distance; each
+atmospheric field sample is inverse-projected back to the original flat weather sheet.
+The ray's curved altitude also determines its roof interval, so a high observer looking
+down can enter the wall. Nearby shelter intersections and shell geometry stay physical.
+Surface frame uniforms are per material, never global to unrelated viewports.
+
+Weather27 passes (6 s): the actual camera at 2 km gets about 1.88 degrees of
+horizon dip and the same per-material surface frame, changing navigation circumference
+does not change the crop veil, and higher observers see less dust. Existing Tu10
+(26 s) and eclipse11 (7 s) remain green. The storm roof uses a bounded quadratic
+intersection rather than discarding all downward rays above the roof. Ground-dust
+curvature uses four weighted taps against the original integral; the curved/straight
+ratio tends to one at zero curvature, and other consumers retain the existing flat
+function. This adds no map reads. Controlled real GPU clear/storm captures now pass: the high downward view enters
+the storm roof, the shield interior remains clear, and the 20 m exterior view is dusty.
+No shader/script/resource errors remain. The correction skips exactly zero optical
+depth. Alternating per-material flat/curved blocks at 1280×720 measured low clear
+2.32→2.60 ms and full storm 3.08→3.61 ms, with 3.61→3.72 ms inside the storm
+shield. These whole-viewport samples include camera-dependent changed ray work.
+Gamescope retained VSync despite a disable request, and high/exterior views varied
+substantially, so no improvement or precise isolated shader-cost claim follows.
+A final clear repeat measured 3.42→3.73 ms at the low observer. Combined-terrain
+horizon acceptance remains pending: the isolated fixture still uses finite flat terrain.
+
+A numerical fast path is agreed for the skirt: when the maximum endpoint sag divided
+by dust scale height is at most 0.001, omit the four-tap integral ratio (at most 0.101%
+relative optical-depth error). The sag is convex along a ray, so its maximum is bounded
+by the endpoints. Endpoint height for the streak texture remains inverse-projected.
+This is a numerical approximation tolerance, not an added gameplay distance.
+
+The bounded fast-path shader was recompiled on the GPU and the downward storm and
+shield captures inspected again, without shader/script/resource errors. Its paired
+full-storm repeat measured low observer 5.323→5.455 ms (+0.132 ms), shield interior
+4.559→4.734 ms (+0.175 ms); high-view differences remained noisy. Cross-run clock
+variation prevents subtracting this directly from the earlier cost measurement.
+
+The high-observer crop veil must integrate signed vertical travel. A downward view
+from 10 km to the Drone at 6 km crosses denser air; treating it as horizontal at
+10 km underestimates the column. The correction retains the analytic exponential column for signed travel using
+the shared parabolic endpoint altitude, clamps physical endpoint altitude at ground,
+and differences bounded endpoint densities. A nearzero interval uses their average
+to avoid cancellation; long ascending paths retain the previous analytic accuracy. Vertical reversed paths must agree
+with their analytic exponential column. No celestial placement or orbit changes.
+
+Weather27 reproduces the downward-column bug before the change (5 s RED), then
+passes with the signed analytic column (6 s GREEN). Reversed vertical 6–10 km
+paths match the analytic exponential integral and each other; the descending path
+has over4.9times the opacity of the horizontal path at10 km.
+
+Finite Drone visibility uses clearance of the observer-to-target segment against
+the same parabolic presentation surface: evaluate both endpoints and the quadratic
+stationary point when it falls inside the segment. No extra hull margin is introduced.
+Only the modelled Drone's local observer subtracts actual nonnegative eye altitude
+from its compressed-orbit radial position; the orbit and all other celestial angular
+ephemerides remain unchanged. Both proxy materials receive slant/near distance scale
+for actual-depth rendering rather than forcing the model behind all ground.

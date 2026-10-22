@@ -2,6 +2,8 @@ extends MenuProbe
 ## Real Main resume continues the saved flight and never grants the survivors twice.
 func run() -> void:
 	var tuning := Tuning.current()
+	# Exercise the saved automatic opening; preparation has separate acceptance.
+	tuning.surveyor_preflight["enabled"] = false
 	tuning.run_seed = 1234
 	tuning.salvage = false
 	for phase in [&"orbit", &"ejection", &"descent", &"entry", &"landing"]:
@@ -17,12 +19,16 @@ func run() -> void:
 	var flight: Dictionary = saves().held().arrival.duplicate(true)
 	var observed: Array[Dictionary] = []
 	saves().restored.connect(func(at: World) -> void: observed.append(at.arrival_state.duplicate(true)), CONNECT_ONE_SHOT)
+	# New games now prepare aboard ship; this saved legacy flight must not.
+	tuning.surveyor_preflight["enabled"] = true
 	await main.resume()
 	world = main.world()
 	check(observed.size() == 1 and observed[0].phase == flight.phase and observed[0].elapsed == flight.elapsed,
 		"resume reconnects the exact saved phase before its clock continues")
 	check(world.arrival_state.phase == &"recovery" and world.arrival_state.structure == flight.structure \
 		and world.arrival_state.equipment == flight.equipment, "the resumed flight lands with the same resolved survivors")
+	check(not world.arrival_state.has("preflight") and world.arrival.preflight == null,
+		"enabling preparation for new runs cannot add a ship to the saved automatic flight")
 	var roles := world.arrival_nodes.size()
 	var food := world.arrival_nodes.get(&"food") as RigidBody3D
 	check(is_instance_valid(food), "food physically exists after landing")

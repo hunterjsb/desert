@@ -1,4 +1,5 @@
 shader_type spatial;
+#include "res://game/world/surface_projection.gdshaderinc"
 // A glint (Skyline): the sun off bare metal, glass or glaze, seen where the
 // way it faces halves the angle between the sun and your eye, within how wide
 // its sparkle sweeps. A smooth function of the sun, the surface and the eye:
@@ -38,11 +39,12 @@ float pixel_at(vec3 at, mat4 projection, vec2 viewport, vec3 eye) {
 }
 
 void vertex() {
-	vec3 at = MODEL_MATRIX[3].xyz;
+	vec3 raw_at = MODEL_MATRIX[3].xyz;
+	vec3 at = surface_project(raw_at);
 	vec3 to_eye = CAMERA_POSITION_WORLD - at;
 	float d = length(to_eye);
 	vec3 v = to_eye / max(d, 1.0e-3);
-	vec3 n = normalize(INSTANCE_CUSTOM.xyz);
+	vec3 n = surface_normal(normalize(INSTANCE_CUSTOM.xyz), raw_at);
 	// The cosine of how wide its sparkle sweeps.
 	float edge = INSTANCE_CUSTOM.w;
 	float a = dot(n, normalize(v + sun_dir));
@@ -50,7 +52,7 @@ void vertex() {
 	float veil = texelFetch(veils, ivec2(int(COLOR.r + 0.5), 0), 0).r;
 	if (dust_reach > 0.0) {
 		a = dot(n, v);
-		g = smoothstep(0.0, 0.6, a) * (0.75 + 0.25 * sin(dust_time * 1.3 + dot(at, vec3(0.37, 0.11, 0.53)) * 3.0));
+		g = smoothstep(0.0, 0.6, a) * (0.75 + 0.25 * sin(dust_time * 1.3 + dot(raw_at, vec3(0.37, 0.11, 0.53)) * 3.0));
 		veil = 1.0 - smoothstep(dust_reach * 0.5, dust_reach, d);
 	}
 	g *= glare * veil * (1.0 - clamp((d - haze.x) / (haze.y - haze.x), 0.0, 1.0) * haze.z);

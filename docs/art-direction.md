@@ -1228,3 +1228,93 @@ the standard radio and battery carry poses remain a documented limitation in
 Movement. Neither the physics object nor the shoulders move to disguise it.
 The cutter's low rear grip can sit partly below the first-person viewport;
 external views show that actual grasp. This does not add finger articulation.
+
+## Surveyor departure cabin (selected 2026-10-21; implementation lane)
+
+A small working room, not a bridge or an empty hangar: bone-white inset hull
+panels in dark ribs, teal supply-rack backs, a yellow loading lane, warm task
+lights and amber computer glass. The six-by-eight-metre room holds one actual
+recoverable PodShell, open at its head and above while docked; its removed
+panels stay visibly retained beside the berth. Supply shelves and a clear floor
+patch stage actual cargo without painted-on equipment. The low launch station
+faces a broad, sealed observation window. That aperture displays the existing
+ArrivalOrbit renderer in an isolated viewport, with its projection following
+the real observer; no painted planet or ground sky substitutes for Zan.
+The same actual player walks on solid floor, walls, shelves and berth ramp.
+Controller, landing choices and cargo accounting remain separate systems.
+
+
+### Departure cabin geometry acceptance (2026-10-21)
+
+The room's solid floor, sealed window, rack and console use matching drawn and
+physical boxes. A loading ramp ends on a short landing over the actual pod sill.
+Arrival 15 passes in 14 s: the unchanged player walks 6.23 m across the room,
+stays on the floor, and stops at the sealed observation aperture. The real
+prone capsule crawls up the ramp and through the existing one-metre frame head
+onto the capsule floor, ending 0.2405 m above the cabin floor. Standing entry
+through that low frame is not claimed; the controller may seat the player from
+the entry marker. All twelve original shell roles remain real saveable parts,
+including the three detached retained panels. Disposing the room leaves the
+physical pod intact. Room/cargo logic and integrated launch acceptance remain
+separate work.
+
+Actual unseen 1280×720 captures inspect the first-person room, observation
+window, launch station and pod berth, plus the exterior pressure-module skin.
+The window uses the real seeded ArrivalOrbit renderer and a frustum fitted to
+the aperture from the observer's eye; the ground World's sky never appears
+inside it. Aft retainers and the empty rack reserve space for actual cargo.
+Exterior inset panels, dark ribs and yellow corner guards keep the small room
+readable as one industrial pressure compartment rather than a whole ship model.
+### Cord on the suit (2026-10-21; visual correction)
+
+A waist tie now reads as two plaited turns around gonkhub's existing belt,
+with a small crossing, muted teal whipping and a lead to the real attachment.
+Use the current rope-end fibre gauge and colour. Cached tip render copies share
+the existing mesh while at the waist; the original loose/held tip and current
+continuous item coil return unchanged when untied. No invented belt hardware,
+new force attachment or extra physical rope constraint is introduced. Actual
+unseen belt-close, whole-player, own-waist and held-coil views were inspected.
+
+### A body during the vault (2026-10-21; bounded pose)
+
+The existing rigid suit now gives the swept climb a free-hand reach and a
+leading knee gather, then releases into its ordinary stance. Use the real
+climb's progress and rise. Fixed limb lengths, meshes, colour and camera
+comfort exclusions stay in place; carried-item hand poses take precedence.
+Actual first-person captures show the gloves entering the lower view while
+external captures show the knee gather. These are visual gestures, not
+physical hand anchors or a new locomotion controller.
+
+## Zan's visible scale (agreed 2026-10-21)
+
+The 150 km travel lap must not make Zan look like a tiny asteroid. Preserve the
+large moon: nearly flat ground at standing height, a gentle distant falloff, and
+clear curvature from high up and orbit. The provisional presentation radius is
+3,700 km within the lore's unsettled 3,500–3,900 km leaning. Ground, skyline,
+landmark silhouettes and atmospheric horizon use the shared SurfaceProjection
+scale; local movement/collision remains a tangent approximation. Do not bend the
+orbital globe or inventory previews through the main ground projection. Existing
+Tu angular size, sun direction, worn materials and accepted sand stay the visual
+baseline. This is a presentation correction, not a new gravity or movement scale.
+
+
+### Surveyor capsule viewing panel (2026-10-21)
+
+The tail remains an ordinary recoverable chassis, with a bone-and-teal window
+surround, dark continuous glazing seals and small safety-yellow fasteners.
+Its center is a real opening in the opaque mesh, closed by two thin clear panes
+on the original chassis faces. Interior copies use the same actual meshes and
+poses; the fallback authors the same shell directly without creating equipment.
+The cramped dark thermal liner and visible frame rails establish a capsule,
+while Zan remains visible through its window rather than painted onto a wall.
+The existing artwork's materials and ordinary detachable panel identity remain.
+
+### Sheltered departure cabin (2026-10-21)
+
+The ship uses the same worn paint shader with little deposited dust on protected
+panels. Neutral task lights preserve bone, teal and gunmetal; recessed black deck
+plates carry fine metal traction ribs. A bounded yellow bay outline, entry
+chevrons and a physical POD BAY sign explain the capsule berth. The launch screen
+is a large dark recess for the controller's live display, not painted UI.
+The capsule's black thermal liner has little deposited sand; exterior armor and
+ordinary recovered equipment retain their weathered materials.

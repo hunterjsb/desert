@@ -74,6 +74,11 @@ var _to_retire: Array = []
 var _to_ground: Array = []
 ## When this frame's budget runs out, in Time ticks (usec).
 var _deadline := 0
+var _apron: GeometryInstance3D
+var _apron_material: ShaderMaterial
+var _apron_material_rid: RID
+var _apron_mesh: RID
+var _apron_next: RID
 var _far: GeometryInstance3D
 var _far_mesh: RID
 var _far_center := Vector2i.ZERO
@@ -116,6 +121,13 @@ func setup(world: World) -> void:
 		_indices[step] = ChunkBuild.indices_for(_size / step)
 	_far = GeometryInstance3D.new()
 	add_child(_far)
+	_far.extra_cull_margin = pow((_tuning.far_radius + _size) * sqrt(2.0), 2.0) / (2.0 * SurfaceProjection.radius(_tuning))
+	_apron = GeometryInstance3D.new()
+	_apron.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_apron.extra_cull_margin = Horizons.bounds_margin(_tuning)
+	add_child(_apron)
+	_apron_material = Horizons.ground_material(world)
+	_apron_material_rid = _apron_material.get_rid()
 	tracks = Tracks.new()
 	add_child(tracks)
 	tracks.setup(world, sand_material)
@@ -135,6 +147,11 @@ func setup(world: World) -> void:
 func _process(_delta: float) -> void:
 	if _world == null:
 		return
+	var eye := _world.player.camera.global_position
+	var frame := Vector3(eye.x, eye.z, SurfaceProjection.radius(_tuning))
+	if sand_material is ShaderMaterial:
+		sand_material.set_shader_parameter("surface_frame", frame)
+	_apron_material.set_shader_parameter("surface_frame", frame)
 	var started := Time.get_ticks_usec()
 	_deadline = started + int(_tuning.stream_budget_ms * 1000.0)
 	var here := chunk_at(_world.player_world_x(), _world.player_world_z())
@@ -187,11 +204,13 @@ func _exit_tree() -> void:
 	for build: ChunkBuild in _results.values():
 		RenderingServer.free_rid(build.mesh)
 	_results.clear()
-	for mesh: RID in [_far_next, _far_mesh]:
+	for mesh: RID in [_far_next, _far_mesh, _apron_next, _apron_mesh]:
 		if mesh.is_valid():
 			RenderingServer.free_rid(mesh)
 	_far_next = RID()
 	_far_mesh = RID()
+	_apron_next = RID()
+	_apron_mesh = RID()
 
 
 ## The ground's one function at a world place, read from a loaded chunk's
@@ -308,6 +327,7 @@ func collision_count() -> int:
 ## Storms hide the far ring: nobody inside one can see that far.
 func show_far(shown: bool) -> void:
 	_far.visible = shown
+	_apron.visible = shown
 
 
 func is_far_shown() -> bool:
@@ -517,6 +537,8 @@ func _upload(build: ChunkBuild) -> void:
 		chunk = TerrainChunk.new()
 		chunk.coord = build.coord
 		chunk.side = _size
+		var reach := (_tuning.view_radius + 2) * _size * sqrt(2.0)
+		chunk.presentation_margin = reach * reach / (2.0 * SurfaceProjection.radius(_tuning))
 		_chunks[build.coord] = chunk
 		add_child(chunk)
 		_place(chunk)
@@ -742,6 +764,11 @@ func _update_far() -> void:
 		WorkerThreadPool.wait_for_task_completion(_far_task)
 		_far_task = -1
 		_far.set_base(_far_next)
+		_apron.set_base(_apron_next)
+		if _apron_mesh.is_valid():
+			RenderingServer.free_rid(_apron_mesh)
+		_apron_mesh = _apron_next
+		_apron_next = RID()
 		if _far_mesh.is_valid():
 			RenderingServer.free_rid(_far_mesh)
 		_far_mesh = _far_next
@@ -751,11 +778,13 @@ func _update_far() -> void:
 	if not _far_mesh.is_valid() or _far_center != _center:
 		_far_building = _center
 		_far_next = RenderingServer.mesh_create()
-		_far_task = WorkerThreadPool.add_task(_build_far.bind(_center, _far_next))
+		_apron_next = RenderingServer.mesh_create()
+		_far_task = WorkerThreadPool.add_task(_build_far.bind(_center, _far_next, _apron_next))
 
 
-func _build_far(center: Vector2i, mesh: RID) -> void:
+func _build_far(center: Vector2i, mesh: RID, apron_mesh: RID) -> void:
 	ChunkBuild.fill(mesh, FarRing.make(_world.shape, center, _tuning), _material_rid)
+	ChunkBuild.fill(apron_mesh, FarRing.apron(_world.shape, center, _tuning), _apron_material_rid)
 
 
 func _sand_look() -> Material:
@@ -781,3 +810,4 @@ func _place(chunk: TerrainChunk) -> void:
 func _place_far() -> void:
 	_far.position = Vector3((_far_center.x - _world.origin_chunk.x) * _size, 0.0,
 		(_far_center.y - _world.origin_chunk.y) * _size)
+	_apron.position = _far.position

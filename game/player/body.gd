@@ -53,6 +53,10 @@ func _ready() -> void:
 		(_parts[name] as MeshInstance3D).layers = OWN_LAYER
 	if player != null and player.camera != null:
 		player.camera.cull_mask &= ~OWN_LAYER
+	var wrap := WaistWrap.new()
+	wrap.name = "WaistWrap"
+	wrap.body = self
+	add_child(wrap)
 
 
 func _process(delta: float) -> void:
@@ -90,6 +94,11 @@ func pose(delta: float) -> void:
 	var drop := clampf(rest_eye - player.feel.steady_eye().y, 0.0, rest_eye - 0.2)
 	var prone := player.ground_pose == &"prone"
 	var sat := player.ground_pose == &"sit" or (player.helm != null and player.helm.sits)
+	var climbing := player.vault.active and player.ride == null
+	var progress := player.vault.progress if climbing else 0.0
+	# Hands arrive before the knee clears, hold the reach, then release for the landing.
+	var climb := smoothstep(0.0, 0.2, progress) * (1.0 - smoothstep(0.8, 1.0, progress))
+	var tuck := minf(player.vault.height, THIGH) * sin(progress * PI)
 	# The trunk: from the hips, leaning with your look, set back of your eyes.
 	var lean := Basis(Vector3.RIGHT, pitch * LEAN)
 	var hips_at := Vector3(0.0, SurveyorLooks.HIPS.y - drop, EYES_AHEAD)
@@ -131,6 +140,10 @@ func pose(delta: float) -> void:
 			if player.ride != null:
 				# On the board: feet apart along it, knees soft.
 				foot = Vector3(0.12 * side, SurveyorLooks.ANKLE.y, EYES_AHEAD - 0.22 * side)
+		if climbing:
+			# The leading knee clears first; a low ledge needs only a small gather.
+			var gather := tuck * (1.0 if i == 0 else 0.5)
+			foot += Vector3(0.0, gather, -gather)
 		_feet[i] = foot if delta <= 0.0 or not _settled else _feet[i].lerp(foot, minf(delta / EASE, 1.0))
 		var bones := _reach(hip, _feet[i], THIGH, SHIN, knee_way)
 		var s := "r" if i == 0 else "l"
@@ -158,6 +171,11 @@ func pose(delta: float) -> void:
 			hand = shoulder + turn * hang
 			if sat:
 				hand = Vector3(0.18 * side, hips_at.y + 0.05, -0.18)
+		if climbing and held == null:
+			var reach := Vector3(SurveyorLooks.CLIMB_HAND.x * side, SurveyorLooks.CLIMB_HAND.y,
+				SurveyorLooks.CLIMB_HAND.z) - Vector3(SurveyorLooks.SHOULDER.x * side,
+				SurveyorLooks.SHOULDER.y, SurveyorLooks.SHOULDER.z)
+			hand = hand.lerp(shoulder + turn * reach, climb)
 		_hands[i] = hand if delta <= 0.0 or not _settled else _hands[i].lerp(hand, minf(delta / EASE, 1.0))
 		var elbow_way := (turn * Vector3(0.4 * side, -0.3, 1.0)).normalized()
 		var arm := _reach(shoulder, _hands[i], UPPER_ARM, FOREARM + GRIP, elbow_way)

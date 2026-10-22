@@ -17,6 +17,8 @@ const MOVES := 0.001
 var coord: Vector2i
 ## Metres a side.
 var side := 64
+## Shader lowering lies outside the native mesh box; collision stays unchanged.
+var presentation_margin := 0.0
 ## Metres between samples; 0 until the first build arrives.
 var step := 0
 var heights: PackedFloat32Array
@@ -44,6 +46,7 @@ var _boxes := {}
 func show_build(build: ChunkBuild) -> void:
 	if _view == null:
 		_view = GeometryInstance3D.new()
+		_view.extra_cull_margin = presentation_margin
 		add_child(_view)
 	_show_ground(build)
 	_show_structures(build.structures)

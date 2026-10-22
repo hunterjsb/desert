@@ -21,7 +21,13 @@ world lives on a 24 km rock. A body that small couldn't hold gravity or air. The
 size is whatever makes the rest of this profile honest; [the body research](../briefs/body-research.md)
 works it out from the feel we want. The leaning is **0.4–0.5 g** (a radius of roughly
 3,500–3,900 km), pending Hunter's call. The game's gravity is unchanged for now, and the
-dev gravity toggle tries the lower value. **Everything else stays honest.**
+dev gravity toggle tries the lower value. **The presentation uses the large body.** The current implementation target is a
+provisional 3,700 km visual radius within that leaning, not a newly settled lore
+size. The 150 km navigation lap compresses journeys; it must not give the ground
+a tiny-asteroid horizon. Ground, distant scenery and sky share that presentation
+scale ([implementation contract](../prd/world-and-terrain.md#large-moon-compressed-travel-and-time-agreed-2026-10-21)).
+Gameplay gravity remains 9.8 m/s² until separately changed; neither distance nor
+time compression is a physical derivation of gravity.
 
 ## The air: thin, unbreathable, fading
 
@@ -130,7 +136,19 @@ gives water a daily rhythm:
 
 ## Day length
 
-A day lasts about 20 minutes, start to finish, and it's fixed. That's compressed game
+At a fixed longitude a day lasts about 20 minutes, start to finish. Travelling
+changes local solar time: west stretches daylight and east shortens it. Keeping
+pace with sunset requires 125*cos(latitude) m/s westward at the current defaults;
+a 20 m/s traveller can match it near 80.8° latitude. The global clock keeps running. At the equator a sustained 20 m/s westward journey stretches
+the local day from 20 minutes to about 23 minutes 49 seconds; eastward, about
+17 minutes 14 seconds. At 80° latitude, matching sunset takes about 21.7 m/s,
+and at 81° about 19.6 m/s. This depends on westward speed along the latitude,
+not total speed in an arbitrary direction. Current zero axial tilt also means
+the high-latitude sun stays low.
+
+The fictional-size proposals and time compression are independent: the current
+9° Tu proposal corresponds to roughly 77.7 fictional hours per 20-minute game day.
+A 20-minute playable day does not assert a physical 20-minute rotation. That's compressed game
 time, the way most survival games handle days. **Zan is tidally locked to Tu** ([the Tu
 spec](../briefs/tu-and-day-2026-10-17.md), 2026-10-17): one face always points at the giant, and the
 real day is one lap round it.

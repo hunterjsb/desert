@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://look/large_moon/atmosphere.gd" id="1"]
+
+[node name="LargeMoonAtmosphere" type="Node"]
+script = ExtResource("1")

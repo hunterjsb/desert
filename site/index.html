@@ -8,9 +8,7 @@
 <body>
 <header><div class="wordmark">DESERT <span>ENGINEERING</span></div><a href="https://github.com/hunterjsb/desert/actions">GitHub Actions ↗</a></header>
 <main>
-  <div class="eyebrow">PERFORMANCE OBSERVATORY</div>
-  <h1>Where the time goes.</h1>
-  <p class="intro">Probes, builds, and the systems beneath the sand. Measurements from completed CI runs, with the evidence one click away.</p>
+  <h1>Desert performance</h1>
   <p id="freshness" role="status">Loading measurements…</p>
   <noscript>This dashboard needs JavaScript to filter measurements. <a href="./data.json">Download the collected data.</a></noscript>
   <div class="controls">
@@ -18,14 +16,16 @@
     <label>Platform<select id="platform" aria-label="Platform"><option>All platforms</option><option>Linux</option><option>Windows</option><option>macOS</option></select></label>
     <label class="search">Find a probe<input id="search" type="search" placeholder="rope, streaming, long_walk…"></label>
   </div>
-  <div id="run-info"></div><div id="summary" class="cards"></div>
-  <section><div class="section-title"><h2>Run history</h2><span>Elapsed minutes · includes scheduling and rerun delays</span></div>
-    <div id="history" class="history" aria-label="Run history"></div>
-    <p class="note">Select a bar to inspect a run. Probes and releases have different workloads; compare like with like. This is a bounded history, not every run ever made.</p>
+  <section class="history-section" aria-label="Run history">
+    <div class="section-title"><h2>Run history</h2><span>Run start time × elapsed minutes</span></div>
+    <div id="history" class="history"></div>
+    <p class="note">Select a dot to inspect that run. Duration includes scheduling and rerun delays. Only the selected workflow is shown; this is a bounded history, not every run ever made.</p>
   </section>
-  <section><div class="section-title"><h2>Game performance</h2><span>Measured inside the probe</span></div>
-    <p class="note">Headless CPU and memory measurements, not player FPS. Shader compilation and GPU rendering are absent. Real-frame checks run on Linux only. Budgets come from the existing assertions; hosted hardware varies.</p>
-    <div id="metrics" class="metric-grid"></div>
+  <section class="run-report" aria-label="Selected run">
+    <div id="run-info"></div>
+    <div class="table-wrap"><table class="summary-table"><caption>Selected run statistics</caption><thead><tr><th>Statistic</th><th>Value</th><th>Scope</th></tr></thead><tbody id="summary"></tbody></table></div>
+    <p class="note">Probe measurements below are headless CPU and memory samples, not player FPS; GPU rendering is absent. Lower values are preferable for these measurements. Limits come from existing assertions. The probe verdict covers all its checks. References use the nearest earlier passing sample on the same platform and workflow; hosted hardware varies.</p>
+    <div class="table-wrap"><table><caption>Probe measurements for this run</caption><thead><tr><th>Measurement / probe</th><th>Platform</th><th>Value</th><th>Limit</th><th>Against limit</th><th>Probe result</th><th>Previous passing sample</th><th>Change</th></tr></thead><tbody id="metrics"></tbody></table></div>
   </section>
   <section><div class="section-title"><h2>Slow probes & retries</h2><span>Wall-clock cost to CI</span></div>
     <p class="note">Sorted by total time including failed attempts. Change compares the final passing attempt with the nearest earlier passing sample on the same platform and workflow. It is a lead to investigate, not proof of a game regression.</p>

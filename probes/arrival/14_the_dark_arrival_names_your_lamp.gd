@@ -2,6 +2,8 @@ extends MenuProbe
 ## An eclipsed arrival explains its free lamp using the actual binding.
 
 func run() -> void:
+	# The automatic landing fixture isolates its recovery notice and rebound action.
+	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 42
 	for phase in [&"orbit", &"ejection", &"descent", &"entry", &"landing"]:
 		Tuning.current().surveyor_arrival[String(phase) + "_s"] = 0.12

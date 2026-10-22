@@ -1,11 +1,12 @@
 name: Probes
 
-# Docs alone change nothing the probes test.
+# Docs and dashboard-only changes do not exercise the game.
+# Keep the dashboard paths aligned with scripts/verify.sh.
 on:
   push:
-    paths-ignore: ['docs/**', '**/*.md']
+    paths-ignore: ['docs/**', '**/*.md', 'site/**', 'scripts/ci_dashboard/**', '.github/workflows/performance-pages.yml']
   pull_request:
-    paths-ignore: ['docs/**', '**/*.md']
+    paths-ignore: ['docs/**', '**/*.md', 'site/**', 'scripts/ci_dashboard/**', '.github/workflows/performance-pages.yml']
   workflow_dispatch:
     inputs:
       full_platforms:
@@ -54,6 +55,7 @@ jobs:
       - name: The runner can fail
         if: matrix.group == 'probes/foundation probes/world probes/dev probes/radio'
         run: |
+          python3 scripts/test_verify.py
           scripts/probe-runner-test.sh
           scripts/probe.sh selftest
 

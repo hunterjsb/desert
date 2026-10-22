@@ -19,20 +19,66 @@ function priorProbe(run, row) {
   }
   return null;
 }
-function metricHistory(run, metric, platform) {
-  return [run, ...older(run)].reverse().flatMap(r => r.jobs.filter(j => j.platform === platform).flatMap(j =>
-    j.metrics.filter(m => m.probe === metric.probe && m.name === metric.name && m.unit === metric.unit && m.result === 'PASS')
-      .slice(-1).map(m => m.value)));
+function priorMetric(run, metric) {
+  for (const previous of older(run)) for (const job of previous.jobs) {
+    if (job.platform !== metric.platform) continue;
+    const sample = job.metrics.filter(m => m.probe === metric.probe && m.name === metric.name && m.unit === metric.unit && m.result === 'PASS').at(-1);
+    if (sample) return {sample, run: previous};
+  }
+  return null;
 }
-function sparkline(values) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 240 44'); svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', `Passing measurement history, oldest first: ${values.map(number).join(', ')}`);
-  const min = Math.min(...values), span = Math.max(...values) - min || 1;
-  const path = document.createElementNS(svg.namespaceURI, 'polyline');
-  path.setAttribute('points', values.map((v, i) => `${4 + i * 232 / Math.max(1, values.length - 1)},${40 - 36 * (v - min) / span}`).join(' '));
-  path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#81cabc'); path.setAttribute('stroke-width', '2');
-  svg.append(path); return svg;
+function stat(label, value, scope) {
+  const tr = node('tr'); tr.append(node('td', label), node('td', value), node('td', scope)); return tr;
+}
+function scatter(run) {
+  const history = data.runs.filter(r => r.workflow === run.workflow && r.elapsed_seconds != null && Number.isFinite(Date.parse(r.created_at)));
+  if (!history.length) { empty('history', 'No elapsed-time measurements available.'); return; }
+  const svgNode = (tag, attrs, text) => {
+    const n = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const [key, value] of Object.entries(attrs)) n.setAttribute(key, value);
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+  const width = Math.max(340, $('history').clientWidth), height = 290;
+  const left = 58, right = width - 28, top = 28, bottom = height - 60;
+  const times = history.map(r => Date.parse(r.created_at));
+  let first = Math.min(...times), last = Math.max(...times);
+  if (first === last) { first -= 1800000; last += 1800000; }
+  const peak = Math.max(...history.map(r => r.elapsed_seconds / 60));
+  const maxMinutes = Math.max(1, Math.ceil(peak * 1.1 / 20)) * 20;
+  const x = time => left + (time - first) / (last - first) * (right - left);
+  const y = seconds => bottom - seconds / 60 / maxMinutes * (bottom - top);
+  const svg = svgNode('svg', {viewBox: `0 0 ${width} ${height}`, role: 'group', 'aria-label': `${run.workflow} runs: start time versus elapsed minutes`});
+  svg.append(svgNode('text', {x: left, y: 14, class: 'axis-label'}, 'Elapsed minutes'));
+  for (let i = 0; i <= 4; i++) {
+    const value = maxMinutes * i / 4, yy = y(value * 60);
+    svg.append(svgNode('line', {x1: left, x2: right, y1: yy, y2: yy, class: 'grid-line'}),
+      svgNode('text', {x: left - 10, y: yy + 4, 'text-anchor': 'end', class: 'axis-label'}, number(value)));
+  }
+  const ticks = width < 600 ? 2 : 4;
+  for (let i = 0; i <= ticks; i++) {
+    const time = first + (last - first) * i / ticks, xx = x(time), date = new Date(time);
+    const anchor = i === 0 ? 'start' : i === ticks ? 'end' : 'middle';
+    svg.append(svgNode('text', {x: xx, y: bottom + 22, 'text-anchor': anchor, class: 'axis-label'}, date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'})),
+      svgNode('text', {x: xx, y: bottom + 39, 'text-anchor': anchor, class: 'axis-label'}, date.toLocaleTimeString(undefined, {hour: '2-digit', minute: '2-digit'})));
+  }
+  // Draw the selected run last so its ring remains visible among nearby samples.
+  for (const r of history.slice().sort((a,b) => Number(a.id === run.id) - Number(b.id === run.id))) {
+    const selected = r.id === run.id;
+    const label = `${new Date(r.created_at).toLocaleString()} · ${duration(r.elapsed_seconds)} · ${r.result} · ${r.sha.slice(0,7)}`;
+    const dot = svgNode('circle', {cx: x(Date.parse(r.created_at)), cy: y(r.elapsed_seconds), r: selected ? 7 : 5,
+      class: `run-dot ${good(r.result) ? '' : 'failed'} ${selected ? 'selected' : ''}`, tabindex: 0, role: 'button',
+      'aria-label': label, 'aria-pressed': selected, 'data-run': r.id});
+    dot.append(svgNode('title', {}, label));
+    const choose = () => {
+      $('run').value = String(r.id); render();
+      $('history').querySelector(`[data-run="${r.id}"]`).focus({preventScroll: true});
+    };
+    dot.addEventListener('click', choose);
+    dot.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(); } });
+    svg.append(dot);
+  }
+  $('history').append(svg);
 }
 function render() {
   const run = data.runs.find(r => String(r.id) === $('run').value);
@@ -45,31 +91,34 @@ function render() {
   const execution = jobs.reduce((s,j) => s + (j.seconds || 0), 0);
   const allRows = jobs.flatMap(j => j.probes);
   const retried = allRows.filter(p => p.attempts.length > 1);
-  $('summary').append(card('Workflow elapsed', duration(run.elapsed_seconds), 'Whole run · includes waits / reruns'),
-    card('Longest selected job', duration(jobs.some(j=>j.seconds!=null) ? Math.max(...jobs.map(j=>j.seconds || 0)) : null), `${jobs.length} jobs · ${duration(execution)} summed execution`),
-    card('Probe verdicts', `${allRows.filter(p=>good(p.result)).length} / ${allRows.length}`, 'Final passing / observed · selected platform'),
-    card('Retry cost', duration(retried.reduce((s,p)=>s+p.retry_seconds,0)), `${retried.length} probes needed another attempt`));
-  const history = data.runs.filter(r=>r.workflow === run.workflow).slice().reverse();
-  const max = Math.max(1,...history.map(r=>r.elapsed_seconds || 0));
-  for (const r of history) {
-    const b = node('button', undefined, `bar ${good(r.result)?'':'failed'} ${r.id===run.id?'selected':''}`);
-    b.style.height = `${Math.max(10, 130 * (r.elapsed_seconds || 0) / max)}px`;
-    const label = `${new Date(r.created_at).toLocaleString()} · ${r.sha.slice(0,7)} · ${duration(r.elapsed_seconds)} · ${r.result}`;
-    b.title = label; b.setAttribute('aria-label', label); b.setAttribute('aria-pressed', String(r.id===run.id));
-    b.append(node('span', r.sha.slice(0,7))); b.onclick=()=>{$('run').value=String(r.id);render();}; $('history').append(b);
-  }
+  $('summary').append(stat('Workflow elapsed', duration(run.elapsed_seconds), 'Whole run · includes waits / reruns'),
+    stat('Longest selected job', duration(jobs.some(j=>j.seconds!=null) ? Math.max(...jobs.map(j=>j.seconds || 0)) : null), `${jobs.length} jobs · ${duration(execution)} summed execution`),
+    stat('Probe verdicts', `${allRows.filter(p=>good(p.result)).length} / ${allRows.length}`, 'Final passing / observed · selected platform'),
+    stat('Retry cost', duration(retried.reduce((s,p)=>s+p.retry_seconds,0)), `${retried.length} probes needed another attempt`));
+  scatter(run);
   const metrics = jobs.flatMap(j=>j.metrics.map(m=>({...m,platform:j.platform,url:j.html_url}))).filter(m=>(m.probe+' '+m.name).toLowerCase().includes(query));
   // Show the last attempt of each measurement, retaining its result explicitly.
   const last = new Map(metrics.map(m=>[`${m.platform}:${m.probe}:${m.name}`,m]));
   for (const m of last.values()) {
-    const c = node('article', undefined, 'metric'); c.append(node('h3',m.name),node('strong',`${number(m.value)} ${m.unit}`));
-    c.append(node('p',`${m.platform} · attempt ${m.attempt} · ${m.result}`));
-    if (m.budget !== undefined) c.append(node('p',`Assertion budget: ${number(m.budget)} ${m.unit}`));
-    const values=metricHistory(run,m,m.platform);
-    if(values.length>1)c.append(sparkline(values));
-    c.append(node('small',`${values.length} passing samples in retained history`),link('Probe source ↗',source(run,m.probe))); $('metrics').append(c);
+    const tr = node('tr'), name = node('td');
+    name.append(node('span', m.name), node('br'), link(m.probe.replace('probes/',''), source(run,m.probe)));
+    const hasLimit = m.budget !== undefined;
+    const status = !hasLimit ? 'No limit' : m.value > m.budget ? 'Above limit' : m.value === m.budget ? 'At limit' : 'Below limit';
+    const verdict = node('td'); verdict.append(link(`${m.result} · attempt ${m.attempt}`, m.url));
+    const reference = node('td'), previous = priorMetric(run,m);
+    let change = '—';
+    if (previous) {
+      reference.append(link(`${number(previous.sample.value)} ${m.unit} · ${previous.run.sha.slice(0,7)}`, previous.run.url));
+      const delta = m.value - previous.sample.value;
+      change = `${delta > 0 ? '+' : ''}${number(delta)} ${m.unit}`;
+      if (previous.sample.value > 0) change += ` (${delta > 0 ? '+' : ''}${number(delta / previous.sample.value * 100)}%)`;
+    } else reference.textContent = 'No earlier sample';
+    tr.append(name, node('td',m.platform), node('td',`${number(m.value)} ${m.unit}`),
+      node('td',hasLimit ? `${number(m.budget)} ${m.unit}` : '—'),
+      node('td',status,hasLimit && m.value > m.budget ? 'bad' : ''), verdict, reference, node('td',change));
+    $('metrics').append(tr);
   }
-  if(!last.size)empty('metrics','No structured game measurements for this selection. Older runs predate reporting; real-frame metrics are intentionally absent on native runners.');
+  if(!last.size){const tr=node('tr'),td=node('td','No structured measurements for this selection. Older runs predate reporting; real-frame measurements run on Linux only.');td.colSpan=8;tr.append(td);$('metrics').append(tr);}
   for (const p of rows.sort((a,b)=>b.total_seconds-a.total_seconds).slice(0,showAll?rows.length:50)) {
     const tr=node('tr'), name=node('td');name.append(link(p.path.replace('probes/',''),source(run,p.path)));
     const result=node('td'); result.append(link(p.result + (p.attempts.length>1?` · ${p.attempts.length} attempts`:''),p.url));
@@ -101,6 +150,7 @@ async function start(){
     for(const r of data.runs){const option=node('option',`${r.workflow} · ${new Date(r.created_at).toLocaleString()} · ${r.sha.slice(0,7)} · ${r.result}`);option.value=r.id;$('run').append(option);}
     $('show-all').onclick=()=>{showAll=!showAll;render();};
     for(const id of ['run','platform','search'])$(id).addEventListener(id==='search'?'input':'change',render);
+    window.addEventListener('resize', () => { const run=data.runs.find(r=>String(r.id)===$('run').value); if(run){$('history').replaceChildren();scatter(run);} });
     if(data.runs.length)render();else $('freshness').textContent+=' · No completed runs available yet.';
   }catch(error){$('freshness').textContent=`Measurements could not be loaded: ${error.message}. Try refreshing or open GitHub Actions.`;}
 }

@@ -304,7 +304,7 @@ the frame is a part stuck on the deck.
 - **Nomad ties the trees together:** its card stands apart, with a line from each of the five
   trees, lit where you've done one. It waits on any one deed of a tree, not a named one, so the
   table's `after` gains "any of a family".
-- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21, 69 now), each a
+- **The grid holds every tree** (built for step 1, Menus & UI): 64 deeds in eleven families since step 4, Yard Sale and the nomads' gear (Line of Sight, Storm on Tu, Long Wire and Null since 2026-10-20; Flight Plan, Make Fast, Foxhole Radio, Close Listening and Mayday 2026-10-21; Whistler cut 2026-10-21 with natural radio; High Wire and Grounded 2026-10-21; Plot a Course and Drop In 2026-10-21, 71 now), each a
   branch or two beside its name down the left, as round one's were (eleven columns side by side
   wouldn't stand left of the prop). It scrolls, and opens on the latest done.
 - **The order.** Each part waits for what it reads to land:
@@ -870,3 +870,14 @@ its record, unshown: the deeds grid lists only `Deeds.TABLE`.
 
 **High Wire and Grounded (2026-10-21).** The antenna kite brings two signals
 deeds (Radio, sound & atmosphere): the roster is 66 in the same eleven families.
+
+## Surveyor preflight deeds (selected 2026-10-21; candidate)
+
+Plot a Course records an actual valid choice through the ship's launch computer;
+Drop In records successful committed launch from the loaded pod. Both belong to
+Camp, with Drop In following Plot a Course, using existing Console/chassis art.
+Restoring a plan, reconstructing the cabin or resuming flight records neither.
+With the radio's deeds and the antenna kite's (above), these two bring the
+roster to 71 deeds in the same eleven families.
+Preflight saves retain actual object references and the selected plan/cargo,
+not a second kit grant. Integrated evidence remains pending.

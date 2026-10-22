@@ -133,3 +133,105 @@ full result expansion and job details without script errors or page overflow;
 metric cards rendered all ten actual local samples in a separate preview fixture.
 The production site consumes CI evidence only. Full CI and initial deployment are
 checked when this change lands; local preview measurements are not CI baselines.
+
+A probe opts in with `metric(label, value, unit, optional_budget)`; its existing
+`check()` still owns pass/fail. The metric helper only reports evidence and never
+asserts a limit. Keep labels and units stable for history comparisons. The runner
+prints the verdict before the metric records, associating measurements with the
+correct first attempt or retry. Failed measurements stay marked failed; missing
+ones do not enter passing trend lines.
+
+The initial [Pages deployment](https://github.com/hunterjsb/desert/actions/runs/39669517833)
+published [the observatory](https://hunterjsb.github.io/desert/) with 15 historical
+runs. Checks took 6 s, the cold backfill/build 65 s, and deployment 12 s, excluding
+runner queue delay. Desktop and narrow-layout checks also passed on the public
+site. Linux verification passed all nine groups in
+[39667591018](https://github.com/hunterjsb/desert/actions/runs/39667591018).
+
+The first full run passed 20 of 21 jobs; macOS salvage retention timed out at
+301 s and 300 s before reaching its measurement output. Across 110 passing probes
+in that job, median runtime was 2.1 times the preceding master run; this alone does
+not establish the cause. No assertion or timeout was changed. The
+[completion-triggered refresh](https://github.com/hunterjsb/desert/actions/runs/39675753373)
+succeeded and publicly reported the failed run, both attempts, their 601 s total,
+and 16 available game measurements. Browser checks confirmed those results on the
+live page. Missing measurements stayed absent. A targeted retry of the failed job
+is tracked in [the source run](https://github.com/hunterjsb/desert/actions/runs/39669517959).
+
+
+### Plain run report (agreed 2026-10-21)
+
+Replace the large summary cards with a compact selected-run table. Move the game
+measurements into that same report, without a separate “Game performance” section
+or decorative sparklines. Each measurement names its platform, value, assertion
+limit when supplied, and whether it is below, at or above that limit. Keep the
+probe's actual verdict separate: a measurement alone cannot certify a whole probe.
+Without a limit, say “No limit” rather than implying good or bad. Show the nearest
+earlier passing sample on the same platform and workflow, with its source run and
+numeric change; absent history is explicitly “No earlier sample”. Keep history,
+slow probes, job details and artifacts. Favor compact tables over presentation.
+
+The plain report replaces the four summary cards and measurement cards with tables,
+removes the large introductory heading and the separate game-performance section,
+and preserves source links and filters. Desktop and 390 px browser checks passed:
+summary rows, limit/no-limit states, absent history, metric search, empty results,
+probe expansion and job details. Five collector checks and JavaScript syntax pass.
+
+
+Combined master [39672634648](https://github.com/hunterjsb/desert/actions/runs/39672634648)
+passed all 21 jobs, including macOS salvage retention. The redundant retry of the
+original run was cancelled; no assertions or budgets changed. The public report
+contains all 18 measurements from the successful combined run.
+
+The plain-table revision passed all nine Linux verification groups in
+[39680975173](https://github.com/hunterjsb/desert/actions/runs/39680975173) and
+[deployed successfully](https://github.com/hunterjsb/desert/actions/runs/39683448632).
+Public desktop/mobile checks confirmed the tables, limit/no-limit labels, filtering,
+and actual earlier-run references; a controlled comparison also verified numeric
+and percentage deltas. Missing history remains explicit rather than implying zero.
+
+
+### Dashboard-only verification (agreed 2026-10-21)
+
+Changes confined to `site/`, `scripts/ci_dashboard/`, and the Performance pages
+workflow, optionally alongside documentation, run dashboard checks instead of the
+game suite. Push and pull-request filters exclude these paths from Probes;
+manual Probes dispatch and tag coverage remain available. The copied verifier
+selects Performance pages for this narrow scope, waits for the exact branch and
+commit, and lands only on success. Its fallback dispatches the selected workflow.
+Any game, probe, shared runner, verifier or other infrastructure change retains
+game verification. Documentation alone still skips CI. Master dashboard pushes
+run checks, collect existing evidence and deploy, without starting Godot.
+
+
+Eight local-remote checks prove dashboard routing/landing, mixed and shared-runner
+changes retaining game checks, moving game files into dashboard paths retaining
+game checks, failure blocking, both fallback dispatches, and docs-only skipping.
+Shell syntax, ShellCheck and both affected workflow lints pass. The routing change
+itself changes shared CI infrastructure and therefore takes the game-check path.
+
+
+### Run scatter plot (agreed 2026-10-21)
+
+Replace the history bars with a scatter chart before the selected-run tables.
+Horizontal position is the run's start date/time; vertical position is elapsed
+minutes, including waits and reruns. Plot the selected workflow's retained runs,
+so releases and probes are not mixed. Clicking a dot selects its run and refreshes
+the report. Dots expose date, duration, result and commit, support keyboard selection,
+and distinguish the selected run without relying on color alone. Keep date and
+minute axes visible; missing elapsed time is not plotted as zero.
+
+
+The SVG chart uses actual timestamps and elapsed minutes with labeled axes and no
+charting dependency. Desktop and 390 px browser checks passed for click and keyboard
+selection, the selected-dot ring, report updates and placement before the tables.
+
+
+The shared routing change passed all nine game-verification groups in
+[39684096966](https://github.com/hunterjsb/desert/actions/runs/39684096966).
+The subsequent dashboard-only scatter commit selected Performance pages:
+[verification](https://github.com/hunterjsb/desert/actions/runs/39685928864)
+passed with a six-second check job, excluding hosted-runner queue time, and
+[master deployment](https://github.com/hunterjsb/desert/actions/runs/39686561034)
+passed. Neither push started Probes. Public desktop and narrow-layout checks
+confirmed dot selection, keyboard selection, the selected ring and report updates.

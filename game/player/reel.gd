@@ -302,14 +302,20 @@ func _process(delta: float) -> void:
 	var paying := _paying_in_hand()
 	var now := paying.rope if paying != null else line()
 	var gathered := now.full - now.length + now.haul_gathered if now != null else 0.0
+	# Waist ties use the suit's actual belt wrap; only held ends keep the item coil.
+	var end: RopeEnd
+	if paying != null:
+		end = Line._tip(paying.ends[1 - paying._first])
+	elif now != null:
+		end = now.a if _on_you(now.a) else now.b
+	var on_belt := end != null and (end.holder == _player or _player.waist.holds(end.holder))
 	var was_visible := _coil.visible
-	_coil.visible = gathered > 0.0
+	_coil.visible = gathered > 0.0 and not on_belt
 	if not _coil.visible:
 		_coil_line = null
 		_coil_amount = 0.0
 		return
 	# Before its first tie the rest is on the belt; afterward it pays from the hand.
-	var end := Line._tip(paying.ends[1 - paying._first]) if paying != null else (now.a if _on_you(now.a) else now.b)
 	var target := clampf(gathered / now.full, 0.0, 1.0)
 	var settle := 1.0 - exp(-delta / float(_tuning.rope_coil_visual.response_seconds))
 	_coil_amount = lerpf(_coil_amount, target, settle) if _coil_line == now else target

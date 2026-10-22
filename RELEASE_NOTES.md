@@ -1,10 +1,24 @@
-## 0.3.0-alpha “Sanddune” — development, unreleased
+## 0.3.0-alpha “Sanddune”
 
-Home, Surveyor arrival, ground rest and rope-coil improvements are integrated.
-This release is unpublished. Integrated source through the crop-survey radio
-flight plan passed all 21 Linux, native platform and build jobs. Human playtest
-acceptance remains.
+A physical Surveyor departure, a camp you can find again, and more grounded
+movement, ropes and radio. Published for ongoing playtesting; fixes will follow
+as Sanddune patches.
 
+- Walk the Surveyor carrier, load actual equipment into a reusable chassis pod,
+  and launch from its seat. Required stores and structural blockers are explained
+  at the computer and before boarding.
+- Read the always-on physical launch screen, smoothly focus it, and drag one
+  departure pulse over a rotating globe. The forecast, cabin window and flight
+  share the same saved clock and path; there are no numeric angle controls.
+- Stay in first person through ejection, descent, atmospheric heating and impact.
+  Loaded gear remains visible; recover surviving equipment nearby and dismantle
+  the pod's ordinary panels into your first camp.
+- Give the cabin sheltered industrial materials, a marked pod bay and a closer
+  planetary horizon. The pod has a real recoverable glazed viewing panel.
+- Share lore-scale curvature between distant ground, sky, storms and the delivery
+  drone. Compressed travel distance and the 20-minute day remain unchanged.
+- Improve chassis-height boarding vaults and body poses, keep the torso out of the
+  ridden-board view, and wrap the visible tether around the suit's waist.
 - Publish a GitHub Pages performance observatory with probe retries, build costs,
   artifact sizes and headless streaming, rope and memory measurements.
 - Speed up probe iteration with accelerated ruin traversal, native scheduling for
@@ -47,16 +61,32 @@ acceptance remains.
 - Fit FM and shortwave converters to the radio and switch bands. FM brings Port
   Morgan's station by line of sight and the relay's music; shortwave carries the
   satellites and Tu's roar, clearer on an antenna reel's strung wire.
-- Find a station's direction by the ferrite rod's null.
-- Fly an antenna kite from a rope hook on the radio's top, its lead a cable run
-  straight or through a driven stake to earth it; unearthed, its static burns
-  out pieces of the rig, and a sandstorm shreds it. The radio's misc bay takes a
-  bleed resistor, valve preamp, direction loop, static choke, wire logger,
-  frequency counter, headset jack or solar lid. New deeds: High Wire, Grounded.
-- The AM dial is a real set's longwave and mediumwave, 150–280 and 530–1700 kHz,
-  the gap between skipped; the gods, the beacon and the Eye moved inside it.
+- Find a station's direction by the ferrite rod's null, and hear natural radio's
+  sferics and whistlers at the bottom of the AM dial on a long wire.
 - Fewer satellites, each on its own orbit: about two cross the sky at once.
-  New deeds: Line of Sight, Storm on Tu, Long Wire and Null.
+  New deeds: Line of Sight, Storm on Tu, Long Wire, Null and Whistler.
+
+### Compatibility
+
+- Existing 0.2.4 run saves and profiles remain supported; no reset is required.
+  Older Surveyor runs retain their existing start. Start a new Surveyor run to
+  experience the carrier and pod opening.
+- Preparation, seated, in-flight and recovered pod saves preserve the selected
+  course and original equipment. Loading does not reroll the start or grant a
+  second kit. Unsupported old save formats are still refused without overwriting.
+
+### Current limits and verification
+
+- Sailing balance, launch-screen comprehension, camera comfort and long-run camp
+  performance remain active playtest work. This release does not close those gates.
+- Kites, deeper suit/wrist instruments and broader origin variants remain for
+  Spaceport. The carrier uses a bounded powered survey loiter and a one-pulse
+  gameplay trajectory; it is not a full orbital flight simulator.
+- Scenario runs do not save. Use Normal runs to test persistence.
+- The shipped runtime passed all 21 Linux, native Windows/macOS and exported-build
+  checks. Connected input/save checks and actual Forward+ and Compatibility
+  captures were reviewed. The release pipeline repeats full checks on the tag
+  and smoke-tests all three packaged builds before publishing.
 
 ## 0.2.4-alpha “Creaky Sailboat”
 
@@ -108,7 +138,7 @@ was reproduced. Version 0.2.4 includes their scope and fixes that bug.
 - Add a directional survey receiver, a physical Surveyor's Guide, a playable
   Archaeologist kit and a personal shield for the Salvager start.
 
-### Current limits
+### Limits recorded for 0.2.3 (historical)
 
 - Drone cargo containers are empty; supply contents are not implemented yet.
 - The Halloran maintenance burn is a bounded encounter, not a portable generator,
@@ -215,8 +245,7 @@ played and broken.
    - **Linux:** `Desert.x86_64`. If it won't start, make it executable first:
      `chmod +x Desert.x86_64`.
 3. Choose **New game**, pick who you come as, then **Normal**.
-4. Press **F1** for the keys list. It shows every key as it's bound now. **F11**
-   switches fullscreen.
+4. Open **Controls** from the pause menu or Options for the current bindings.
 
 You'll need a graphics card with Vulkan (Windows and Linux) or a Mac on macOS 13 or
 later (Apple silicon) or 11 or later (Intel).

@@ -19,6 +19,8 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(away)
 	for keeper in [^"/root/Saves", ^"/root/Profile"]:
 		get_node(keeper).dir = away
+	# This surface capture retains the automatic-arrival baseline.
+	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 1234
 	var main: Main = MAIN.instantiate()
 	main.opens_on_menu = false

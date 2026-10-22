@@ -92,3 +92,26 @@ static func _entry(spec: Array, rng: RandomNumberGenerator, chance: float) -> Di
 
 static func _fraction(rng: RandomNumberGenerator, span: Vector2, usable_min: float) -> float:
 	return clampf(rng.randf_range(minf(span.x, span.y), maxf(span.x, span.y)), usable_min, 1.0)
+
+
+## Preflight selects physical objects before resolving impact; omitted rack gear is absent.
+static func resolve_loaded(run_seed: int, landing_point: Vector3, loaded: Array[Dictionary], profile: Dictionary) -> Dictionary:
+	var resolved := resolve(run_seed, landing_point, profile)
+	var config := Tuning.current().surveyor_arrival.duplicate(true)
+	config.merge(profile, true)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash([run_seed, &"surveyor_preflight_impact", VERSION])
+	var equipment: Array[Dictionary] = []
+	var ordered := loaded.duplicate(true)
+	ordered.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a.uid) < str(b.uid))
+	for item: Dictionary in ordered:
+		var essential: bool = item.uid in [&"water", &"food", &"shield", &"camp_cell"]
+		var entry := {"uid": item.uid, "id": item.id, "parent": item.get("parent", &""),
+			"essential": essential, "survives": essential or rng.randf() < config.extra_survival,
+			"state": {}, "recovered": false, "placement": &"loaded"}
+		if item.has("durability"):
+			entry.state.durability = float(item.durability) if essential else float(item.durability) * _fraction(rng, config.device_durability, config.usable_min)
+		equipment.append(entry)
+	resolved.equipment = equipment
+	resolved.cargo_order = equipment.filter(func(entry: Dictionary) -> bool: return entry.survives).map(func(entry: Dictionary) -> StringName: return entry.uid)
+	return resolved

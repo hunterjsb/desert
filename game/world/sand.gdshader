@@ -1,4 +1,5 @@
 shader_type spatial;
+#include "res://game/world/surface_projection.gdshaderinc"
 #include "res://game/world/mountain.gdshaderinc"
 // The sand: the flat colour plus what makes dune shapes read. Slip faces are
 // smooth avalanche sand, a shade deeper and warmer, so they read even under a
@@ -286,6 +287,8 @@ void vertex() {
 			max(track_at(xz + vec2(0.0, 0.5)), track_at(xz - vec2(0.0, 0.5)))));
 		VERTEX.y += track_lift * near;
 	}
+	vec3 drawn = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	VERTEX = (inverse(MODEL_MATRIX) * vec4(surface_project(drawn), 1.0)).xyz;
 }
 
 // Depth below a ripple's crest: the integral of its rounded sawtooth slope.
@@ -587,7 +590,7 @@ void fragment() {
 	colour = mountain_colour(colour, world_pos.y, normalize(world_normal));
 	ALBEDO = wind_view_colour(colour, world_pos.xz, wind_vertex);
 	ROUGHNESS = 1.0;
-	NORMAL = normalize((VIEW_MATRIX * vec4(rippled, 0.0)).xyz);
+	NORMAL = normalize((VIEW_MATRIX * vec4(surface_normal(rippled, world_pos), 0.0)).xyz);
 }
 
 // Volume: the share of a directional light past occluders whose horizon

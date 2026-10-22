@@ -228,6 +228,8 @@ var _marks: Node3D
 var _mark_look: StandardMaterial3D
 var _readout: Label
 ## The aim dot and its line, out of the way while a menu is up.
+## A physical display has its own readable controls while the eye is focused.
+var display_focused := false
 var _hud: CanvasLayer
 var _dot: Control
 var _sound: AudioStreamPlayer
@@ -292,6 +294,8 @@ func _ready() -> void:
 ## is in tug range and put it down if not. Something too heavy to carry, you
 ## take hold of instead, and taking again lets go. Says whether it did anything.
 func grab() -> bool:
+	if _player.world.arrival != null and _player.world.arrival.take():
+		return true
 	if grasp.body != null:
 		if stand != null:
 			_stand_on(stand)
@@ -400,6 +404,8 @@ func grab() -> bool:
 ## nothing else to do, it goes on your waist; empty-handed, the selected line at
 ## your waist comes back to your hands. Says whether it did anything.
 func interact() -> bool:
+	if _player.world.arrival != null and _player.world.arrival.interact():
+		return true
 	_look()
 	if _player.world.stoker != null and _player.world.stoker.interact(_player):
 		return true
@@ -895,7 +901,7 @@ func _physics_process(delta: float) -> void:
 ## turn; the next tick puts it back where the last one left it.
 func _process(_delta: float) -> void:
 	if _hud != null:
-		_hud.visible = Controls.playing()
+		_hud.visible = Controls.playing() and not display_focused
 		# Close up on a dial the view isn't your aim.
 		_dot.visible = _player.close_up.close < 0.5
 	if phase == Phase.HELD and is_instance_valid(held):
@@ -2228,6 +2234,10 @@ func _part_stats(part: Part) -> Dictionary:
 ## What the look-at line says now: why take or use did nothing, why what you
 ## hold won't stick where it's shown or what to mind, else what you look at.
 func line() -> String:
+	if _player.world.arrival != null:
+		var opening := _player.world.arrival.hint()
+		if opening != "":
+			return opening
 	if notice != "":
 		return notice
 	if phase == Phase.HELD and held is Part and held.has_meta(&"line") and _look_hook() != null:

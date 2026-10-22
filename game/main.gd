@@ -276,7 +276,7 @@ func _into(next: Node, resuming: bool) -> void:
 		profile().remember_origin(Kit.of(world()).id)
 	Controls.free_mouse(false)
 	await ui.fade(false)
-	while run == next and world() != null and world().arrival != null and world().arrival.active():
+	while run == next and world() != null and world().arrival != null and world().arrival.active() and not world().arrival.preparing():
 		await get_tree().physics_frame
 
 

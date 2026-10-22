@@ -1,3 +1,9 @@
+#ifdef DISTANT_SURFACE
+#include "res://game/world/surface_projection.gdshaderinc"
+#endif
+#ifdef SKY_PROXY
+uniform float sky_proxy_distance_scale = 1.0;
+#endif
 // Painted metal worn by this moon. Paint chips at edges and corners down to
 // bare metal, and the old chips are red rust; faces turned to the prevailing
 // wind are scoured pale and matte; sand settles on whatever faces up and in
@@ -60,8 +66,13 @@ varying vec4 stamp;
 void vertex() {
 #ifdef SKY_PROXY
 	// Only the drone proxy replaces projection; ordinary worn shadows stay native.
-	POSITION = PROJECTION_MATRIX * MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
-	POSITION.z = mix(CLIP_SPACE_FAR * POSITION.w, POSITION.z, 0.000001);
+	vec4 proxy_view = MODELVIEW_MATRIX * vec4(VERTEX, 1.0);
+	proxy_view.xyz *= sky_proxy_distance_scale;
+	POSITION = PROJECTION_MATRIX * proxy_view;
+	if (POSITION.z <= CLIP_SPACE_FAR * POSITION.w) {
+		float inside = CLIP_SPACE_FAR < 0.0 ? 0.0000002 : 0.0000000001;
+		POSITION.z = (CLIP_SPACE_FAR + inside) * POSITION.w;
+	}
 #endif
 	obj_pos = VERTEX;
 	obj_n = NORMAL;
@@ -74,6 +85,12 @@ void vertex() {
 	stamp = kit ? vec4(UV, UV2) : vec4(0.0);
 	// The colour's alpha carries the piece's glow on.
 	COLOR.a = kit ? CUSTOM2.z : 0.0;
+#ifdef DISTANT_SURFACE
+	vec3 point = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	vec3 normal = surface_normal(normalize(MODEL_NORMAL_MATRIX * NORMAL), point);
+	VERTEX = (inverse(MODEL_MATRIX) * vec4(surface_project(point), 1.0)).xyz;
+	NORMAL = normalize(transpose(mat3(MODEL_MATRIX)) * normal);
+#endif
 }
 
 float tri(vec3 p, vec3 n, float s) {

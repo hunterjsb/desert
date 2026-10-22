@@ -13,6 +13,8 @@ static var _current: Tuning
 @export var run_seed: int = 0
 ## Metres round the moon. The one deliberate physics cheat (docs/the-moon.md).
 @export var moon_circumference: float = 150000.0
+## Large-body presentation; the circumference above only compresses travel.
+@export var moon_visual_radius_m: float = 3700000.0
 @export var spawn_latitude_degrees: float = 0.0
 @export var spawn_longitude_degrees: float = 0.0
 ## Surface gravity, m/s². The body research leans toward 0.4-0.5 g; F6 tries it live.
@@ -476,13 +478,15 @@ static var _current: Tuning
 
 @export_group("Ledge vault")
 ## Reach above the current feet, forward reach, m; jump rise is not added again.
-@export var vault_height: float = 0.65
+@export var vault_height: float = 1.1
+## Small clutter stays an ordinary obstacle/jump, not a full mantle.
+@export var vault_min_height: float = 0.3
 @export var vault_reach: float = 0.9
 @export var vault_clearance: float = 0.02
 ## Duration of a full-height climb; shorter paths use proportionally less time.
-@export var vault_seconds: float = 0.42
+@export var vault_seconds: float = 0.55
 ## Feet clear the measured top by this much while crossing it, m.
-@export var vault_lift_margin: float = 0.06
+@export var vault_lift_margin: float = 0.18
 @export var vault_stamina: float = 4.0
 @export var vault_settle_speed: float = 0.1
 
@@ -1463,6 +1467,9 @@ static func current() -> Tuning:
 ## Foot radius and summit rise, metres. Gentle broad approaches remain walkable.
 @export var starcom_mountain := Vector2(2400.0, 600.0)
 @export var observatory_mountain := Vector2(3600.0, 950.0)
+## Cheap background ground beyond the ordinary far ring; geometric radial spacing.
+@export var horizon_apron_rings: int = 20
+@export var horizon_apron_sides: int = 128
 @export var horizon_step := 128.0
 @export var horizon_range := Vector2(24000.0, 42000.0)
 @export var mountain_bedrock_depth := 40.0
@@ -1483,6 +1490,8 @@ static func current() -> Tuning:
 @export_group("Surveyor arrival")
 ## Provisional recovery rules for the integrated development opening.
 @export var surveyor_arrival: Dictionary = {}
+## Cabin preparation and bounded approach/impact choices.
+@export var surveyor_preflight: Dictionary = {}
 
 
 @export_group("Ground posture")

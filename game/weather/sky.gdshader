@@ -12,6 +12,7 @@ render_mode disable_fog;
 
 // The day's gradient, as the stock sky drew it.
 uniform vec4 sky_top_color : source_color = vec4(0.385, 0.454, 0.55, 1.0);
+uniform float horizon_dip = 0.0;
 uniform vec4 sky_horizon_color : source_color = vec4(0.86, 0.78, 0.66, 1.0);
 uniform vec4 ground_bottom_color : source_color = vec4(0.2, 0.169, 0.133, 1.0);
 uniform vec4 ground_horizon_color : source_color = vec4(0.86, 0.78, 0.66, 1.0);
@@ -107,10 +108,10 @@ float fbm(vec2 p) {
 }
 
 vec3 gradient(vec3 d) {
-	float v = clamp(d.y, -1.0, 1.0);
+	float v = sin(clamp(asin(clamp(d.y, -1.0, 1.0)) + horizon_dip, -1.5707963, 1.5707963));
 	vec3 sky = mix(sky_top_color.rgb, sky_horizon_color.rgb, clamp(pow(1.0 - v, 4.0), 0.0, 1.0));
 	vec3 ground = mix(ground_bottom_color.rgb, ground_horizon_color.rgb, clamp(pow(1.0 + v, 30.0), 0.0, 1.0));
-	return mix(ground, sky, step(0.0, d.y));
+	return mix(ground, sky, step(0.0, v));
 }
 
 // What of the light from beyond gets through the air, looking this far up.
@@ -196,14 +197,14 @@ void sky() {
 		COLOR = base;
 	} else {
 		float px = max(length(fwidth(d)), 1.0e-5);
-		vec3 air = through_air(d.y);
+		vec3 air = through_air(d.y + sin(horizon_dip));
 		// Low down the dust softens Tu as it dims it.
 		float low = 1.0 - smoothstep(0.02, 0.25, d.y);
 		vec3 beyond = vec3(0.0);
 		float cover = 0.0;
 		float c = dot(d, tu_dir);
 		float r = tu_radius;
-		if (c > cos(r * 1.25) && d.y > -0.02) {
+		if (c > cos(r * 1.25) && d.y > -sin(horizon_dip) - 0.02) {
 			// The ray meets a unit sphere this far off, or grazes it.
 			float dist = 1.0 / sin(r);
 			float b = c * dist;
@@ -241,7 +242,7 @@ void sky() {
 		float behind = eclipse.x;
 		vec3 off_sun = sun_dir - tu_dir * dot(sun_dir, tu_dir);
 		float off = length(off_sun);
-		if (behind > 0.0 && c > cos(r * REACH) && d.y > -0.02) {
+		if (behind > 0.0 && c > cos(r * REACH) && d.y > -sin(horizon_dip) - 0.02) {
 			// Backlit, Tu's rim is a ring of sunset light: a thin line of fire,
 			// Tu's high haze lit just inside it, and a soft glow past it that
 			// fades to nothing well inside the reach, so it never ends in an edge.
@@ -267,7 +268,7 @@ void sky() {
 		// blazing where it goes in and lingering a second or two; and again
 		// where it comes out.
 		float bead = smoothstep(1.0, -1.0, eclipse.z) * exp(-max(-1.0 - eclipse.z, 0.0) / 0.8);
-		if (bead > 0.001 && off > 1.0e-4 && d.y > -0.02) {
+		if (bead > 0.001 && off > 1.0e-4 && d.y > -sin(horizon_dip) - 0.02) {
 			vec3 at = tu_dir * cos(r) + off_sun / off * sin(r);
 			float from_bead = acos(clamp(dot(d, at), -1.0, 1.0)) / SUN_RADIUS;
 			beyond += BEAD * sun_light * bead * (3.0 * exp(-from_bead * from_bead * 6.0)
@@ -289,7 +290,7 @@ void sky() {
 		}
 		// Stars show once the air's glow is down, and never through Tu.
 		float dark = 1.0 - smoothstep(0.003, 0.06, glow);
-		vec3 field = dark > 0.0 && d.y > -0.02 ? stars(to_stars * d, px) * dark : vec3(0.0);
+		vec3 field = dark > 0.0 && d.y > -sin(horizon_dip) - 0.02 ? stars(to_stars * d, px) * dark : vec3(0.0);
 		// The satellites orbit Zan, far nearer than Tu: they show in front of it.
 		vec3 orbiting = vec3(0.0);
 		// Seen at night, or by day if near and bright enough; brighter against the day.
