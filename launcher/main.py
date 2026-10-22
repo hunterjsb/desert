@@ -300,6 +300,33 @@ class DownloadWorker(QThread):
             self.finished_install.emit("", str(error))
 
 
+class SourceImportWorker(QThread):
+    finished_import = Signal(str)
+
+    def __init__(self, godot: str, tree_path: Path):
+        super().__init__()
+        self.godot = godot
+        self.tree_path = tree_path
+
+    def run(self):
+        try:
+            result = subprocess.run(
+                [self.godot, "--headless", "--path", str(self.tree_path), "--import"],
+                cwd=self.tree_path,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        except OSError as error:
+            self.finished_import.emit(str(error))
+            return
+        if result.returncode:
+            details = result.stderr.strip() or result.stdout.strip() or f"Godot exited with status {result.returncode}."
+            self.finished_import.emit(details)
+            return
+        self.finished_import.emit("")
+
+
 class HeroBanner(QWidget):
     def __init__(self):
         super().__init__()
@@ -346,6 +373,7 @@ class Launcher(QMainWindow):
         self.releases: list[Release] = []
         self.release_worker = None
         self.download_worker = None
+        self.source_import_worker = None
         self.setStyleSheet("""
             QMainWindow, QWidget { background: #171819; color: #e8e1d5; }
             QLabel#title { font-size: 27px; font-weight: 700; }
@@ -792,10 +820,31 @@ class Launcher(QMainWindow):
         command = [godot, "--path", str(tree.path)]
         if editor:
             command.append("--editor")
+        self.source_status.setText("Updating…")
+        self.run_game.setEnabled(False)
+        self.open_editor.setEnabled(False)
+        self.source_import_worker = SourceImportWorker(godot, tree.path)
+        worker = self.source_import_worker
+        self.source_import_worker.finished_import.connect(
+            lambda error: self.source_import_finished(tree, command, error)
+        )
+        worker.finished.connect(lambda: self.clear_source_import_worker(worker))
+        self.source_import_worker.start()
+
+    def clear_source_import_worker(self, worker: SourceImportWorker):
+        if self.source_import_worker is worker:
+            self.source_import_worker = None
+
+    def source_import_finished(self, tree: SourceTree, command: list[str], error: str):
+        if error:
+            QMessageBox.critical(self, "Could not update source project", error)
+            self.refresh_sources()
+            return
         try:
             subprocess.Popen(command, cwd=tree.path, start_new_session=(sys.platform != "win32"))
         except OSError as error:
             QMessageBox.critical(self, "Could not start Godot", str(error))
+        self.render_sources()
 
 
 def main() -> int:
