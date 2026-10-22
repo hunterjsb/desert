@@ -59,10 +59,14 @@ time, so it stays smooth at any frame rate. The landing ground is not drawn unti
 begins, when it starts to warm up behind the glass.
 
 **Impact and camp.** Each panel and store rolls its survival and wear on its own seeded
-identity and the approach's odds, so what else you packed never changes its fate. The real
-bodies land in the pod or scatter clear of the crawl route to the hatch. Anything that can't
-be placed drops above the way out, and the landing never holds the run. You crawl out; the pod
-is your first chassis rig. Deeds: Plot a Course, Drop In, Making Landfall.
+identity and the approach's odds, so what else you packed never changes its fate. The impact
+bursts the front frame off with the tail you watched the fall through, so the seat always faces
+open floor under open sky: crawling straight ahead takes you out, and standing is possible
+once clear. Nothing the impact places may land in that way. Real bodies stay in the pod or
+scatter beside it, and anything that can't be placed is dropped beside the pod. The landing
+never holds the run. The burst frame and its panels are recoverable debris, and the shield
+and cell stay mounted behind the seat. The pod is your first chassis rig. Deeds: Plot a
+Course, Drop In, Making Landfall.
 
 **Saves.** One saved opening state. A save made in the cabin, mid-fall or mid-impact resumes
 where it was, without rerolling, duplicating or replaying the impact. A departure model this
@@ -86,7 +90,7 @@ shadowed lights and two orbital viewports were not measured headless.
 - a flyable departure for every start (48);
 - "Ready" always launches (49);
 - a saved fall resuming once (50);
-- crawling out (40);
+- crawling straight out, on the real opening (40) and on every seed and approach (51);
 - loaded-only cargo (20, 21);
 - rope and nested cargo through impact (23, 24, 44);
 - lost frames as debris (5);
@@ -99,7 +103,8 @@ shadowed lights and two orbital viewports were not measured headless.
 - the cabin floor (15).
 
 `probes/camp/11` follows the loaded pod into a marked Home through a distant storm and a disk
-resume. The capture is `look/surveyor_opening`.
+resume. The capture is `look/surveyor_opening`. Captures that frame a run's surface start instead
+take it through `look/surface_start.gd`, the developer `spawn` scenario with the run's own kit.
 
 ## Open
 

@@ -13,20 +13,11 @@ func run() -> void:
 		"landing_world": Vector2(world.world_x(open.x), world.world_z(open.z)), "heading": 0.0}
 	var nodes := PreflightCargo.stage(world, ship, state)
 	var pod := ship.pod.deck
-	var shield := nodes[&"shield"] as Device
-	pod.dismount(pod.seat_of(shield))
-	Stick.put(pod, nodes[&"floor_b"], Chassis.TOP, Vector2(0.16, 0.22), 0.0, shield)
-	var camp_cell := nodes[&"camp_cell"] as Battery
-	pod.take(camp_cell.socket)
-	Stick.put(pod, nodes[&"floor_b"], Chassis.TOP, Vector2(0.28, 0.0), 0.0, camp_cell)
 	var water := nodes[&"water"] as Supply
 	world.teleport(water, water.global_transform.translated(pod.global_basis * Vector3(0, 0, 0.05)))
-	var food := nodes[&"food"] as Supply
-	var food_pose := food.global_transform
-	food_pose.origin += ship.pod.deck.global_basis * Vector3(-0.2, 0, -0.08)
-	world.teleport(food, food_pose)
 	var board := nodes[&"board"] as Device
-	Stick.put(pod, nodes[&"floor_a"], Chassis.TOP, Vector2(-0.26, -0.14), 0.0, board)
+	# Fitted ahead of the seat, across the way out the impact opens.
+	Stick.put(pod, nodes[&"floor_b"], Chassis.TOP, Vector2(0.1, 0.0), 0.0, board)
 	var cell := nodes[&"board_cell"] as Battery
 	cell.charge_wh *= 0.5
 	var charge := cell.charge_wh
@@ -34,7 +25,7 @@ func run() -> void:
 	await physics_frames(4)
 	var line := (hands.held as Part).get_meta(&"line") as Line
 	var ties: Array[Socket] = []
-	for pair: Array in [[&"floor_b", Vector2(0.2, -0.3)], [&"floor_a", Vector2(-0.4, 0.25)]]:
+	for pair: Array in [[&"floor_a", Vector2(-0.42, 0.0)], [&"floor_b", Vector2(-0.4, 0.25)]]:
 		var hook := Catalog.part(&"hook")
 		var mounted := Stick.put(pod, nodes[pair[0]], Chassis.TOP, pair[1], 0.0, hook)
 		for child in mounted.fitted:
