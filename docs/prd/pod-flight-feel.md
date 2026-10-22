@@ -67,3 +67,8 @@ through entry were inspected. The existing seated renderer's heat audit changes
 entry, impact and settled ground views were inspected. These are renderer and
 focused evidence, not combined CI or Hunter's comfort acceptance. No release is
 declared by this branch.
+
+The successful preflight launch action explicitly sounds the ejection pop after
+creating the flight view. A restored view never infers a new launch from its first
+phase or an elapsed-time value. Arrival16 checks the sound immediately after the
+ordinary seat launch; legacy orbit-to-ejection transitions use the same helper.

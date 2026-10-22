@@ -223,6 +223,15 @@ func _aperture(camera: Camera3D, pod_pose: Transform3D) -> Rect2:
 			high = high.max(pixel)
 	return Rect2(low, high - low)
 
+## The successful launch action owns this one-shot; constructing a restored view does not.
+func launch_sound() -> void:
+	if not is_instance_valid(_world):
+		return
+	_voice.stream = Sounds.BOARD_POP
+	_voice.volume_db = float(_world.tuning.surveyor_arrival.ejection_db)
+	_voice.play()
+
+
 ## First presentation may resume mid-flight; only a later actual transition sounds.
 func _phase_audio(phase: StringName, progress: float) -> void:
 	var changed := _has_phase and phase != _heard_phase
@@ -233,7 +242,7 @@ func _phase_audio(phase: StringName, progress: float) -> void:
 		_voice.stop()
 		var stream: AudioStream
 		match phase:
-			&"ejection": stream = Sounds.BOARD_POP
+			&"ejection": launch_sound()
 			&"landing": stream = Sounds.BOARD_SLAM
 		if stream != null:
 			_voice.stream = stream

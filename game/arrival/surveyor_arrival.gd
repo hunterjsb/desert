@@ -61,6 +61,12 @@ func restore() -> void:
 		_release()
 		set_physics_process(false)
 
+## The actual launch action owns its one-shot; restoration only resumes the flight.
+func launch_sound() -> void:
+	if is_instance_valid(_view):
+		_view.call(&"launch_sound")
+
+
 func recover(body: Node) -> void:
 	if world.get_meta(&"arrival_restoring", false) or active() or not is_instance_valid(body):
 		return

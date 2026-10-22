@@ -260,6 +260,7 @@ func launch() -> bool:
 	Deeds.done(world, &"pod_launch")
 	dispose()
 	arrival.restore()
+	arrival.launch_sound()
 	return true
 
 
