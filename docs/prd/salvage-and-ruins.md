@@ -26,7 +26,12 @@ with the near ring covering its extent. Check real physics at both ends.
 boxes and fitted pipe spans. Drawing remains with the original site; collision
 uses the same local shapes and transforms. The streamed physics regression
 (Kits 16) failed all six roof/wall checks with centre ownership, then passed
-in 15 s with local ownership, including the return to Aitch.
+in 15 s with local ownership, including the return to Aitch. First-fire
+interaction passed in 18 s; ordinary storm emergence, reburial and occupancy
+passed in 203 s with no measured separation between collision and the visible
+ruin. Linux verification run `39818082028` passed before landing. The existing
+GPU capture camera is partly obscured by the player model; those captures are
+not collision evidence.
 
 ## Halloran: first fire (built, 2026-10-20)
 
