@@ -551,7 +551,7 @@ static func moon_at(world: World, scenario: Dictionary) -> Vector2:
 
 static func by_key(key: String) -> Dictionary:
 	# Existing console histories and capture scripts still reach the one setup.
-	if key in ["clear_skies", "deliveryship"]:
+	if key in ["clear_skies", "deliveryship", "drone", "surveyor"]:
 		key = "clear"
 	for scenario in LIST:
 		if scenario.key == key:

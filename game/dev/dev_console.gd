@@ -34,6 +34,8 @@ const COMMANDS := {
 	"deeds": ["[clear]", "which deeds are done; clear forgets them all"],
 	"reset": ["", "forget the profile: deeds, starts opened, finds, how-tos, as Options' reset"],
 	"meltdown": ["", "the Stoker plays its furnace song on its frequency, once, from now"],
+	"drone": ["[s]", "alias of deliveryship"],
+	"surveyor": ["[s]", "alias of deliveryship; the Surveyor origin is unchanged"],
 	"deliveryship": ["[s]", "the deliveryship's pass forced: it comes straight over you in s seconds, 20 alone"],
 	"airdrop": ["[now]", "on to just before the deliveryship's next pass high over you, a flare in your hands; now, its cannon fires at you at once"],
 }
@@ -370,6 +372,14 @@ func _give(args: PackedStringArray, world: World) -> void:
 			Scenarios.drop(world, Catalog.part(id), lying, 0.0, ahead)
 			ahead += 0.3
 	_say("%d %s" % [count, id])
+
+
+func _drone(args: PackedStringArray, world: World) -> void:
+	_deliveryship(args, world)
+
+
+func _surveyor(args: PackedStringArray, world: World) -> void:
+	_deliveryship(args, world)
 
 
 func _deliveryship(args: PackedStringArray, world: World) -> void:

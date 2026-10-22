@@ -45,6 +45,13 @@ func run() -> void:
 	weather_everywhere(0.25)
 	radio.frequency = gods.carrier(best, world.time)
 	await physics_frames(5)
+	# A deliberate dropout is silence; measure the received signal between cuts.
+	for attempt in 10:
+		if not radio.reception.cut:
+			break
+		world.time += Interference.SLICE
+		radio.frequency = gods.carrier(best, world.time)
+		await physics_frames(5)
 	var bus := AudioServer.get_bus_index(radio.signal_bus())
 	var crushed := AudioServer.is_bus_effect_enabled(bus, Garble.Stage.CRUSH)
 	var warbling := AudioServer.is_bus_effect_enabled(bus, Garble.Stage.WARBLE)

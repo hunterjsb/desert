@@ -651,6 +651,8 @@ func _state(body: RigidBody3D) -> Dictionary:
 		if is_instance_of(body, entry[0]):
 			for key: String in entry[1]:
 				out[key] = _copy(body.get(key))
+	if body is SurveyReceiver:
+		out.beacon_khz = Dial.BEACON_KHZ
 	var device := body as Device
 	if device != null:
 		out.durability = device.durability
@@ -667,13 +669,18 @@ func _state(body: RigidBody3D) -> Dictionary:
 
 func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 	var state: Dictionary = rec.state
+	if body is SurveyReceiver and not state.has("beacon_khz") and state.has("frequency"):
+		# The old narrow-band receiver followed the beacon at 1930 kHz.
+		if absf(state.frequency - 1930.0) <= _world.tuning.receiver_band_khz:
+			state = state.duplicate()
+			state.frequency += Dial.BEACON_KHZ - 1930.0
 	if body is Mast and not state.has("hoist_enabled"):
 		body.legacy_hoist = true
 	var part := body as Part
 	if part != null and state.has("stats"):
 		part.stats = state.stats.duplicate(true)
 	for key: String in state:
-		if key in ["durability", "powered", "stats", "amount"]:
+		if key in ["durability", "powered", "stats", "amount", "beacon_khz"]:
 			continue
 		body.set(key, _copy(state[key]))
 	if body is Battery:

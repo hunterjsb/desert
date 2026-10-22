@@ -483,7 +483,7 @@ func tune(notches: int, fine := false) -> bool:
 	frequency = clampf(snappedf(frequency + notches * step, snap), _lowest(), _highest())
 	if band == AM_BAND:
 		frequency = Dial.on_dial(frequency, notches > 0)
-	if _has(&"counter"):
+	if _runs(&"counter"):
 		_lock_on()
 	_retuned(before)
 	return true
@@ -1131,6 +1131,17 @@ func _retuned(before: int) -> void:
 		spoken_at = -INF
 
 
+## A station owns its queued words, even when its neighbour is also a god.
+func _listening_to(station: StringName) -> void:
+	if station == _spoken_station:
+		return
+	_hush()
+	_spoken_station = station
+	spoken = PackedStringArray()
+	_last_words = ""
+	spoken_at = -INF
+
+
 ## What it plays this tick, from the systems it reads.
 func _listen(delta: float) -> void:
 	_to_your_ears(carried() or headset_on())
@@ -1172,12 +1183,7 @@ func _listen(delta: float) -> void:
 	odd = choked(field.anomaly_at(x, z, t), _tuning.choke_static)
 	var now := channel
 	var station := tuned_to()
-	if station != _spoken_station:
-		_hush()
-		_spoken_station = station
-		spoken = PackedStringArray()
-		_last_words = ""
-		spoken_at = -INF
+	_listening_to(station)
 	if now != _was:
 		if _was != UNHEARD or target.is_empty():
 			_retuned(_was)
@@ -1384,6 +1390,7 @@ func _track_moves() -> void:
 ## storm's static isn't heard here: FM's limiter clips it off. The satellites
 ## aren't either: they're on the AM dial.
 func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
+	_listening_to(tuned_to())
 	var now := channel
 	if now != _was:
 		_retuned(_was)
@@ -1973,7 +1980,7 @@ func _read(delta: float, now: int) -> void:
 		_lines = []
 		_local = false
 		# Heard half through the storm, its wire logger plays it back clean.
-		if over_air and _has(&"logger") and _reading_dirt >= _tuning.logger_dirty and not spoken.is_empty():
+		if over_air and _runs(&"logger") and _reading_dirt >= _tuning.logger_dirty and not spoken.is_empty():
 			_play_back()
 		_reading_dirt = 0.0
 

@@ -74,3 +74,12 @@ locking and capture rules.
   receiving array and broken elevator foot, laid by `Sites` at their history landmarks.
 - Focused checks: history 8, kits 12/13; existing exposure, burial and spawn probes.
   Captures: `look/horizons/horizons.tscn`. First-hour audit: `look/exposure/first_hour.tscn`.
+
+## Radio integration follow-up
+
+`Radio` supplies the passive crystal and field sets, actual band/station identity
+and powered module actions. `Snapshot` tags the survey receiver beacon carrier
+and restores legacy detuning. `AntennaKite` follows origin displacement and checks
+its live cable before granting gain or grounding. Radio69–73 cover those bounded
+corrections; existing radio55–68, Power7 and saves13 retain the feature checks.
+See [the integration account](prd/radio-integration-review.md).

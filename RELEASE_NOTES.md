@@ -15,9 +15,26 @@
 - Avoid a redundant zero-motion projection in large craft contact work; a
   controlled 108-piece camp measured about 3.4% lower settled CPU time.
 
+- Add the passive crystal set, new field-radio looks, coloured band windows and
+  powered receiver modules. Reorganize AM/FM/shortwave broadcasts around their
+  updated carriers, including wreck distress and the tower weather/schedule.
+- Fly a radio antenna aerial from its reel and route its lead through a stake
+  for grounding. Static charge, wear and damaged leads affect reception. The
+  traction kite remains a separate Spaceport feature.
+- Rename the delivery craft to the deliveryship and raise its pass; keep the
+  former drone/surveyor developer commands and scenarios as aliases.
+- Migrate old survey-receiver frequencies while preserving their detuning,
+  charge and switch state. Reset queued speech on actual station changes and
+  require power for the counter and logger modules.
+- Keep the aerial aligned through world recentering and disconnect a ruptured
+  strong lead from reception and grounding. Remove the clipped footstep sample.
+
 Existing run/profile formats remain supported. The escape-route repair applies
 when impact materializes; already recovered camps are not rearranged on load.
-Published 0.3.0 remains unchanged. This patch is not yet published.
+The AM dial and station allocation change; full-radio frequency marks retain
+their recorded frequencies. Natural-radio listening and the Whistler deed are
+retired, with existing profile completion data retained. Published 0.3.0 remains
+unchanged. This patch is not yet published.
 
 ## 0.3.0-alpha “Sanddune”
 

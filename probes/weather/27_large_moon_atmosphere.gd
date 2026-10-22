@@ -59,7 +59,8 @@ func run() -> void:
 	var orbit_at := orbit.at(world.time)
 	var below := orbit_at.normalized()
 	world.moon.place(rad_to_deg(Sphere.latitude(below)), rad_to_deg(Sphere.longitude(below)))
-	world.player.global_position.y = 10000.0
+	# Keep the observer above the actual orbital altitude as that orbit changes.
+	world.player.global_position.y = (orbit_at.length() - 1.0) * orbit.radius + 4000.0
 	sky._show_satellites(world.time)
 	check(craft.visible and (craft.global_position - eye.global_position).normalized().y < -0.99,
 		"actual ephemeris viewed from above places the finite Drone below the observer")

@@ -74,6 +74,17 @@ func _init() -> void:
 func _ready() -> void:
 	super()
 	_seed = float(hash(get_instance_id()) % 1000) * 0.01
+	if world != null:
+		world.origin_shifted.connect(_origin_shifted)
+
+
+func _origin_shifted(by: Vector2i) -> void:
+	var offset := Vector3(by.x * world.tuning.chunk_size, 0.0, by.y * world.tuning.chunk_size)
+	kite_at -= offset
+	# Top-level aerial effects do not inherit their reel's displacement.
+	for visual in [_kite, _line, _flash]:
+		if is_instance_valid(visual) and visual.is_inside_tree():
+			visual.global_position -= offset
 
 
 ## Its kite, line, crackle and flash, made the first time it flies: a kite
@@ -213,7 +224,7 @@ func find_rig() -> Dictionary:
 	if mine == null or mine.part == null:
 		return {}
 	var cable := Cable.of(mine.part, world)
-	if cable == null:
+	if cable == null or cable is StrongCable and (cable as StrongCable).rope == null:
 		return {}
 	for plug in cable.plugs:
 		if plug == mine.part or not is_instance_valid(plug) or plug.socket == null or plug.socket.kind != &"lead":
@@ -233,7 +244,10 @@ static func _hook_of(_radio: Radio, lead: Socket) -> Socket:
 
 ## Whether its lead runs through a driven stake: earthed.
 func earthed() -> bool:
-	return not rig.is_empty() and (rig.cable as Cable).staked()
+	var cable: Variant = rig.get("cable")
+	if not is_instance_valid(cable):
+		return false
+	return not (cable is StrongCable and (cable as StrongCable).rope == null) and cable.staked()
 
 
 func stats() -> Dictionary:
