@@ -1889,6 +1889,24 @@ kite area, force and line behavior remain Tuning parameters.
 anchoring, a rendered kite visible from a nearby scouting dune, and equivalent flight at
 supported physics rates. A deed is recorded at actual wind-powered travel.
 
+
+**As built, 2026-10-22.** The found `salvage_kite` packs a 5.5 m² wing and one
+55 m ordinary line. It shares the antenna's wing, packed mesh, sway, elevation
+and cloth-wear law, with teal cloth and yellow trim. A second included line is
+never issued after the first is removed. Existing carry selection, reeling,
+yanking and ordinary hook/stake transfers manage its one bridle; a flying kite
+line stays tied when boarding. In a lull the same line can be reeled back into
+reach, tied at the waist to free a hand, and the kite folded through ordinary use.
+Kite Rider records 100 m of actual board travel with positive work from the
+loaded line, including gathered knots and routed ends.
+
+Flight, paid-out reserve, settling angle, sway phase and travel progress save
+with the ordinary rope; the saved camp also builds its menu preview. At steady
+9 m/s, the same original anchored rope survived 30, 60 and 120 physics ticks,
+with a largest flight difference of 1.70 m against a 3 m limit. Actual GPU
+captures show the packed find, worn wing, camp flight and a small physical
+landmark at 200 m. Terrain and dust still obscure it.
+
 ## Kite propulsion energy gate (SANDGAME, 2026-10-22)
 
 The approved gate is at least 50% lower propulsion Wh/km than motor-only travel
@@ -1907,12 +1925,14 @@ ordinary chassis tow and a common speed controller.
 
 **Measured 2026-10-22:** on the same 250 m downwind corridor in a steady 10 m/s
 wind, towing a 19.8 kg chassis on powered hover through an ordinary waist line,
-the 5.5 m² kite used 0.000 propulsion Wh/km against the motor-only leg's 1.698.
+the 5.5 m² kite used 0.783 propulsion Wh/km against the motor-only leg's 1.632,
+a 52.0% reduction. A fixed sway phase and the same look-and-steer input policy
+kept both riders within the same 15 m corridor (kite maximum 7.72 m across).
 Both board and payload began with 100 Wh each and finished charged. The same
 4 m/s minimum cruise controller let the wind carry the kite leg faster; it
-finished in 51.9 s against 73.7 s. With motor input released for the first 25 s,
-the kite carried the loaded rider 92.7 m with zero propulsion draw. Combined
-board and payload hover used 4.564 Wh/km against 6.504; equipment used zero in
-both fixtures, and total draw was 4.564 against 8.203 Wh/km. These numbers cover
+finished in 58.05 s against 70.45 s. With motor input released for the first 25 s,
+the kite carried the loaded rider 92.34 m with zero propulsion draw. Combined
+board and payload hover used 5.081 Wh/km against 6.215; equipment used zero in
+both fixtures, and total draw was 5.864 against 7.848 Wh/km. These numbers cover
 this clear downwind fixture only. Probe 37 also reconciles integrated components
 against both actual battery withdrawals within 0.05 Wh.

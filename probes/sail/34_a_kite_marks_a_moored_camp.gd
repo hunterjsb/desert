@@ -16,6 +16,7 @@ func run() -> void:
 	var line := Line.between(world, kite.bridle(), camp.free_tie(kite.global_position), 1.0)
 	line.full = world.tuning.traction_line_m
 	line.rope.full = line.full
+	var original := line.rope
 	check(kite.use(world.player, kite.global_position), "the camp's line launches the kite")
 	await simulate(35.0)
 	var height := kite.global_position.y - world.height_under(kite.global_position)
@@ -40,7 +41,7 @@ func run() -> void:
 	look(camera.global_position, kite.global_position)
 	await physics_frames(3)
 	check(hands.interact() and not kite.flying, "the reachable kite folds through the ordinary use action")
-	check(kite.laid() == line and world.ropes.ropes.has(line.rope), "folding preserves the rope and both attachments")
+	check(kite.laid() == line and line.rope == original and world.ropes.ropes.has(original), "folding preserves the rope and both attachments")
 	check(kite.carryable and not kite.flying, "the recovered kite can be carried")
 	var full := line.full
 	check(kite.use(world.player, kite.global_position), "the same line launches again")

@@ -32,7 +32,8 @@ func run() -> void:
 	speed_up(1)
 	look(camp.global_position - Vector3(downwind.x, 0.0, downwind.y) * 28.0 + Vector3.UP * 5.0, kite.global_position * 0.45 + camp.global_position * 0.55)
 	await _shoot(out.path_join("camp.png"))
-	var near := kite.global_position - kite.load_n.normalized() * 6.0
+	var near := kite.global_position - kite.load_n.normalized() * 6.0 \
+		+ Vector3.UP.cross(kite.load_n).normalized() * 2.5
 	look(near, kite.global_position)
 	await _shoot(out.path_join("wing.png"))
 	var far := camp.global_position - Vector3(downwind.x, 0.0, downwind.y) * 200.0

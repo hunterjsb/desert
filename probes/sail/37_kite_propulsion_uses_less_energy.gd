@@ -12,6 +12,8 @@ func run() -> void:
 	var motor := await _route(false)
 	var kite := await _route(true)
 	Input.action_release("move_forward")
+	Input.action_release("move_left")
+	Input.action_release("move_right")
 	check(motor.finished and kite.finished, "both loaded legs finish the same route before running flat")
 	check(kite.off_m > 10.0 and kite.off_propulsion < 0.000001 and kite.off_load > 15.0,
 		"the loaded kite moves the rider with the motor released and no propulsion electricity")
@@ -52,6 +54,7 @@ func _route(with_kite: bool) -> Dictionary:
 		var kite := Catalog.device(&"salvage_kite") as SalvageKite
 		world.content.add_child(kite)
 		kite.global_position = player.global_position + Vector3.UP * 1.5
+		kite.phase = 0.0
 		check(kite.use(player, kite.global_position), "the kite unfolds on its ordinary line")
 		kite_line = kite.laid()
 	player.set_physics_process(true)
@@ -88,14 +91,25 @@ func _route(with_kite: bool) -> Dictionary:
 			if kite_line != null:
 				result.off_load = maxf(result.off_load, kite_line.rope.tension)
 		else:
-			if player.ride.velocity.dot(downwind) < CRUISE_MPS:
+			# Both riders look along the same corridor and steer with ordinary inputs.
+			var desired := (downwind - across * clampf(offset.dot(across) / 40.0, -0.25, 0.25)).normalized()
+			player.rotation.y = atan2(-desired.x, -desired.y)
+			Input.action_release("move_left")
+			Input.action_release("move_right")
+			if player.ride.velocity.dot(desired) < CRUISE_MPS:
 				Input.action_press("move_forward")
 			else:
 				Input.action_release("move_forward")
+				var error := player.ride.ahead.angle_to(desired)
+				if absf(error) > 0.015:
+					Input.action_press("move_left" if error < 0.0 else "move_right")
+
 		if offset.dot(downwind) >= ROUTE_M:
 			result.finished = true
 			break
 	Input.action_release("move_forward")
+	Input.action_release("move_left")
+	Input.action_release("move_right")
 	var label := "kite" if with_kite else "motor"
 	for component: String in ["propulsion", "hover", "equipment", "total"]:
 		metric(label + " " + component, float(result[component]) / maxf(result.km, 0.000001), "Wh/km")
