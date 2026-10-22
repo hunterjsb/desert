@@ -574,7 +574,6 @@ func _runs(stat: StringName) -> bool:
 	return not crystal and _has(stat)
 
 
-## Whether it reaches a band: the AM dial always, the others with their converters.
 ## Its misc bay's module at work: whether one with this stat is fitted.
 func bleeds() -> bool:
 	return _has(&"bleed")
@@ -618,6 +617,7 @@ func headset_on() -> bool:
 		and world.player.global_position.distance_to(global_position) <= _tuning.headset_cord_m
 
 
+## Whether it reaches a band: the AM dial always, the others with their converters.
 func reaches(to: StringName) -> bool:
 	return to == AM_BAND or (to == FM_BAND and has_fm()) or (to == SW_BAND and has_sw())
 

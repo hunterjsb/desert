@@ -321,9 +321,9 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
 
 ### The FM band (built 2026-10-20)
 
-- **The FM converter** (`fm_converter`), a radio mod: 0.6 kg, 0.5 W from the radio's battery or pool, in a
-  socket on the radio's left side (kind `radio_mod`). Found on colonial and First Kingdom shelves and in
-  relay mast cabinets.
+- **The FM converter** (`fm_converter`), a radio mod: 0.6 kg, no power of its own (Radio upgrades vetted,
+  below), in a socket on the radio's left side (kind `radio_mod`). A fairly easy midgame find: First Kingdom
+  shelves (weighted 2), skimmer-era and colonial shelves, and relay mast cabinets.
 - **The band switch** works the radio the tuning actions work: round AM, FM and shortwave through a burst
   of static, skipping a band without its converter. Each band keeps its place; take a converter off and the
   radio goes back to the AM dial.
@@ -346,7 +346,7 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
 
 ### Shortwave and Tu's roar (built 2026-10-20)
 
-- **The shortwave converter** (`sw_converter`), the FM converter's sibling, 0.6 kg, 0.5 W; the radio's left
+- **The shortwave converter** (`sw_converter`), the FM converter's sibling, 0.6 kg, no power of its own; the radio's left
   side takes two mods. Found on skimmer-era shelves and in relay mast cabinets.
 - **The band** runs 2–30 MHz, the dial going on in kHz past the AM dial (`Shortwave`, `sw_notch_khz`, fine
   tuning 1 kHz): "Radio · 29.07 MHz". AM and shortwave share one `frequency`, each keeping its place
@@ -414,8 +414,7 @@ now in `tuning.tres` (`kite_*`).
   `Dress._module`). Powered ones need the set's power (none on a crystal set):
   - **Bleed resistor:** leaks a kite's charge off (`kite_bleed_tau`), so a breeze never arcs it unearthed; a
     dust front outruns it.
-  - **Valve preamp:** lifts everything heard `preamp_gain` times, so a far god lost in the hiss comes through,
-    for 4 W more.
+  - **Valve preamp:** lifts everything heard `preamp_gain` times, so a far god lost in the hiss comes through.
   - **Direction loop:** takes the ferrite rod's place, its null deeper and narrower (`loop_width`), and as
     deep by night's sky wave.
   - **Static choke:** a storm's static at half, the garbling at 0.6, the signal at 0.8.
@@ -428,6 +427,17 @@ now in `tuning.tres` (`kite_*`).
 - **Found** on skimmer-era floors (the kite), colonial and First Kingdom shelves and relay mast cabinets
   (the modules). **High Wire:** hear a satellite clear on a kite flown 50 m up. Scenario `kite`. **Not
   yet:** the kite's pull on its reel; a drawn arc down the lead.
+
+### Radio upgrades vetted (gonkhub, 2026-10-22)
+
+*Walking through the radio's upgrades one by one. gonkhub: "make upgrades cost no additional power for
+now," and the FM converter "should be a fairly easy to find midgame upgrade for the radio."*
+
+- **No upgrade draws power** for now: the converters, valve preamp, wire logger and frequency counter
+  carry no `draw_w` (they were 0.5, 0.5, 4, 0.2 and 0.3 W). The powered ones still need a powered set, so a
+  crystal set can't run them (radio probe 73).
+- **The FM converter is a midgame find:** First Kingdom shelves weight it 2, and skimmer-era shelves now
+  hold it too, beside colonial shelves and relay mast cabinets.
 
 ### The ferrite rod's null (built 2026-10-20)
 

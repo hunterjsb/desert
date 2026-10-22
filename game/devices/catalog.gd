@@ -200,23 +200,24 @@ const PARTS := {
 	# on its own whip and hands it to the set as a carrier the set already
 	# tunes, so the radio reaches FM, still as narrow as AM sounds.
 	&"fm_converter": {"kind": &"radio_mod", "label": "FM converter", "mass": 0.6, "size": Vector3(0.12, 0.095, 0.06),
-		"color": Color(0.22, 0.23, 0.22), "stats": {"fm": 1, "draw_w": 0.5}},
+		"color": Color(0.22, 0.23, 0.22), "stats": {"fm": 1}},
 	# Its shortwave sibling, as car radios once took too: the band from 2 to 30
 	# MHz handed to the set the same way, wire terminals on its top for a long
 	# antenna in place of a whip.
 	&"sw_converter": {"kind": &"radio_mod", "label": "Shortwave converter", "mass": 0.6,
-		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.24, 0.22, 0.2), "stats": {"sw": 1, "draw_w": 0.5}},
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.24, 0.22, 0.2), "stats": {"sw": 1}},
 	# The radio's misc bay takes one of these, the same maker's add-ons as its
 	# converters (gonkhub, 2026-10-21: "give all of the upgrades effects. Make
 	# them functional, give them a purpose in the world"). What each does is in
-	# Radio, by its stat.
+	# Radio, by its stat. Radio upgrades draw no power of their own for now
+	# (gonkhub, 2026-10-22); a crystal set still can't run the powered ones.
 	# Bleeds a flown kite's charge off steadily (AntennaKite): fair weather and a
 	# breeze it holds; a dust front's charge outruns it.
 	&"bleed_resistor": {"kind": &"radio_bay", "label": "Bleed resistor", "mass": 0.4,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.7, 0.15), "stats": {"bleed": 1}},
-	# Lifts what it hears out of the hiss, at three times the set's draw.
+	# Lifts what it hears out of the hiss.
 	&"valve_preamp": {"kind": &"radio_bay", "label": "Valve preamp", "mass": 0.7,
-		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.42, 0.1), "stats": {"preamp": 1, "draw_w": 4.0}},
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.42, 0.1), "stats": {"preamp": 1}},
 	# A loop in place of the ferrite rod's: its null sharp and deep, by night too.
 	&"direction_loop": {"kind": &"radio_bay", "label": "Direction loop", "mass": 0.5,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.6, 0.62, 0.64), "stats": {"loop": 1}},
@@ -225,10 +226,10 @@ const PARTS := {
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.3, 0.55, 0.85), "stats": {"choke": 1}},
 	# Records what comes in on wire: a report half lost to the storm, it plays back clean.
 	&"wire_logger": {"kind": &"radio_bay", "label": "Wire logger", "mass": 0.6,
-		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.8, 0.68), "stats": {"logger": 1, "draw_w": 0.2}},
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.8, 0.68), "stats": {"logger": 1}},
 	# Reads the frequency exactly: tuned near a carrier, the dial locks onto it.
 	&"frequency_counter": {"kind": &"radio_bay", "label": "Frequency counter", "mass": 0.4,
-		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.25, 0.15), "stats": {"counter": 1, "draw_w": 0.3}},
+		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.25, 0.15), "stats": {"counter": 1}},
 	# A headset on its cord: the set in your ears near it, the wind and storm turned down.
 	&"headset_jack": {"kind": &"radio_bay", "label": "Headset jack", "mass": 0.3,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.1, 0.1, 0.1), "stats": {"headset": 1}},
