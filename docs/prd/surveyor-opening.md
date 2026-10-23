@@ -52,6 +52,15 @@ owns the approved compatibility grants. Still after Spaceport.
 
 ## As built
 
+**Impact retirement correction (candidate, 2026-10-23).** Unseat lost cargo
+before any lost carrier leaves the world. Seed 1's lost front wall and packed
+panel reproduce an invalid mount teardown; arrival probe 52 fails before the
+correction and passes after it, alongside nested-cargo probes 24 and 44. The
+real opening followed by an immediate save/reload keeps neither lost body nor
+its live socket. Historical impact outcomes remain in the manifest. Seeded
+losses, survivor placement and the save format are unchanged. Held for the
+post-0.3.1 batch (SANDGAME).
+
 **Cabin.** A small walkable room hangs over the start in the same World, sheltered from
 weather. Its window faces Tu, 9° across as from the surface and placed by the same geometry,
 through a separate orbital renderer; the station's globe shows Zan. Nothing aboard has been
