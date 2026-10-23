@@ -40,18 +40,32 @@
   controlled 108-piece camp measured about 3.4% lower settled CPU time.
 
 - Add the passive crystal set, new field-radio looks, coloured band windows and
-  powered receiver modules. Reorganize AM/FM/shortwave broadcasts around their
+  receiver upgrades with no additional power draw. Reorganize AM/FM/shortwave broadcasts around their
   updated carriers, including wreck distress and the tower weather/schedule. Hear
   the Walker on FM, and bring the relay's music back.
 - Align the printed AM/FM/shortwave dial marks with actual tuning and needle travel.
-- Fly a radio antenna aerial from its reel and route its lead through a stake
-  for grounding. Static charge, wear and damaged leads affect reception. The
-  traction kite remains a separate Spaceport feature.
+- Plug an antenna kite directly into the radio's aerial clip with a cable to improve
+  reception on every band. Route the lead through a driven stake to earth it; an
+  ungrounded arc damages one piece of the chain. Earn Over the Horizon by hearing
+  an FM station clearly through the kite where the whip cannot. The traction kite
+  remains a separate Spaceport feature.
+- Find a headset, cable it to the radio's misc bay and wear or hold it to hear the
+  set close and clear, with quieter wind and storm noise. Its cord pulls free if
+  you walk beyond its length.
+- Fit a solar lid to run the radio and charge its battery by day, even while it
+  plays. Headsets and solar lids can be found on every era's shelves.
+- Fit a static choke to remove storm interference; it still costs signal strength
+  and does not eliminate every other source of static.
+- Read incoming speech as subtitles above the set with a wire logger, replacing
+  its old playback function. Tuning stays by ear; the frequency counter is gone.
+- Find the FM converter as a midgame upgrade for clear FM listening. Shortwave
+  converters are rarer, late-game finds for satellites, with reception on bare
+  terminals near overhead and better reception through a kite.
 - Rename the delivery craft to the deliveryship and raise its pass; keep the
   former drone/surveyor developer commands and scenarios as aliases.
 - Migrate old survey-receiver frequencies while preserving their detuning,
-  charge and switch state. Reset queued speech on actual station changes and
-  require power for the counter and logger modules.
+  charge and switch state. Reset queued speech on actual station changes; active
+  upgrades still need a powered set, but add no power draw.
 - Keep the aerial aligned through world recentering and disconnect a ruptured
   strong lead from reception and grounding. Remove the clipped footstep sample.
 - Call a deliveryship care package with a signal flare and recover its contents
@@ -75,7 +89,10 @@ Existing run/profile formats remain supported. The escape-route repair applies
 when impact materializes; already recovered camps are not rearranged on load.
 The AM dial and station allocation change; full-radio frequency marks retain
 their recorded frequencies. Natural-radio listening and the Whistler deed are
-retired, with existing profile completion data retained. Published 0.3.0 remains
+retired, with existing profile completion data retained. The antenna wire reel
+and Long Wire deed are retired too; saved reels become antenna kites, direction
+loops become static chokes, and counters and old headset-jack modules become valve
+preamps. Published 0.3.0 remains
 unchanged. This patch is not yet published.
 
 ## 0.3.0-alpha “Sanddune”
