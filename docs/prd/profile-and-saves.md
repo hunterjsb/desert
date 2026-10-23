@@ -17,6 +17,20 @@ to build every origin. Existing profile, unlock and save behavior remains as bui
 older balance classifications below describe implementation/history, not a new gate.
 
 
+## Starter headlamp compatibility (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [first-slice brief](../briefs/suit-first-slice-2026-10-22.md):
+
+> 1. yes 2. optional 3. yes 4. yes
+
+Answer 4 approves one fitted starter lamp for legacy saves, exactly once, and a
+fitted starter lamp for new origins without a ship. This includes legacy cabin and
+flight saves; migration must not duplicate a module already present. Selected, not
+built. [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22)
+owns the after-Spaceport sequence; [Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
+owns the new Surveyor's optional fitting and impact protection.
+
+
 ## Halloran's first fire (agreed, 2026-10-20)
 
 **First Fire**, hidden in Far, is recorded when a preserved coalcane bundle is physically consumed

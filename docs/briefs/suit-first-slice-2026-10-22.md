@@ -31,13 +31,13 @@ visible. Removing it disables the beam. No Console, tutorial text page or new su
 power meter is needed; [neotech power](../prd/survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
 is already selected to last years. Camp and carried-device batteries remain separate.
 
-Recommend an optional lesson with no new launch blocker. A fitted lamp travels with
+Selected: an optional lesson with no new launch blocker. A fitted lamp travels with
 the wearer; an unfitted lamp in the pod follows physical cargo placement rules.
-Recommend protecting this starter lamp from impact loss in either state. Neither
-recommendation is settled. Departure and recovery hints must reflect its real state;
+Selected: protect this starter lamp from impact loss in either state.
+Other implementation details remain proposals. Departure and recovery hints must reflect its real state;
 an absent lamp cannot produce the current recovery instruction to switch it on.
 
-Proposed compatibility: legacy saves receive one fitted starter lamp exactly once,
+Selected compatibility ([owner](../prd/profile-and-saves.md#starter-headlamp-compatibility-selected-2026-10-22)): legacy saves receive one fitted starter lamp exactly once,
 including old cabin/flight saves; new non-Surveyor origins start with one fitted.
 New Surveyors learn fitting aboard ship. Persist identity and fitted state through
 cabin, departure, impact and reload: never both spawn a starter and migrate one.
@@ -68,7 +68,7 @@ Inspect real GPU captures of grip, layout and beam, then play the cabin-to-dark-
 sequence without coaching. Confirm inventory closes promptly, preserves status access,
 and does not pause the world. Pack deployment and additional modules belong later.
 
-## Hunter's remaining decisions
+## Hunter's answers
 
 Hunter, 2026-10-22: “1. yes 2. optional 3. yes 4. yes”.
 

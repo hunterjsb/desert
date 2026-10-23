@@ -38,7 +38,7 @@ supersedes its built-in status in [Survival](survival.md#neotech-suit-and-modula
 
 **Order approved, 2026-10-22.** Asked whether the [first-slice order](../briefs/suit-first-slice-2026-10-22.md)
 is right (headlamp and gear layout as the start of B, then the set-down pack C, then
-the broader harness B and carry view A), Hunter said: “1. yes 2. optional 3. yes 4. yes” Still after Spaceport.
+the broader harness B and carry view A), Hunter said: “1. yes 2. optional 3. yes 4. yes”. Still after Spaceport.
 
 
 ## Why this system exists
