@@ -902,6 +902,11 @@ func demand_w(t := NAN) -> float:
 	# A crystal set draws nothing, whatever's in its bay: it runs on what it hears.
 	if crystal:
 		return 0.0
+	# By day a solar lid's cells run the set, so its battery only fills
+	# (gonkhub, 2026-10-22: "always charge during the day, even when on").
+	if _has(&"solar_w") and world != null \
+			and world.weather.felt_light(global_position + Vector3.UP * 0.5, t) >= _tuning.solar_lid_runs_light:
+		return 0.0
 	return super(t) + (_tuning.radio_w if on and not wrecked() else 0.0)
 
 
@@ -1497,7 +1502,8 @@ func _listen_fm(delta: float, x: float, z: float, t: float) -> void:
 		if reception.id in [Fm.PORT_MUSIC, Fm.CITY_MUSIC] and reception.quiet >= WHOLE and volume > 0.0 and heard():
 			Deeds.done(world, &"fm_heard")
 		# Clear on a kite, where its own whip hears only hiss.
-		if reception.quiet >= WHOLE and _whip_margins.get(reception.id, INF) < _tuning.fm_threshold_db 				and volume > 0.0 and heard():
+		if reception.quiet >= WHOLE and _whip_margins.get(reception.id, INF) < _tuning.fm_threshold_db \
+				and volume > 0.0 and heard():
 			Deeds.done(world, &"over_horizon")
 	if song != null:
 		_put_on(song, t, into)

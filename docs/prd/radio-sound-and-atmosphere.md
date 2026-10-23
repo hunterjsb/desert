@@ -419,10 +419,12 @@ now in `tuning.tres` (`kite_*`).
     or far, over the set's whip and any dune between, out to 15 m. A crystal set can't run it (radio
     probes 63, 73). It no longer plays reports back.
   - **A headset's cable** (not a module): a cable's plug fits the bay, its other end a headset's jack (below).
-  - **Solar lid:** `solar_w` of cells fill a switched-off set's battery by day, far less on Tu's light.
-- **Found** on skimmer-era floors (the kite), colonial and First Kingdom shelves and relay mast cabinets
-  (the modules). **High Wire:** hear a satellite clear on a kite flown 50 m up. Scenario `kite`. **Not
-  yet:** the kite's pull on its reel; a drawn arc down the lead.
+  - **Solar lid:** `solar_w` of cells: by day they run the set, so it draws nothing from its battery while
+    the cells still fill it, switched on or off (`solar_lid_runs_light`); by night, on Tu's light, far less,
+    and a playing set draws on its battery again (radio probe 66).
+- **Found** on skimmer-era floors (the kite), colonial and First Kingdom shelves, every era's shelves (the
+  headset and solar lid) and relay mast cabinets (the modules). **High Wire:** hear a satellite clear on a
+  kite flown 50 m up. Scenario `kite`. **Not yet:** the kite's pull on its reel; a drawn arc down the lead.
 
 ### Radio upgrades vetted (gonkhub, 2026-10-22)
 
@@ -485,6 +487,8 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   nearer and cleaner. The cable is the cord: walk past its length and a plug pulls out. On every era's
   shelves and in relay mast cabinets. Saves with the old jack module wake with a valve preamp. Radio probes
   65 and 67; saves probe 48 (worn, it survives a save).
+- **The solar lid charges by day even while the set plays:** "Make it always charge during the day, even
+  when on"; and "make it more common": on every era's shelves now, beside colonial ones.
 - **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
   one misc bay stops forcing a choice between modules.
 

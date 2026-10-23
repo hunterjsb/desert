@@ -1254,6 +1254,9 @@ static var _current: Tuning
 @export var choke_dirt: float = 0.6
 @export var choke_signal: float = 0.8
 @export var logger_hold_s: float = 4.0
+## In this much light or more a solar lid's cells run the set, drawing nothing
+## from its battery while the cells still fill it.
+@export var solar_lid_runs_light: float = 0.05
 @export var headset_duck_db: float = -14.0
 ## Tu's roar on shortwave: it comes in from the bottom of this span, kHz, to
 ## full at its top; Tu storms while Zan is within half of tu_roar_window (a
