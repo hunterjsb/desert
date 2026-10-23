@@ -433,8 +433,8 @@ and yourself", and later, riffing, "maybe it's like a Pip-Boy-type thing".
 `World.home`; `HomeView` is the carry-interface page. Membership is a set rebuilt only
 when something changes (bodies entering or leaving the world, ropes, mounts) plus a slow
 sweep for belongings drifting into the shield; between rebuilds the footprint follows the
-chassis, and the per-tick body check is constant time. The cap is 160 work items, sized
-so a rebuild at the cap stays under 1 ms (0.55 ms median measured, camp probe 12; the
+chassis, and the per-tick body check is constant time. The cap is 272 work items, sized
+so a rebuild at the cap stays under 1 ms (0.929 ms median measured, camp probe 12; the
 ticks between cost about 5 µs, where every tick once rebuilt the whole camp). Home's state shows on the beacon itself:
 off when unmarked or unpowered, blinking while its ground is being prepared, steady when
 ready, with a short tone as it becomes ready. Unmarking happens only at the beacon. The
@@ -445,3 +445,40 @@ side is in [World & terrain](world-and-terrain.md#marked-camp-preparation-2026-1
 The Surveyor guide's scouting page teaches taking out and mounting the beacon, marking,
 waiting for ready support and opening Home; compass, landmarks, mooring and weather
 preparation still matter, and a saved fix gives no shield power or protection.
+
+### Large Home main-thread budget (2026-10-22)
+
+The representative Home fixture has 108 joined frames, 18 skates, nine trays,
+six batteries and eight mounted devices including a hinged mast: 1,178.8 kg and
+159 work items. The denser sailing/capsized load has 262 work items and is
+also admitted under the 272-item cap selected below. Camp 13 rides a real powered board more
+than 2.1 km out and back under ordinary controls, preserving the camp's ground,
+membership, geographic place and active shelter power through origin shifts.
+It samples nearby, during remote scouting and on return.
+
+| Phase | Main-thread CPU per physics tick | Enforced budget |
+| --- | ---: | ---: |
+| Near Home | 6.3–6.5 ms | 10 ms |
+| Riding remotely | 6.9–7.2 ms | 10 ms |
+| Returned | 5.9–6.3 ms | 10 ms |
+
+Each is a 480-tick Linux main-thread CPU window; engine elapsed and subsystem
+costs are reported separately. The probe runs alone, enforces the cap and checks
+that the same admitted fittings remain active on return. These figures include
+the live world's and rider's main-loop work, rather than isolating Home upkeep.
+They are reference averages, not tail-latency, GPU or larger-camp guarantees.
+The fixture and accounting method are shared with the
+[moving and capsized budgets](movement.md#representative-large-camp-budgets-2026-10-22).
+
+**Decision: cap 272, admitted by the heavy-camp study, 2026-10-22, SANDGAME.** The fully loaded fixture is 262 work items
+including its mounted gear, not 234; 17 physical members. With a private diagnostic
+admission override it completed the same trip at 7.88 / 9.04 / 8.25 ms per tick
+near/remote/returned. Rebuild p50/p95 was 0.509/0.781 ms, the ordinary one-second
+sweep 0.499/0.706 ms, and unchanged ticks 5/6 µs. A separate 272-item loose-member
+upkeep study measured 0.929/0.945 ms rebuild and 5 µs unchanged ticks, within the
+existing 1 ms / 50 µs upkeep limits but with little rebuild headroom. Camp probe 12
+runs alone at the production cap and enforces those limits with the loose-member
+upkeep fixture. Arbitrary 272 loose-body active physics remains unvalidated;
+these measurements admit the representative composite camp, not a physics
+guarantee for every arrangement. Study overrides were process-local and restored
+before the selected production cap was changed in place.

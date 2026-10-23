@@ -1,9 +1,10 @@
 extends Node
 ## Look-test: the Walker and the living city. The Walker on the Rim near,
 ## from its flank and its front quarter, and far off, its stand-in at its own
-## size; the Console's chart with the bearings it noted beside it and their
-## fix; the living city's lights at night from two km and one; and after
-## teaching, the Console's map and chart showing an anomaly. Needs a GPU, not
+## size; the Console's Map with navigation alone, the bearings it noted
+## beside it and their fix; the living city's lights at night from two km and
+## one; and after teaching, its Map's weather showing an anomaly, then with
+## navigation over it. Needs a GPU, not
 ## --headless; scripts/unseen.sh gives it one with no window:
 ##   scripts/unseen.sh --path . --resolution 1920x1080 res://look/walker/walker.tscn -- <out dir>
 
@@ -50,7 +51,7 @@ func _ready() -> void:
 
 
 ## Beside it as it comes by, its flank, front quarter and port; the Console
-## beside you, its chart and its map once the Walker's taught.
+## beside you, its Map's navigation and, once the Walker's taught, its weather.
 func _walker() -> Walker:
 	var scenario := Scenarios.by_key("walker")
 	var place := Scenarios.find(world, scenario)
@@ -90,26 +91,28 @@ func _far(walker: Walker) -> void:
 	print("walker: %.0f m off, its stand-in past %.0f m" % [eye.distance_to(at), world.tuning.skyline_handover_m.y])
 
 
-## The chart page once it has noted every contact the Walker keeps.
+## The Map's navigation alone once it has noted every contact the Walker keeps.
 func _chart(console: Console) -> void:
 	var every := world.tuning.walker_log_every
 	var slot := ceilf(world.time / every) * every
 	for k in world.tuning.walker_contacts_kept + 1:
 		world.time = slot + k * every + 1.0
 		await ticks(3)
-	console.page = Console.Page.CHART
+	console.page = Console.Page.MAP
+	console.filters_off = ["weather"]
 	await _screen(console, "chart")
 	print("walker: %d bearings noted, a fix %s" % [console.bearings.size(), not Chart.fix(console.bearings, world.tuning).is_empty()])
 
 
-## Taught: its map and chart show an anomaly.
+## Taught: its Map's weather shows an anomaly, alone and with navigation.
 func _taught(console: Console) -> void:
 	world.weather.field = Staged.new(world.run_seed, Tuning.current())
 	world.taught = true
-	console.page = Console.Page.RADAR
+	console.page = Console.Page.MAP
+	console.filters_off = ["nav"]
 	await ticks(5)
 	await _screen(console, "taught_map")
-	console.page = Console.Page.CHART
+	console.filters_off = []
 	await _screen(console, "taught_chart")
 
 

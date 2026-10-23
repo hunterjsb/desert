@@ -18,7 +18,7 @@ func use(by: Player, _at: Vector3) -> bool:
 
 
 func route_at(by: Player) -> bool:
-	var hook := by.hands._look_hook()
+	var hook := by.hands.look_hook()
 	if hook == null or not has_meta(&"line"):
 		return false
 	var line: Line = get_meta(&"line")
@@ -26,5 +26,5 @@ func route_at(by: Player) -> bool:
 	if why != "":
 		return by.hands.refuse(why)
 	by.hands.say("line passes through hook" if line.rope.through != null else "line clear of hook")
-	by.hands._seat_sound()
+	by.hands.seat_sound()
 	return true

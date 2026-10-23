@@ -14,7 +14,7 @@ func run() -> void:
 	var board := nodes[&"board"] as Device
 	Stick.put(ship.pod.deck, ship.pod_parts[&"side_back_b"], Chassis.TOP, Vector2.ZERO, PI * 0.5, board)
 	await physics_frames(2)
-	var sealed := PreflightCargo.seal(world, ship, state, world.tuning.surveyor_preflight.profiles.shallow)
+	var sealed := PreflightCargo.seal(world, ship, state, SurveyorManifest.approach(world.tuning, &"shallow"))
 	check(not sealed.is_empty(), "actual stores and fitted external board seal")
 	if sealed.is_empty(): return
 	var selected := ship.pod_parts.duplicate()
@@ -39,9 +39,9 @@ func run() -> void:
 			and mesh.mesh == source.mesh and mesh.material_override == source.material_override
 			and mesh.cast_shadow == source.cast_shadow and mesh.layers == source.layers
 			and mesh.visible == source.is_visible_in_tree(), "selected mesh keeps its actual physical pose and material visibility")
-		check(mesh.get_instance_shader_parameter(&"age") == source.get_instance_shader_parameter(&"age")
+		check((mesh.get_instance_shader_parameter(&"age") == null or mesh.get_instance_shader_parameter(&"age") == 0.0)
 			and mesh.get_instance_shader_parameter(&"lit") == source.get_instance_shader_parameter(&"lit"),
-			"selected mesh retains its actual wear and powered state")
+			"selected mesh is clean of sand in orbit and keeps its powered state")
 	check(copied.has(shield.frame_view.get_instance_id()) and copied.has(board.frame_view.get_instance_id()),
 		"selected mounted device meshes remain visible")
 	for part: Part in [cell, nodes[&"board_cell"]]:

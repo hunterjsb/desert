@@ -4,7 +4,6 @@ var out: String
 func run() -> void:
 	Tuning.current().run_seed = 1234
 	Tuning.current().salvage = false
-	Tuning.current().surveyor_preflight["enabled"] = true
 	out = OS.get_cmdline_user_args()[-1]
 	DirAccess.make_dir_recursive_absolute(out)
 	main = MAIN.instantiate()

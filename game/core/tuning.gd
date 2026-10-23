@@ -71,6 +71,9 @@ static var _current: Tuning
 @export var deed_board_height_m: float = 8.0
 ## One ride without stepping off, m: more than a scout round camp.
 @export var deed_board_m: float = 5000.0
+## One ride on a make before Quiver counts it, m: seven or eight seconds
+## pushing from a stand on the slowest make, past stepping on and off.
+@export var deed_make_m: float = 100.0
 ## Tumbled in one wipeout, m: thrown off near flat out, past what an edge
 ## caught in a stop throws you.
 @export var deed_tumble_m: float = 12.0
@@ -424,6 +427,9 @@ static var _current: Tuning
 ## Wind 10 m/s past that wrecks a device by itself in this many minutes;
 ## harder wind, faster in proportion.
 @export var wind_wreck_minutes: float = 30.0
+## What wear costs: a device on the point of wreck makes this share less than
+## a sound one, and holds the weather back for that much more.
+@export var worn_loss: float = 0.5
 
 @export_group("Player")
 ## About 5 km/h, the pace the moon's size was set against.
@@ -733,6 +739,9 @@ static var _current: Tuning
 ## this fast a turn, rad/s, by a turning push of at most this much, N·m.
 @export var helm_turn: float = 0.5
 @export var helm_torque: float = 800.0
+## A camp lying over drags along the sand at its edges and masthead by this
+## share of what holds it up there.
+@export var tipped_grip: float = 0.6
 
 @export_group("Rope")
 ## A line's own weight, kg per metre. It's what makes a lightly loaded line
@@ -1080,6 +1089,12 @@ static var _current: Tuning
 @export var lagrange_radii: float = 8.0
 @export var halo_radii: float = 0.9
 @export var halo_minutes: float = 10.0
+## The relay sends the port's music down on the FM band from L1 by a dish aimed
+## at Zan: this many dB over Port Morgan's own station's margin at a kilometre,
+## so from so far it still clears the noise, until the ground near you hides it.
+## The ground toward a satellite is read this far out, m.
+@export var relay_fm_db: float = 55.0
+@export var fm_sky_reach_m: float = 3000.0
 @export var dust_height_m: float = 1500.0
 ## Frontier Ag's deliveryship (Deliveryship) is drawn this many times the size
 ## DeliveryshipLooks builds it: 2.3 makes it about 940 m tip to tip, under 2
@@ -1333,10 +1348,8 @@ static var _current: Tuning
 @export var walker_speed: float = 1.5
 
 @export_group("The Walker and the living city")
-## The Walker's log goes out weaker than its forecast: whole within the first
-## distance, m, lost to noise past the second. It reads one entry this often,
-## s: its survey, then each contact it keeps, the last this many.
-@export var walker_log_m := Vector2(8000.0, 40000.0)
+## The Walker's log, heard only within its FM station's range, reads one entry
+## this often, s: its survey, then each contact it keeps, the last this many.
 @export var walker_log_every: float = 8.0
 @export var walker_contacts_kept: int = 6
 ## Taught, its feed flags an anomaly whose heart is this near the radio, m.
@@ -1474,6 +1487,17 @@ static func current() -> Tuning:
 @export var winch_drum_radius: float = 0.09
 @export var halyard_lower_seconds: float = 1.5
 @export var winch_hoist_deed: float = 0.95
+@export_group("Sailing learning aid")
+@export var sailing_aid_every: float = 0.25
+@export var sailing_aid_budget_us: int = 200
+@export var sailing_aid_heading_steps: int = 16
+@export var sailing_aid_sheet_steps: int = 12
+@export var sailing_aid_speed_steps: int = 6
+@export var sailing_aid_speed_ratio: float = 4.0
+@export var sailing_aid_turn_cost: float = 0.1
+@export var sailing_aid_calm_mps: float = 0.2
+@export var sailing_aid_arrive_m: float = 15.0
+@export var sailing_aid_helm_seconds: float = 2.5
 @export_group("Expedition horizons")
 ## Foot radius and summit rise, metres. Gentle broad approaches remain walkable.
 @export var starcom_mountain := Vector2(2400.0, 600.0)
@@ -1503,10 +1527,90 @@ static func current() -> Tuning:
 @export var home_beacon_blink_s: float = 1.0
 
 @export_group("Surveyor arrival")
-## Provisional recovery rules for the integrated development opening.
-@export var surveyor_arrival: Dictionary = {}
-## Cabin preparation and bounded approach/impact choices.
-@export var surveyor_preflight: Dictionary = {}
+## The cabin hangs this far over the start, sheltered, while you prepare.
+@export var arrival_ship_height_m: float = 30.0
+@export var arrival_cabin_radius_m: float = 7.0
+@export var arrival_interact_m: float = 3.0
+@export var arrival_seat_eye_m: float = 0.48
+@export var arrival_rack_pitch_m: float = 0.08
+@export var arrival_cargo_gap_m: float = 0.01
+## Gear fitted to the pod's outside still flies if it stays inside this box.
+@export var arrival_external_cargo: AABB = AABB(Vector3(-0.65, -0.2, -0.83), Vector3(2.3, 1.8, 1.66))
+@export var arrival_rope_m: float = 6.0
+@export var arrival_computer_focus_s: float = 0.45
+@export var arrival_computer_focus_m: float = 0.56
+## The carrier keeps station over the start; the pod gets one pulse. Planet radii.
+@export var arrival_departure_altitude_r: float = 0.12
+@export var arrival_free_orbit_s: float = 600.0
+@export var arrival_drift_mps: float = 0.3
+@export var arrival_loiter_m: float = 600.0
+@export var arrival_down_kick: float = 0.35
+@export var arrival_retro_max: float = 0.8
+@export var arrival_cross_max: float = 0.25
+@export var arrival_default_pulse: Vector2 = Vector2(0.4, 0.0)
+@export var arrival_step_s: float = 0.25
+@export var arrival_max_s: float = 180.0
+@export var arrival_path_stride: int = 4
+@export var arrival_handle_r: float = 1.0
+@export var arrival_view_r: float = 3.4
+## Float32 paths miss by millimetres; the default pulse needs only to land on the site.
+@export var arrival_calibration_m: float = 2.0
+## How often preparation re-forecasts the landing as the moon turns under it.
+@export var arrival_forecast_s: float = 0.25
+## The orbital survey: what can be seen, and what ground a pod can land on.
+@export var arrival_candidate_count: int = 4
+@export var arrival_corridor_m: float = 2800.0
+@export var arrival_signal_walk_m: Vector2 = Vector2(250.0, 750.0)
+@export var arrival_attempts_per_signal: int = 12
+@export var arrival_signal_limit: int = 64
+@export var arrival_footprint_half_m: float = 5.0
+@export var arrival_footprint_rise_m: float = 0.7
+@export var arrival_structure_clear_m: float = 20.0
+@export var arrival_detectable_height_m: float = 0.5
+@export var arrival_distance_band_m: float = 250.0
+@export var arrival_candidate_spacing_m: float = 180.0
+## Impact and scatter.
+@export var arrival_ejection_s: float = 2.0
+@export var arrival_landing_s: float = 1.2
+@export var arrival_exit_offset_m: float = 3.2
+@export var arrival_landing_clearance_m: float = 0.04
+@export var arrival_spill_gap_m: float = 0.18
+@export var arrival_spill_columns: int = 2
+@export var arrival_spill_attempts: int = 80
+## Per approach as (shallow, standard, steep): a steeper drop is quicker and harder.
+@export var arrival_entry_s: Vector3 = Vector3(5.0, 3.0, 2.0)
+@export var arrival_frame_survival: Vector3 = Vector3(0.95, 0.9, 0.85)
+@export var arrival_outer_survival: Vector3 = Vector3(0.9, 0.8, 0.65)
+@export var arrival_extra_survival: Vector3 = Vector3(0.9, 0.8, 0.65)
+@export var arrival_chassis_wear_low: Vector3 = Vector3(0.7, 0.45, 0.3)
+@export var arrival_chassis_wear_high: Vector3 = Vector3(0.95, 0.9, 0.75)
+@export var arrival_device_wear_low: Vector3 = Vector3(0.8, 0.6, 0.5)
+@export var arrival_device_wear_high: Vector3 = Vector3(1.0, 0.95, 0.8)
+@export var arrival_usable_min: float = 0.25
+## The seated fall: view, turbulence and sound.
+@export var arrival_head_yaw_deg: float = 110.0
+@export var arrival_head_pitch_deg: float = 75.0
+@export var arrival_sway_m: float = 0.012
+@export var arrival_sway_deg: float = 0.65
+@export var arrival_sway_hz: Vector3 = Vector3(0.73, 0.91, 0.57)
+## Turbulence share in (ejection, descent, entry).
+@export var arrival_sway_share: Vector3 = Vector3(0.8, 0.22, 1.0)
+@export var arrival_entry_fade: Vector2 = Vector2(0.15, 0.85)
+@export var arrival_entry_heat: float = 0.65
+@export var arrival_air_db: float = -20.0
+@export var arrival_hull_db: float = -14.0
+@export var arrival_air_ejection: float = 0.25
+@export var arrival_air_descent: float = 0.65
+@export var arrival_air_entry_peak: float = 0.6
+@export var arrival_air_impact_fade: float = 0.4
+@export var arrival_air_pitch: Vector2 = Vector2(0.7, 1.0)
+@export var arrival_ejection_db: float = -8.0
+@export var arrival_landing_db: float = -2.0
+@export var arrival_impact_roll_db: float = -16.0
+@export var arrival_impact_jolt_s: float = 0.42
+@export var arrival_impact_offset_m: float = 0.035
+@export var arrival_impact_tilt_deg: float = 1.3
+@export var arrival_impact_dust_s: float = 0.9
 
 
 @export_group("Ground posture")
@@ -1514,7 +1618,56 @@ static func current() -> Tuning:
 @export var posture_prone_height: float = 0.7
 @export var posture_sit_eye: float = 1.0
 @export var posture_prone_eye: float = 0.5
+## Lying down you reach this far behind your eyes to your boots, m.
+@export var posture_prone_length: float = 1.5
 @export var posture_crawl_speed: float = 0.55
 @export var posture_camera_seconds: float = 0.22
 @export var posture_sit_catch: float = 0.6
 @export var posture_prone_catch: float = 0.25
+
+
+@export_group("Coalcane")
+## One shared crop row, read by Plant, the feral layer and crop advisories.
+@export var coalcane_crop: Dictionary = {}
+@export var burner_w: float = 45.0
+@export var burner_stalk_seconds: float = 120.0
+@export var coalcane_bundle_stalks: int = 6
+
+@export_group("Suit pose")
+## Only looks: the suit's limbs ease toward a new pose in about this long, s.
+@export var suit_ease_seconds: float = 0.12
+## A stride lifts the swinging boot this far, m, at a walk and more at a run;
+## the arms swing this far against it, rad, at a walk and at a run.
+@export var suit_step_lift: float = 0.09
+@export var suit_arm_swing: Vector2 = Vector2(0.25, 0.6)
+## Looking down or up, the trunk leans with your head this share of it.
+@export var suit_lean: float = 0.1
+## A small thing brought all the way in hangs this far below your eye line,
+## rad: low at your chest, close, in your gloves' reach (Hunter, 2026-10-22);
+## it swings with this share of your look. Read, it comes up to here in your
+## view, m from your eyes in your turn's frame.
+@export var suit_carry_drop: float = 1.03
+@export var suit_carry_follow: float = 0.2
+@export var suit_read: Vector3 = Vector3(0.0, -0.12, -0.36)
+
+@export_group("Wind streamer")
+## It hangs under the first air, m/s, stands out level from the second, and
+## flaps a full swing at the third.
+@export var streamer_air: Vector3 = Vector3(0.6, 4.0, 18.0)
+## Its flapping: how often in still air, Hz, and how much more each m/s.
+@export var streamer_flap_hz: Vector2 = Vector2(0.6, 0.45)
+
+@export_group("Care package")
+## The container keeps the craft's motion this long, s, before turning down;
+## this share of its fall is even, the rest gathering speed.
+@export var airdrop_carry_seconds: float = 1.2
+@export var airdrop_even_share: float = 0.35
+## It tumbles this fast falling, rad/s, and keeps this share of it rolling on.
+@export var airdrop_spin: float = 2.6
+@export var airdrop_roll_share: float = 0.5
+## Its speed at the ground, along the way it came and down, m/s.
+@export var airdrop_skid: Vector2 = Vector2(7.0, 3.0)
+## It lingers this long after the hit, s, for its sand to settle.
+@export var airdrop_settle_seconds: float = 7.0
+## Each of its sockets holds something this often (salvage's loot fills it).
+@export var airdrop_packed_share: float = 0.75

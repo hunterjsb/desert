@@ -58,9 +58,10 @@ func run() -> void:
 	check(is_instance_valid(mast), "the trim rig remains on the settled ground")
 	if not is_instance_valid(mast):
 		return
-	mast.raised = true
-	mast.raise = 1.0
-	Line.to_waist(world, mast._tie(), 1.0)
+	# Its halyard made fast on a deck hook with the sail right up.
+	fit_part(deck, &"hook")
+	mast.rig_hoist(deck, null, true)
+	Line.to_waist(world, mast.boom_tie(), 1.0)
 	await physics_frames(5)
 	check(hands.reel.notch(1), "the ordinary reel works the waist sheet")
 	await physics_frames(20)

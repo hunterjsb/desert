@@ -45,17 +45,17 @@ static func pose_on(deck: Device, piece: Device, face: StringName, at: Vector2, 
 
 ## A host's sticky face in its own frame: a deck's piece's, or a mast's.
 static func frame_of(host: Device, piece: Device, face: StringName) -> Transform3D:
-	return (host as Chassis).face_frame(piece as Chassis, face) if host is Chassis else (host as Mast).face_frame(face)
+	return host.sticking_frame(piece, face)
 
 
 ## Where on a face a thing may sit, [min, max] in the face's frame.
 static func room_on(host: Device, face: StringName) -> Rect2:
-	return Rect2(-Vector2.ONE * WIDE_HALF, Vector2.ONE * WIDE_HALF * 2.0) if host is Chassis else (host as Mast).face_room(face)
+	return host.sticking_room(face)
 
 
 ## The piece of a host a socket on it is on: a deck's own piece, a mast itself.
 static func piece_of(host: Device, socket: Socket) -> Device:
-	return (host as Chassis).own_piece(socket) if host is Chassis else host
+	return host.sticking_piece(socket)
 
 
 ## Sticks a thing on a piece's face at a place and turn: a frame square and

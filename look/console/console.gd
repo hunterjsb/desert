@@ -82,7 +82,7 @@ func _capture(out_dir: String) -> void:
 	made.page = Console.Page.POWER
 	await _ticks(10)
 	await _close(out_dir, "power", made)
-	made.page = Console.Page.RADAR
+	made.page = Console.Page.MAP
 	await _ticks(10)
 	await _close(out_dir, "full", made)
 
@@ -143,7 +143,7 @@ func _capture(out_dir: String) -> void:
 	made.page = Console.Page.POWER
 	await _ticks(10)
 	await _close(out_dir, "near_power", made)
-	made.page = Console.Page.RADAR
+	made.page = Console.Page.MAP
 
 	# One alone, on a floating piece of its own beside the deck.
 	var own := Rig.build(world.content, [[&"stick", Vector2i.ZERO, &"bottom", Vector2.ZERO, 0.0, &"hover_tray"],

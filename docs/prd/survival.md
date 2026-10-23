@@ -3,11 +3,38 @@
 *Draft, 2026-10-13. Answers to [the vision](../vision.md). The physical reasoning behind
 air, temperature and water is in [the moon](../world/the-moon.md).*
 
+## Rest, food and drink support exploration (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> It is not. Farming is not promised, atp in the game it is rare loot and a slight burden. It's hard in an almost tedious way. I am rethinking hunger and thirst - instead of surfacing them to the player, resting, eating, and drinking should provide valheim-style buffs to health (maybe) but definitely stamina, to aid in exploration. That would be conducive to our cozy camp style vibe--you *get* to rest and eat cuz youre stuck in a storm, youre not frantically searching for food and trying to get up ag asap before you die. this does significantly hinder our status as a hardcore game so i have some ideas for systems later, incorporating deep starvation if left at low levels for 2+ weeks and acute thirst after a few days, along with macronutrient systems as buff/debuff modifiers.
+>
+> so this raises what is the p&a? we will revisit it after the spaceport release.
+
+**Approved for 0.4, 2026-10-22.** Hunter, on the [rest and buffs concept](../briefs/rest-and-buffs-2026-10-22.md):
+
+> 1. 0.4 2. deliberate 3. stamina only 4. yes
+
+So the concept's three buffs (Rested, Fed, Hydrated) ship in 0.4. You eat and drink deliberately, with no auto-top-up. The buffs touch stamina only, and the three rewards, visible labels and rough durations fit. The numbers stay tuning.
+
+**Direction:** hunger and thirst are not surfaced
+as bars. Rest, food and drink give exploration buffs: definitely stamina, possibly
+health. Farming is not a promised prerequisite to surviving the early game; storm
+shelter should be time to enjoy rest and meals, not a race to establish agriculture.
+
+Deep starvation after 2+ weeks at low levels, acute thirst after a few days and
+macronutrients as buff/debuff modifiers are ideas for a later hardcore layer, not
+implemented timers or present acceptance criteria. Exact buff values remain open.
+Existing needs, depletion, auto-consumption and historical probe measurements below
+still describe the current implementation, not the selected replacement design.
+The rejected Saltbush gate and deferred promise are owned by the [roadmap](../alpha-roadmap.md#saltbush-promise-and-acceptance-deferred-2026-10-22).
+
+
 ## Why this system exists
 
-Survival is the pressure that a good camp turns into steady state. Out here you need
-air, water, food and protection from the elements. Early on, every one of them is a
-worry. A well-built camp handles them without you, until going AFK costs nothing.
+Survival gives shelter and preparation a purpose. The selected direction makes rest,
+food and drink support exploration through buffs; protection from the elements still
+matters. The implementation below retains the older depletion model until redesigned.
 
 ## Who you are
 
@@ -19,11 +46,36 @@ radiation reaches the ground.
 First and foremost, you're out here to survive. (Session 4, part 2 gives each start an origin;
 the default is a Tilg & Standard contractor. See [the vision](../vision.md#player-origins-and-kits).)
 
+## Neotech suit and modular headlamp (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; [timing and order](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22) are after Spaceport.
+
+> out suit is neotech. the only thing better than colonial. we have a nano-HeG3N and wont be a problem for years for 3.
+
+**SANDGAME's reading:** the suit is neotech, above colonial technology. Its power
+source is read as a nano helium-3 generator; that expansion of “nano-HeG3N” is an
+interpretation, not a settled technical name or reactor specification. Suit-module
+power is not a present gameplay constraint: it should last years. This does not
+make camp equipment or carried devices free to power. [Lore](../world/lore-research.md#neotech-the-players-suit-hunter-2026-10-22)
+owns the technology's provenance; no generator output, refuelling loop or timer is set.
+
+> 2. start with headlamp.
+
+**SANDGAME's reading:** the headlamp becomes the first fitted suit module, replacing
+its free built-in status. It uses the suit's effectively ample power, not a new
+battery chore. [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22)
+owns the visual equipment layout; [Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
+owns the fitting introduction. No changes to built-in air/radiation protection were
+requested. [Profile & saves](profile-and-saves.md#starter-headlamp-compatibility-selected-2026-10-22) owns the approved compatibility grants. The runtime headlamp is still built in until this direction is implemented.
+
 ## The suit
+
+The headlamp history below describes earlier implementation; the selected modular
+headlamp and ample neotech power above supersede its design status.
 
 - **The suit is the one gift this brutal world gives you.** Its air and radiation
   protection are free, with no power and no bar. You have a sick suit, and you're not
-  dead. So is its **headlamp** (Hunter, 2026-10-16), which comes on by itself in the
+  dead. Historically its **headlamp** was also built in (Hunter, 2026-10-16); it came on in the
   dark, at night or in a storm, so your tracks can be followed when nothing else lights
   the sand. **Switched by hand for now** (Hunter, 2026-10-17: "have b toggle the headlamp
   for now and then add eye adaptation"): its own action turns it on and off, fading
@@ -44,13 +96,16 @@ the default is a Tilg & Standard contractor. See [the vision](../vision.md#playe
   noise of four runs); its shadows would add 0.06 to 0.3 ms. Tuning's Light group
   holds its thresholds and beam.
 - **Losing the suit kills you.** For now that's the whole rule.
-- **It's a device like any other,** with sockets (Devices & mods) plus some built-in
-  features. Fit a heater, a cooler, a water reclaimer, a better battery or harness
-  hooks.
+- **The suit-module direction** starts with a headlamp. Earlier heater/cooler,
+  reclaimer and harness ideas remain unselected; a better suit battery is not a
+  current power-progression requirement under the neotech decision.
 - **It shapes how you tether.** Harness points, how strong a waist line can be, and how
   hard a gust drags you all depend on the suit.
 
 ## What you track
+
+**Current implementation, pending the selected buff redesign above.** This is not a
+promise to retain visible hunger/thirst meters or the current depletion deadlines.
 
 | Need | What drains it | What restores it |
 |---|---|---|
@@ -106,6 +161,9 @@ food is a ration, sealed or carried, and eaten by the suit. Whether it should is
 ([Farming](farming.md#open-questions)).
 
 ## AFK is something you build
+
+**Historical depletion-loop design and current auto-consumption behavior.** This is
+not a requirement to farm before an early food/water deadline under the new direction.
 
 There's no hard-coded "camp feeds you" rule. Instead:
 
@@ -372,10 +430,10 @@ broadcasts. [Wind & storms](wind-and-storms.md): the curve.
 
 ## On screen
 
-Health, hunger, thirst and stamina get **bars**. That's an exception to "almost no menus"
-at this early stage. They might show only when a need runs low, but they're always
-visible in dev mode. Better ways to express them come later: breathing, vision, sound
-and readouts on the suit.
+The selected direction has no surfaced hunger or thirst bars; rest, food and drink
+support exploration buffs as specified [above](#rest-food-and-drink-support-exploration-selected-2026-10-22).
+The current implementation still shows the older health/hunger/thirst/stamina bars.
+This documentation change does not remove them or choose a replacement HUD layout.
 
 ## Death
 
@@ -391,6 +449,9 @@ Death means a new run (see Runs in the vision).
 4. **Every number is visible in dev mode.**
 
 ## Skeleton version
+
+Historical implementation baseline; the 2026-10-22 buff direction supersedes its
+visible hunger/thirst requirement.
 
 - Health, hunger, thirst and stamina, shown as bars.
 - The three harms, through the felt weather.
@@ -937,133 +998,21 @@ connected rope, zero individual reel targets and no selected rope. The readable 
 return cue replaced the hover/click instruction and stayed above the carry tiles. Import
 and the capture completed without script or teardown errors; no local probes were run.
 
-## Surveyor's Guide (agreed and built 2026-10-19)
+## Surveyor's Guide (Hunter, 2026-10-19/22)
 
-A physical Surveyor's Guide starts carried by the Surveyor alone, alongside all its
-existing supplies. Five short pages explain establishing a self-sustaining survey
-camp, recognizing the starter gear, unstaking/towing/parking, scouting and returning,
-and loose salvage upgrades with storm shelter. It teaches current actions with their
-binding macros. A short profile-once carried hint explains the first survey and how
-to open the Guide after live input returns. There is no arrival pod, receiver, map, quest marker or forced reader
-opening. Return advice is physical: short scouts, keeping camp in sight, looking back
-at landmarks and allowing for fading tracks. It is a normal carried,
-placeable, saveable booklet, available in the creative menu, with a distinct procedural
-survey-mark cover using existing materials. Reading adds no deed.
+Hunter: "you have a surveyor's guide. And let's keep it really, really simple."
+A physical booklet the Surveyor alone starts with, 0.3 kg, carried, placeable,
+saveable and in the creative menu. Four picture pages, a line each, in the
+sailing notes' reader: take what survived, raise a shield on a deck, mark Home,
+go and look from a nearby rise. Captions name actions through their binding
+macros. One first-time hint says where the Guide is; it never opens itself, and
+reading adds no deed. The pictures are real unseen captures with the HUD hidden
+(`look/guide_pages`).
 
-As built, the guide adds 0.3 kg (the same physical booklet size and mass as sailing
-notes), with no existing gear removed. Only the Surveyor kit resource gains it;
-existing saves are not retroactively restocked. A fresh Surveyor's carried guide
-opened from the carry view in an unseen 1280 by 720 run, closed back to that view,
-and remained carried with all five pages after saving and resuming. The initial
-hint appeared without opening a menu. Existing clean-new-run probe 4 passes with
-its exact kit fixture extended for the Guide; other origin kit data is unchanged.
-The current camp streaming/persistence limits remain outside this teaching change;
-the Guide does not promise a permanent distant camp or introduce arrival machinery.
+## Surveyor arrival
 
-The first integrated remote CI run found one stale development-scenario fixture:
-`survive` restocks the normal Surveyor suit, so its carried set now also contains
-the Guide. Dev probe 1 still expected only water, a ration and a bedroll, although
-the run contained all four intended objects. Extend that existing exact gear list
-for the Guide; preserve its health, hunger, thirst, sealed-water and condenser checks.
-This changes the fixture only, with no scenario or supply behavior change.
-
-## Surveyor orbital arrival and surviving equipment (selected 2026-10-20; development implementation below)
-
-The [interactive ship preparation extension](surveyor-preflight.md), selected
-2026-10-21, adds a walkable interior, limited scouting/site selection and physical
-pod loading. It is in progress; the automatic arrival below remains the built
-baseline and the legacy-save path.
-
-Hunter selected the pod as the Surveyor's eventual replacement for an abstract
-starter kit: begin above Zan, be ejected toward the surface, land/crash in a pod
-made from real chassis pieces, and recover the equipment that survived. Resolved
-survivors form a seeded starting loadout; they are physical mounted/stowed objects
-and recoverable structure, not an extra inventory grant after the landing. Other
-origins keep their own starts. Preserve a viable survival opening, meaningful
-tradeoffs and player agency while varying damage and usable gear. Exact survival
-guarantees and damage distributions need balance before replacing the current kit.
-
-Resolve the opening once from the run seed and persist arrival phase, landing
-location, survivors, damage and teardown state. Resume must not reroll or duplicate
-equipment. Use the existing hands, chassis joining/mounting and salvage actions.
-The first camp comes from dismantling or adapting the landed pod. The guide gives
-the arrival purpose and a small first survey. Deed-unlocked origin variants remain
-a later extension; descent decision menus remain on the back burner.
-
-An orbital visual mockup is requested before implementation. A real orbital scene
-and ejection are the preferred presentation direction; a general orbital flight
-simulator or freely traversable spherical world is not required by this request.
-Keep today's Surveyor start available until the replacement's landing, recovery,
-survival and save/restore work together. Release placement remains undecided.
-
-### First parallel arrival prototypes (2026-10-20; prototype design record)
-
-Build separate isolated prototypes for the physical shell, pure seeded survivor
-manifest and orbital rendering. None replaces the production Surveyor kit yet.
-The first shell layout explores a reclined one-person enclosure using ten real
-recoverable chassis panels and two frames. This count is a geometry experiment,
-not a final equipment budget. Give structural pieces stable roles for saved damage
-and recovery. Decorative trim must travel with its owning physical panel.
-
-For the manifest prototype, guarantee a usable board and Home beacon alongside
-basic shelter, water, food, power and anchoring so the first scout/return remains
-available. Vary condition, charge, equipment extras and eventual arrangement.
-Exact guarantees and distributions are provisional implementation defaults, not
-accepted balance. Put them in tuning. Resolve plain data once from a local seeded
-random stream; creating, handing out and recovering objects belongs to later
-integration. Match structural roles to the real shell. Test saved phase and
-recovery changes without rerolling. The first orbital view is a visual prototype,
-not an implemented arrival, flight model or starter replacement.
-
-### Integrated Surveyor opening (selected 2026-10-20; in progress)
-
-New normal Surveyor runs will use one saved arrival state: orbit, ejection,
-descent, entry, landing and recovery. Developer scenarios, direct World fixtures,
-other origins and old saves retain their existing starts. The production run
-manager selects the new opening explicitly before child nodes initialize, so
-its suit and deck kit are not also granted. Resume never starts a fresh opening.
-
-Render orbit through a separate view while normal terrain preloads the resolved
-landing location. Preserve the real world time, heading and geographic landing
-point. Hold player movement/vitals during the controlled flight; menus and saving
-remain available. Land only after collision is ready. Restore the normal camera,
-input and suit operation when the player can stand clear of the opened pod.
-This is a controlled arrival sequence, with no free-flight or targeting menu.
-
-Materialize each surviving role once as ordinary catalog gear and real shell
-pieces. Apply resolved condition/charge; fit the board's own cell. A landing spill
-may place cargo in clear nearby sand where it does not fit the pod; prevent
-intersections and buried essentials. Open the actual roof/hatch and preserve
-normal salvage/mounting actions. Taking a physical arrival object records its
-recovery at that action and earns a camp deed; merely resolving or loading a
-manifest earns nothing. Persist appearance roles, object references, recovered
-flags, arrival phase and elapsed phase time. Mid-flight and partially dismantled
-saves must resume without rerolling, replacing or duplicating gear.
-
-The integrated opening is developed for 0.3.0-alpha “Sanddune”; the existing
-0.2.4 “Creaky Sailboat” release candidate stays separate. Exact arrival timings and
-provisional equipment balance live in tuning. Acceptance includes new Surveyor,
-other-origin/scenario compatibility, mid-flight/landed/recovered save round trips,
-normal recovery and assembly, real GPU captures and combined CI before landing.
-
-#### Integrated development slice (landed 2026-10-21; native checks pending)
-
-Main/Runs now select the opening for new normal Surveyors before suit setup.
-The default controlled sequence lasts 16.2 seconds, plus any required terrain
-wait. World time, vitals and player movement resume beside the opened shell.
-Ordinary chassis and catalog survivors retain resolved damage, charge and
-individual recovery; the old inventory/deck grant is suppressed. Existing
-scenarios, other origins and legacy saves retain their starts.
-
-The actual Main opening and flight/recovery save round trips pass focused
-checks (4 and 8 seconds). Rerooted roles fail before metadata transfer and pass
-after it; flight, partial teardown and held-object restoration checks also pass.
-A real GPU run captured all six phases with 24 physical roles and no ground
-rescues for seed 1234. Existing World sounds provide transition cues; dummy
-audio verifies routing and lifetime, not listening balance. Orbital relief is
-illustrative, not exact local dune geometry. Equipment balance, broader opening
-viability and unassisted recovery remain acceptance work. Combined Linux verification
-passed at `49af744f`; native platform/build checks are running.
+The Surveyor starts in orbit and lands in a pod built from real chassis panels; its
+cabin, launch, fall and first camp are owned by [Surveyor opening](surveyor-opening.md).
 
 ## Ground rest (selected 2026-10-20; implemented development)
 

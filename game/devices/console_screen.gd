@@ -1,12 +1,14 @@
 class_name ConsoleScreen
 extends Control
 ## A Console's screen as its own small canvas, a terminal in the game's
-## theme, monospaced, big enough to read from a step or two back. Its radar
-## page is the storm map the whole width of it: storms in amber, as dense as
-## their sand where a sensor reads it, humidity laid over the clear air in
-## blue, unknown air dark; the front's numbers where the front is, the
-## pressure's bar down its edge, the forecast along its foot, and under it the
-## gyro and the legend. Its power page is the deck's electrics as a panel: one
+## theme, monospaced, big enough to read from a step or two back. Its Map is
+## the whole width of it, north up, with a switch under it for each filter:
+## the weather's storms in amber, as dense as their sand where a sensor reads
+## it, humidity laid over the clear air in blue, unknown air dark, the front's
+## numbers where the front is, the pressure's bar down its edge and the
+## forecast along its foot, and under it the gyro and the legend; the
+## survey's old lines and sites; navigation's bearings, fix, Home and course.
+## Its power page is the deck's electrics as a panel: one
 ## line from what makes power through each power box, its bays as its strips
 ## show them, and the batteries to what draws it, each device's switches on its
 ## row, paged when they're more than it holds. Its other pages draw rows as a Terminal
@@ -33,6 +35,8 @@ const TAB_SHARE := 0.09
 ## Where the text pages' rows start, and how much of the stats page's foot its
 ## gyro and the pressure's minutes take.
 const TOP := 64.0
+## The row of the Map's filter switches under it.
+const FILTER_ROW := 60.0
 const DETAIL := 290.0
 ## A table's columns, in characters from its left: where its numbers end,
 ## where its units start, and where its notes start.
@@ -91,6 +95,18 @@ static func lay_out(model: Dictionary) -> void:
 	for k in tabs.size():
 		tabs[k]["box"] = Rect2(Vector2(k * wide + 5.0, top + 8.0), Vector2(wide - 10.0, canvas.y - top - 16.0))
 		keys.append(tabs[k])
+	# Each filter keeps its own third, so a switch stays where it was as others come and go.
+	var third := (canvas.x - 2.0 * MARGIN) / Console.FILTERS.size()
+	for each: Dictionary in model.get("filters", []):
+		var k := Console.FILTERS.keys().find(each.to)
+		each["box"] = Rect2(Vector2(MARGIN + k * third + 4.0, canvas.x + 10.0), Vector2(third - 8.0, FILTER_ROW - 16.0))
+		keys.append(each)
+	var sailing: Array = model.get("sail_keys", [])
+	for i in sailing.size():
+		var each: Dictionary = sailing[i]
+		var width := (canvas.x - 2.0 * MARGIN) / sailing.size()
+		each["box"] = Rect2(Vector2(MARGIN + i * width + 4.0, 58.0), Vector2(width - 8.0, 44.0))
+		keys.append(each)
 	var panel: Dictionary = model.get("panel", {})
 	if not panel.is_empty():
 		var y := TOP
@@ -158,16 +174,11 @@ func _draw() -> void:
 		return
 	var keys_top := size.y * (1.0 - TAB_SHARE)
 	match _model.page:
-		"RADAR":
-			_draw_radar(keys_top)
+		"MAP":
+			_draw_map(keys_top)
 		"POWER":
 			_draw_header()
 			_draw_power()
-		"SURVEY":
-			_draw_header()
-			_draw_survey(keys_top)
-		"CHART":
-			_draw_chart(keys_top)
 		_:
 			_draw_header()
 			_draw_rows(keys_top)
@@ -179,29 +190,36 @@ func _color(name: StringName) -> Color:
 	return THEME.get_color(name, &"Palette")
 
 
-## The map the whole width, the forecast along its foot, the legend under it.
-func _draw_radar(keys_top: float) -> void:
+## The Map the whole width, north up, reaching as far as the model says: each
+## filter on laid over it, what lies past its edge pinned there. Under it the
+## filters' switches, and under those the weather's legend while it's on, or
+## else the survey's and navigation's rows.
+func _draw_map(keys_top: float) -> void:
 	var side := size.x
-	var map: Dictionary = _model.get("map", {})
-	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), UNKNOWN)
-	if not map.is_empty() and map.has("cells"):
-		_draw_cells(map, side)
-	if map.has("reach"):
-		_draw_anomalies(map.get("anomalies", []), map.reach, side)
-	var middle := Vector2(side, side) * 0.5
+	var box := Rect2(Vector2.ZERO, Vector2(side, side))
+	var middle := box.get_center()
 	var text := _color(&"text")
+	var dim := _color(&"dim")
 	var accent := _color(&"accent")
-	draw_line(middle - Vector2(10.0, 0.0), middle + Vector2(10.0, 0.0), text, 3.0)
-	draw_line(middle - Vector2(0.0, 10.0), middle + Vector2(0.0, 10.0), text, 3.0)
-	_label(Vector2(MARGIN, MARGIN), "N", MID, accent)
-	if map.has("front"):
-		var at: Vector2 = map.front
-		var spot: Vector2 = middle + _screen(at) / map.reach * side * 0.5
-		draw_line(middle, spot, URGENT, 3.0)
-		draw_circle(spot, 7.0, URGENT)
-		if _model.get("front", "") != "":
-			_label_at(spot, _model.front, BIG, URGENT, side)
-	elif _model.get("front", "") != "":
+	var map: Dictionary = _model.get("map", {})
+	draw_rect(box, UNKNOWN)
+	var reach: float = _model.get("reach", 0.0)
+	if reach > 0.0:
+		var scale := side * 0.5 / reach
+		if map.has("cells"):
+			_draw_cells(map, side, scale)
+		if _model.has("survey"):
+			_draw_survey(_model.survey, middle, scale, side)
+		_draw_anomalies(map.get("anomalies", []), middle, scale, side)
+		if _model.has("chart"):
+			_draw_chart(_model.chart, middle, scale, side)
+		if map.has("front"):
+			var spot := _pin(middle + _screen(map.front) * scale, side)
+			draw_line(middle, spot, URGENT, 3.0)
+			draw_circle(spot, 7.0, URGENT)
+			if _model.get("front", "") != "":
+				_label_at(spot, _model.front, BIG, URGENT, side)
+	if not map.has("front") and _model.get("front", "") != "":
 		_label_at(Vector2(side * 0.5, side * 0.18), _model.front, BIG, URGENT, side)
 	if _model.get("here", "") != "":
 		_label_at(middle + Vector2(0.0, 60.0), _model.here, MID, URGENT if _model.here.begins_with("IN") else text, side)
@@ -212,57 +230,20 @@ func _draw_radar(keys_top: float) -> void:
 		draw_rect(strip, Color(GLASS, 0.85))
 		var fits := _fit(_model.forecast, SMALL, side - 2.0 * MARGIN)
 		draw_string(FONT, Vector2(MARGIN, side - 16.0), fits, HORIZONTAL_ALIGNMENT_CENTER, side - 2.0 * MARGIN, SMALL, text)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), Color(accent, 0.5), false, 2.0)
-	_draw_legend(map, Rect2(0.0, side + 8.0, side, keys_top - side - 8.0))
-
-
-## The ground radar's map, the Console in its middle and north up, rings
-## every hundred metres: the old lines under the sand faint, a structure a
-## square, a dune's ruin a triangle, an outline while the sand's over it,
-## amber while a storm lays it bare, solid once it's out; and under the map
-## the nearest, listed.
-func _draw_survey(keys_top: float) -> void:
-	var text := _color(&"text")
-	var dim := _color(&"dim")
-	var accent := _color(&"accent")
-	var side := size.x - 2.0 * MARGIN
-	var box := Rect2(Vector2(MARGIN, TOP), Vector2(side, side))
-	draw_rect(box, UNKNOWN)
-	var middle := box.get_center()
-	var survey: Dictionary = _model.get("survey", {})
-	var reach: float = survey.get("reach", 0.0)
-	if reach > 0.0:
-		var scale := side * 0.5 / reach
-		for ring in range(100, int(reach) + 1, 100):
-			draw_arc(middle, ring * scale, 0.0, TAU, 64, Color(dim, 0.35), 2.0)
-		var inside := Rect2(box.position, box.size)
-		for points: PackedVector2Array in survey.get("lines", []):
-			for i in points.size() - 1:
-				var a := middle + points[i] * scale * (-1.0 if _model.flip else 1.0)
-				var b := middle + points[i + 1] * scale * (-1.0 if _model.flip else 1.0)
-				if inside.has_point(a) or inside.has_point(b):
-					draw_line(_clamped(a, inside), _clamped(b, inside), Color(accent, 0.35), 3.0)
-		for each: Dictionary in survey.get("sites", []):
-			var at: Vector2 = each.at * scale * (-1.0 if _model.flip else 1.0)
-			if absf(at.x) > side * 0.5 or absf(at.y) > side * 0.5:
-				continue
-			var spot := middle + at
-			var color := URGENT if each.bared else (text if each.under <= 0.0 else dim)
-			var mark := PackedVector2Array([spot + Vector2(0.0, -12.0), spot + Vector2(11.0, 8.0), spot + Vector2(-11.0, 8.0)]) \
-				if each.dune else PackedVector2Array([spot + Vector2(-8.0, -8.0), spot + Vector2(8.0, -8.0),
-					spot + Vector2(8.0, 8.0), spot + Vector2(-8.0, 8.0)])
-			if each.bared or each.under <= 0.0:
-				draw_colored_polygon(mark, color)
-			else:
-				mark.append(mark[0])
-				draw_polyline(mark, color, 3.0)
 	draw_line(middle - Vector2(10.0, 0.0), middle + Vector2(10.0, 0.0), text, 3.0)
 	draw_line(middle - Vector2(0.0, 10.0), middle + Vector2(0.0, 10.0), text, 3.0)
-	_label(box.position + Vector2(10.0, 8.0), "N", MID, accent)
-	if _model.get("cells", "") != "":
-		_label(box.position + Vector2(10.0, side - 36.0), _model.cells, SMALL - 4, dim)
+	_label(Vector2(MARGIN, MARGIN), "N", MID, accent)
+	if _model.get("span", "") != "":
+		var wide := FONT.get_string_size(_model.span, HORIZONTAL_ALIGNMENT_LEFT, -1, SMALL - 4).x
+		_label(Vector2(side - MARGIN - wide, MARGIN), _model.span, SMALL - 4, dim)
 	draw_rect(box, Color(accent, 0.5), false, 2.0)
-	var y := TOP + side + 12.0
+	# What runs past the map's square (an anomaly's ring) stays off what's under it.
+	draw_rect(Rect2(0.0, side, size.x, size.y - side), GLASS)
+	var under := side + FILTER_ROW
+	if not map.is_empty():
+		_draw_legend(map, Rect2(0.0, under, side, keys_top - under))
+		return
+	var y := under + 4.0
 	for row: String in _model.get("rows", []):
 		if y + ROW > keys_top:
 			break
@@ -270,19 +251,61 @@ func _draw_survey(keys_top: float) -> void:
 		y += ROW
 
 
+## A spot on the map, or, past its edge, where the way to it leaves the map.
+static func _pin(spot: Vector2, side: float) -> Vector2:
+	var off := spot - Vector2(side, side) * 0.5
+	var over := maxf(absf(off.x), absf(off.y)) / (side * 0.5 - 24.0)
+	return spot if over <= 1.0 else Vector2(side, side) * 0.5 + off / over
+
+
+## The ground radar's survey: rings every hundred metres out to its reach,
+## the old lines under the sand faint, a structure a square, a dune's ruin a
+## triangle, an outline while the sand's over it, amber while a storm lays
+## it bare, solid once it's out.
+func _draw_survey(survey: Dictionary, middle: Vector2, scale: float, side: float) -> void:
+	var text := _color(&"text")
+	var dim := _color(&"dim")
+	var accent := _color(&"accent")
+	var box := Rect2(Vector2.ZERO, Vector2(side, side))
+	for ring in range(100, int(survey.reach) + 1, 100):
+		draw_arc(middle, ring * scale, 0.0, TAU, 64, Color(dim, 0.35), 2.0)
+	for points: PackedVector2Array in survey.get("lines", []):
+		for i in points.size() - 1:
+			var a := middle + _screen(points[i]) * scale
+			var b := middle + _screen(points[i + 1]) * scale
+			if box.has_point(a) or box.has_point(b):
+				draw_line(_clamped(a, box), _clamped(b, box), Color(accent, 0.35), 3.0)
+	for each: Dictionary in survey.get("sites", []):
+		var spot := middle + _screen(each.at) * scale
+		if not box.has_point(spot):
+			continue
+		var color := URGENT if each.bared else (text if each.under <= 0.0 else dim)
+		var mark := PackedVector2Array([spot + Vector2(0.0, -12.0), spot + Vector2(11.0, 8.0), spot + Vector2(-11.0, 8.0)]) \
+			if each.dune else PackedVector2Array([spot + Vector2(-8.0, -8.0), spot + Vector2(8.0, -8.0),
+				spot + Vector2(8.0, 8.0), spot + Vector2(-8.0, 8.0)])
+		if each.bared or each.under <= 0.0:
+			draw_colored_polygon(mark, color)
+		else:
+			mark.append(mark[0])
+			draw_polyline(mark, color, 3.0)
+
+
 static func _clamped(at: Vector2, box: Rect2) -> Vector2:
 	return at.clamp(box.position, box.end)
 
 
 ## Each cell its storm, as dense as its sand where a sensor reads it, or its
-## clear air as humid as it is; an estimate hatched, as only guessed.
-func _draw_cells(map: Dictionary, side: float) -> void:
+## clear air as humid as it is; an estimate hatched, as only guessed. Its
+## grid spans the weather's own reach, cut to the map's.
+func _draw_cells(map: Dictionary, side: float, scale: float) -> void:
 	var n: int = map.n
 	var cells: Dictionary = map.cells
 	var storm: PackedFloat32Array = cells.storm
 	var sand: PackedFloat32Array = cells.sand
 	var humid: PackedFloat32Array = cells.humid
-	var cell := side / n
+	var cell: float = 2.0 * map.reach / n * scale
+	var corner: Vector2 = Vector2(side, side) * 0.5 - Vector2.ONE * map.reach * scale
+	var shown := Rect2(Vector2.ZERO, Vector2(side, side))
 	var flip: bool = _model.flip
 	var dense: bool = map.get("sand", false)
 	var guessed: bool = map.estimate
@@ -293,11 +316,14 @@ func _draw_cells(map: Dictionary, side: float) -> void:
 				continue
 			var col := (n - 1 - i) if flip else i
 			var row := (n - 1 - j) if flip else j
+			var box := Rect2(corner + Vector2(col, row) * cell, Vector2(cell, cell)).grow(-1.0)
+			if not box.intersects(shown):
+				continue
+			box = box.intersection(shown)
 			var color := DRY.lerp(HUMID, smoothstep(0.15, 0.75, humid[k])) if k < humid.size() and humid[k] >= 0.0 else DRY
 			if storm[k] > 0.0:
 				color = WALL.lerp(HEART, sand[k]) if dense else WALL
 				color = color.lerp(DRY, 0.4 * (1.0 - storm[k]))
-			var box := Rect2(Vector2(col, row) * cell, Vector2(cell, cell)).grow(-1.0)
 			draw_rect(box, color)
 			if guessed:
 				# Hatched: only estimated.
@@ -306,48 +332,55 @@ func _draw_cells(map: Dictionary, side: float) -> void:
 					draw_line(from, from + Vector2(box.size.x / 3.0, -box.size.y / 3.0), GLASS, 2.0)
 
 
-## The chart: the moon round the Console, north up, rings each 10 km; the
-## Rim and Tu-ward; each noted bearing a line from where the Walker stood,
-## that spot a dot; a fix where three cross; and once the Walker's taught,
-## the anomalies. Its rows under it.
-func _draw_chart(keys_top: float) -> void:
-	var side := size.x
-	var chart: Dictionary = _model.get("chart", {})
+## Navigation: the Rim and Tu-ward; each noted bearing a line from where the
+## Walker stood, that spot a dot; the deck's course dashed out to the edge;
+## Home, dim once its beacon's no longer heard; and the fix where three
+## cross. Home and the fix past the edge are pinned there with how far.
+func _draw_chart(chart: Dictionary, middle: Vector2, scale: float, side: float) -> void:
 	var text := _color(&"text")
 	var dim := _color(&"dim")
-	var accent := _color(&"accent")
-	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), UNKNOWN)
-	var middle := Vector2(side, side) * 0.5
-	var reach: float = chart.get("reach", 1.0)
-	var scale := side * 0.5 / reach
-	for k in range(1, int(reach / 10000.0) + 1):
-		draw_arc(middle, k * 10000.0 * scale, 0.0, TAU, 48, Color(dim, 0.25), 1.0)
+	var box := Rect2(Vector2.ZERO, Vector2(side, side))
 	var on := func(at: Vector2) -> Vector2: return middle + at * scale
 	_polyline(chart.get("rim", PackedVector2Array()), on, Color(TU, 0.5), 2.0, side)
 	if chart.has("tu"):
 		var tu: Vector2 = on.call(chart.tu)
-		if Rect2(Vector2.ZERO, Vector2(side, side)).has_point(tu):
+		if box.has_point(tu):
 			draw_circle(tu, 8.0, TU)
 			_label(tu + Vector2(10.0, -10.0), "TU", KEY, TU)
-	_draw_anomalies(chart.get("anomalies", []), reach, side)
 	for line: PackedVector2Array in chart.get("lines", []):
 		_polyline(line, on, Color(BEARING, 0.8), 2.0, side)
-		draw_circle(on.call(line[0]), 5.0, BEARING)
+		if box.has_point(on.call(line[0])):
+			draw_circle(on.call(line[0]), 5.0, BEARING)
+	var course: Vector2 = chart.get("course", Vector2.ZERO)
+	if course != Vector2.ZERO:
+		draw_dashed_line(middle, _pin(middle + course * side, side), Color(text, 0.7), 2.0, 14.0)
+	var sailing: Dictionary = chart.get("sailing", {})
+	if not sailing.is_empty():
+		var facing: float = chart.get("facing", 1.0)
+		var along := course.normalized() if course != Vector2.ZERO else Vector2.UP
+		var centre := middle + along * 80.0
+		var apart := along.orthogonal() * 65.0
+		_rig_mark(centre + apart, sailing.actual * facing, sailing.actual_sail * facing, "YOU", text)
+		_rig_mark(centre - apart, sailing.heading * facing, sailing.ideal_sail * facing, "IDEAL", _color(&"accent"))
+	if chart.has("home"):
+		var spot: Vector2 = on.call(chart.home)
+		var at := _pin(spot, side)
+		var color := text if chart.get("live", false) else dim
+		draw_colored_polygon(PackedVector2Array([at + Vector2(-9.0, 9.0), at + Vector2(9.0, 9.0), at + Vector2(9.0, -2.0),
+			at + Vector2(0.0, -11.0), at + Vector2(-9.0, -2.0)]), color)
+		_label_at(at, "HOME" if at == spot else "HOME %s" % Console._distance((chart.home as Vector2).length()), MID, color, side)
 	if chart.has("fix"):
-		var fix: Vector2 = on.call(chart.fix)
-		draw_arc(fix, 16.0, 0.0, TAU, 24, URGENT, 3.0)
-		_label_at(fix, "FIX", MID, URGENT, side)
-	draw_line(middle - Vector2(10.0, 0.0), middle + Vector2(10.0, 0.0), text, 3.0)
-	draw_line(middle - Vector2(0.0, 10.0), middle + Vector2(0.0, 10.0), text, 3.0)
-	_label(Vector2(MARGIN, MARGIN), "N", MID, accent)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(side, side)), Color(accent, 0.5), false, 2.0)
-	var y := side + 16.0
-	for row: String in _model.get("rows", []):
-		if y + ROW > keys_top:
-			break
-		_table_row(row, MARGIN, y, STATS_COLUMNS)
-		y += ROW
-	_label(Vector2(side - 200.0, side - 44.0), "%d km across" % roundi(reach * 2.0 / 1000.0), SMALL - 4, dim)
+		var spot: Vector2 = on.call(chart.fix)
+		var at := _pin(spot, side)
+		draw_arc(at, 16.0, 0.0, TAU, 24, URGENT, 3.0)
+		_label_at(at, "FIX" if at == spot else "FIX %s" % Console._distance((chart.fix as Vector2).length()), MID, URGENT, side)
+
+
+func _rig_mark(at: Vector2, heading: Vector2, boom: Vector2, called: String, color: Color) -> void:
+	_arrow(at - heading * 20.0, at + heading * 28.0, color, 3.0)
+	draw_line(at, at + boom * 32.0, color, 6.0)
+	draw_circle(at, 5.0, color)
+	_label_centred(at + Vector2(0.0, 52.0), called, KEY, color)
 
 
 ## A line of map places, kept to the map's square.
@@ -362,9 +395,7 @@ func _polyline(points: PackedVector2Array, on: Callable, color: Color, width: fl
 
 ## Each anomaly as a ring as wide as it reaches, as bright as it stands
 ## strong, its heart marked: its place east and south of the map's middle.
-func _draw_anomalies(hearts: Array, reach: float, side: float) -> void:
-	var middle := Vector2(side, side) * 0.5
-	var scale := side * 0.5 / maxf(reach, 1.0)
+func _draw_anomalies(hearts: Array, middle: Vector2, scale: float, side: float) -> void:
 	for heart: Dictionary in hearts:
 		var at: Vector2 = heart.at
 		var spot := middle + at * scale
@@ -420,8 +451,7 @@ func _draw_legend(map: Dictionary, box: Rect2) -> void:
 		_table_row(_model[item[0]], x + 30.0, y, LEGEND_COLUMNS)
 		y += 62.0
 	if _model.get("cells", "") != "":
-		var scale := "%s · %d km" % [_model.cells, roundi(map.get("reach", 0.0) / 1000.0)]
-		_label(Vector2(x, box.end.y - 44.0), scale + (" · est." if map.get("estimate", false) else ""), SMALL - 4, dim)
+		_label(Vector2(x, box.end.y - 44.0), _model.cells + (" · est." if map.get("estimate", false) else ""), SMALL - 4, dim)
 
 
 ## A compass gyro, north up: Tu-ward, a disc on the rim in Tu's colour; the
@@ -698,6 +728,8 @@ func _draw_keys() -> void:
 		var box: Rect2 = key.box
 		var aimed: bool = _model.aim == k
 		var font_size := TAB if key.device == null else KEY
+		if str(key.to).begins_with("sail_"):
+			draw_rect(box, GLASS)
 		draw_rect(box, Color(accent, 0.9) if aimed else (Color(accent, 0.35) if key.lit else Color(accent, 0.08)))
 		draw_rect(box, Color(accent, 0.9 if key.lit else 0.45), false, 3.0 if key.lit else 2.0)
 		draw_string(FONT, Vector2(box.position.x, box.position.y + (box.size.y + FONT.get_ascent(font_size)) * 0.5 - 3.0),

@@ -15,9 +15,51 @@ direction, and the "as built" notes below say what stands. [Session 4, part
 fungus on the habitats history left, and wild stock is real: cut or dug from them, it grows in your
 planter and gives the wild share ([Feral plants, as built](#as-built-the-feral-layer-2026-10-18)).*
 
+*Built (2026-10-22): the Almanac's Rim agriculture complex and useful crop-advice broadcasts are
+in the world. The portable module and crossbreeding remain proposals; see the section below.*
+
+## Agricultural depth before variety and portable gods (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> loop first, variety later. variety can be introduced as-needed for bigger systems for now.  we also deferred repairs.
+
+> no, ag depth and the ag complex is needed first. the mother should probably come first tbh.
+
+Work on the loop first; introduce variety as larger systems need it. The full crop
+roster is direction, not a 0.5 gate. Repairs and raw materials remain [deferred](devices-and-mods.md#repairs-and-era-mobility-selected-2026-10-22).
+Agricultural depth and the agriculture complex precede a portable Almanac; existing
+broadcasts remain built. Mother Cistern before the Almanac is Hunter's tentative
+preference, not approval of a Mother build or ending in 0.5. Crossbreeding remains
+an idea. [Survival](survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
+owns the new food/drink direction; [the roadmap](../alpha-roadmap.md#saltbush-promise-and-acceptance-deferred-2026-10-22)
+owns the open release promise. No farming code changed with this decision.
+
+
+## Coalcane chain (agreed 2026-10-22)
+
+Hunter: "coalcane is a go". The complete grow → harvest → burner chain is owned here
+and in [Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22).
+
+**As built.** Coalcane uses the shared crop growth, felt-weather and tank-water rules.
+A new deep planter has one deep-bed slot, a water socket, harvester mount and cable
+port, and stands on a deck. Existing planter socket ordering is unchanged. Seven
+minutes of full daylight growth spends 1.5 L and yields one existing six-stalk
+coalcane bundle; the cut stump retains a quarter of its growth. It needs shelter
+from storm wind/dust and grows no fuel in darkness or with an empty tank. All crop
+figures live in `coalcane_crop` in tuning. Manual harvest and the existing harvester
+split/storage path apply; automated replanting still spends its configured seed share.
+
+Clean cuttings, deep planters and burners enter colonial salvage. The existing
+cistern habitat now grows wild coalcane and provides cuttings through the ordinary
+feral harvest path. The ringed growing stems match the existing cut fuel, which
+Halloran still consumes through its unchanged maintenance-burn encounter. The
+bundle's catalog identity and old saves remain valid; its label now fits fresh fuel too.
+
 ## Why this system exists
 
-The farm is the engine of steady state. It turns light, warmth and time into food, and
+Farming is an optional way to deepen the camp, not a promised early survival requirement.
+It turns light, warmth and time into food, and
 some crops also give water and fuel. It's also the part of the camp that most needs
 protecting. Crops can't take the temperature swings that you can survive in a suit, so
 the farm is what pulls a thermal shield into your life.
@@ -188,7 +230,7 @@ the main remote colonial contractors and made some, not all, of the original cro
   sugar, and heavy lignin makes it near-wood. *Feral drift:* rare, since it is thirsty, and it
   survives only near old water. Ancient stands build into thick, near-petrified groves. *Hooks:* the
   only renewable fuel crop, a night and storm counterpart to solar, burned in a new burner device
-  ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built)). Old groves are a big one-time
+  ([Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22)). Old groves are a big one-time
   fuel haul and a sign of ancient water. It trades water for power.
 - **Vat fungus.** *Ancestry:* oyster mushroom crossed with mycoprotein strains. *Engineering:* the
   colony's original food, grown in sealed vats in dark hab tunnels and fed on waste; it fruits when
@@ -342,7 +384,7 @@ plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4).
   and filtering other than by boiling is not said. Still open.
 - **New equipment implied:** a burner or generator for coalcane fuel, a humidifier and, from part 5, a
   kiln (above). Both are
-  crate parts like the existing devices ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built),
+  crate parts like the existing devices ([Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22),
   [Devices & mods](devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)). The
   office fern needs a lamp as its light source: since the chassis rework a lamp sticks on a deck as
   anything does, and a planter, which stands on its own, has no place for one, so how the lamp
@@ -369,11 +411,19 @@ Readings, not in the session:
   bed, and the snap of a lamp "onto the crate." Here a planter is a frame of its own, not a crate
   with plant slots, so a grow crate reads as a planter variant.
 
-### The Almanac and crossbreeding (Idea, session 4, part 5; not built)
+### The Almanac and crossbreeding (crop broadcasts built 2026-10-22; portable module and crossbreeding not built)
+
+**Deferred:** agricultural depth and the ag complex come first; see the
+[2026-10-22 decision](#agricultural-depth-before-variety-and-portable-gods-selected-2026-10-22).
+
+**Built (2026-10-22):** `Gods.ag_complex` places the Almanac at Frontier Ag's Rim farm, and
+`Transmissions._almanac` broadcasts crop advice based on the weather ahead. The portable
+Almanac module and crop crossbreeding described here are still unbuilt.
 
 *[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 10, and its open question "Whether the
 Almanac is how crossbreeding works." The Almanac and what it enforces are **Agreed**; that it is how the
-player crosses strains is an **Idea** ("probably crossbreeding"). Nothing is built.*
+player crosses strains is an **Idea** ("probably crossbreeding"). The portable module and crossbreeding
+are not built; the Rim complex and crop-advice broadcast are recorded above.*
 
 The Almanac is the god of growth: Frontier Ag's farm-management mind, in a Rim ag complex, and a
 mountable module ([Devices & mods](devices-and-mods.md#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)).
@@ -406,10 +456,12 @@ Readings, not in the session:
   broadcasts planting timing and "which feral strains tolerate ash soil"; the Almanac is an agriculture
   company's farm mind. The session does not say they are one ([the lore](../world/lore-research.md#the-pantheon-agreed-session-4-part-5)).
 
-## Feral plants and a crop's history (Agreed, session 4, part 3; not built)
+<a id="feral-plants-and-a-crops-history-agreed-session-4-part-3-not-built"></a>
+## Feral plants and a crop's history (feral layer built 2026-10-18; wider history open)
 
-*Session 4, part 3 (lore session); loose, and none of it is
-built.* Zan has no native life, only feral colonial imports ("rogue plants"). They are not the
+*Session 4, part 3 (lore session). The wild saltbush, root-tuber, vat fungus and coalcane layer is
+built; the full crop-history and seed-vault ideas below remain incomplete.* Zan has no native life,
+only feral colonial imports ("rogue plants"). They are not the
 planter's crops: they grow wild, in the world, and the farm's two crops are unchanged. They do four
 jobs at once ([the lore](../world/lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)):
 - **Weather sign.** Feral scrub closes up or turns its leaves before a storm, a free, slotless,
@@ -674,7 +726,7 @@ that ignored the weather.
 
 - **Yucca,** with its water and regrowing fruit. Superseded in the roster by dewleaf and stormcup
   (open questions).
-- **Fuel crops:** coalcane and the burner (above, [Power](power.md#fuel-crops-and-the-burner-proposed-not-built)).
+- **Fuel crops:** coalcane and the burner (above, [Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22)).
 - **Planter grids** on a single tether.
 - **Big carriers,** like the walker farmer, that can carry the shield too.
 - **More crops,** each carrying its history (above). Session 4, part 4 makes this the roster of
@@ -682,10 +734,10 @@ that ignored the weather.
   and vat fungus as the direct replacements, then the planter socket kinds, the shared growth stages,
   propagules with a clean or wild flag, the burner and humidifier, and last the wild plants placed by
   habitat ([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
-- **Feral plants** as a weather sign and a trail, and the order's seed vaults as a source of stock
-  (proposed, above). The plants are the first two pieces of part 3's proposed build order; part 4's,
-  the newer, defers the weather sign and places wild plants last, at step 9 ([skeleton
-  plan](../skeleton-plan.md#waiting-for-the-full-version)). The vaults are in neither.
+- **Feral plants** as a weather sign and a trail, and the order's seed vaults as a source of stock.
+  The wild layer and saltbush weather sign are built (2026-10-18); trail history and seed vaults
+  remain open. The older session 4 build orders disagree on placement; the later implementation
+  brought the weather sign into the feral layer ([skeleton plan](../skeleton-plan.md#waiting-for-the-full-version)).
 
 ## Probes
 

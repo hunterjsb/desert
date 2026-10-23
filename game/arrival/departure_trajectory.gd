@@ -6,55 +6,69 @@ const NORTH := Vector3(0.0, 0.0, 1.0)
 
 static func build(plan: Dictionary, epoch_s: float, tuning: Tuning) -> Dictionary:
 	var candidate := LandingPlan.selected(plan)
-	if candidate.is_empty() or not is_finite(epoch_s):
+	if not is_finite(epoch_s) or not plan.has("anchor"):
 		return {}
-	var rules := tuning.surveyor_preflight
-	var radius := 1.0 + float(rules.departure_altitude_r)
-	var reference_speed := TAU * radius / float(rules.departure_free_orbit_s)
-	var target: Vector3 = candidate.point
+	# Without a clear surveyed site, aim at the start itself; the forecast still judges the ground.
+	var target: Vector3 = candidate.point if not candidate.is_empty() else plan.anchor.point
+	var radius := 1.0 + tuning.arrival_departure_altitude_r
+	var reference_speed := TAU * radius / tuning.arrival_free_orbit_s
 	var nav_radius := tuning.moon_circumference / TAU
 	var cfg := {"radius": radius, "mu": reference_speed * reference_speed * radius,
 		"day_s": tuning.day_minutes * 60.0,
 		"carrier_omega": TAU / (tuning.day_minutes * 60.0),
-		"loiter_angle": float(rules.departure_loiter_m) / (nav_radius * maxf(cos(Sphere.latitude(target)), 0.1)),
-		"loiter_rate": float(rules.departure_drift_mps) / float(rules.departure_loiter_m),
-		"down": float(rules.departure_down_kick), "retro": float(rules.departure_retro_max),
-		"cross": float(rules.departure_cross_max), "step": float(rules.departure_step_s),
-		"max_s": float(rules.departure_max_s), "stride": int(rules.departure_path_stride),
-		"handle": float(rules.departure_handle_r), "view": float(rules.departure_view_r)}
+		"loiter_angle": tuning.arrival_loiter_m / (nav_radius * maxf(cos(Sphere.latitude(target)), 0.1)),
+		"loiter_rate": tuning.arrival_drift_mps / tuning.arrival_loiter_m,
+		"down": tuning.arrival_down_kick, "retro": tuning.arrival_retro_max,
+		"cross": tuning.arrival_cross_max, "step": tuning.arrival_step_s,
+		"max_s": tuning.arrival_max_s, "stride": tuning.arrival_path_stride,
+		"handle": tuning.arrival_handle_r, "view": tuning.arrival_view_r}
 	var model := {"version": VERSION, "seed": plan.seed, "epoch": epoch_s,
 		"anchor": plan.anchor.duplicate(true), "nav_radius": nav_radius,
-		"corridor_m": LandingPlan.RULES.corridor_radius_m,
-		"pulse": rules.departure_default_pulse, "settings": cfg,
-		"orbit_axis": NORTH, "orbit_start": _body_basis(epoch_s, cfg) * target}
-	# Calibrate once, before selection: the default pulse reaches the known safe site.
+		"corridor_m": tuning.arrival_corridor_m,
+		"pulse": tuning.arrival_default_pulse, "settings": cfg,
+		"orbit_start": _body_basis(epoch_s, cfg) * target}
+	# Calibrate once, before selection: the default pulse reaches the known site. The
+	# closest pass is kept, so float noise can never leave the run without a model.
 	var start := target
+	var best := {}
+	var miss := INF
 	for attempt in 12:
 		model.orbit_start = _body_basis(epoch_s, cfg) * start
 		var shot := _flight(model, epoch_s, false)
 		if shot.is_empty():
-			return {}
+			break
 		var landed := _body_basis(epoch_s + float(shot.seconds), cfg).inverse() * (shot.point as Vector3)
 		var correction := Sphere.flat_from(landed, target)
-		if correction.length() < 0.0000002:
-			return model
+		if correction.length() < miss:
+			miss = correction.length()
+			best = model.duplicate(true)
+		if miss * nav_radius < tuning.arrival_calibration_m:
+			break
 		start = Sphere.from_flat(start, correction)
-	return {}
+	return best
 
-static func sample(model: Dictionary, clock_s: float, _tuning: Tuning) -> Dictionary:
-	if not _valid(model) or not is_finite(clock_s):
-		return {"status": &"unsupported_trajectory", "safe": false}
+## Where the moon, ship and pulse handle stand now: cheap enough for every frame.
+static func frame(model: Dictionary, clock_s: float) -> Dictionary:
+	if not valid(model) or not is_finite(clock_s):
+		return {}
 	var cfg: Dictionary = model.settings
-	var body := _body_basis(clock_s, cfg)
 	var carrier := _carrier(model, clock_s)
-	var result := {"status": &"no_intercept", "safe": false, "body_basis": body,
-		"ship_position": carrier.point, "path": PackedVector3Array(),
-		"pulse_handle": _handle(model, carrier), "clock": clock_s}
 	var initial: Vector3 = model.orbit_start
 	var east := Sphere.east(initial)
 	var look := (initial - east * 0.7 + initial.cross(east) * 0.45).normalized()
 	var camera := look * float(cfg.view)
-	result.camera_transform = Transform3D(Basis.looking_at(-camera, NORTH), camera)
+	return {"body_basis": _body_basis(clock_s, cfg), "ship_position": carrier.point,
+		"pulse_handle": _handle(model, carrier), "clock": clock_s,
+		"camera_transform": Transform3D(Basis.looking_at(-camera, NORTH), camera)}
+
+
+## The whole predicted flight and landing; integrates the path, so callers cache it.
+static func sample(model: Dictionary, clock_s: float) -> Dictionary:
+	var result := frame(model, clock_s)
+	if result.is_empty():
+		return {"status": &"unsupported_trajectory", "safe": false}
+	result.merge({"status": &"no_intercept", "safe": false, "path": PackedVector3Array()}, true)
+	var cfg: Dictionary = model.settings
 	var shot := _flight(model, clock_s, true)
 	if shot.is_empty():
 		return result
@@ -78,8 +92,8 @@ static func sample(model: Dictionary, clock_s: float, _tuning: Tuning) -> Dictio
 	return result
 
 ## Ray coordinates are inertial planet-radius units, just like sample's handle.
-static func drag(model: Dictionary, clock_s: float, ray_origin: Vector3, ray_direction: Vector3, _tuning: Tuning) -> Dictionary:
-	if not _valid(model) or not is_finite(clock_s) or not ray_origin.is_finite() or not ray_direction.is_finite():
+static func drag(model: Dictionary, clock_s: float, ray_origin: Vector3, ray_direction: Vector3) -> Dictionary:
+	if not valid(model) or not is_finite(clock_s) or not ray_origin.is_finite() or not ray_direction.is_finite():
 		return {}
 	var carrier := _carrier(model, clock_s)
 	var cfg: Dictionary = model.settings
@@ -97,21 +111,20 @@ static func drag(model: Dictionary, clock_s: float, ray_origin: Vector3, ray_dir
 		clampf(off.dot(carrier.north) / (float(cfg.handle) * float(cfg.cross)), -1.0, 1.0))
 	return copy
 
+## The forecast landing judged against the actual seeded ground, as one launch candidate.
 static func resolve(shape: TerrainShape, plan: Dictionary, model: Dictionary, clock_s: float, tuning: Tuning) -> Dictionary:
-	var forecast := sample(model, clock_s, tuning)
-	var result := {"status": forecast.status, "safe": false, "sample": forecast, "candidate": {}, "plan": {}}
-	if not _valid(model) or model.seed != shape.history.run_seed or model.get("anchor") != plan.get("anchor"):
+	var forecast := sample(model, clock_s)
+	var result := {"status": forecast.status, "safe": false, "sample": forecast, "candidate": {}, "plan": {}, "clock": clock_s}
+	if not valid(model) or model.seed != shape.history.run_seed or model.get("anchor") != plan.get("anchor"):
 		result.status = &"foreign_survey"
 		return result
 	if not forecast.get("inside_survey", false):
 		return result
 	var anchor := _anchor(model)
 	var at: Vector2 = forecast.landing_world
-	var rules := LandingPlan.RULES
-	var reach := maxf(rules.signal_walk_m.y, SiteKinds.most_reach() + rules.structure_clear_m + rules.footprint_half_m * sqrt(2.0))
-	var records := LandingPlan._records(shape.history, forecast.landing_point, reach)
-	var signals := LandingPlan._detectable(shape, anchor, records, rules)
-	var candidate := LandingPlan._candidate(shape, anchor, at, &"launch_pulse", records, signals, rules)
+	var reach := tuning.arrival_structure_clear_m + tuning.arrival_footprint_half_m * sqrt(2.0) + SiteKinds.most_reach()
+	var records := LandingPlan.sites_near(shape.history, forecast.landing_point, reach)
+	var candidate := LandingPlan.candidate(shape, anchor, at, &"launch_pulse", records, LandingPlan.signals(shape, plan, tuning), tuning)
 	result.candidate = candidate
 	result.safe = candidate.safe
 	result.status = &"ready" if candidate.safe else &"unsafe_footprint"
@@ -185,7 +198,7 @@ static func _flight(model: Dictionary, clock_s: float, keep_path: bool) -> Dicti
 			times.append(elapsed)
 	return {}
 
-static func _valid(model: Dictionary) -> bool:
+static func valid(model: Dictionary) -> bool:
 	if model.get("version") != VERSION or not model.get("orbit_start") is Vector3 or not model.get("pulse") is Vector2 \
 			or not model.get("settings") is Dictionary or not model.get("anchor") is Dictionary:
 		return false

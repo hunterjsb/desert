@@ -895,6 +895,25 @@ Against session 3's six eras, this table begins at the collapse (its era 5) and 
 falls in the table is not said ([section 16](#16-open-after-session-4-part-2)). Burial doesn't
 need the time: dunes and eruptions bury ruins within centuries.
 
+### Neotech: the player's suit (Hunter, 2026-10-22)
+
+Hunter, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md):
+
+> out suit is neotech. the only thing better than colonial.
+
+**Reading:** the player's suit is neotech, a technology above colonial equipment.
+This is Hunter's new lore statement, not an inferred relic era. It does not add a
+neotech period to Zan's historical sequence, date its invention, name a maker or
+make every present-day object neotech. Those details remain open.
+
+> we have a nano-HeG3N and wont be a problem for years for 3.
+
+**SANDGAME's reading:** a nano helium-3 generator powers the suit for years, making
+suit-module power a non-constraint now. “nano-HeG3N” is preserved as spoken/transcribed;
+the expansion is tentative. [Survival](../prd/survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
+owns gameplay implications; no reactor physics, exact lifetime or new fuel supply
+chain is established. Release timing is unassigned.
+
 ### Era names, again (Agreed, session 4, part 4; corrected in part 5)
 
 Session 4, part 4 ([the plants session](../briefs/plants-worldgen-ruins-2026-10-17.md)) renamed the eras for the
@@ -1033,6 +1052,35 @@ food. Feudal war plus a second famine breaks all three. **Agreed (part 5):** the
 volcanic vents shift beyond reach." Halloran's refinery mind, the Stoker, is left starving for the
 heat it was built to use ([section 9](#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
 
+### Halloran's decline and the ban on the Stoker (agreed, 2026-10-22)
+
+Halloran was Zan's second-largest city during the Colonial and Skimmer eras and
+peaked in the Skimmer Era. It remains a major power in the Warring Kingdoms
+(the First Kingdoms), but is already losing people. Its industrial importance
+had sustained a city in a place poorly suited to agriculture or traveller trade.
+As that economy contracts, inhabitants leave for Port Morgan and, especially,
+the fertile ring's farming settlements around Sister and Halfrise. This is the
+Rim of the existing regional geography, not a new region. The outflow precedes
+the final loss of reachable vent heat described above.
+
+The departures contribute to the Stoker's deterioration: the community and
+workforce around the refinery diminish while its production obligations remain.
+Its unmet quotas are not a failure of faith or of understanding. The severed
+supply chain leaves it without the pipe and labour needed to extend its lines
+([its surveys of unreachable heat](#the-walker-and-the-stoker-surveys-of-unreachable-heat-agreed-2026-10-20)).
+
+During the Warring Kingdoms, people still understand what the Stoker is.
+Halloran's authorities ban access because it is too volatile and dangerous.
+They restrict contact rather than encourage people to seek knowledge from it.
+The ban begins as a practical response to an industrial mind they understand.
+
+After the Dark Age, in the Feudal Era (the second age), that prohibition helps
+make the Stoker esoteric. The old restriction survives the understanding that
+justified it; later cults form around the forbidden god. Halloran's religious
+life is less institutionally organized than the order around the Ledger in
+Port Morgan. These Stoker cults do not replace Muster's Quartermaster war cult.
+Their names, doctrines and particular practices remain open.
+
 ### The houses and Crakeside, renamed (Agreed, session 5)
 
 *Session 5, "Renames": "Five names change everywhere
@@ -1115,7 +1163,8 @@ fallen Crakes, who are the IOU's descendants and fall in the second age, which f
 ([Mitchell](#mitchell-the-dead-god-agreed-session-5)). The Bastion is built round the freighter left behind ([section
 4](#the-freighter-left-behind-agreed-endings-session)).
 
-**Halloran's ruins (Han)** support three settlements:
+**Halloran's ruins (Han)** support three settlements. Their diminished population
+and the Stoker's later cults follow [Halloran's decline and the ban](#hallorans-decline-and-the-ban-on-the-stoker-agreed-2026-10-22):
 
 | Settlement | What it is |
 |---|---|
@@ -1805,6 +1854,40 @@ Readings, not in the session:
 - **"Storm radio windows" put machines on the radio.** The amended rule lets machines talk through
   terminals, and the windows carry gods "arguing" over the radio, which the Radio PRD leaves open as a
   voice or tones ([section 19](#19-open-after-session-4-part-5)).
+
+### Starcom, the gods and surviving satellites (2026-10-22)
+
+**Agreed, Hunter's words:** "local gods get reconnected with starcom, the young god will play diff music and read diff readings if corrupted. we need to consider satellites too and make sure it makes sense that our gods cant use them or could only using them for sparring occasional messages, whatevers realisitic."
+
+Reconnecting Starcom restores the local god network as well as external contact. The corrupted
+Eye has different music and readings. This does not settle whether reconnecting reverses an
+existing corruption; keep that state transition open. Contract, radio-route and repair decisions
+live in [the vision](../vision.md#starcom-decisions-agreed-2026-10-22).
+
+**Proposed explanation, awaiting Hunter:** surviving orbital broadcasts are not a functioning
+all-purpose communications network. Retain the actual [satellite and relay roster](../prd/radio-sound-and-atmosphere.md):
+a craft can keep transmitting its instruments, or repeating a particular ground feed, without
+accepting and forwarding arbitrary messages from every god. The Tower relay is the useful
+counterexample: one surviving route, not proof that the whole network still routes traffic.
+
+**Proposed mechanism:** Starcom once provided the ground-side switching and compatible uplinks
+that tied these separate systems together. Its outage left some local links intact, consistent
+with Mother Cistern reaching Mitchell, while cutting dependable planet-wide conversation.
+An orbiting relay could still pass a brief stored message when compatible endpoints have a
+usable pass and working uplinks; that would be exceptional, not impossible. A pass alone does
+not guarantee an uplink, a compatible destination or permission to forward. Do not invent
+weather or the horizon as a universal explanation: the L1 relay already serves a fixed route.
+
+**Proposed gameplay consequence:** an occasional delayed dispatch can survive without giving
+the Eye continuous counsel or replacing the Walker and player as couriers. Restoring Starcom
+adds reliable addressed exchange; it does not need to revive every satellite. A full addressed
+exchange that grants launch clearance must still count as a bridge, whichever channel carries
+it. No silent exception that makes successful messages useless just to preserve a quest.
+
+This proposes no new satellite, frequency, maker, orbit or ancient maintenance miracle.
+Surviving hardware longevity remains an existing setting premise, not something intermittent
+coverage explains. Which endpoints can exchange sparse messages, and whether any need to be
+implemented, remain open; coordinate satellite or Walker changes with Gonk.
 
 ### Mitchell, the dead god (Agreed, session 5)
 

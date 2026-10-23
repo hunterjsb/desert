@@ -59,6 +59,7 @@ const HABITATS := [
 ## How each crop stands wild: Feral's own "bush", or its crop's own look; and
 ## the box you aim at to take from it, m across and up, at full size.
 const LOOKS := {
+	&"coalcane": {"box": Vector3(0.5, 0.5, 1.2)},
 	&"saltbush": {"bush": true, "box": Vector3(1.1, 1.1, 0.6)},
 	&"root_tuber": {"box": Vector3(0.24, 0.24, 0.22)},
 	&"vat_fungus": {"box": Vector3(0.16, 0.16, 0.12)},

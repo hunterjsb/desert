@@ -25,7 +25,7 @@ func refresh() -> void:
 	var player := waist.get_parent() as Player
 	var camera := player.camera
 	for body in reel.waist_lines():
-		var rope := reel._line_of(body)
+		var rope := reel.line_of(body)
 		var points := rope.strand.shown()
 		for i in points.size() - 1:
 			var a := points[i]
@@ -105,25 +105,14 @@ func _draw() -> void:
 		draw_rect(bar, _ink(&"faint"))
 		bar.size.x *= waist.release_progress()
 		draw_rect(bar, _ink(&"accent"))
-	var body := hovered if is_instance_valid(hovered) else chosen
+	# The note and the line in view: how many are on you, how to choose,
+	# and the hovered or chosen line's own numbers.
 	var count := reel.connected_ropes().size()
-	var stake_only := waist.tied.size() == 1 and waist.tied[0] is Stake and reel.waist_lines().is_empty()
-	var hint := "Stake at your waist" if stake_only else ("Sole rope ready" if count == 1 else "Hover a rope, click to select")
-	_words(Vector2(32.0, 42.0), "%d connected rope%s · %s" % [count, "" if count == 1 else "s", hint], size.x - 64.0)
-	var context := handling
-	if context == "" and waist.untying >= 0.0:
-		context = "Untying · %.1f s" % waist.untying
-	if context == "" and stake_only:
-		context = "%s with empty hands · take the stake back" % Controls.key_for(&"interact")
-	if context == "" and is_instance_valid(body):
-		context = ("Preview · " if body == hovered and body != chosen else "Selected · ") + reel.waist_description(body)
-		if reel.in_hand() != null:
-			context += " · held line takes priority"
-	if context == "" and count == 1 and not stake_only:
-		context = "Sole rope · ready to reel"
-	if context == "":
-		context = "No rope selected"
-	_words(Vector2(32.0, 74.0), context, size.x - 64.0)
+	if count > 0:
+		_words(Vector2(32.0, 48.0), "%d rope%s connected · hover one to select it" % [count, "" if count == 1 else "s"], size.x - 64.0)
+	var body := hovered if is_instance_valid(hovered) else chosen
+	if is_instance_valid(body):
+		_words(Vector2(32.0, 86.0), reel.waist_description(body), size.x - 64.0)
 
 
 func _button(box: Rect2, text: String, selected: bool) -> void:
@@ -138,7 +127,8 @@ func _ink(name: StringName) -> Color:
 
 func _words(at: Vector2, text: String, width: float, color := &"text") -> void:
 	var font := get_theme_font(&"font", &"AsideName")
-	var font_size := get_theme_font_size(&"font_size", &"AsideName")
+	# Read across the carry view, so set as large as its menu words.
+	var font_size := get_theme_font_size(&"font_size", &"MenuWordMain")
 	draw_string_outline(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, width, font_size,
 		get_theme_constant(&"outline_size", &"Label"), _ink(&"shadow"))
 	draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, width, font_size, _ink(color))

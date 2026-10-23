@@ -2,6 +2,37 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md).*
 
+## Halloran's decline and the forbidden furnace (Hunter, 2026-10-22)
+
+> Halloran's decline, people leaving for the ring and Port Morgan, and the ban on
+> the Stoker becoming the basis for those later cults.
+
+The [lore account](../world/lore-research.md#hallorans-decline-and-the-ban-on-the-stoker-agreed-2026-10-22)
+owns this history. Recorded as lore; its physical expression in the ruins remains
+unbuilt. The existing first-fire encounter below is unchanged.
+
+## Halloran collision repair (Hunter, 2026-10-22)
+
+> did you not bother to add collision to the ruins in halloran or did you just fuck it up?
+
+The walls and roofs must remain solid at both ends of the route, including after
+leaving and returning. Halloran's collision currently follows its centre chunk,
+which falls outside the near ring when the player visits the outer buildings.
+Distribute its solid pieces among their local terrain chunks; keep ordinary
+ruin ownership and the existing collision radius. Each piece has one owner,
+with the near ring covering its extent. Check real physics at both ends.
+
+**As built.** Halloran opts into per-solid chunk ownership for both building
+boxes and fitted pipe spans. Drawing remains with the original site; collision
+uses the same local shapes and transforms. The streamed physics regression
+(Kits 16) failed all six roof/wall checks with centre ownership, then passed
+in 15 s with local ownership, including the return to Aitch. First-fire
+interaction passed in 18 s; ordinary storm emergence, reburial and occupancy
+passed in 203 s with no measured separation between collision and the visible
+ruin. Linux verification run `39818082028` passed before landing. The existing
+GPU capture camera is partly obscured by the player model; those captures are
+not collision evidence.
+
 ## Halloran: first fire (built, 2026-10-20)
 
 Build one connected playable route from Aitch through the Crossing to one Stoker furnace bay.
@@ -746,7 +777,16 @@ docs or commands/code to call it deliveryship," and "needs to be much much highe
 - **The hit.** A cloud of sand thrown up and swelling, 420 lit puffs 3 to 9 m across, and a ring of it
   thrown out along the ground, 220 more; the impact's boom, a clang and a thud. The container is a body
   again (catalog `cargo`, 80 kg, an orange shell banded in black), its beacon still blinking; after 7 s the
-  drop lets it go into the world. Nothing's inside it yet.
+  drop lets it go into the world.
+- **What's inside** (Hunter, 2026-10-22: "might add random loot"). Random loot from salvage's own
+  tables: each socket along its flank (water, food, medicine, battery) takes, by weight, what fits it
+  from every era's shelves and caches (`SiteLoot`), at least two of them filled. The pull is seeded by
+  the run and the moment the cannon fired, as the landing spot is, so the same drop always holds the
+  same and nothing more is saved. Company stock: sealed, lately charged. It is laid in the sockets and
+  taken out by hand, never granted. Flares stay in salvage's loot.
+- **Where it lands.** Never inside something: the spot first picked is passed over for the first clear
+  one round the flare if anything stands there when the cannon fires, and if a camp moves under the
+  fall it lands on top of it, felt for by a shape cast of its own box.
 - **Dev console:** `deliveryship [s]` forces the deliveryship's pass (gonkhub, 2026-10-20: "make a command to force
   the surveyor's low pass. add a scenario for it"; the command was `surveyor`, then `drone`, and is
   `deliveryship` since 2026-10-21, with no old aliases): its orbit turned to bring it straight over you in s
@@ -757,11 +797,12 @@ docs or commands/code to call it deliveryship," and "needs to be much much highe
   your hands, and the deliveryship forced straight over you in a minute (`Scenarios.DELIVERYSHIP_LEAD`, 60 s
   since it flies 30 km up; 30 s before): light the flare as it comes over. `deliveryship` and `clear_skies`
   still reach it.
-- **Probes:** salvage 9 (the deliveryship's care package) and 10 (the deliveryship forced over). **Look-test:** `look/airdrop`, by day: the trail, the
+- **Probes:** salvage 9 (the deliveryship's care package), 10 (the deliveryship forced over) and 11 (it lands
+  clear, and the same drop holds the same loot). **Look-test:** `look/airdrop`, by day: the trail, the
   fall, the hit, the cloud and its settling.
 - **Fixed in passing:** a billboard particle drops its scale unless told to keep it, so puffs sized in
   metres came out all the same small size (`billboard_keep_scale`).
-- **Not yet:** what's inside. Active-drop saves are handled by the repair below.
+- **Saves:** an active drop saves mid-fall and after the hit (saves 38), its loot included.
 
 ## Exposed wreck surfaces (Hunter, 2026-10-20; built)
 

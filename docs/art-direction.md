@@ -996,29 +996,11 @@ with grazing views bounded and tracks flattening the relief. These are millimetr
 ripples; the ground's metre lattice and collision remain authoritative. This completes close
 relief without a separately streamed displaced mesh patch.
 
-Measured at 1920 × 1080 on the shared machine's RTX 3070, nine alternating rounds of 60 measured
-frames per look after ten settling frames, with no other Godot running. Each entry is the median
-paired GPU difference; medians of different pairs need not add exactly. The baseline is the
-previous sand shader (`14cb3d0`); switching only `ripple_relief` off separates the trace's cost.
-
-| View | Complete change | Dune and ripple shading, relief off | Close relief alone |
-| --- | ---: | ---: | ---: |
-| Noon from eye height | +0.326 ms | +0.274 ms | +0.049 ms |
-| Low sun, sand filling the frame | +0.652 ms | +0.272 ms | +0.516 ms |
-| Noon at your feet | +0.598 ms | -0.013 ms (noise) | +0.401 ms |
-
-The complete change stays below the roughly 0.8 ms budget in these median samples. Individual
-rounds vary with desktop load; this is a measurement on this GPU, not a guarantee for every GPU.
-The vertex bake costs worker CPU time: a 64 m near chunk at 1 m steps takes 30.552 ms against
-17.777 ms before (+12.775 ms); a mid chunk at 2 m steps, 8.062 against 4.755 ms (+3.307 ms).
-It adds no per-frame CPU bake, and stores four floats per vertex including the skirts.
-
-World probe 12 checks continuous shade across chunk seams. The reported long-walk leak did not
-reproduce after integration. A diagnostic found resource and orphan-node counts fixed while
-resident chunk and collision counts changed. World probe 3 now compares memory back at the same
-settled location after warming up and after 20 km, preserving its original 10% object and 64 MB
-memory limits: 4,946 → 4,943 objects, 220.8 → 221.1 MB. It still checks the complete route's
-collision, dropped boxes and maximum resident chunks.
+**Cost.** Median paired GPU differences over nine rounds at 1920×1080 on the RTX 3070, against
+the previous sand shader: +0.33 ms at noon from eye height, +0.65 ms with low sun filling the frame
+(the close relief alone +0.52 ms), +0.60 ms at your feet, inside the roughly 0.8 ms budget. The
+vertex bake adds 12.8 ms of worker time to a 64 m near chunk and stores four floats a vertex.
+World probe 12 checks shade across chunk seams; world probe 3 checks memory stays flat.
 
 The before/after capture covers noon, low sun from eye height and above, dusk from above, full-Tu
 night, the headlamp, storm, a walked track, and close ripples. The look-test can measure each
@@ -1055,266 +1037,80 @@ night, the headlamp, storm, a walked track, and close ripples. The look-test can
   shield's remodel is the first exception or waits with the rest, and whether a new shape keeps
   the grey box's collision and sockets, as the paint pass did.
 
-## Playtest follow-up (Hunter, 2026-10-19; agreed, in progress)
+## Sand trails (Hunter, 2026-10-19)
 
-Hunter: "sand looks great ... our best iteration yet" and "we need our sand trails to look as good as our sand." The accepted sand appearance is the baseline. Improve walking trails and board/skid gouges with soft compressed floors, loose raised rims and nearby relief that belongs to the rippled surface. Keep marks stable while moving and through origin shifts, preserve their lifetime and physical ground, and measure the extra GPU cost against the accepted sand build. Prefer a bounded nearby shader treatment within the existing visual budget before expanding the track map or adding a separate mesh patch.
-
-
-**Trail follow-up built and rendered (2026-10-19).** Signed compressed floors and loose
-rims use bounded near relief and local wall horizons. Deep board gouges get extra depth;
-boots and shallow hover wakes keep their own pressure scale. The physical ground, mark
-lifetimes and track-map memory are unchanged. Filled bare-sand comparison regions match
-the accepted sand build exactly. The direct combined shader comparison against `14cb3d0`
-measured paired median increments of 0.204 ms in daylight and 0.365 ms in low sun at
-1080p on the same test renderer (nine alternated rounds, 60 frames, 30 settling frames).
-Those representative views remain below the roughly 0.8 ms budget; individual rounds
-are noisier. These are direct measurements, not a sum of different camera cases.
-See [Tracks](prd/world-and-terrain.md) for the full profile and measured checks.
+Hunter: "sand looks great ... our best iteration yet" and "we need our sand trails to look as
+good as our sand." Trails and board gouges get soft compressed floors, loose raised rims and near
+relief that belongs to the rippled surface, stable while moving and through origin shifts, with
+their lifetimes and the physical ground unchanged. Deep board gouges sink further; boots and hover
+wakes keep their own pressure. **Cost:** +0.20 ms in daylight and +0.37 ms in low sun at 1080p
+over the sand without them (paired medians); profile in [Tracks](prd/world-and-terrain.md).
 
 ## Survey receiver (2026-10-20)
 
-A first receiver tier using the existing signal system, modelled as a complete
-handheld field instrument. Keep B's bevelled, worn industrial language: a bone enamel
-cast housing, teal recessed front, black impact corners, brass fittings and an open
-loop aerial. A large cream analogue meter with a red moving needle is the visual
-focus, balanced by a deeply ribbed tuning wheel and a small power lamp. Speaker
-slots, a rear battery cradle, hinge pins, screws and a contractor's plate explain
-how it is assembled and held. Avoid decorative detail across the meter or controls.
+A complete handheld field instrument in B's language: bone enamel cast housing, teal recessed
+front, black impact corners, brass fittings and an open loop aerial. A large cream analogue meter
+with a red needle is the focus, beside a ribbed tuning wheel and a small power lamp; the meter
+reads signal strength only, no compass or digits. Needle and wheels are separate meshes so they
+move (`SurveyReceiverLooks`, 7,324 triangles over five meshes).
 
-Use merged procedural Godot meshes and the existing Paint shader so wear, era
-lineage, sand and lighting remain native to the game. Separate the needle, tuning and volume
-wheels from the case for readable movement. Inspect actual close/held/mounted and dust
-captures before acceptance. Original switch, tuning and pulse sounds should be
-quiet and tactile, with signal audibility tied to the real receiver state.
+## Rope coils (2026-10-20)
 
+A compact hand-wound bundle of round, sun-worn brown fibre with a muted teal whipped lead, inside
+the old 0.34 × 0.34 × 0.07 m envelope; more rope adds windings, never thicker fibre. One cached
+mesh (3,258 triangles) bent along its winding by a coil-only fibre shader, its lead fixed to the
+live rope end (`rope_coil_visual` tuning). A loose end is three laid cords with teal whipping.
 
-**As built and inspected (2026-10-20).** `SurveyReceiverLooks` uses four cached
-single-surface meshes: case 3,336 triangles, needle 140, tuning wheel 1,484 and
-aerial 880. A second scaled wheel supplies volume, making 7,324 submitted triangles
-across five mesh instances before the fitted battery/socket. These are geometry
-counts, not a measured frame-time cost. The aerial has physical hinge lugs and
-support posts meeting its ring; the case has a rear cell cradle and feet meeting
-the placement floor.
+## Home beacon (2026-10-20)
 
-Actual Forward+ renders on Godot 4.7.2 show front, side and rear assembly, the live
-needle and both controls in hand, and the receiver in the carry view at 720p. Turning
-through a quarter turn changed measured signal strength from 0.8664 to 0.0693 and
-the visible meter from step 7 to 1. The meter reads signal strength; no compass or
-range digits were added to its face. Three original mono 48 kHz switch, detent and
-contact-pulse sounds ship with a reproducible generator; measured levels are in
-[audio credits](../assets/audio/CREDITS.md). The existing static bed supplies hiss.
-Automated unseen runs use dummy audio, so these checks establish playback state
-and measured levels, not subjective listening quality.
+A compact field transponder bolted upright to a chassis: gunmetal shoe, bone enamel enclosure with
+a teal service face, protected amber lens, ribbed antenna stub, brass fasteners. Its amber lens
+lights only for the marked, powered beacon on its Home chassis; it projects nothing. One worn
+surface, 1,164 triangles, inside its catalog box.
 
-Mounted views were also inspected in daylight dust and local midnight dust, with
-a small staged warm light for the night inspection. The face, needle, lamp and
-both wheels remain distinct against the worn chassis. This is a rendered model
-readability check; the staged light does not establish unlit night legibility.
+## The Surveyor's pod and ship (2026-10-20/21)
 
-
-## Rope coils (2026-10-20; built)
-
-A compact hand-wound bundle of round, sun-worn brown fibre replaces the old metal
-block. The gathered display and loose full coil share one winding mesh, with a
-muted teal whipped leading end and a shallow second layer. Keep the existing
-0.34 × 0.34 × 0.07 m part envelope. More rope adds windings, never thicker fibre.
-
-`Dress.coil()` caches one indexed single-surface mesh: 1,631 vertices and 3,258
-triangles. A coil-only rough fibre shader deforms the tube continuously along its
-winding path from an instance amount. The nominal 0.02 m fibre radius remains
-beside the world strand's 0.024 m radius. The leading end stays fixed to the live
-rope endpoint; changing fill does not recenter the bundle or swap its mesh.
-
-Actual Forward+ 1280 × 720 held-end captures cover near-empty, both sides of the
-former one-third/two-thirds boundaries and full fill, followed by consecutive
-payout/gather frames. The real pickup, first tie and moving-hand check runs before
-the visual sweep; only the synthetic zero-length sweep suspends rope solving so
-it does not drop the held endpoint. These establish rendered continuity and
-readability, not a measured GPU frame-time budget. Geometry and visual response
-live in `rope_coil_visual` tuning.
-
-The line's existing loose end also has a native fibre model: three laid cords
-with teal whipping, inside its unchanged small part envelope. No new coupling or
-metal fitting is implied. Ground/held geometry keeps the old attachment point.
-
-## Home beacon (2026-10-20; selected)
-
-A compact field transponder bolts upright to an ordinary chassis: a low gunmetal
-mounting shoe, bone enamel enclosure with teal recessed service face, protected
-amber status lens, ribbed antenna stub and brass fasteners. Its restrained light
-identifies the marked transmitter; it makes no shield or navigation projection.
-Keep the complete model inside the existing catalog box, merged into one shared
-worn-material mesh. Read its assembly in actual close, carried and mounted GPU
-views before acceptance.
-
-**As built and inspected.** The beacon is one cached worn-material surface with
-1,164 triangles. Its visual AABB is 0.27 × 0.359 × 0.22 m, inside the catalog
-0.28 × 0.36 × 0.24 m box. Actual Forward+ 1280 × 720 captures show the enamel
-enclosure, ribbed antenna and mounting feet close up, on a powered chassis and
-in hand. The amber lens lights only for the marked powered transmitter mounted
-on its Home chassis; removing it leaves the saved Home identity and last fix.
-This is a readability/assembly check, not a GPU timing measurement or proof of
-remote camp support.
-
-## Surveyor arrival prototypes (2026-10-20; isolated, not production)
-
-`look/orbit` now renders a real Godot globe with a separate dusty limb and star
-background. It uses the actual seeded Geology rift, resampled across its whole
-path, plus DayCycle sun/Tu directions and the existing Tu cloud shader. Regional
-albedo and relief are illustrative procedural art; they do not yet reproduce
-the local TerrainShape heights. The first full-lit render was too flat and its
-contour pattern looked artificial. Inspected iterations remove the contour lines,
-move the camera/light toward the terminator and reduce noisy high-frequency bump
-shading. This remains a rough orbital material study, not the generated concept
-image's visual quality, a completed descent or a seamless global terrain renderer.
-
-`look/pod_shell` captures a closed, opened and reclined interior layout built from
-ten real detachable chassis panels and two frames. The cream outer skins and
-charred underside belong to their physical panels and carry no extra collision.
-Opening the roof provides standing exit space. Closed assembly measurements:
-149 nodes, 62 visible mesh surfaces, 43,648 triangles, 34 collision shapes and one
-active chassis body; collision bounds 2.24 by 1.24 by 1.24 m. Real GPU checks pass
-normal hatch/roof removal. The integrated development opening now reconstructs the pod skin through saved
-physical roles and idempotent appearance helpers. Flight, recovery and skin
-restoration have focused checks; combined CI and unassisted play acceptance
-remain pending.
-
-## The Surveyor's suit (2026-10-21; integration candidate)
-
-gonkhub, 2026-10-21: "start work on polishing, upgrading and implementing the
-player model you previously made. Need to see it in first person POV." The
-lab's kit-built surveyor (lab/anim, M1), in its bone white ("Lab's bone
-white"), refined in the game's own kit (`SurveyorLooks`, worn shader):
-
-- **The suit:** bone white, a shade darker at its pockets; gunmetal where
-  it bends (shoulder yokes, elbows, knee joints, belt); teal trim to match
-  the pack on the collar ring, the middle bellows and the knee pads. Cut
-  lean and plain: a chest 0.30 m wide and 0.19 m deep, shoulder joints
-  0.31 m apart (gonkhub, 2026-10-21: slimmer, especially in the chest;
-  simpler, especially the head, with teal accents).
-- **The helmet:** one rounded shell, a wide dark visor and a small lamp on
-  its right (where the headlamp shines from).
-- **The pack:** teal, banded in safety yellow, its fins, a hose over the
-  right shoulder to the collar.
-- **Hands and boots:** half-closed work gloves with a knuckle guard, an amber
-  readout on the back of the left wrist, black boots with gunmetal toe caps.
-
-Rigid pieces on their joints, 5,072 triangles in 16 draws. In first
-person the helmet, the collar and the shoulder yokes are drawn only for
-their shadow and for others (`Body.OWN_LAYER`). What you see is your arms
-reaching to what you hold, your knees crouched or sat, and your boots
-looking down. Look-test: `look/player_body`.
-
-
-### Comfortable own-camera suit view (2026-10-21; urgent correction)
-
-Keep gonkhub's complete rigid suit in external views and its shadow. Exclude
-hips and trunk, alongside head/collar, from the player's own camera so the
-near plane never slices through the torso while riding. Arms and boots remain
-visible. The body's drawn origin follows the same between-tick translation as
-the board and camera; it does not move the physical player. Posture comes from
-the steady eye rather than camera shake/interpolation. This is a view comfort
-fix, not an anatomical scale change or new body animation.
-
-
-### Held grip surfaces (2026-10-21; bounded suit polish)
-
-Keep gonkhub's rigid Surveyor meshes and their original arm proportions. The
-cutter's right glove targets the existing rear handle, rather than the barrel's
-side; a carried chassis takes both gloves to actual near frame surfaces, not
-its distant center. Item-local anchors follow the real object orientation.
-The fixed-length arms still stop short when an item is physically beyond reach:
-the standard radio and battery carry poses remain a documented limitation in
-Movement. Neither the physics object nor the shoulders move to disguise it.
-The cutter's low rear grip can sit partly below the first-person viewport;
-external views show that actual grasp. This does not add finger articulation.
-
-## Surveyor departure cabin (selected 2026-10-21; implementation lane)
-
-A small working room, not a bridge or an empty hangar: bone-white inset hull
-panels in dark ribs, teal supply-rack backs, a yellow loading lane, warm task
-lights and amber computer glass. The six-by-eight-metre room holds one actual
-recoverable PodShell, open at its head and above while docked; its removed
-panels stay visibly retained beside the berth. Supply shelves and a clear floor
-patch stage actual cargo without painted-on equipment. The low launch station
-faces a broad, sealed observation window. That aperture displays the existing
-ArrivalOrbit renderer in an isolated viewport, with its projection following
-the real observer; no painted planet or ground sky substitutes for Zan.
-The same actual player walks on solid floor, walls, shelves and berth ramp.
-Controller, landing choices and cargo accounting remain separate systems.
-
-
-### Departure cabin geometry acceptance (2026-10-21)
-
-The room's solid floor, sealed window, rack and console use matching drawn and
-physical boxes. A loading ramp ends on a short landing over the actual pod sill.
-Arrival 15 passes in 14 s: the unchanged player walks 6.23 m across the room,
-stays on the floor, and stops at the sealed observation aperture. The real
-prone capsule crawls up the ramp and through the existing one-metre frame head
-onto the capsule floor, ending 0.2405 m above the cabin floor. Standing entry
-through that low frame is not claimed; the controller may seat the player from
-the entry marker. All twelve original shell roles remain real saveable parts,
-including the three detached retained panels. Disposing the room leaves the
-physical pod intact. Room/cargo logic and integrated launch acceptance remain
-separate work.
-
-Actual unseen 1280×720 captures inspect the first-person room, observation
-window, launch station and pod berth, plus the exterior pressure-module skin.
-The window uses the real seeded ArrivalOrbit renderer and a frustum fitted to
-the aperture from the observer's eye; the ground World's sky never appears
-inside it. Aft retainers and the empty rack reserve space for actual cargo.
-Exterior inset panels, dark ribs and yellow corner guards keep the small room
-readable as one industrial pressure compartment rather than a whole ship model.
-### Cord on the suit (2026-10-21; visual correction)
-
-A waist tie now reads as two plaited turns around gonkhub's existing belt,
-with a small crossing, muted teal whipping and a lead to the real attachment.
-Use the current rope-end fibre gauge and colour. Cached tip render copies share
-the existing mesh while at the waist; the original loose/held tip and current
-continuous item coil return unchanged when untied. No invented belt hardware,
-new force attachment or extra physical rope constraint is introduced. Actual
-unseen belt-close, whole-player, own-waist and held-coil views were inspected.
-
-### A body during the vault (2026-10-21; bounded pose)
-
-The existing rigid suit now gives the swept climb a free-hand reach and a
-leading knee gather, then releases into its ordinary stance. Use the real
-climb's progress and rise. Fixed limb lengths, meshes, colour and camera
-comfort exclusions stay in place; carried-item hand poses take precedence.
-Actual first-person captures show the gloves entering the lower view while
-external captures show the knee gather. These are visual gestures, not
-physical hand anchors or a new locomotion controller.
+- **The pod** is ten real detachable chassis panels and two frames, its cream outer skins and
+  charred underside belonging to those panels, with no extra collision. Its tail is an ordinary
+  chassis with a bone-and-teal window surround and two thin clear panes in a real opening; inside,
+  a cramped dark thermal liner. Zan shows through the window, never painted on.
+- **The departure cabin** is a small working room, not a bridge: bone-white inset hull panels in
+  dark ribs, teal rack backs, a yellow loading lane and POD BAY sign, warm task lights, black
+  ribbed deck plates. Protected panels carry little dust. Its sealed window shows the real
+  `ArrivalOrbit` renderer fitted to the observer's eye; the launch screen is a dark recess for the
+  controller's live display, not painted UI. Drawn and physical boxes match.
+- **From orbit** (`look/orbit`): a real globe with a dusty limb and stars, the seeded rift and the
+  day's sun and Tu. A rough material study, not yet the local terrain.
 
 ## Zan's visible scale (agreed 2026-10-21)
 
-The 150 km travel lap must not make Zan look like a tiny asteroid. Preserve the
-large moon: nearly flat ground at standing height, a gentle distant falloff, and
-clear curvature from high up and orbit. The provisional presentation radius is
-3,700 km within the lore's unsettled 3,500–3,900 km leaning. Ground, skyline,
-landmark silhouettes and atmospheric horizon use the shared SurfaceProjection
-scale; local movement/collision remains a tangent approximation. Do not bend the
-orbital globe or inventory previews through the main ground projection. Existing
-Tu angular size, sun direction, worn materials and accepted sand stay the visual
-baseline. This is a presentation correction, not a new gravity or movement scale.
+The 150 km travel lap must not make Zan look like a tiny asteroid: nearly flat ground at standing
+height, a gentle distant falloff, clear curvature from high up and orbit. The presentation radius
+is 3,700 km; ground, skyline, landmarks and the atmospheric horizon share SurfaceProjection, while
+movement and collision stay a tangent approximation. Orbit views and inventory previews are not
+bent. A presentation correction, not a new gravity or movement scale.
 
+## The Surveyor's suit (2026-10-21)
 
-### Surveyor capsule viewing panel (2026-10-21)
+gonkhub: "start work on polishing, upgrading and implementing the player model you previously
+made. Need to see it in first person POV." The lab's kit-built surveyor in the game's own kit
+(`SurveyorLooks`, worn shader), then cut slimmer and plainer (gonkhub: slimmer, especially in the
+chest; simpler, especially the head, with teal accents):
 
-The tail remains an ordinary recoverable chassis, with a bone-and-teal window
-surround, dark continuous glazing seals and small safety-yellow fasteners.
-Its center is a real opening in the opaque mesh, closed by two thin clear panes
-on the original chassis faces. Interior copies use the same actual meshes and
-poses; the fallback authors the same shell directly without creating equipment.
-The cramped dark thermal liner and visible frame rails establish a capsule,
-while Zan remains visible through its window rather than painted onto a wall.
-The existing artwork's materials and ordinary detachable panel identity remain.
+- **The suit:** bone white, a shade darker at its pockets; gunmetal where it bends (shoulder yokes,
+  elbows, knee joints, belt); teal trim to match the pack on the collar ring, the middle bellows
+  and the knee pads. A chest 0.30 m wide and 0.19 m deep, shoulder joints 0.31 m apart.
+- **The helmet:** one rounded shell, a wide dark visor and a small lamp on its right, where the
+  headlamp shines from.
+- **The pack:** teal, banded in safety yellow, finned, a hose over the right shoulder.
+- **Hands and boots:** half-closed work gloves, an amber readout on the left wrist, black boots
+  with gunmetal toe caps.
+- **A waist tie** reads as two plaited turns round the belt with a small crossing, teal whipping
+  and a lead to the real attachment, in the rope end's gauge and colour; no invented hardware.
 
-### Sheltered departure cabin (2026-10-21)
-
-The ship uses the same worn paint shader with little deposited dust on protected
-panels. Neutral task lights preserve bone, teal and gunmetal; recessed black deck
-plates carry fine metal traction ribs. A bounded yellow bay outline, entry
-chevrons and a physical POD BAY sign explain the capsule berth. The launch screen
-is a large dark recess for the controller's live display, not painted UI.
-The capsule's black thermal liner has little deposited sand; exterior armor and
-ordinary recovered equipment retain their weathered materials.
+Rigid pieces on their joints, 5,072 triangles in 16 draws. In your own view the helmet and collar
+are drawn only for their shadow and for others; the slim chest stays below and behind the view
+(gonkhub chose it over hiding the torso). The gloves take what you hold by its real sides and the
+arms keep their lengths; vaulting, empty hands reach for the ledge and a knee gathers. How it moves
+and what it costs are in [Movement](prd/movement.md#your-body-2026-10-21). Look-test:
+`look/player_body`; held things, `look/player_body/held.tscn`.

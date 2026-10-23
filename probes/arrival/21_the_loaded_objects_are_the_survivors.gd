@@ -26,8 +26,8 @@ func run() -> void:
 	var battery := nodes[&"camp_cell"] as Battery
 	battery.charge_wh *= 0.5
 	var charge := battery.charge_wh
-	var profile := {"id": &"shallow", "extra_survival": 1.0, "outer_survival": 1.0, "frame_survival": 1.0,
-		"device_durability": Vector2.ONE, "chassis_durability": Vector2.ONE}
+	var profile := SurveyorManifest.approach(world.tuning, &"shallow").merged({"extra_survival": 1.0,
+		"outer_survival": 1.0, "frame_survival": 1.0, "device_wear": Vector2.ONE, "chassis_wear": Vector2.ONE}, true)
 	state = PreflightCargo.seal(world, ship, state, profile)
 	check(not state.is_empty(), "ready cargo seals")
 	if state.is_empty():
@@ -37,7 +37,7 @@ func run() -> void:
 		original[entry.uid] = nodes[entry.uid].get_instance_id()
 	var omitted := nodes[&"guide"] as Device
 	var omitted_pose := omitted.global_transform
-	var landed := PreflightCargo.land(world, state)
+	var landed := SurveyorRecovery.land(world, state)
 	check(state.get("materialized", false) and not landed.is_empty(), "the actual selected cargo lands")
 	for uid: StringName in original:
 		check(is_instance_valid(landed.get(uid)) and landed[uid].get_instance_id() == original[uid], "the original %s survives without replacement" % uid)
@@ -45,7 +45,7 @@ func run() -> void:
 	check(board.host() != null and board.battery() == nodes[&"board_cell"], "the external board retains the same fitted cell and real mounting")
 	check(omitted.global_transform == omitted_pose, "forgotten rack equipment is not moved to the surface")
 	var count := world.content.get_child_count()
-	check(PreflightCargo.land(world, state).size() == landed.size() and world.content.get_child_count() == count,
+	check(SurveyorRecovery.land(world, state).size() == landed.size() and world.content.get_child_count() == count,
 		"a repeated landing cannot duplicate bodies")
 	print("LANDED selected", state.preflight.loaded_uids, " placements", state.get("placements", {}))
 	wind.override = Callable()

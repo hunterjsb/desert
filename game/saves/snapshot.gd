@@ -16,6 +16,7 @@ extends RefCounted
 
 ## What each kind of thing keeps besides where it is, by property.
 static var _kept := [
+	[Burner, ["on", "fuel_seconds"]],
 	[Flare, ["lit", "called"]],
 	[Stake, ["driven", "pulled", "sustained", "holding", "pull"]],
 	[ShieldGenerator, ["on", "smart", "size", "_up", "_since", "held_minutes"]],
@@ -26,15 +27,15 @@ static var _kept := [
 	[Planter, ["tank_l", "split", "stored", "seeds", "ripened", "replanted", "banked", "dropped", "picked",
 		"fed_kcal", "_owed"]],
 	[Condenser, ["made_l"]],
-	[Console, ["page", "log_lines", "_alerts", "_front_near", "evidence", "bearings"]],
+	[Console, ["page", "filters_off", "log_lines", "_alerts", "_front_near", "evidence", "bearings", "sail_course", "sail_home"]],
 	[Battery, ["charge_wh"]],
 	[Plant, ["growth", "fruit", "state", "wild"]],
-	[Mast, ["hoist_enabled", "legacy_hoist", "raised", "raise", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "trim", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
+	[Mast, ["raised", "raise", "head_speed", "boom", "boom_spin", "boom_pose", "boom_velocity", "boom_angular", "load_n", "bend_n", "extend", "upwind_m", "outflow_m"]],
 	[Helm, ["sailed_m"]],
 	[Chassis, ["_today", "_day_from"]],
 	[PowerBox, ["held"]],
 	[Bedroll, ["laid"]],
-	[Device, ["resting", "lift_share", "lamps", "priority", "switched_off"]],
+	[Device, ["resting", "lift_share", "lamps", "priority", "switched_off", "weathered"]],
 ]
 const PLAYER := ["stamina", "flying", "mode", "crouched", "own", "slope", "wind", "low", "sink", "_sliding",
 	"_jumped", "_since_ground", "_touchdown", "_jump_buffer", "_jump_was", "_jump_queued", "_crouch_was",
@@ -324,7 +325,7 @@ func finish(data: Dictionary) -> void:
 	if grasped != null and _made.has(grasped):
 		hands.grasp.recall(_made[grasped], data.grasp)
 	for drop: Dictionary in data.get("airdrops", []):
-		var cargo := _made.get(drop.cargo) as Part
+		var cargo := _made.get(drop.cargo) as Device
 		if is_instance_valid(cargo):
 			Airdrop.recall(world, cargo, _transform_in(drop.at), drop.state)
 	world.home.finish_restore(data.get("home", {}), func(ref: int) -> Node: return _made.get(ref))
@@ -672,8 +673,6 @@ func _set_state(body: RigidBody3D, rec: Dictionary) -> void:
 		if absf(state.frequency - 1930.0) <= _world.tuning.receiver_band_khz:
 			state = state.duplicate()
 			state.frequency += Dial.BEACON_KHZ - 1930.0
-	if body is Mast and not state.has("hoist_enabled"):
-		body.legacy_hoist = true
 	var part := body as Part
 	if part != null and state.has("stats"):
 		part.stats = state.stats.duplicate(true)
@@ -889,7 +888,7 @@ func _solver_in(rec: Dictionary) -> void:
 		var node: Node3D
 		if entry[0] is Dictionary:
 			var mast := _made.get(entry[0].get("boom")) as Mast
-			node = mast._boom_body if is_instance_valid(mast) else null
+			node = mast.boom_body() if is_instance_valid(mast) else null
 		else:
 			node = _world.player if entry[0] is String else _made.get(entry[0])
 		if node == null:

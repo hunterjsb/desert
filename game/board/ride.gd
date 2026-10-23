@@ -215,9 +215,20 @@ func tow(by: Vector3) -> void:
 ## Motor effort under line load is limited by force and mechanical power.
 func _motor_force(free_force: float, speed: float) -> float:
 	var t := _tuning
+	# Any taut line governs the motor, so it can't run you past what tows you;
+	# only a pull against it heats it.
 	var loaded := smoothstep(0.0, t.board_tow_load_n, _line_load)
 	var tow := minf(t.board_tow_force_n, t.board_tow_work_w / maxf(speed, 1e-3))
 	return lerpf(free_force, minf(free_force, tow), loaded) * motor_pulse
+
+
+## How much of `span` s from `from` a pulse train, on for `duty` of each of
+## its `hz` cycles a second, is on.
+static func _on_share(from: float, span: float, hz: float, duty: float) -> float:
+	if hz <= 0.0 or span <= 0.0:
+		return 1.0
+	var on_by := func(cycles: float) -> float: return floorf(cycles) * duty + minf(fposmod(cycles, 1.0), duty)
+	return (on_by.call((from + span) * hz) - on_by.call(from * hz)) / (span * hz)
 
 
 ## One tick: `dir` is where your keys steer, flat, forward and to the sides;
@@ -283,8 +294,12 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			and velocity.length() < t.board_tow_stall_speed:
 		heating = maxf(heating, 1.0)
 	overload = clampf(overload + heating * delta / t.board_tow_hot_s, 0.0, 1.0)
-	_motor_age += delta
-	var on := 1.0 if fposmod(_motor_age * t.board_tow_sputter_hz, 1.0) < t.board_tow_sputter_on else 0.0
+	if overload >= 1.0:
+		Deeds.done(world, &"board_bogged")
+	# The pulse's share of this tick, not a sample of it, so it sputters alike
+	# at any tick rate.
+	var on := _on_share(_motor_age, delta, t.board_tow_sputter_hz, t.board_tow_sputter_on)
+	_motor_age = fposmod(_motor_age + delta, 1.0 / t.board_tow_sputter_hz) if t.board_tow_sputter_hz > 0.0 else 0.0
 	motor_pulse = lerpf(1.0, on, overload)
 	ride_height = lerpf(ride_height, t.board_tow_ground_height, overload)
 	for i in n:
@@ -541,6 +556,9 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 	_bitten = _bitten and dig > BITE * 0.5
 	board.push = pushed
 	board.tow_work_w = tow_work / t.board_tow_efficiency
+	# Driving a load along against its line, not straining at a dead stop.
+	if _motor_load > t.board_tow_load_n and velocity.dot(ahead) > t.board_tow_stall_speed and tow_work > 0.0:
+		Deeds.done(world, &"board_tow")
 	board.meter(world.time, world.time + delta * world.time_warp, delta)
 	if hit > BUMP:
 		bottomed += 1
@@ -570,7 +588,7 @@ func _throw(how: StringName, speed: float) -> void:
 	thrown_at = speed
 
 ## The board's deeds as they happen: high over the sand under it, far in one
-## ride, and into a storm by night or in an eclipse.
+## ride, a ride on its make, and into a storm by night or in an eclipse.
 func _deeds(world: World) -> void:
 	var stormy := world.weather.in_storm
 	var into := stormy and not _stormy
@@ -579,6 +597,8 @@ func _deeds(world: World) -> void:
 		return
 	Deeds.measure(world, &"board_height", y - _height(Vector2(player.global_position.x, player.global_position.z)))
 	Deeds.measure(world, &"board_distance", _came)
+	if _came >= world.tuning.deed_make_m:
+		Deeds.done(world, &"quiver", BoardMakes.make_of(board))
 	var day := world.weather.day
 	if into and (not day.is_day(world.time, world.moon.longitude) or day.sun_shown(world.time) < 1.0):
 		Deeds.done(world, &"board_storm")

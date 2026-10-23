@@ -64,6 +64,25 @@ const GLAZE := Color(0.08, 0.22, 0.5)
 const SALTWOOD := Color(0.45, 0.39, 0.3)
 const LIMEWASH := Color(0.85, 0.81, 0.71)
 const SAND_GLASS := Color(0.6, 0.68, 0.6)
+## The nomads' cloth, dyed and faded by the sun (ochre, rust, an indigo gone
+## grey); their pale saltbush wood, bone toggles, and cord as rope is.
+const OCHRE_DYE := Color(0.72, 0.52, 0.24)
+const RUST_DYE := Color(0.56, 0.24, 0.14)
+const INDIGO_DYE := Color(0.28, 0.32, 0.42)
+const NOMAD_WOOD := Color(0.62, 0.5, 0.34)
+const NOMAD_BONE := Color(0.86, 0.82, 0.7)
+## The Surveyor's suit is the shield maker's bone white, a shade darker at its
+## seams, under a dark visor, with work gloves, a warm lamp and an amber
+## readout; company drops wear safety orange.
+const SUIT_SHADE := Color(0.7, 0.66, 0.57)
+const VISOR := Color(0.12, 0.16, 0.2)
+const GLOVE := Color(0.3, 0.29, 0.27)
+const LAMP := Color(1.0, 0.88, 0.7)
+const READOUT := Color(1.0, 0.62, 0.2)
+const DROP_ORANGE := Color(0.85, 0.45, 0.12)
+## A signal flare's red tube; an aerial wire's bare copper.
+const FLARE_RED := Color(0.75, 0.12, 0.08)
+const COPPER := Color(0.55, 0.36, 0.2)
 const DYED := Color(0.55, 0.22, 0.12)
 const SCRAP: Array[Color] = [YELLOW, TEAL, BONE, STEEL]
 
@@ -156,6 +175,27 @@ static func show_age(body: Node, amount: float) -> void:
 	for child in body.get_children():
 		if is_worn(child):
 			(child as GeometryInstance3D).set_instance_shader_parameter(&"age", amount)
+
+
+## The storms' damage on one of a thing's meshes (Device.weathered): toward
+## the faces the sand struck, turned into the mesh's own frame, as one-sided
+## as it blew, and how deep. What turns to face the wind, a rotor, took it
+## all on its front. Any era's look reads it the same.
+static func show_blast(view: GeometryInstance3D, body: Node3D, weathered: Vector4, faces_wind := false) -> void:
+	if view == null:
+		return
+	var toward := Vector3.ZERO
+	var from := Vector3(weathered.x, weathered.y, weathered.z) / maxf(weathered.w, 1e-9)
+	if faces_wind:
+		toward = Vector3.BACK if weathered.w > 0.0 else Vector3.ZERO
+	elif from != Vector3.ZERO:
+		var basis := Basis.IDENTITY
+		var node: Node3D = view
+		while node != null and node != body:
+			basis = node.transform.basis * basis
+			node = node.get_parent() as Node3D
+		toward = (basis.inverse() * from).normalized() * from.length()
+	view.set_instance_shader_parameter(&"blasted", Vector4(toward.x, toward.y, toward.z, minf(weathered.w, 1.0)))
 
 
 static func is_worn(node: Node) -> bool:

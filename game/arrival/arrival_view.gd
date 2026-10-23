@@ -1,10 +1,11 @@
 class_name ArrivalView
 extends CanvasLayer
-## A disposable presentation over the preloading world; the arrival controller owns time.
+## A disposable presentation over the landing world; the arrival controller owns time.
 var _world: World
 var _root := Control.new()
 var _screen := SubViewportContainer.new()
 var _viewport := SubViewport.new()
+var _hidden_world := false
 var _orbit := ArrivalOrbit.new()
 var _interior: PodInterior
 var _effects := ArrivalImpactEffects.new()
@@ -54,7 +55,7 @@ func setup(world: World) -> void:
 	_orbit.setup(world.shape.history, world.weather.day)
 	_orbit.camera.fov = world.player.camera.fov
 	_seat_eye = PodShell.seat_pose() * Transform3D(Basis(Vector3.RIGHT, 0.1),
-		Vector3(0, float(world.tuning.surveyor_preflight.seat_eye_m), 0))
+		Vector3(0, world.tuning.arrival_seat_eye_m, 0))
 	_interior = PodShell.flight_interior(world.arrival_nodes)
 	# The shell stays fixed while the saved recoil moves the eye inside it.
 	_orbit.camera.add_child(_interior)
@@ -62,67 +63,50 @@ func setup(world: World) -> void:
 	_root.add_child(_effects)
 	_effects.setup(world.tuning)
 
-func present(state: Dictionary) -> void:
+## `lead` draws a fraction of a tick past the saved time, so the fall is smooth at any frame rate.
+func present(state: Dictionary, lead := 0.0) -> void:
 	if not is_instance_valid(_world):
 		return
 	_state = state
-	var phase: StringName = state.get("phase", &"orbit")
-	var seconds := float(state.get("elapsed", 0.0))
+	var phase: StringName = state.get("phase", &"ejection")
 	var duration := maxf(float(state.get("phase_seconds", 1.0)), 0.001)
-	var progress := clampf(float(state.get("progress", seconds / duration)), 0.0, 1.0)
+	var seconds := minf(float(state.get("elapsed", 0.0)) + lead, duration)
+	var progress := clampf(seconds / duration, 0.0, 1.0)
+	var now := {"phase": phase, "elapsed": seconds, "progress": progress}
 	_phase_audio(phase, progress)
 	_air_audio(phase, progress)
 	_root.visible = phase != &"recovery"
-	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED if phase in [&"landing", &"recovery"] else SubViewport.UPDATE_ALWAYS
-	_screen.visible = phase not in [&"landing", &"recovery"]
+	var falling := phase not in [&"landing", &"recovery"]
+	_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS if falling else SubViewport.UPDATE_DISABLED
+	_screen.visible = falling
+	# The landing ground is hidden behind the fall until entry, when it starts to warm up.
+	_hide_world(phase in [&"ejection", &"descent"])
 	if phase == &"recovery":
 		return
-	_orbit.update_light(_world.time)
-	var point: Vector3 = state.get("landing_point", Sphere.point(_world.moon.latitude, _world.moon.longitude))
-	var heading := float(state.get("heading", 0.0))
-	var descent := 0.0
-	match phase:
-		&"orbit": descent = lerpf(0.0, 0.04, progress)
-		&"ejection": descent = lerpf(0.04, 0.12, progress)
-		&"descent": descent = lerpf(0.12, 0.92, smoothstep(0.0, 1.0, progress))
-		&"entry", &"landing": descent = lerpf(0.92, 1.0, progress)
-	var altitude := lerpf(0.65, 0.0012, descent)
-	var angular_offset := deg_to_rad(lerpf(28.0, 0.1, descent))
-	var direction := Sphere.toward(point, -heading + PI, angular_offset)
-	_orbit.camera.position = direction * ArrivalOrbit.RADIUS * (1.0 + altitude)
-	_orbit.camera.look_at(point * ArrivalOrbit.RADIUS, Sphere.north(direction))
-	var flight: Dictionary = state.get("preflight", {}).get("flight_sample", {})
-	if flight.has("path") and flight.path.size() > 1:
-		var path: PackedVector3Array = flight.path
-		var elapsed := float(state.get("flight_elapsed", 0.0))
-		var t := clampf(elapsed / maxf(float(flight.flight_s), 0.001), 0.0, 1.0)
-		var times: PackedFloat32Array = flight.get("path_times", PackedFloat32Array())
-		var i := 0
-		var fraction := t * (path.size() - 1)
-		if times.size() == path.size():
-			while i < times.size() - 2 and times[i + 1] < elapsed:
-				i += 1
-			fraction = clampf((elapsed - times[i]) / maxf(times[i + 1] - times[i], 0.000001), 0.0, 1.0)
-		else:
-			i = mini(floori(fraction), path.size() - 2)
-			fraction -= i
-		var position := path[i].lerp(path[i + 1], fraction)
-		var clock := float(state.preflight.departure_time) + elapsed
-		var turn := Basis(Vector3(0, 0, 1), TAU * elapsed / (_world.tuning.day_minutes * 60.0))
-		var body: Basis = turn * (flight.body_basis as Basis)
-		var local := body.inverse() * position
-		_orbit.camera.position = local * ArrivalOrbit.RADIUS
-		var radial := local.normalized()
-		var forward: Vector3 = flight.get("landing_forward", Sphere.north(point) * cos(heading) + Sphere.east(point) * sin(heading))
-		forward = forward.slide(radial).normalized()
-		var limb := asin(clampf(1.0 / maxf(local.length(), 1.000001), 0.0, 1.0))
-		var level := smoothstep(0.0, 1.0, progress) if phase == &"entry" else 0.0
-		var angle := lerpf(limb - deg_to_rad(float(_world.tuning.surveyor_arrival.flight_limb_below_deg)), PI * 0.5 + 0.1, level)
-		var aim := -radial * cos(angle) + forward * sin(angle)
-		_orbit.camera.look_at(_orbit.camera.position + aim, radial)
-		_orbit.update_light(clock)
+	var flight: Dictionary = state.preflight.flight_sample
+	var path: PackedVector3Array = flight.path
+	var times: PackedFloat32Array = flight.path_times
+	var elapsed := minf(float(state.get("flight_elapsed", 0.0)) + lead, float(flight.flight_s))
+	var i := 0
+	while i < times.size() - 2 and times[i + 1] < elapsed:
+		i += 1
+	var fraction := clampf((elapsed - times[i]) / maxf(times[i + 1] - times[i], 0.000001), 0.0, 1.0)
+	var position := path[i].lerp(path[i + 1], fraction)
+	var clock := float(state.preflight.departure_time) + elapsed
+	var turn := Basis(Vector3(0, 0, 1), TAU * elapsed / (_world.tuning.day_minutes * 60.0))
+	var body: Basis = turn * (flight.body_basis as Basis)
+	var local := body.inverse() * position
+	_orbit.camera.position = local * ArrivalOrbit.RADIUS
+	var radial := local.normalized()
+	var forward: Vector3 = (flight.landing_forward as Vector3).slide(radial).normalized()
+	# The fall faces Tu's side of the sky, as the window did; entry turns it to the landing.
+	var toward_tu := -ArrivalOrbit.toward_tu(local, _world.weather.day.sub_tu(clock)).z
+	var level := smoothstep(0.0, 1.0, progress) if phase == &"entry" else (1.0 if phase == &"landing" else 0.0)
+	var aim := toward_tu.slerp(forward * cos(0.1) + radial * sin(0.1), level)
+	_orbit.camera.look_at(_orbit.camera.position + aim, radial)
+	_orbit.update_light(clock)
 	# Effects are pure saved-time samples; computing the window twice triggers no events.
-	_effects.present(state, Rect2())
+	_effects.present(now, Rect2())
 	var recoil := Transform3D(Basis.from_euler(_effects.camera_rotation), _effects.camera_offset)
 	var angles := head_angles()
 	var head := Transform3D(Basis(Vector3.UP, angles.x) * Basis(Vector3.RIGHT, angles.y), Vector3.ZERO)
@@ -135,28 +119,28 @@ func present(state: Dictionary) -> void:
 		var tail := _world.arrival_nodes.get(&"tail") as Chassis
 		var intact := is_instance_valid(tail) and tail.deck != null
 		if intact:
-			_present_windows(state, camera, _ground_pod_pose())
+			_present_windows(now, camera, _ground_pod_pose())
 		else:
-			_effects.present(state, Rect2(Vector2.ZERO, Vector2.ONE))
+			_effects.present(now, Rect2(Vector2.ZERO, Vector2.ONE))
 	else:
 		var base := _orbit.camera.transform
 		_orbit.camera.transform = base * head * recoil
 		_interior.transform = (head * recoil).affine_inverse() * _seat_eye.affine_inverse()
-		_present_windows(state, _orbit.camera, base * _seat_eye.affine_inverse())
+		_present_windows(now, _orbit.camera, base * _seat_eye.affine_inverse())
 
 
 func head_angles() -> Vector2:
 	var angles: Vector2 = _state.get("head_look", Vector2.ZERO)
 	if not angles.is_finite():
 		return Vector2.ZERO
-	var rules := _world.tuning.surveyor_arrival
-	return Vector2(clampf(angles.x, -deg_to_rad(rules.head_yaw_deg), deg_to_rad(rules.head_yaw_deg)),
-		clampf(angles.y, -deg_to_rad(rules.head_pitch_deg), deg_to_rad(rules.head_pitch_deg)))
+	var yaw := deg_to_rad(_world.tuning.arrival_head_yaw_deg)
+	var pitch := deg_to_rad(_world.tuning.arrival_head_pitch_deg)
+	return Vector2(clampf(angles.x, -yaw, yaw), clampf(angles.y, -pitch, pitch))
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_instance_valid(_world) or not Controls.playing() or Controls.mouse_free \
-		or not event is InputEventMouseMotion or not _state.get("phase", &"") in [&"orbit", &"ejection", &"descent", &"entry", &"landing"]:
+		or not event is InputEventMouseMotion or not _state.get("phase", &"") in [&"ejection", &"descent", &"entry", &"landing"]:
 		return
 	var angles: Vector2 = head_angles() - event.relative * _world.tuning.mouse_sensitivity
 	_state.head_look = angles
@@ -228,7 +212,7 @@ func launch_sound() -> void:
 	if not is_instance_valid(_world):
 		return
 	_voice.stream = Sounds.BOARD_POP
-	_voice.volume_db = float(_world.tuning.surveyor_arrival.ejection_db)
+	_voice.volume_db = _world.tuning.arrival_ejection_db
 	_voice.play()
 
 
@@ -237,42 +221,50 @@ func _phase_audio(phase: StringName, progress: float) -> void:
 	var changed := _has_phase and phase != _heard_phase
 	_heard_phase = phase
 	_has_phase = true
-	var settings := _world.tuning.surveyor_arrival
+	var rules := _world.tuning
 	if changed:
 		_voice.stop()
-		var stream: AudioStream
-		match phase:
-			&"ejection": launch_sound()
-			&"landing": stream = Sounds.BOARD_SLAM
-		if stream != null:
-			_voice.stream = stream
-			_voice.volume_db = float(settings.get(str(phase) + "_db", 0.0))
+		if phase == &"ejection":
+			launch_sound()
+		elif phase == &"landing":
+			_voice.stream = Sounds.BOARD_SLAM
+			_voice.volume_db = rules.arrival_landing_db
 			_voice.play()
-		if phase == &"landing":
 			_impact_roll.stream = Sounds.BOOM
-			_impact_roll.volume_db = float(settings.get("impact_roll_db", -16.0))
+			_impact_roll.volume_db = rules.arrival_impact_roll_db
 			_impact_roll.play()
 	if phase == &"landing" and _impact_roll.playing:
 		var fade := 1.0 - smoothstep(0.35, 1.0, progress)
-		_impact_roll.volume_db = float(settings.get("impact_roll_db", -16.0)) + linear_to_db(maxf(fade, 0.00001))
+		_impact_roll.volume_db = rules.arrival_impact_roll_db + linear_to_db(maxf(fade, 0.00001))
 
 
 func _air_audio(phase: StringName, progress: float) -> void:
 	var weight := 0.0
-	var rules := _world.tuning.surveyor_arrival
+	var rules := _world.tuning
 	match phase:
-		&"ejection": weight = smoothstep(0.0, 1.0, progress) * float(rules.flight_air_ejection)
-		&"descent": weight = lerpf(rules.flight_air_ejection, rules.flight_air_descent, progress)
-		&"entry": weight = lerpf(rules.flight_air_descent, 1.0, smoothstep(0.0, rules.flight_air_entry_peak, progress))
-		&"landing": weight = 1.0 - smoothstep(0.0, rules.flight_air_impact_fade, progress)
+		&"ejection": weight = smoothstep(0.0, 1.0, progress) * rules.arrival_air_ejection
+		&"descent": weight = lerpf(rules.arrival_air_ejection, rules.arrival_air_descent, progress)
+		&"entry": weight = lerpf(rules.arrival_air_descent, 1.0, smoothstep(0.0, rules.arrival_air_entry_peak, progress))
+		&"landing": weight = 1.0 - smoothstep(0.0, rules.arrival_air_impact_fade, progress)
 	for bed: AudioStreamPlayer in [_air, _hull]:
 		if weight <= 0.0:
 			bed.stop()
 		else:
-			bed.volume_db = float(rules.flight_air_db if bed == _air else rules.flight_hull_db) + linear_to_db(weight)
-			bed.pitch_scale = lerpf(rules.flight_audio_pitch.x, rules.flight_audio_pitch.y, weight)
+			bed.volume_db = (rules.arrival_air_db if bed == _air else rules.arrival_hull_db) + linear_to_db(weight)
+			bed.pitch_scale = lerpf(rules.arrival_air_pitch.x, rules.arrival_air_pitch.y, weight)
 			if not bed.playing:
 				bed.play()
+
+
+func _hide_world(hide_it: bool) -> void:
+	if hide_it != _hidden_world and is_inside_tree():
+		_hidden_world = hide_it
+		get_viewport().disable_3d = hide_it
+
+
+## A run left mid-fall still gives the menu its 3D back.
+func _exit_tree() -> void:
+	_hide_world(false)
 
 
 func dispose() -> void:
@@ -289,6 +281,7 @@ func dispose() -> void:
 		_world.player.rotate_y(yaw)
 		_world.player.camera.rotation.y = 0.0
 	_ground_camera_active = false
+	_hide_world(false)
 	_world = null
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_root.hide()

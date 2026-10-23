@@ -52,5 +52,8 @@ func worst_gust() -> float:
 func steady(toward: Vector2, speed: float, gusts: float) -> Callable:
 	var along := toward.normalized() * speed
 	var evolve := _tuning.gust_evolve_speed
+	# Locals only: a lambda that reached `self` would hold this field in its own
+	# override, a cycle that never frees.
+	var eddies := _eddies
 	return func(x: float, z: float, t: float) -> Vector2:
-		return along * (1.0 + gusts * _eddies.get_noise_3d(x - along.x * t, z - along.y * t, t * evolve))
+		return along * (1.0 + gusts * eddies.get_noise_3d(x - along.x * t, z - along.y * t, t * evolve))

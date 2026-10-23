@@ -13,6 +13,8 @@ extends RefCounted
 ## side is the right's mirror.
 const HIPS := Vector3(0.0, 0.98, 0.0)
 const WAIST := Vector3(0.0, 1.16, 0.0)
+## The belt's front knot, from the hips, where waist lines are tied.
+const WAIST_KNOT := Vector3(0.0, 0.07, -0.17)
 const NECK := Vector3(0.0, 1.56, -0.01)
 const SHOULDER := Vector3(0.155, 1.46, 0.0)
 const ELBOW := Vector3(0.195, 1.18, 0.03)
@@ -23,21 +25,18 @@ const HIP := Vector3(0.1, 0.93, 0.0)
 const KNEE := Vector3(0.11, 0.51, -0.02)
 const ANKLE := Vector3(0.11, 0.1, 0.02)
 
-const SUIT := Color(0.8, 0.76, 0.66)
-const SUIT_SHADE := Color(0.7, 0.66, 0.57)
 const PACK := Paint.TEAL
-const VISOR := Color(0.12, 0.16, 0.2)
 
 static var _made := {}
 
 
 static func _coats() -> Dictionary:
-	return {"suit": Paint.coat(SUIT, 0.5, 0.0, 0.75), "shade": Paint.coat(SUIT_SHADE, 0.5, 0.0, 0.8),
+	return {"suit": Paint.coat(Paint.BONE, 0.5, 0.0, 0.75), "shade": Paint.coat(Paint.SUIT_SHADE, 0.5, 0.0, 0.8),
 		"joint": Paint.coat(Paint.GUNMETAL, 0.7, 0.5, 0.5), "black": Paint.coat(Paint.BLACK, 0.4, 0.0, 0.8),
 		"pack": Paint.coat(PACK, 0.9, 0.0, 0.55), "trim": Paint.coat(PACK, 0.6, 0.0, 0.7), "band": Paint.coat(Paint.YELLOW, 0.8, 0.0, 0.5),
-		"steel": Paint.coat(Paint.STEEL, 0.4, 0.6, 0.35), "glove": Paint.coat(Color(0.3, 0.29, 0.27), 0.4, 0.0, 0.85),
-		"visor": Paint.coat(VISOR, 0.0, 0.6, 0.08, 0.0, 0.15), "lamp": Paint.coat(Color(1.0, 0.88, 0.7), 0.0, 0.0, 0.3, 0.0, 1.0),
-		"readout": Paint.coat(Color(1.0, 0.62, 0.2), 0.0, 0.0, 0.3, 0.0, 1.6)}
+		"steel": Paint.coat(Paint.STEEL, 0.4, 0.6, 0.35), "glove": Paint.coat(Paint.GLOVE, 0.4, 0.0, 0.85),
+		"visor": Paint.coat(Paint.VISOR, 0.0, 0.6, 0.08, 0.0, 0.15), "lamp": Paint.coat(Paint.LAMP, 0.0, 0.0, 0.3, 0.0, 1.0),
+		"readout": Paint.coat(Paint.READOUT, 0.0, 0.0, 0.3, 0.0, 1.6)}
 
 
 ## A part's mesh, by name: &"hips", &"trunk", &"collar", &"head", and per side (&"r" or
@@ -188,7 +187,7 @@ static func _shin(b: Paint.Pieces, c: Dictionary, side: float) -> void:
 static func _foot(b: Paint.Pieces, c: Dictionary, side: float) -> void:
 	b.box(Vector3(0.14, 0.09, 0.15), Vector3(0.0, -0.01, 0.0), c.black, 0.025)
 	b.box(Vector3(0.13, 0.08, 0.17), Vector3(0.0, -0.05, -0.1), c.black, 0.03)
-	b.box(Vector3(0.14, 0.03, 0.3), Vector3(0.0, -0.09, -0.05), Paint.coat(Color(0.05, 0.05, 0.05), 0.3, 0.0, 0.9), 0.01)
+	b.box(Vector3(0.14, 0.03, 0.3), Vector3(0.0, -0.09, -0.05), Paint.coat(Paint.BLACK, 0.3, 0.0, 0.9), 0.01)
 	b.box(Vector3(0.12, 0.05, 0.05), Vector3(0.0, -0.05, -0.18), c.joint, 0.015)
 	b.box(Vector3(0.145, 0.025, 0.14), Vector3(0.0, 0.045, 0.0), c.joint, 0.008)
 
@@ -215,9 +214,9 @@ static func waist_wrap() -> ArrayMesh:
 			b.drum(float(rules.end_strand_radius), span.length(), (ends[0] + ends[1]) * 0.5, fibre,
 				Basis(Quaternion(Vector3.UP, span.normalized())), int(rules.sides))
 	# A small crossing and muted whipping make the forward tie readable.
-	b.drum(float(rules.gauge), 0.065, Vector3(0, 0.07, -0.17), fibre, Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
+	b.drum(float(rules.gauge), 0.065, WAIST_KNOT, fibre, Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
 	for x in [-0.022, -0.014, 0.014, 0.022]:
-		b.drum(float(rules.end_wrap_radius), float(rules.end_wrap_width), Vector3(x, 0.07, -0.17), binding,
+		b.drum(float(rules.end_wrap_radius), float(rules.end_wrap_width), WAIST_KNOT + Vector3(x, 0.0, 0.0), binding,
 			Basis(Vector3.FORWARD, PI * 0.5), int(rules.sides))
 	_made[&"waist_wrap"] = b.commit()
 	return _made[&"waist_wrap"]

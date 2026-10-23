@@ -68,7 +68,7 @@ PRD; this PRD owns what flows through them.
 | **Solar** | Clear skies, daytime, toward the poles | Storms (some types keep a little), night | None, beyond the weather |
 | **Wind** | Storms, toward the stormy equator | Calm | It has to be planted to work, so you stay or leave it behind |
 | **Heavy generator** | Always: strong and steady | Out of fuel | It rides on caterpillar tracks, slows the camp, and burns fuel |
-| **Burner** (proposed, session 4, part 4) | Night and storm, when solar can't help: it runs on stored fuel | Out of fuel | Its fuel is coalcane, which needs water and a day's light to grow ([below](#fuel-crops-and-the-burner-proposed-not-built)) |
+| **Burner** (agreed 2026-10-22) | Night and storm, when solar can't help: it runs on stored fuel | Out of fuel | Its fuel is coalcane, which needs water and a day's light to grow ([below](#fuel-crops-and-the-burner-agreed-2026-10-22)) |
 
 **Solar comes in forms that trade portability for output:**
 - **Light:** placeable and picked back up. This is the starting source.
@@ -89,7 +89,36 @@ stand outside, in the storm, and take the damage. The alternative is a shield th
 lets wind through, like the late-game temperature shield. That trade-off comes free from
 the felt-weather rule.
 
-## Fuel crops and the burner (proposed, not built)
+<a id="fuel-crops-and-the-burner-proposed-not-built"></a>
+<a id="fuel-crops-and-the-burner-agreed-2026-10-22"></a>
+
+## Fuel crops and the burner (built 2026-10-22)
+
+**Hunter, 2026-10-22:** "coalcane is a go", the roadmap's farming-and-processing stretch goal, as one
+complete chain: grow coalcane, burn it in the burner, power at night and through storms.
+
+**As built.** A deck-mounted burner takes the existing six-stalk `coalcane_bundle` in
+its physical hopper. Use opens/closes the burner; the hopper holds one waiting bundle
+beside the fuel already in the chamber. Each stalk supplies 45 W for 120 seconds
+(9 Wh per bundle), whether clear, dark or stormy. A closed burner preserves its fuel;
+a running one spends it even if its pool is full. The ordinary power ledger accounts
+for all output, including a partial final tick, and saves keep the unburned time and
+queued item separately. Night Harvest records actual generation. The fire-door glow
+and remaining seconds show its state. Tuning owns the output and burn duration.
+
+Grow and harvest through the [coalcane chain](farming.md#coalcane-chain-agreed-2026-10-22).
+This is the small burner, not the Stoker's launch-fuel refinery or the tracked generator.
+
+**Validation (2026-10-22).** Farming 16 grows and harvests a real bed, measures 1.5 L
+spent, and carries a stationary light shield and radio through a ten-minute night
+plus ninety seconds of storm. It then runs out of fuel with the energy ledger
+balanced; the ordinary reserve policy may shed the radio afterward. Power 17 feeds
+the hopper through the hands and saves a partial burn with a queued bundle: the two
+bundles produce exactly 18 Wh across resume and a closed interval. The existing
+power ledger, harvester and Halloran First Fire checks pass. Full daylight gives a
+standard panel 60 W against the burner's 45 W; fuel also costs water and bed space.
+This is a modest stationary load, not a guarantee for a large shield or moving farm.
+GPU capture: `scripts/unseen.sh --path . --resolution 1280x800 res://look/coalcane/coalcane.tscn -- /tmp/coalcane.png`.
 
 *[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md); implied equipment, direction only, with no
 number set. It is the fuel half of "Fuel grown from plants" above.*
@@ -128,16 +157,15 @@ Readings, not in the session:
 
 *[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 5; direction only, with no number set.
 [Devices & mods](devices-and-mods.md#the-kiln-agreed-session-4-part-5-not-built) has the kiln itself.*
-"The kiln is a new processing device that burns coalcane," in three era variants: the colonial **electric
-furnace** ("most efficient; runs on power, not coalcane"), the First Kingdoms' **brass-fitted forge**
-(middle efficiency) and the second age's **beehive clay kiln** (lossy). A variant's job is the same, and its
-"efficiency and fuel draw" differ.
+The [four kiln forms selected 2026-10-22](devices-and-mods.md#four-kiln-forms-selected-2026-10-22)
+supersede the old three-variant roster. Devices owns their mobility, location and
+energy-source specification; processing budgets remain unset.
 
 Readings, not in the session:
 - **Coalcane has more mouths.** The burner turns it to power, the kiln to heat, and the Stoker eats it
   ("feeding... calms it"; [the lore](../world/lore-research.md#the-stoker-and-the-end-of-zan-agreed-session-4-part-5)).
   Cane is thirsty and rare, and the session sets no figure for a stalk's energy or its water, so whether
-  a farm can feed all three is a number to set (the burner's own loop is unset already).
+  a farm can feed all three is a number to set (the burner loop is now built; see its fuel-crop section).
 - **The kiln's heat is not power.** A stalk burned in the kiln gives ceramic, salt or safe water and no
   watts; the same stalk in the burner gives watts. They are two devices that want one crop, and the game
   has no heat model to join them.
@@ -371,8 +399,10 @@ batteries in its bays is stored power you carry or drag like anything else.
   in real time, it made power 99% of the time and drifted 1.4 m.
 - **The storm wears the turbine out.** About half an hour of full storm wrecks it, and
   nothing mends it: on the probes' seed it goes on the third day (2.45 days in at the
-  equator, 2.67 at 45°), having made about 90 Wh for the camp, less than a battery
-  holds. That's why probe 4 runs two days. A wrecked device leaves its pool, and its
+  equator, 2.67 at 45°), having made about 80 Wh for the camp, less than a battery
+  holds: it makes less as it wears ([storm wear](devices-and-mods.md#where-parts-come-from-and-how-they-wear)),
+  66 Wh over probe 4's two days where a turbine that never weakened made 82 (2026-10-22). That's why
+  probe 4 runs two days. A wrecked device leaves its pool, and its
   battery's charge with it. After that the bank carries the camp alone: the camp on the
   sand, before the deck, was down to 63% after eight days at the equator, nearly six of
   them storm, where the floating deck reached its reserve at 7.4 days (above).

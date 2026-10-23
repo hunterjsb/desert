@@ -188,6 +188,14 @@ func piece_at(point: Vector3) -> Chassis:
 
 
 ## The piece a socket of this deck is its own, through what it's fitted in.
+func sticking_frame(piece: Device, face: StringName) -> Transform3D:
+	return face_frame(piece as Chassis, face)
+
+
+func sticking_piece(socket: Socket) -> Device:
+	return own_piece(socket)
+
+
 func own_piece(socket: Socket) -> Chassis:
 	var piece := _piece_of(socket)
 	return piece if piece != null else self
@@ -842,7 +850,8 @@ func _read_contact_corners(frame: FrameContact) -> void:
 		_contact_resources.append(frame.source)
 
 
-func _rest_frame_contacts(h: float, clearance: float) -> void:
+## Its joined frames' real corners, for resting tipped over on them.
+func frame_contact_points(points: PackedVector3Array, clearances: PackedFloat32Array, clearance: float) -> void:
 	for frame in _frame_contacts():
 		var shape := frame.shape
 		# Replacing a shape has no child-order notification; use it immediately.
@@ -854,7 +863,8 @@ func _rest_frame_contacts(h: float, clearance: float) -> void:
 			_read_contact_corners(frame)
 		var to_world := global_transform * shape.transform
 		for corner in frame.corners:
-			Runners.touch(self, world, to_world * corner, 0.6, h, clearance)
+			points.append(to_world * corner)
+			clearances.append(clearance)
 
 
 func show_wear() -> void:

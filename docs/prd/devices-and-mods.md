@@ -2,6 +2,34 @@
 
 *Draft, 2026-10-13. Answers to [the vision](../vision.md). Rebuilt round the chassis, 2026-10-18.*
 
+## Repairs and era mobility (selected 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> sorry once again defered. we dont really have raw materials in this game.
+
+Repair actions and raw-material acquisition are deferred. Earlier repair-material
+names and crafting readings below are historical direction, not current build scope.
+Visible wear is a separate feature and is not reversed by this decision.
+
+The [kiln decision](#the-kiln-agreed-session-4-part-5-not-built) also changes era mobility:
+only colonial/skimmer items, from before Starcom's collapse, can be dragged. This is
+selected direction, not a claim that existing physics already enforces it. Socket
+interoperability does not grant portability to later-era fixed installations.
+
+### Portable parts from later installations (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+
+> 4. yes some parts that make sense but not all the installations will have them
+
+**SANDGAME's reading:** some later-era installations can yield physically portable
+parts where that makes sense. Not every installation contains one. Extraction does
+not make its fixed host draggable; the whole-installation rule above still applies.
+Which parts, attachment points and sites qualify remains to be designed, not a
+guaranteed core reward, universal dismantling system or new raw-material economy.
+
+
 ## Why this system exists
 
 Building your camp is the gameplay. The camp is chassis: sticky squares you tile into decks,
@@ -99,7 +127,8 @@ board tie while preserving its other anchor passes (7 s).
   moving"; then, 2026-10-18, the other way round, as lines matter more: the wheel bare reels,
   held with control it moves what you hold): on anything you hold or have hold of, they bring it nearer or push it farther,
   within reason, and never touch a line. *As built:* a notch is 0.25 m. What you carry goes from
-  0.5 m to 2 m in front of your eyes, never nearer than clears you, and still stops short
+  0.5 m to 2 m in front of your eyes, never nearer than clears you (a small thing
+  all the way in rests low in your arms, [Movement](movement.md)), and still stops short
   of the sand or anything in the way; what you have hold of goes from just clear of you
   out to your 2.5 m reach, following only as far as your strength and the slip allow.
 - **Rotate** (Hunter, 2026-10-16): held down, the mouse turns what you hold, or what you
@@ -364,7 +393,8 @@ gives a long view for spotting glints, plumes and storm fronts." Found with the 
   the ground shows from it. 42, the streamer hangs, streams and flaps by the wind, shows a moving
   deck's air, and reads in your suit.
 
-## The Console (proposed; first version built)
+<a id="the-console-proposed-first-version-built"></a>
+## The Console (first version built 2026-10-17; Map filters built 2026-10-22; wider specification open)
 
 *Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)), a voice session. Its own
 framing: "Treat them as direction, not a final spec: the Console's slot layout is explicitly due
@@ -410,7 +440,7 @@ device already stays a body of its own on the host's power pool.
   taller server rack like thing, so we can make the displays bigger"): the Console stands tall
   and narrow, like a server rack, its whole front a big screen.
 - **The frame** (as built, 2026-10-18) is a rack 0.7 m wide, 1.3 m tall and 0.6 m deep, and
-  10 kg. 1.3 m, not taller, because that's as tall as the radar page wants (the map the full
+  10 kg. 1.3 m, not taller, because that's as tall as the Map wants (the map the full
   width of the screen, its legend, the forecast and the keys under it), and at that height the
   screen's middle sits at your eyes once the Console floats on its tray or on a floating deck.
   Taller would put the screen over your head and tip more easily. It's painted in B as a rack:
@@ -439,8 +469,8 @@ device already stays a body of its own on the host's power pool.
 - **The radar first** (Hunter, 2026-10-18, after playing it: "the console is kind of
   information overload... we shouldnt directly drop any of it... i love the map"). Nothing is
   dropped; it's rearranged so the map leads, and readable from where you stand:
-  - **Pages:** the weather radar map first, the whole screen; then stats, every reading in
-    detail; then the deck's power; then the log.
+  - **Pages:** the Map first, the whole screen (its filters under One map, with filters, below);
+    then stats, every reading in detail; then the deck's power; then the log.
   - **The map loses resolution, not itself,** as instruments come off: the more gear, the finer
     it is; with less, it coarsens.
   - **On the map:** the wind as a gyro vector in its legend, a compass too (in detail on the
@@ -450,7 +480,7 @@ device already stays a body of its own on the host's power pool.
 - **The screen** (as built, 2026-10-18) is a part, 0.62 by 1.12 m and 3 kg, the whole front of
   the rack, drawn on a canvas of 580 by 1080. It's a terminal in the game's theme, monospaced,
   and its pages go in the order of its tabs:
-  - **Radar:** the storm map the full width of the screen, north up. Storms are amber, darker
+  - **Map, its weather:** the storm map the full width of the screen, north up. Storms are amber, darker
     where a particle sensor reads them denser. Clear air is laid over in blue as humid as the
     hygrometer makes it, which deepens just ahead of each front, and air the map can't see is
     dark. The front's distance and time are written at the front itself, with a line to it from
@@ -589,7 +619,8 @@ device already stays a body of its own on the host's power pool.
   arrives while you watch.
 - **What's under the sand gets its own page** when mods detect it (Hunter, 2026-10-18): old
   lines and buried structures, as the dev map draws them, on a Survey page among the tabs, not
-  over the weather radar. Built 2026-10-19 with the ground radar (below).
+  over the weather radar. Built 2026-10-19 with the ground radar (below), and folded into the one
+  Map as its survey filter on 2026-10-22, Hunter's later call (below).
 - **The navigation computer** (2026-10-19, `nav_computer`, a give id): a Console of the Varran
   empire's make, the Varran settler's, out of place and heavy on his minimal rig (Profile & saves). The
   Console's rack in an armoured case, imperial blue under ivory corners with chrome handles, 30 kg, its
@@ -614,19 +645,19 @@ a ground radar fitted to a Console, a sand scoop and a sieve, all on one deck.
   looked over whatever your pace while it runs. `GROUND RADAR ONLINE` goes to the log as it's fitted,
   and the stats page adds how many it finds and how many a storm is baring. It doesn't sharpen the
   storm map: it reads the sand, not the weather.
-- **The Survey page** joins the tabs while the system has a ground radar: a map round the Console out to
-  the radar's reach, north up, rings every 100 m, the old lines faint, a structure a square and a dune's
+- **The survey** shows on the Map (its survey filter) while the system has a ground radar: round the
+  Console out to the radar's reach, north up, rings every 100 m, the old lines faint, a structure a square and a dune's
   ruin a triangle, an outline while the sand is over it, amber while a storm lays it bare
   (`sites.newly_exposed`), solid once it's out. Under it the nearest five, each its name, how far and which
   way, and a row under that: the sand over it, "bared" or "dug out".
 - **The chart, and the Walker** (built 2026-10-19, the Walker's quest in
-  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-and-the-living-city-agreed-2026-10-19-built-2026-10-19)):
+  [Radio](radio-sound-and-atmosphere.md#the-walkers-quest-agreed-2026-10-19-hunter-perfect-built)):
   a Console with a radio in its system tuned to the Walker notes each contact its log reads whole, and
-  its **Chart** page joins the tabs once it has noted one or the Walker's taught: the moon round it north
+  its bearings show on the Map (its navigation filter) once it has noted one: the moon round it north
   up, each bearing a line, three crossing a fix. It keeps evidence of each anomaly tell its system
   witnesses (a compass stuck on its deck, a radio on it, a shield on it read against its particle
   sensor), and its port plugged into the Walker's by a cable uploads it, teaching the Walker with all
-  three. Taught, its radar map and chart show the anomalies near. A save keeps its evidence and its
+  three. Taught, its Map's weather shows the anomalies near. A save keeps its evidence and its
   bearings (`Chart`, `game/devices/chart.gd`).
 - **The sieve** (`sieve`), a saltwood hoop rimmed in steel with a worn steel mesh, half a metre across,
   1.2 kg. Nothing takes it; it sticks on a deck. Carried, or set down or stuck on a deck within 4 m of
@@ -682,11 +713,42 @@ what a Console's full-face screen shows, and a god module is a part of the compu
 modules](#god-modules-as-crate-modules-proposed-session-4-part-5-not-built)). A Walker taken whole is
 still the Console with weather sensing built in, above.
 
-**One map, with filters (Hunter, 2026-10-19; agreed, not built).** "Instead of more tabs im
+**One map, with filters (Hunter, 2026-10-19; built 2026-10-22).** "Instead of more tabs im
 thinking one map tab with filters: weather, archeology, and navigation." The Console keeps one Map
 page. What used to want its own page lays over it as a filter you switch on and off: weather (the
 radar, fronts, anomalies once the Walker is taught), archaeology (the ground radar's Survey) and
 navigation (bearings, the Walker's contacts, the course and the sail's ideal).
+
+As built (`Console._map_page`, `ConsoleScreen._draw_map`, `Chart.layer`):
+- **Tabs:** Map, Stats, Power, Log. The Survey and Chart pages are gone; a save on either opens
+  on the Map.
+- **The filters** are three plain switches under the map, WEATHER, SURVEY and NAV, each in its
+  own third so it stays put. A switch shows only while the Console's system feeds it: weather
+  from any instrument that reads it (the same gear the storm map needs), the survey from a ground
+  radar, navigation once there's something to steer by, a noted bearing or a Home fix. Each starts
+  on; use on a switch turns its filter off and on, and a save keeps which are off.
+- **Weather** is the storm map as it was, with the anomalies once the Walker's taught.
+  **Survey** is the ground radar's rings, old lines and sites. **Navigation** is the noted
+  bearings from the Walker's contacts, the fix, Home (dim once its beacon's last fix is all
+  that's known), the deck's course dashed to the edge, and the Rim and Tu when they're near.
+  The deliveryship and the gods stay on the radio.
+- **One scale:** the map reaches as far as the nearest filter on, so each stays readable: the
+  survey's 300 m, the weather radar's reach, navigation's out past its fix and Home. What lies
+  past the edge (the front, the fix, Home) is pinned there with how far. Its span is written in
+  the map's corner.
+- **Under the map:** the weather's gyro and readings while weather's on; otherwise the survey's
+  nearest sites, then navigation's bearings, fix, Home and evidence. Nothing is drawn that no
+  filter asked for: with every filter off, the map is empty.
+- **The sail's ideal** lives beside the course as YOU and IDEAL rig marks on Nav,
+  each showing heading and boom angle. A powered wind-reading Console on a sailing
+  deck also feeds Nav. COURSE takes the deck's current heading as the desired course;
+  HOME follows its recorded fix. The control key cycles HAND, TRIM and, while a sailor
+  sits at a supported helm, STEER. A sheet tied to a separate hand winch on this deck
+  enables that key; the halyard drum remains independent. The calculation and physical
+  control contract belong to [Movement](movement.md#sailing-learning-aid-selected-2026-10-22-built).
+- **Checks:** devices 45 (each filter with its gear, and off when switched off), radio 26 (the
+  bearings and fix stay once taught), saves 33 (the survey lists the ruin), weather 24; captures
+  in `look/map`.
 
 ## The patrol board as a superchassis (proposed, not built)
 
@@ -815,12 +877,54 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
   felt weather. Use never wears them. A part sheltered from a harm doesn't wear from
   it, so the shield protects your parts as well as you. (Session 4, part 5 gives each era a repair
   material, which nothing here mends yet: [frames by era](#frames-by-era-agreed-session-4-part-5-not-built).)
+- **Storms leave visible damage (Hunter, 2026-10-22; agreed, first step built).** "We can start with the storm
+  causing visible damage to items to wear in our wear system, keeping in mind we will use it to create
+  tiered gear later just like youre suggesting, with kind of the same model across eras of the same
+  piece of gear but yeah different conditions and wear levels and modifications and repair needs and
+  capabilities but theres a throughline, a theme if you will." First step: a storm's wear on a part
+  shows on it, through the one wear shader, and what it costs the part is real. Later, one piece of
+  gear keeps one model across eras, its era and state carried by condition, wear, modifications and
+  repair needs, so the throughline reads at a glance.
+- **Wear costs, and nothing mends it yet (Hunter, 2026-10-22):** asked whether wear should only
+  show until repair exists, he chose "it shows and costs. no repair." A worn part makes less and a
+  worn shield draws more from now on; repair stays planned for 0.5 Saltbush.
+
+  *As built (2026-10-22):*
+  - **Its condition is data the look reads.** Beside its soundness, a device keeps which way the weather
+    wore it (`Device.weathered`, saved with it): each share of its life a storm or a gale took, toward
+    where the sand came from, in its own frame. Only the elements mark it; a find's years and a landing's
+    impact show as age, as before. Nothing but the look reads the marks, so an era's or a modification's
+    look shows the same damage on the same model.
+  - **It shows where it hit.** The one wear shader blasts every painted mesh on the device, fitted parts
+    and joined pieces too: the faces turned to the storms are scoured pale and matte, their edges
+    stripped and their paint pitted and thinned to bright metal, deeper with more storm, while the lee
+    keeps its paint. A turbine's rotor turns to face the wind, so it takes it all on its front. A part
+    has no condition of its own yet: taken off, it shows none.
+  - **It costs what it looks.** A worn device makes `1 - worn_loss × (1 - soundness)` of what a sound one
+    does (`worn_loss` 0.5: on the point of wreck, half), and a shield holding the weather back draws
+    that much more. Trays float at their old draw. One storm (twelve minutes of full storm) leaves a
+    turbine 70% sound, its windward edges stripped and lightly pitted, making 85%; three leave it 10%,
+    its windward faces blasted to grey metal, making 55%. An unsheltered chassis is wrecked in one.
+    Half worn, a turbine makes 80% and a shield's 10 W sip is 13.3 W (power probe 18); over power probe
+    4's two days the camp's turbine makes 66 Wh where it made 82, and its bank's lowest is 85.9%, not 86.9%.
+  - **Measured:** the blast costs about 0.1 ms a frame at 1080p on the RTX 3070, close on the worst of it
+    (noise ±0.3 ms), and nothing on what no storm has marked (`look/storm_wear`).
+  - **Not yet:** eras, tiers, modifications and repair. A piece joining a deck shows the deck's marks
+    while joined, and its own again once it comes off.
 
 ## Frames by era (Agreed, session 4, part 5; not built)
 
 *[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 4; it supersedes the 17 Oct notes'
 "trade-offs, not a ladder" crate table ([Salvage & ruins](salvage-and-ruins.md#gear-and-ruins-by-era)
 has the eras and the ruins). Today there is one crate frame, and none of this is built.*
+
+**Neotech exception (Hunter, 2026-10-22):** the player's suit is “neotech”, “the only
+thing better than colonial”. [Lore](../world/lore-research.md#neotech-the-players-suit-hunter-2026-10-22)
+owns that new technology statement; [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
+owns its power reading. This is not a new historical ruin era or a code/catalog tier
+added by this docs change. Existing era stats and wear remain as built.
+
+**Socket compatibility, not mobility:** the [2026-10-22 restriction](#repairs-and-era-mobility-selected-2026-10-22) supersedes older claims that any era can be dragged.
 
 **All eras interoperate** (Agreed): "any crate takes any module, and there are no per-era compatibility
 rules. Eras differ only in stats, along one axis: **efficiency vs repairability**." So a frame's era is
@@ -851,8 +955,8 @@ Where this meets what's built, as readings and not in the session:
   "use never wears them." The column needs a repair act and a repair material per era (the kiln makes the
   second age's ceramic and glass, [below](#the-kiln-agreed-session-4-part-5-not-built)). Whether a worn frame
   is mended or only replaced is not said (open questions).
-- **"Still mountable" and "interoperate" agree.** The bottom mount keeps its tray socket in every era,
-  and the chassis joins pieces by their rings whatever their era.
+- **Historical mounting reading:** compatibility alone no longer implies a movable
+  device; later-era fixed kilns follow the selected mobility restriction.
 - **A mixed deck is the point.** The nomad city is "a huge tethered raft of salvaged chassis, shields
   and turbines," and part 5 says late camps should mix eras on purpose.
 - **Era and maker are two axes.** The maker table below says who built a crate and what for; the era says
@@ -943,62 +1047,52 @@ Readings, not in the session:
   therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
   are built.
 
-## The burner and the humidifier (proposed, not built)
+<a id="the-burner-and-the-humidifier-proposed-not-built"></a>
+## The burner (built 2026-10-22) and the humidifier (proposed)
+
+The burner is agreed and built through the [coalcane chain](power.md#fuel-crops-and-the-burner-agreed-2026-10-22):
+a deck-mounted device with a fuel hopper and cable port. The humidifier remains proposed.
 
 *[Session 4, part 4](../briefs/plants-worldgen-ruins-2026-10-17.md): "New equipment implied: burner/generator
 (for coalcane fuel), humidifier. Both are crate parts like the existing devices." Implied, not
 specified; direction only.*
 
-- **The burner** consumes coalcane and produces power ([Power](power.md#fuel-crops-and-the-burner-proposed-not-built)).
+- **The burner** consumes coalcane and produces power ([Power](power.md#fuel-crops-and-the-burner-agreed-2026-10-22)).
 - **The humidifier** raises humidity for storm crops, a managed input in the late game, with the lamp
   for light ([Farming](farming.md#progression-agreed)). Its water and power draw are not said.
 - **The lamp** that grows the office fern is the existing lamp-on-crate snap.
 
-Readings, not in the session:
+The burner implementation resolves its frame and fuel-input questions. The humidifier remains open:
 - **"Crate parts like the existing devices" has two readings.** A part fits a socket (a battery, a
-  panel, a hook), and a device is a frame with sockets of its own, and the existing devices include
-  both: the shield and the radio seat on a top mount while the condenser and the charger stand on a
-  deck mount. Which the burner and humidifier are is not said. They would need a fuel input (a stalk
-  of coalcane is neither a battery nor a canister) and a water input, so a frame with its own sockets
-  is the likelier. If so, each gets a row in "what each frame has" below.
-- **The socket kind is open.** A top mount, a deck mount and the planter's mod mount are the
-  candidates for the humidifier, and a new fuel socket for the burner. The session names none.
+  panel, a hook), and a device is a frame with sockets of its own. The humidifier would need water
+  and power inputs; its form and socket kind remain undecided.
 
 ## The kiln (Agreed, session 4, part 5; not built)
 
-*[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 5. Nothing is built, and no number is
-set.* "The kiln is a new processing device that burns coalcane. It is what makes second-age repair
-possible." Four chains:
+### Four kiln forms (selected 2026-10-22)
 
-1. **Ceramics and glass:** fires salt-glazed ceramic and sand-glass, the repair materials for second-age
-   gear.
-2. **Water:** boils tainted stormcup water safe.
-3. **Food:** roasts the bitterness out of wild tubers; dries and salts food for keeping.
-4. **Salt:** reduces saltbush bladders to salt.
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
 
-"Era variants work like crate makers: same job, different efficiency and fuel draw."
+> you can get lucky and find kilns in uncovered ruins but you cant drag anything but skimmer/colonial (pre starcom collapse age). I think we are good with a col. electric kiln that fits on a chassis, a skimmer era modified version of the col kiln to draw less power but slower output, a mounted, large first era kiln made from a repurposed colonial item such as a mech repair cauldron or he3 reactor, a middle size clay feudal kiln in a feudal forge. we can have the second two burn coalcane.
 
-| Variant | Era | Notes |
-|---|---|---|
-| Electric furnace | Colonial | Most efficient; runs on power, not coalcane |
-| Brass-fitted forge | First Kingdoms | Middle efficiency |
-| Beehive clay kiln | Second age | Lossy, but buildable and repairable from gathered materials |
+This replaces the earlier three-variant table and the assumption that every kiln is
+portable. Kilns can be found in uncovered ruins; no raw-material crafting path is
+approved. Only pre-collapse colonial/skimmer items can be dragged.
 
-Readings, not in the session:
-- **One device, three catalog entries, four recipes.** The three variants are frames with different
-  numbers, as the crate's eras are; the four chains are recipes: items in and a fuel or power draw, items
-  out. No chain is a subsystem of its own (Farming's rule 3, "one shared system per area").
-- **It is a device that stands on a deck mount,** a crate-sized thing like the condenser and the charger,
-  with a place for its input and its output and a fuel input (coalcane is neither a battery nor a
-  canister, as the burner's case was). The electric furnace needs a power socket instead. Which sockets
-  is not said, and any new one is appended to a frame.
-- **The wild-water chain pairs with the water socket.** A canister of tainted stormcup water goes in and a
-  safe one comes out, through the same one-at-a-time socket as everywhere else.
-- **"Buildable and repairable from gathered materials" is the first thing the player makes.** Parts are
-  "found, never crafted," and crafting is out of scope. A clay kiln built from gathered stuff, and ceramic
-  fired in it, are the first crafting in the design; the session names no other (open questions).
-- **Era variants make coalcane's price an era choice.** The colonial furnace needs no fuel and a lot of
-  power, the others burn the same cane the burner and the Stoker want ([Power](power.md#the-kiln-and-its-fuel-agreed-session-4-part-5-not-built)).
+| Variant | Location and mobility | Energy and output |
+| --- | --- | --- |
+| Colonial electric kiln | Fits on a chassis; draggable | Electricity |
+| Skimmer modification of colonial kiln | Pre-collapse, draggable | Less electrical power, slower output than colonial |
+| First-era kiln | Large mounted installation made from repurposed colonial equipment; a mech-repair cauldron or He3 reactor are examples | Coalcane |
+| Feudal clay kiln | Middle-sized, in a feudal forge; not draggable | Coalcane |
+
+**Earlier agreed processing direction, unbuilt:** ceramic/glass, safe stormcup water,
+tuber treatment, salting/drying and salt processing remain directions, not a commitment
+to finish all recipes in the current release. Repairs/raw materials are
+[deferred](#repairs-and-era-mobility-selected-2026-10-22), and food preservation still
+needs a spoilage design. Recipe input quantities, fuel budgets, processing times and
+release acceptance are not settled here. The four forms are design direction, not built devices.
+
 
 ## The terminal output system (proposed, session 4, part 5; first piece built)
 
@@ -1526,7 +1620,8 @@ it as direction and says so on each line.
   and crafting is out of scope. The session: a kiln "fires salt-glazed ceramic and sand-glass," and the
   beehive kiln is "buildable and repairable from gathered materials." *Follows the session as
   direction.* Not said what goes in for ceramic and glass (clay and sand are the guess), or what building
-  a kiln is.
+  a kiln is. Repairs and raw-material acquisition were subsequently deferred on
+  2026-10-22; this historical crafting reading is not implementation scope.
 - **A god's module against a device whose abilities come from its parts.** Here (rule 4): abilities
   come from the device's own parts. The session: the Quartermaster "requisitions a cut of your camp power,"
   "won't light civilian lamps" and "locks your radio." Not said whether the module reaches the rest of the

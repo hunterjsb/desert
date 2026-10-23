@@ -1510,7 +1510,7 @@ static func yacht(world: World) -> Array[Node3D]:
 
 ## A line from a mast's boom's end to your waist, a little slack.
 static func sheet_to_waist(world: World, mast: Mast) -> Line:
-	var line := to_waist(world, mast._tie())
+	var line := to_waist(world, mast.boom_tie())
 	mast.rig_sheet(line, SAIL_EASED)
 	return line
 

@@ -62,15 +62,15 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   on caterpillar tracks, is strong for the camp but slows you down.
 - **Parts are found, never crafted** (for now), and they wear out only from the
   elements. Salvage is the whole economy.
-- **The farm is a roster of crops with a history** (Agreed, session 4, part 4; not built). The
-  carrots and fungus are placeholders for eleven Earth-lineage crops that colonial biotech engineered
-  and that went feral, in two families, one that runs on light and one on dark and humidity. Early on,
-  weather decides what you can grow; late, shields take the weather away and light and water become
-  the managed inputs. One shared system, with a unique feel per item: differences come from data
+- **The data-driven farm and feral crop layer are partly built** (feral layer, 2026-10-18). The
+  original carrot and fungus placeholders have been replaced by root-tuber, vat fungus, saltbush and
+  coalcane systems. The full Earth-lineage roster and crop-history loop remain direction. Early on,
+  weather decides what you can grow; later, light and water become managed inputs
   ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
-- **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
-  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built)),
-  and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).
+- **The camp has a Console and bedroll sleep** (first versions built 2026-10-18; Map filters built
+  2026-10-22). The Console reads weather instruments onto a screen, and sleep can skip the wait on a
+  long storm ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built),
+  [Survival](prd/survival.md#sleep-as-built-2026-10-18)).
 - **The camp moves at walking pace, and storms are weathered, not outrun.** Each storm
   is a judgment call: stay and let it pass, or push through inside the bubble. Early on,
   a post or ruin to tie to is precious.
@@ -259,6 +259,27 @@ ice, an orbital station), and whether each is a landmark is not said. [World &
 terrain](prd/world-and-terrain.md#landmarks) and [Salvage &
 ruins](prd/salvage-and-ruins.md#landmarks) hold the rule and the sites.
 
+### Starcom decisions (agreed, 2026-10-22)
+
+Hunter's answers to the [quest proposal](briefs/starcom-quest-2026-10-22.md), in his words:
+
+- **Contract call:** "you can call them and tell them the planet is ready early, earning a bonus if it is, or getting terminated if its not."
+  This adds an early readiness report to the promised ten-year pickup. Readiness criteria,
+  the bonus and what termination does in play remain undecided; no immediate rescue is promised.
+- **Radio:** "radio cant go interstellar but can lead you to starcom."
+  This supersedes the ladder's earlier independent radio-to-interstellar call. Local receiving
+  gear can lead to the station; it cannot itself complete the call.
+- **Halloran:** "let's work in halloran but im not totally sure what youre referring ot".
+  Include Halloran in planning. SANDGAME's interpretation is beat 3 as an optional supply detour;
+  the blocked-entrance treatment and observatory commitment are not separately approved by this answer.
+- **Repair component, deferred:** 'defer this, im not sure that "ordinary salvage" exists in the game rn'.
+  There are specific catalog parts, not an agreed generic repair material. The fault and repair
+  component wait on the repair path following storm wear; no part has been selected.
+
+The [god network decision and proposed satellite explanation](world/lore-research.md#starcom-the-gods-and-surviving-satellites-2026-10-22)
+are owned by the lore research. These answers do not approve the brief's remaining interactions
+or make it a buildable specification.
+
 ### The ladder
 
 Roughly from most achievable to rarest. Order, not exact tiers. This replaces the last fold's
@@ -270,7 +291,7 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 | Shot down (freighter) | The same, lifting the freighter. | Agreed |
 | Small ship escape | Both the Ledger and the Quartermaster authorise. | Agreed |
 | Freighter escape | Lift the whole freighter with both AIs. The Ledger is the freighter's own mind, so the god of the crusades leaves with you. | Agreed |
-| The long wait | Make the call (StarCom or radio) and survive the years until a Tilg & Standard ship arrives. Endurance test. | Agreed, must keep |
+| The long wait | Make the interstellar call through Starcom (radio can lead you there) and survive the years until a Tilg & Standard ship arrives. Endurance test. | Agreed, must keep |
 | Up the well | Restore a skimmer from a sealed hangar deep in Aitch (buried old H-Town), reach orbit, refuel from Tu. Accessible but fairly high tier. See the variants. | Agreed |
 | The pathfinder | You never leave Zan; you open the door for someone else. Around or just above Up the well. | Agreed (session 4, part 3) |
 | Stolen freighter | Sneak the Ledger's freighter past the Quartermaster (fool it, e.g. a forged Provisional clearance, or knock out the air-defence net) and take the dead lane into old hive mind space. Same tier as AI ascendancy. | Agreed |
@@ -283,7 +304,7 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 
 **Carried over from the last fold's table,** where the ladder doesn't contradict it:
 - **The long wait** (was StarCom): repair the StarCom interstellar antenna with the right parts.
-  Comms are instant but ships take years, so Tilg answers and extraction is years out, and the
+  Comms are instant but ships take years, so Tilg & Standard answers and extraction is years out, and the
   finale is surviving until they arrive.
 - **The escapes** (were Launch): the Ledger knows the ships, and the Quartermaster holds the
   clearances. Connecting them means bridging Mon and Han across open desert: two gods talking
@@ -299,7 +320,8 @@ shorter table of StarCom, Launch, Shot down, Nomad city and Radio.
 **Ideas still loose.** *Wrong answer* (you call out and something that isn't Tilg answers) fits
 the hive mind start as the way you discover what you are. *Haberjack line*: an underground bunker
 with a holdout (developed by session 4, part 5 into [the Haberjack bunker](#the-haberjack-bunker-agreed-session-4-part-5), where the holdout is the player). *Radio ending* (from earlier docs, "Find the right frequencies to reach Tilg or
-the last town") remains undesigned. *Wow* (session 5, a sketch): see the ascendancy notes below. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
+the last town") remains undesigned; the [2026-10-22 ruling](#starcom-decisions-agreed-2026-10-22)
+excludes an independent interstellar call from ordinary radio. *Wow* (session 5, a sketch): see the ascendancy notes below. *Quietbloom* (session 4, part 4, **Idea**, open: "confirm or
 drop"): carrying the alien crystal lattice onto a freighter or into the AI endings could be a quiet
 modifier ([Farming](prd/farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
 

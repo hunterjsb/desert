@@ -1252,7 +1252,7 @@ paint's age.
   there, duller the further (`clang.ogg`, from Sand Game's metal clank, its ring kept).
 - **The hook for the Console's sensors.** `sites.newly_exposed(x, z, radius)` lists the sites near a place a
   storm has newly laid bare, nearest first, with how much further out of the sand it has them: the ground
-  radar marks them bared on a Console's survey page (2026-10-19, below).
+  radar marks them bared on a Console's Map, its survey filter (2026-10-19, below).
 - **Cost** (17 sites by hand coming out of the sand round you as a storm rises, headless; `terrain/site` on
   the dev overlay, and `terrain/dust` the glints through the dust): following them, 0.10 ms a frame on average and 0.43 at most, about 6 µs a moving
   site, and nothing for sites the weather isn't moving; 12 presses a minute at play speed, each 4 ms on a
@@ -1339,7 +1339,7 @@ paint's age.
   bare by day and shoots it from off its ground in the clear before the storm, rising half out of the
   sand in it, at its height and in the clear after, and from out in the dust its bared windows glinting
   through, and builds `~/Desktop/exposure.png`. `look/archaeology/shoot.sh <dir>` shoots a big dune's ruin
-  bared after a big storm, the archaeology setup on a deck beside it and its survey page, and what a
+  bared after a big storm, the archaeology setup on a deck beside it and its Map's survey, and what a
   storm let fall in a crest's lee round you, and builds `~/Desktop/dunes.png`.
 
 ## Defaults

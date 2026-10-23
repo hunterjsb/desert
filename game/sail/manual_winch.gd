@@ -7,6 +7,8 @@ var _operator: Player
 var _worked: Rope
 var _wheel: MeshInstance3D
 var _turned := 0.0
+var _computer: Console
+var _command_tick := -2
 
 
 func _ready() -> void:
@@ -19,15 +21,19 @@ func _ready() -> void:
 
 
 func line() -> Rope:
+	var laid := _laid()
+	return laid.rope if laid != null else null
+
+
+## The line tied on the drum, by its end's own record.
+func _laid() -> Line:
 	if world == null:
 		return null
 	for socket in frame_sockets():
 		if socket.kind == &"tie" and is_instance_valid(socket.part) and socket.part.has_meta(&"line"):
 			var laid: Variant = socket.part.get_meta(&"line")
-			if not is_instance_valid(laid) or not laid is Line:
-				continue
-			if laid.rope != null and world.ropes.ropes.has(laid.rope):
-				return laid.rope
+			if is_instance_valid(laid) and laid is Line and laid.rope != null and world.ropes.ropes.has(laid.rope):
+				return laid
 	return null
 
 
@@ -37,6 +43,9 @@ func notch(by: int, player: Player) -> bool:
 	var rope := line()
 	if rope == null:
 		return player.hands.refuse("tie a line to the winch drum")
+	if is_instance_valid(_computer):
+		_computer.sailing.mode = SailingAid.Mode.HAND
+	_computer = null
 	player.world.salvage.claim(self)
 	if rope != _worked:
 		_worked = rope
@@ -55,6 +64,24 @@ func notch(by: int, player: Player) -> bool:
 	return true
 
 
+## A powered computer may turn this drum, under the same load and pace limits.
+func trim_by(computer: Console, length: float) -> void:
+	var rope := line()
+	if rope == null or host() == null or wrecked() or not computer.running() or computer._root() != computer_deck():
+		return
+	_computer = computer
+	_command_tick = Engine.get_physics_frames()
+	_worked = rope
+	wanted = clampf(length, world.tuning.winch_min_m, rope.full)
+
+
+func computer_deck() -> Device:
+	var root: Device = self
+	while root.host() != null:
+		root = root.host()
+	return root
+
+
 func interact(by: Player) -> bool:
 	if by.hands.held != null:
 		return false
@@ -70,13 +97,16 @@ func _physics_process(delta: float) -> void:
 		_worked = null
 		wanted = NAN
 		return
-	if not is_instance_valid(_operator) or not Controls.playing() or _operator.suit.open \
+	var computing := is_instance_valid(_computer) and _computer.running() \
+		and _computer._root() == computer_deck() and _computer.sailing.mode != SailingAid.Mode.HAND \
+		and Engine.get_physics_frames() - _command_tick <= 1
+	if not computing and (not is_instance_valid(_operator) or not Controls.playing() or _operator.suit.open \
 			or _operator.hands.held != null or _operator.hands.grasp.body != null \
 			or _operator.hands.look_device != self \
-			or _operator.camera.global_position.distance_to(global_position) > world.tuning.reach:
+			or _operator.camera.global_position.distance_to(global_position) > world.tuning.reach):
 		wanted = rope.length
 		return
-	var load := maxf(rope.tension, rope.haul_n)
+	var load := rope.tension
 	var pace := world.tuning.winch_pace_mps
 	if wanted < rope.length:
 		pace *= 1.0 - smoothstep(world.tuning.winch_pull_n * 0.5, world.tuning.winch_pull_n, load)
@@ -85,11 +115,13 @@ func _physics_process(delta: float) -> void:
 	rope.strand.set_length(rope.length)
 	_turned -= step / world.tuning.winch_drum_radius
 	_wheel.rotation.z = _turned
-	if step < 0.0:
-		for child in world.content.get_children():
-			if child is Line and (child as Line).rope == rope:
-				for end: Part in (child as Line).ends:
-					if end.socket != null and end.socket.get_parent() is Mast:
-						var mast := end.socket.get_parent() as Mast
-						if mast.hoist_enabled and mast.raise >= world.tuning.winch_hoist_deed:
-							Deeds.done(world, &"hand_hoist")
+	if computing and absf(step) > 0.0 and world.counts_deeds:
+		for end: Part in _laid().ends:
+			var mast := end.socket.get_parent() as Mast if end.socket != null else null
+			if mast != null and mast.sheet() == rope and mast.raise > 0.0 and mast.force.length() > 1.0:
+				Deeds.done(world, &"sail_by_wire")
+	if step < 0.0 and world.counts_deeds:
+		for end: Part in _laid().ends:
+			var mast := end.socket.get_parent() as Mast if end.socket != null else null
+			if mast != null and end.socket == mast.halyard_socket() and mast.raise >= world.tuning.winch_hoist_deed:
+				Deeds.done(world, &"hand_hoist")

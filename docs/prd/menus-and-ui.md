@@ -4,6 +4,43 @@
 main menu, the system menu and the look of every UI came the same day, written in
 another session; this PRD takes it on and fits it to the game as built.*
 
+## Inventory and suit modules (open design, 2026-10-22)
+
+Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, questionnaire revision 126.
+
+> it does not need that, but we do want to star thinking about an inventory rework and suit module system.
+
+No wrist instrument is required for Spaceport. The later answer below selects the
+inventory direction and places it after Spaceport. Existing behavior remains
+as built. [Survival](survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
+owns food/drink buffs; those statuses are not equipment sockets.
+
+### Combined inventory direction and first module (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built. **Timing, 2026-10-22:** after Spaceport. Asked whether it goes in 0.4 or after, Hunter said: “after”.
+
+> A, B and C was my actual vision. B is going to completely overhaul what inventory means. C. needs to feel really good and snappy and white is open you can see the objects physically. A. must be done at some pt.
+
+**SANDGAME's reading:** all three belong in the vision, not competing alternatives.
+B, the visible harness, fundamentally changes inventory. C, the set-down pack, must
+open/use snappily with the objects physically visible while open; “white is open”
+is read as “while it's open”. A, the clearer carry view, is needed at some point.
+This does not settle implementation order, socket counts or pack-opening mechanics.
+
+> 2. start with headlamp. tarkove-style visual layour of your gear in tab. bring it on the pod. that way we can introdice that mecahnic on the ship.
+
+**SANDGAME's reading:** start with a physical headlamp suit module. The inventory
+action opens a Tarkov-style visual arrangement of gear; this selects presentation,
+not an imported slot count, packing puzzle or entire Tarkov inventory system.
+[Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
+owns bringing it on the pod and teaching fitting aboard the ship. The headlamp
+supersedes its built-in status in [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22).
+
+**Order approved, 2026-10-22.** Asked whether the [first-slice order](../briefs/suit-first-slice-2026-10-22.md)
+is right (headlamp and gear layout as the start of B, then the set-down pack C, then
+the broader harness B and carry view A), Hunter said: “1. yes 2. optional 3. yes 4. yes”. Still after Spaceport.
+
+
 ## Why this system exists
 
 The vision asks for almost no menus: things live in the world and in your hands, and a
@@ -15,7 +52,8 @@ world. The pressure comes from the moon, and a menu is no shelter from it.
 
 1. **State shows on things first.** A device's charge, a shield's strain and a crop's
    ripeness show on the device. The overlay carries only what has nowhere else to live:
-   the survival bars, the inventory view, key hints and warnings.
+   survival feedback, the inventory view, key hints and warnings. Hunger/thirst bars
+   belong to the older implementation, not the selected survival direction.
 2. **The game never pauses.** Opening a menu overlays the running world, storms
    included. Being able to leave the game running at steady state is something a camp
    earns, not something the menu grants.
@@ -254,7 +292,7 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("16 of 44 deeds"), with Back: a branch or two for each family
+of every deed under the current completed and total counts, with Back: a branch or two for each family
 (Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
 2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
 from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:
@@ -407,7 +445,7 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
   (today 13:40, yesterday 21:05, 3 days ago), the run's day (counted from its own start, the
   day it began day 1), and who you came as; then how many
-  deeds show done ("Deeds 6 of 15"). A save
+  deeds show done using the current completed and total counts. A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
 - **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
   stereo), from its start as the menu's desert shows, on the menus' bus while the menu's storm
@@ -614,45 +652,14 @@ drift anchor (6 s); Dev 8 empties/refills a held cell and empties both cells
 in a deck pool (4 s). The existing one-theme check passed (6 s), and Saves 1's
 normal round trip passed (53 s). General rope-picker labels now use the shared
 Geist UI face rather than the numeric readout face.
-## Visual sailing field notes (Hunter, 2026-10-20; built)
+## Visual sailing field notes (Hunter, 2026-10-20)
 
-Replace the sailing booklet's long text with at most four actual gameplay images
-and short sailing-only captions: read the streamer/start across wind, haul/ease the
-sheet, carve the board's edge, and select/route the intended line through a physical
-hook. Use the existing Geist prose at 20 px, normal Words navigation and back behavior.
-The Surveyor's Guide keeps its existing text pages through the shared reader's page
-format dispatch. Tutorial images are intentional assets under assets/tutorial/sailing;
-no invented screenshots or full-game tutorial expansion. New boom/rope physics may
-require refreshing those images after combined integration.
-
-
-As built: four single-page visual leaves replace the six long sailing chapters.
-Each caption is 12–21 words before action binding expansion. The last explains
-that one line works automatically and multiple lines are chosen in the carry view;
-it does not teach the proposed held-end bundle. Image rows dispatch to a compact
-Words layout; the Surveyor subclass's two-column text rows retain the prior reader.
-BookMenuList supplies compact spacing through the shared theme; Guide content is unchanged. Captions use existing KeysList Geist
-prose at 20 px, not the numeric mono face.
-
-The four intentional PNG assets are actual unseen game captures with the photo
-HUD hidden. Streamer, sheet and fitted hook pictures show the higher physical
-boom/ordinary routed sheet geometry; the board picture shows a real input-driven
-carve, 3.39 m/s at capture. These pictures illustrate controls and geometry, not
-validation of the new boom's handling. Refresh them if integration changes that
-visible geometry; there are no fixed boom-angle claims in the captions.
-
-Existing Menus 19 passed unchanged (5 s). All four final reader pages were viewed
-at 1280×720: each image is 533×300 px, captions occupy two 27 px lines, and the
-normal Next/Previous/Chapters controls remain within the screen. Action macros
-render current bindings. The Surveyor Guide still has five prose pages and no
-image nodes; its first page was also viewed in the same capture. No new repository
-probe, wording pin, global UI refactor or reading deed was added.
-
-Combined verification correction: visual booklet spacing belongs in the shared
-theme as a MenuList variation, rather than a per-control override. Origin gear
-counts must include each real starter sheet guide declared by the kit, matching
-the removable hook installed when that waist sheet is laid.
-
+At most four gameplay pictures with short sailing-only captions: hoist and trim
+(the winch and the sheet), read the streamer and start across the wind, carve the
+board's edge, and route a line through a fitted hook. Existing Geist prose at
+20 px through the theme, ordinary Words navigation and back. The pictures are
+real unseen captures with the HUD hidden, under `assets/tutorial/sailing`; the
+Surveyor's Guide uses the same picture leaves. Menus 19 reads every leaf.
 
 ## Clear-sky scenario consolidation and deliveryship naming (agreed 2026-10-20; renamed 2026-10-21)
 

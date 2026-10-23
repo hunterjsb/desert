@@ -53,7 +53,7 @@ func run() -> void:
 func _reading() -> Dictionary:
 	var on: Chassis = deck._piece_of(mast) if deck._piece_of(mast) != null else deck
 	return {"at": _at(deck), "runners": deck.glider.runners.size() if deck.glider != null else 0, "mast_on": on.cell,
-		"raised": mast.raised, "raise": snappedf(mast.raise, 1e-4), "trim": snappedf(mast.trim, 1e-4),
+		"raised": mast.raised, "raise": snappedf(mast.raise, 1e-4), "sheet": snappedf(mast.sheet().length, 1e-4) if mast.sheet() != null else 0.0,
 		"boom": snappedf(mast.boom, 1e-4), "sail_m2": snappedf(mast.sail_m2(), 1e-3), "sheeted": mast.sheeted(),
 		"speed": snappedf(way().length(), 1e-3)}
 

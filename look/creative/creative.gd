@@ -33,13 +33,13 @@ func _ready() -> void:
 	Settings.path = away.path_join("settings.cfg")
 	SaveFile.remove(Settings.path)
 	# This surface capture retains the automatic-arrival baseline.
-	Tuning.current().surveyor_preflight["enabled"] = false
 	Tuning.current().run_seed = 1234
 	_main = MAIN.instantiate()
 	add_child(_main)
 	_main.new_game()
 	while _main.world() == null or _main.ui._fading:
 		await get_tree().process_frame
+	await SurfaceStart.begin(_main)
 	await _idle()
 	await get_tree().create_timer(PLAYED).timeout
 	_press(&"creative")

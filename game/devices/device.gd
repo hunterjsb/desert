@@ -50,6 +50,10 @@ var durability := 1.0:
 	set(to):
 		durability = to
 		show_wear()
+## Its wear by the way the weather blew, in its own frame: xyz each share of
+## its life the sand took, toward where it came from; w those shares. Its
+## paint shows it where it hit (Paint.show_blast), whatever look it wears.
+var weathered := Vector4.ZERO
 ## Its painted frame, and what turns on its mast.
 var frame_view: MeshInstance3D
 var rotor: Rotor
@@ -81,6 +85,8 @@ var lift_share := 1.0:
 ## What its trays hold up this tick, kg: its weight floating free, less what
 ## the sand or a hand takes, more what a line pulls down. They draw for it.
 var carried_kg := 0.0
+## What resting tipped over on its edges costs a tick, µs, on average.
+var rest_us := 0.0
 
 var world: World
 ## Its runners, if it rides the sand on any, or null.
@@ -243,6 +249,22 @@ func mounted() -> Array[Device]:
 	return found
 
 
+## A sticky face of this host as Stick sets things on it, in its own frame:
+## only decks and standing masts have them (Chassis, Mast).
+func sticking_frame(_piece: Device, _face: StringName) -> Transform3D:
+	return Transform3D.IDENTITY
+
+
+## Where on such a face a thing may sit, [min, max] in the face's frame.
+func sticking_room(_face: StringName) -> Rect2:
+	return Rect2(-Vector2.ONE * Stick.WIDE_HALF, Vector2.ONE * Stick.WIDE_HALF * 2.0)
+
+
+## The piece of this host a socket on it is on.
+func sticking_piece(_socket: Socket) -> Device:
+	return self
+
+
 ## The device it's seated on, or null.
 func host() -> Device:
 	return get_parent() as Device
@@ -357,7 +379,13 @@ func production_w(t := NAN) -> float:
 		var made := minf(now["turbine_w"], world.tuning.turbine_watts_per_cubic * wind * wind * wind)
 		turbine_share = made / now["turbine_w"]
 		watts += made
-	return watts
+	return watts * efficiency()
+
+
+## Energy actually supplied this tick; finite sources consume their store here,
+## never when the Console merely asks for a watts reading.
+func generate_wh(seconds: float, t: float) -> float:
+	return production_w(t) * seconds / 3600.0
 
 
 ## What it would draw, W, if it had the power, now or at world time t: some
@@ -389,15 +417,32 @@ func wrecked() -> bool:
 
 
 ## The weather takes a share of a new device's life, less for a tough one; at
-## nothing it's wrecked, dark for good.
-func wear(share: float) -> void:
+## nothing it's wrecked, dark for good. Sand blown from a way, world, marks the
+## faces it struck.
+func wear(share: float, from := Vector3.ZERO) -> void:
 	if share <= 0.0 or wrecked():
 		return
-	durability = maxf(durability - share / frame_stats.get("toughness", 1.0), 0.0)
+	var lost := minf(share / frame_stats.get("toughness", 1.0), durability)
+	if from != Vector3.ZERO:
+		var own := from.normalized() * global_basis * lost
+		weathered += Vector4(own.x, own.y, own.z, lost)
+	durability -= lost
 	if wrecked():
 		set_powered(false)
 		if charge_light != null:
 			ChargeLight.paint(charge_light, 0.0)
+
+
+## What of its rating its wear leaves it: sand-pitted cells and a scoured
+## rotor make less, and a shield draws more to hold the weather back.
+func efficiency() -> float:
+	return 1.0 - Tuning.current().worn_loss * (1.0 - durability)
+
+
+## An appearance may adapt the generated lineage without replacing imported art.
+func apply_frame_look(mesh: ArrayMesh) -> void:
+	if frame_view != null:
+		frame_view.mesh = mesh
 
 
 ## What of it wears its paint: its frame and what turns on its mast.
@@ -417,6 +462,15 @@ func show_wear() -> void:
 	for socket in sockets():
 		if socket.marker != null:
 			socket.marker.set_instance_shader_parameter(&"age", amount)
+	_show_blast()
+
+
+## The storms' damage on everything painted on it, fitted parts and joined
+## pieces too: one deck, one condition.
+func _show_blast() -> void:
+	for child in get_children():
+		if child == rotor or Paint.is_worn(child):
+			Paint.show_blast(child, self, weathered, child == rotor)
 
 
 func parts() -> Array[Part]:
@@ -638,6 +692,8 @@ func _unfit(socket: Socket, whole: bool) -> Part:
 			node.visible = false
 		elif Paint.is_worn(node):
 			(node as GeometryInstance3D).set_instance_shader_parameter(&"lit", 0.0)
+			# A part has no condition of its own yet: it leaves the device's marks behind.
+			(node as GeometryInstance3D).set_instance_shader_parameter(&"blasted", Vector4.ZERO)
 	socket.fitted.clear()
 	socket.part = null
 	part.socket = null
@@ -742,6 +798,7 @@ func _recompute() -> void:
 		glider.runners = runners
 	var now := stats()
 	_hovering = now["hovering"]
+	_show_blast()
 	# Lamps shine, and lenses and emitters glow, only while it has the power,
 	# and a lamp only while it's switched on.
 	if frame_view != null:
@@ -796,7 +853,8 @@ func shape_bounds() -> AABB:
 	return _bounds
 
 
-## A separately simulated fitted assembly carries its own mass.
+## What a fitted part adds to its host's weight; a mast's sail, simulated
+## apart, adds none (Mast).
 func _fitted_mass(socket: Socket) -> float:
 	return socket.part.mass
 
@@ -844,8 +902,12 @@ func _physics_process(delta: float) -> void:
 
 
 ## Tipped over, a chassis and its seated devices meet the sand at their
-## real frame corners, so the camp rests on its edges rather than through sand.
+## real frame corners and a mast at its head, all together, so the camp rests
+## on its edges and masthead rather than through sand.
 func _rest_seated(h: float) -> void:
+	var started := Time.get_ticks_usec()
+	var points := PackedVector3Array()
+	var clearances := PackedFloat32Array()
 	var riding: Array[Device] = []
 	if self is Chassis:
 		riding.append(self)
@@ -856,8 +918,11 @@ func _rest_seated(h: float) -> void:
 		riding.append_array(each.mounted())
 		# The native carrier stays ahead of terrain speculation; seated frames are frozen.
 		var clearance := world.tuning.runner_clearance if each == self else 0.0
+		if each is Mast:
+			points.append((each as Mast).masthead())
+			clearances.append(0.0)
 		if each == self and self is Chassis:
-			(self as Chassis)._rest_frame_contacts(h, clearance)
+			(self as Chassis).frame_contact_points(points, clearances, clearance)
 			continue
 		for child in each.get_children():
 			var shape := child as CollisionShape3D
@@ -866,7 +931,10 @@ func _rest_seated(h: float) -> void:
 			var box := Catalog.bounds(shape.shape)
 			var to_world := each.global_transform * shape.transform
 			for i in 8:
-				Runners.touch(self, world, to_world * box.get_endpoint(i), 0.6, h, clearance)
+				points.append(to_world * box.get_endpoint(i))
+				clearances.append(clearance)
+	Runners.rest_on(self, world, points, clearances, world.tuning.tipped_grip, h)
+	rest_us += (Time.get_ticks_usec() - started - rest_us) * 0.05
 
 
 ## Each tray reads the sand under its face, on average, and pushes straight
