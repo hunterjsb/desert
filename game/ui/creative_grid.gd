@@ -18,7 +18,7 @@ const GROUPS := [
 		&"anemometer", &"barometer", &"hygrometer", &"particle_sensor", &"radar", &"ground_radar", &"radio", &"radio_colonial", &"radio_skimmer", &"radio_kingdoms", &"radio_second_age",
 		&"crystal_set", &"fm_converter", &"sw_converter", &"antenna_kite",
 		&"bleed_resistor", &"valve_preamp", &"static_choke", &"wire_logger",
-		&"headset_jack", &"solar_lid", &"survey_receiver", &"lamp",
+		&"headset", &"solar_lid", &"survey_receiver", &"lamp",
 		&"planter", &"harvester", &"bedroll", &"survival_kit"]],
 	["Sail and rope", [&"mast", &"sail", &"hand_winch", &"keel", &"helm_seat", &"crows_nest", &"streamer", &"sailing_notes", &"coil", &"hook", &"stake"]],
 	["Tools", [&"surveyor_guide", &"cutter", &"sand_scoop", &"sieve", &"sealant", &"med_kit", &"compass", &"home_beacon", &"hull_plate", &"flare", &"cargo"]],

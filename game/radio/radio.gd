@@ -337,6 +337,12 @@ var _last_at := Vector3.INF
 var _margins := {}
 var _margins_at := Vector3.INF
 var _margins_lifted := 0.0
+## Its kite as last looked up, and the physics frame it was.
+var _kite: AntennaKite
+var _kite_frame := -1
+## Which stats its fitted parts give, as asked: none till asked, and forgotten
+## as its parts change.
+var _fitted := {}
 ## What each station would clear on its own whip, dB, beside the kite.
 var _whip_margins := {}
 var _margins_t := -INF
@@ -536,9 +542,10 @@ func has_sw() -> bool:
 
 
 func _has(stat: StringName) -> bool:
-	if frame_stats.get(stat, 0) > 0:
-		return true
-	return converter(stat) != null
+	# Asked many times a tick; known again once its parts change (_recompute).
+	if not _fitted.has(stat):
+		_fitted[stat] = frame_stats.get(stat, 0) > 0 or converter(stat) != null
+	return _fitted[stat]
 
 
 ## The part fitted that gives `stat`, not burnt out, or null.
@@ -554,9 +561,27 @@ func on_you() -> bool:
 	return carried() or (world != null and world.player != null and world.player.hands.held == self)
 
 
-## Whether you're listening close: a headset jacked in and the set on you.
+## Whether you're listening close: a headset on you on a cable from its bay.
 func listened_close() -> bool:
-	return _has(&"headset") and on_you()
+	var worn := headset()
+	return worn != null and world != null and (worn.has_meta(&"carried") or world.player.hands.held == worn)
+
+
+## The headset on a cable from its misc bay: the cable's one plug in the bay,
+## the other in a headset's jack, or null.
+func headset() -> Device:
+	if world == null:
+		return null
+	for socket in sockets():
+		if socket.kind != &"radio_bay" or socket.part == null or socket.part.kind != &"port":
+			continue
+		var cable := Cable.of(socket.part, world)
+		if cable == null:
+			continue
+		for plug in cable.plugs:
+			if plug != socket.part and is_instance_valid(plug) and plug.socket != null and plug.socket.kind == &"jack":
+				return plug.socket.get_parent() as Device
+	return null
 
 
 ## Whether a module that needs power works in it: a crystal set has none to give.
@@ -581,11 +606,18 @@ func converter_socket(stat: StringName) -> Socket:
 func kite() -> AntennaKite:
 	if not is_inside_tree():
 		return null
+	# Looked up once a tick: every band's reception asks for it.
+	var frame := Engine.get_physics_frames()
+	if frame == _kite_frame and (_kite == null or is_instance_valid(_kite)):
+		return _kite
+	_kite_frame = frame
+	_kite = null
 	for node in get_tree().get_nodes_in_group(AntennaKite.GROUP):
 		var each := node as AntennaKite
 		if each != null and each.rig.get("radio") == self:
-			return each
-	return null
+			_kite = each
+			break
+	return _kite
 
 
 ## What its valve preamp and static choke make of a signal's strength. A
@@ -600,8 +632,10 @@ func boost() -> float:
 ## does a mediumwave set (Marconi heard the Atlantic on one): more the higher it
 ## flies, to kite_am_most; 1 with none.
 func aerial_am() -> float:
+	if band != AM_BAND:
+		return 1.0
 	var flown := kite()
-	if band != AM_BAND or flown == null or not flown.up():
+	if flown == null or not flown.up():
 		return 1.0
 	return lerpf(1.0, _tuning.kite_am_most, smoothstep(0.0, _tuning.kite_am_full_m, flown.height()))
 
@@ -621,10 +655,10 @@ func choked(amount: float, share: float) -> float:
 	return amount * share if _has(&"choke") else amount
 
 
-## Its headset in use: fitted, the set playing, you within its cord.
+## Its headset in use: the set playing, set down, and you wearing the headset
+## on its cable, which reaches only so far before its plug pulls out.
 func headset_on() -> bool:
-	return _has(&"headset") and playing() and world != null and not carried() \
-		and world.player.global_position.distance_to(global_position) <= _tuning.headset_cord_m
+	return playing() and not carried() and listened_close()
 
 
 ## Whether it reaches a band: the AM dial always, the others with their converters.
@@ -882,6 +916,7 @@ func stats() -> Dictionary:
 
 
 func _recompute() -> void:
+	_fitted = {}
 	super()
 	_show_window()
 	# Its dial lights only while it's on.

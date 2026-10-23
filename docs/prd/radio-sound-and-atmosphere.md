@@ -301,8 +301,8 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
 - **Quiet, and the headset** (gonkhub, 2026-10-21: "Crystal set should have no adjustable audio, and needs to
   be much quieter. If the player has the headphones module, they can attach it ... to hear more clearly.
   Otherwise, transmissions should remain hardly audible and highly distorted"): no volume knob; it plays
-  `crystal_quiet_db` down and at least `crystal_dirt` dirty. Its tray has one bay; a headset jack in it, the
-  set carried or in your hands, brings it to `crystal_headset_quiet_db` and `crystal_headset_dirt`. Powered
+  `crystal_quiet_db` down and at least `crystal_dirt` dirty. Its tray has one bay; a headset on a cable from it,
+  worn, brings it to `crystal_headset_quiet_db` and `crystal_headset_dirt`. Powered
   modules don't run on it. The deed **Close Listening**: hear a god in its window on a crystal set through a
   headset.
 - **The field radio in makers' looks:** the radio the game always had is company issue (teal and gunmetal),
@@ -418,8 +418,7 @@ now in `tuning.tres` (`kite_*`).
     came through, and stays `logger_hold_s` after (`Radio._show_transcript`). The same size on screen near
     or far, over the set's whip and any dune between, out to 15 m. A crystal set can't run it (radio
     probes 63, 73). It no longer plays reports back.
-  - **Headset jack:** with the set playing and you within `headset_cord_m`, it's in your ears from where it
-    stands, and the wind and storm turned down 14 dB.
+  - **A headset's cable** (not a module): a cable's plug fits the bay, its other end a headset's jack (below).
   - **Solar lid:** `solar_w` of cells fill a switched-off set's battery by day, far less on Tu's light.
 - **Found** on skimmer-era floors (the kite), colonial and First Kingdom shelves and relay mast cabinets
   (the modules). **High Wire:** hear a satellite clear on a kite flown 50 m up. Scenario `kite`. **Not
@@ -478,6 +477,14 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   and 12 m checked it reads, clear of the whip, over a dune's lip.
 - **The frequency counter is scrapped** ("scrap this one"): tuning stays by ear. Saves holding one wake
   with a valve preamp (`Catalog.RENAMED`). Radio probe 64 went with it.
+- **The headset is an item of its own** (`headset`): "just a headset item, that can attach a cable. The
+  other end of the cable can attach to a radio misc mod slot"; and "Common, easy to find upgrade." Two cups
+  on a band, a jack on one. A cable, plain or strong, from its jack to a radio's misc bay carries no power
+  (`Cable.SIGNAL_ONLY`); worn in the suit with its cable in, or in your hands, the set playing is in your ears
+  from where it stands, no panning, the wind and storm 14 dB down (`headset_duck_db`), and a crystal set
+  nearer and cleaner. The cable is the cord: walk past its length and a plug pulls out. On every era's
+  shelves and in relay mast cabinets. Saves with the old jack module wake with a valve preamp. Radio probes
+  65 and 67; saves probe 48 (worn, it survives a save).
 - **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
   one misc bay stops forcing a choice between modules.
 

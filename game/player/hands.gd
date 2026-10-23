@@ -96,7 +96,7 @@ const SOCKET_NAMES := {&"battery": "battery slot", &"ring": "ring", &"bottom": "
 	&"plant_pot": "pot", &"plant_standard": "planter", &"plant_deep": "deep bed", &"port": "port", &"tie": "hook",
 	&"water": "water socket", &"mod": "mod mount", &"food": "food slot", &"face": "frame face",
 	&"computer_mod": "computer-mod port", &"computer_top": "computer-mod top", &"screen": "screen port", &"sail": "sail mount",
-	&"radio_mod": "converter mount", &"radio_bay": "misc bay", &"lead": "lead clip"}
+	&"radio_mod": "converter mount", &"radio_bay": "misc bay", &"lead": "lead clip", &"jack": "headset jack"}
 const RIDING := "not from the board"
 const STUNNED := "your hands won't close"
 ## What a piece of a wreck needs before it gives, said when you try it without.

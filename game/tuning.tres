@@ -326,7 +326,6 @@ kite_storm_ruin_s = 75.0
 choke_dirt = 0.6
 choke_signal = 0.8
 logger_hold_s = 4.0
-headset_cord_m = 3.0
 headset_duck_db = -14.0
 tu_roar_khz = Vector2(15000, 21000)
 tu_roar_phases = PackedFloat32Array(0.25, 0.67)

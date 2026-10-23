@@ -28,6 +28,7 @@ const KINDS := {
 	&"radio_mod": Color(0.95, 0.4, 0.55),
 	&"radio_bay": Color(0.85, 0.3, 0.75),
 	&"lead": Color(0.72, 0.42, 0.22),
+	&"jack": Color(0.1, 0.1, 0.1),
 }
 
 ## Parts: the socket kind they fit, weight, size (z is how far they stand out
@@ -223,9 +224,6 @@ const PARTS := {
 	# Records what comes in on wire, its transcript floating over the set as it's read.
 	&"wire_logger": {"kind": &"radio_bay", "label": "Wire logger", "mass": 0.6,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.8, 0.68), "stats": {"logger": 1}},
-	# A headset on its cord: the set in your ears near it, the wind and storm turned down.
-	&"headset_jack": {"kind": &"radio_bay", "label": "Headset jack", "mass": 0.3,
-		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.1, 0.1, 0.1), "stats": {"headset": 1}},
 	# A lid of cells: trickles a charge into the set's battery by day (Device's solar_w).
 	&"solar_lid": {"kind": &"radio_bay", "label": "Solar lid", "mass": 0.5,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.2, 0.3, 0.55), "stats": {"solar_w": 3.0}},
@@ -245,7 +243,10 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 	# another bay module.
 	&"direction_loop": &"static_choke",
 	# And the frequency counter (2026-10-22): its saves wake with a valve preamp.
-	&"frequency_counter": &"valve_preamp"}
+	&"frequency_counter": &"valve_preamp",
+	# The headset jack became a headset of its own on a cable (2026-10-22): a
+	# jack still in a bay wakes as a valve preamp.
+	&"headset_jack": &"valve_preamp"}
 ## Part kinds that go only in a slot of their own, never stuck loose on a
 ## chassis: hooks on rings, plugs in ports, a line's end, a hose's end, crops
 ## in beds, mods in their mounts, a sail on its mast.
@@ -503,6 +504,12 @@ const DEVICES := {
 	# set's aerial.
 	&"antenna_kite": {"label": "Antenna kite", "size": Vector3(0.36, 0.2, 0.18), "mass": 2.2, "kite": true,
 		"carryable": true, "sticks": true, "sockets": [[&"lead", Vector3(0.18, -0.02, 0.0), Vector3.RIGHT]]},
+	# A headset (gonkhub, 2026-10-22: "just a headset item, that can attach a
+	# cable. The other end of the cable can attach to a radio misc mod slot").
+	# Worn, carried or in your hands, on a cable to a radio's misc bay, the set
+	# is in your ears as far as the cable reaches (Radio.headset).
+	&"headset": {"label": "Headset", "size": Vector3(0.18, 0.16, 0.07), "mass": 0.3, "carryable": true,
+		"sticks": true, "worn": true, "sockets": [[&"jack", Vector3(-0.09, -0.04, 0.0), Vector3.LEFT]]},
 	# A sealed case of what keeps you going: a canister, a ration and seeds.
 	&"survival_kit": {"label": "Survival kit", "size": Vector3(0.5, 0.25, 0.35), "mass": 3.0, "carryable": true,
 		"sticks": true,
@@ -801,9 +808,10 @@ static func stake() -> Stake:
 
 ## A tie socket facing `outward`, with the ring you see there.
 ## Whether a part of `part_kind` fits a socket of `socket_kind`: its own kind,
-## or a cable's plug on a lead clip (a radio's aerial clip, a kite reel's terminal).
+## or a cable's plug on a lead clip (a radio's aerial clip, a kite reel's
+## terminal), a headset's jack, or a radio's misc bay (a headset's cable).
 static func fits(part_kind: Variant, socket_kind: StringName) -> bool:
-	return part_kind == socket_kind or part_kind == &"port" and socket_kind == &"lead"
+	return part_kind == socket_kind or part_kind == &"port" and socket_kind in [&"lead", &"jack", &"radio_bay"]
 
 
 static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
