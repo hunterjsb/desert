@@ -100,6 +100,10 @@ const PLACE_EVERY := 30
 ## moves); and a tick's move longer than this is the world shifting under it,
 ## not it moving.
 const FM_RECKON_M := 2.0
+## Its wire logger's transcript floats this high over the set, m, clear of
+## its whip, and reads out to this far, m.
+const LOGGER_ABOVE := 0.5
+const LOGGER_READ_M := 15.0
 ## A kite flown this high, m, on its lead, hearing a satellite clear: High Wire.
 const KITE_HIGH := 50.0
 const FM_RECKON_S := 1.0
@@ -305,10 +309,15 @@ var _level := 1.0
 var _lines := []
 var _line := 0
 var _reading_for := 0.0
-## The dirtiest a report it's reading over the air has come through, for its
-## wire logger; and how many its logger has played back.
-var _reading_dirt := 0.0
-var played_back := 0
+## Its wire logger's transcript (gonkhub, 2026-10-22: "a text transcript that
+## shows as a subtitle floating above the radio"): each phrase it's reading
+## over the air and when it starts, s in; the next one due; the words showing
+## now, and how much longer they stay, s.
+var _captions := []
+var _caption := 0
+var transcript := ""
+var _transcript_left := 0.0
+var _subtitle: Label3D
 ## The physics frame a headset last turned the weather down on, for every radio.
 static var _ducked_at := -10
 var _done_at := 0.0
@@ -1195,6 +1204,7 @@ func _listening_to(station: StringName) -> void:
 func _listen(delta: float) -> void:
 	_to_your_ears(carried() or headset_on())
 	_track_moves()
+	_tick_transcript(delta)
 	if not playing():
 		noise = 0.0
 		odd = 0.0
@@ -1354,8 +1364,6 @@ func _listen(delta: float) -> void:
 		dirt = maxf(dirt, _tuning.crystal_headset_dirt if listened_close() else _tuning.crystal_dirt)
 	Garble.shape(AudioServer.get_bus_index(signal_bus()), 0, dirt, t, get_instance_id(), _tuning.am_audio_hz)
 	var broke := _glitch.tick(delta, dirt)
-	if not _local and not _lines.is_empty():
-		_reading_dirt = maxf(_reading_dirt, dirt)
 	music.volume_db += linear_to_db(maxf(broke.x, 0.0001))
 	music.pitch_scale = maxf(0.05, music.pitch_scale * broke.y)
 	_read(delta, now)
@@ -1976,6 +1984,7 @@ func _queue(phrases: PackedStringArray, lead: float) -> void:
 	reader.bus = Sounds.radio_bus() if _local else _speech_bus(profile)
 	var at := lead + STOP_GAP
 	for phrase in phrases:
+		_captions.append([phrase, at])
 		for entry: Array in RadioSpeech.plan(phrase, Radio.clip):
 			var own: AudioStream = entry[0]
 			_lines.append([own, at])
@@ -2001,6 +2010,11 @@ func _read(delta: float, now: int) -> void:
 	_reading_for += delta
 	if _local:
 		reader.volume_db = knob_db()
+	while _caption < _captions.size() and _reading_for >= _captions[_caption][1]:
+		# Its wire logger writes each phrase out over the set as it's read.
+		if not _local and _runs(&"logger"):
+			_show_transcript(_captions[_caption][0])
+		_caption += 1
 	while _line < _lines.size() and _reading_for >= _lines[_line][1]:
 		var own: AudioStream = _lines[_line][0]
 		if own != null:
@@ -2015,24 +2029,53 @@ func _read(delta: float, now: int) -> void:
 			reader.stream = own
 			reader.play(into)
 	if _reading_for >= _done_at:
-		var over_air := not _local
 		_lines = []
+		_captions = []
+		_caption = 0
 		_local = false
-		# Heard half through the storm, its wire logger plays it back clean.
-		if over_air and _runs(&"logger") and _reading_dirt >= _tuning.logger_dirty and not spoken.is_empty():
-			_play_back()
-		_reading_dirt = 0.0
 
 
-## Its wire logger playing back the report it just recorded, from its own
-## speaker, clean of the storm the signal came through.
-func _play_back() -> void:
-	played_back += 1
-	_click(Sounds.RADIO_TUNE, -8.0)
-	_line = 0
-	_reading_for = 0.0
-	_local = true
-	_queue(spoken, Sounds.RADIO_TUNE.get_length())
+## Its wire logger's transcript showing `words` over the set, clean whatever
+## the signal came through, till logger_hold_s after the words are done.
+func _show_transcript(words: String) -> void:
+	transcript = words
+	_transcript_left = _tuning.logger_hold_s
+	if _subtitle == null:
+		_subtitle = Label3D.new()
+		_subtitle.font = preload("res://assets/fonts/GeistMono-Regular.ttf")
+		_subtitle.font_size = 36
+		# The same size on screen near or far, so it reads across a camp, and
+		# gone past where you'd hear the set.
+		_subtitle.fixed_size = true
+		_subtitle.pixel_size = 0.0006
+		_subtitle.visibility_range_end = LOGGER_READ_M
+		# A subtitle: over a dune's lip or the set's own whip, never hidden by them.
+		_subtitle.no_depth_test = true
+		_subtitle.outline_size = 10
+		_subtitle.outline_modulate = Color(0.0, 0.0, 0.0, 0.85)
+		_subtitle.modulate = Color(0.96, 0.9, 0.74)
+		_subtitle.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		_subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_subtitle.width = 520.0
+		_subtitle.shaded = false
+		_subtitle.position = Vector3.UP * LOGGER_ABOVE
+		add_child(_subtitle)
+	_subtitle.text = words
+	_subtitle.visible = true
+
+
+## Its transcript fading out once its hold is up, or at once with no logger
+## running to write it.
+func _tick_transcript(delta: float) -> void:
+	if transcript == "":
+		return
+	# Held while the words are still being read, then counting down.
+	if _lines.is_empty() or _local:
+		_transcript_left -= delta
+	if _transcript_left <= 0.0 or not _runs(&"logger") or not powered:
+		transcript = ""
+		if _subtitle != null:
+			_subtitle.visible = false
 
 
 func _hush() -> void:
@@ -2040,9 +2083,10 @@ func _hush() -> void:
 		reader.stop()
 	_lines = []
 	_line = 0
+	_captions = []
+	_caption = 0
 	_reading_for = 0.0
 	_local = false
-	_reading_dirt = 0.0
 
 
 ## Port Morgan Tower on the air at world place x, z and time t, speaking only

@@ -220,7 +220,7 @@ const PARTS := {
 	# Takes the edge off a storm's hash, and a little of the signal.
 	&"static_choke": {"kind": &"radio_bay", "label": "Static choke", "mass": 0.5,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.3, 0.55, 0.85), "stats": {"choke": 1}},
-	# Records what comes in on wire: a report half lost to the storm, it plays back clean.
+	# Records what comes in on wire, its transcript floating over the set as it's read.
 	&"wire_logger": {"kind": &"radio_bay", "label": "Wire logger", "mass": 0.6,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.8, 0.68), "stats": {"logger": 1}},
 	# Reads the frequency exactly: tuned near a carrier, the dial locks onto it.

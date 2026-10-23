@@ -21,8 +21,7 @@ func run() -> void:
 	logger.frequency = Radio.gods_of(world).carrier(&"quartermaster", world.time)
 	broadside(logger, &"quartermaster")
 	logger._listen(0.0)
-	check(not logger._lines.is_empty() and logger._reading_dirt >= Tuning.current().logger_dirty,
-		"the passive set receives a real dirty transmission")
-	logger._read(logger._done_at + 1.0, logger.channel)
-	check(logger.played_back == 0 and logger._lines.is_empty(), "a crystal set cannot power logger playback")
+	check(not logger._lines.is_empty(), "the passive set receives a real transmission")
+	logger._read(logger._done_at * 0.5, logger.channel)
+	check(logger.transcript == "", "a crystal set cannot power the logger's transcript")
 	check(crystal.demand_w() == 0.0 and logger.demand_w() == 0.0, "passive sets still draw no power")

@@ -413,8 +413,11 @@ now in `tuning.tres` (`kite_*`).
     cuts or sliding between the set and what it hears (`Radio.storm_along`). Other static (a jammer's, a
     kite's) at half, other garbling at 0.6, the signal at 0.8. Seed 1234, the Ledger through a thin storm:
     dirt 0.62 bare, 0.16 choked (radio probe 62).
-  - **Wire logger:** a report or a god's words read through a signal dirtier than `logger_dirty` it plays
-    back once they're done, from the set's own speaker, clean of the storm.
+  - **Wire logger:** writes out what comes in over the air: each phrase of a report, an advisory, a god's
+    words or a distress call floats over the set as a subtitle while it's read, clean whatever the signal
+    came through, and stays `logger_hold_s` after (`Radio._show_transcript`). The same size on screen near
+    or far, over the set's whip and any dune between, out to 15 m. A crystal set can't run it (radio
+    probes 63, 73). It no longer plays reports back.
   - **Frequency counter:** tuned within `counter_lock_khz` of a carrier, the dial stands right on it.
   - **Headset jack:** with the set playing and you within `headset_cord_m`, it's in your ears from where it
     stands, and the wind and storm turned down 14 dB.
@@ -471,6 +474,9 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   finder. Saves holding one wake with a static choke (`Catalog.RENAMED`). Radio probe 61 went with it.
 - **The static choke eliminates storm interference:** "have it eliminate ALL interference from storms.
   otherwise good." Its signal cost stays.
+- **The wire logger gives a transcript:** "The wire logger should give a text transcript that shows as a
+  subtitle floating above the radio." It replaces the logger's playback. Real Forward+ captures at 1.6, 6
+  and 12 m checked it reads, clear of the whip, over a dune's lip.
 - **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
   one misc bay stops forcing a choice between modules.
 
