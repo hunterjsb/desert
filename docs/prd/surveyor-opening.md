@@ -7,7 +7,7 @@ Other origins, developer scenarios and saves from before the opening keep their 
 
 ## Headlamp fitting on the ship (selected 2026-10-22)
 
-Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; after Spaceport, with order owned by [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22).
 
 > 2. start with headlamp. tarkove-style visual layour of your gear in tab. bring it on the pod. that way we can introdice that mecahnic on the ship.
 
@@ -15,10 +15,15 @@ Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-a
 introduced aboard the ship before arrival. Use the inventory action and its physical
 gear layout, owned by [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22).
 This is a real module introduction, not a newly granted invisible built-in after
-landing. Exact placement, lesson, persistence and any launch-readiness requirement
-remain to design; this decision does not select a mandatory launch blocker or
-change the existing pod manifest. [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
+landing. Exact placement and lesson remain to design; the answers below settle
+launch readiness and starter-lamp impact protection. [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
 owns module/power behavior. No milestone assigned.
+
+**First-slice answers, 2026-10-22:** “1. yes 2. optional 3. yes 4. yes” to the [first-slice brief](../briefs/suit-first-slice-2026-10-22.md).
+Fitting aboard the ship is **optional**: a Surveyor may leave without fitting the lamp, and
+fitting is not a launch-readiness check. The starter lamp **survives impact**, fitted or
+packed. [Profile & saves](profile-and-saves.md#starter-headlamp-compatibility-selected-2026-10-22)
+owns the approved compatibility grants. Still after Spaceport.
 
 ## Hunter's decisions
 

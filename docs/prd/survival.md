@@ -66,7 +66,7 @@ the default is a Tilg & Standard contractor. See [the vision](../vision.md#playe
 
 ## Neotech suit and modular headlamp (selected 2026-10-22)
 
-Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; [timing and order](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22) are after Spaceport.
 
 > out suit is neotech. the only thing better than colonial. we have a nano-HeG3N and wont be a problem for years for 3.
 
@@ -84,7 +84,7 @@ its free built-in status. It uses the suit's effectively ample power, not a new
 battery chore. [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22)
 owns the visual equipment layout; [Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
 owns the fitting introduction. No changes to built-in air/radiation protection were
-requested. The runtime headlamp is still built in until this direction is implemented.
+requested. [Profile & saves](profile-and-saves.md#starter-headlamp-compatibility-selected-2026-10-22) owns the approved compatibility grants. The runtime headlamp is still built in until this direction is implemented.
 
 ## The suit
 
