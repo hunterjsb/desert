@@ -20,6 +20,12 @@ remain to design; this decision does not select a mandatory launch blocker or
 change the existing pod manifest. [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
 owns module/power behavior. No milestone assigned.
 
+**First-slice answers, 2026-10-22:** “1. yes 2. optional 3. yes 4. yes” to the [first-slice brief](../briefs/suit-first-slice-2026-10-22.md).
+Fitting aboard the ship is **optional**: a Surveyor may leave without fitting the lamp, and
+fitting is not a launch-readiness check. The starter lamp **survives impact**, fitted or
+packed. **Compatibility:** legacy saves receive one fitted starter lamp, exactly once,
+and origins without a ship start with it fitted. Still after Spaceport.
+
 ## Hunter's decisions
 
 - "Subnautica style launch pod… take apart the launch pod to form your chassis… you have

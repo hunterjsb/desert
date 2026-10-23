@@ -1,8 +1,8 @@
 # Suit and inventory: first playable slice
 
-*Proposal for Hunter, 2026-10-22. Docs only; no build authorization. After Spaceport,
-not 0.4, per the [selected timing](../prd/menus-and-ui.md). All mechanics below are
-proposed unless identified as selected. Sources: [answered concept](inventory-and-suit-modules-2026-10-22.md)
+*Proposal for Hunter, 2026-10-22. **Approved the same day** (“1. yes 2. optional 3. yes 4. yes”): the order, optional
+fitting, an impact-proof starter lamp and the compatibility lamps. Docs only; no build authorization. After Spaceport,
+not 0.4, per the [selected timing](../prd/menus-and-ui.md). The canonical owners record each answer. Sources: [answered concept](inventory-and-suit-modules-2026-10-22.md)
 and canonical decisions at `f9348bb4`; current code audited at `dba4ad92`.*
 
 ## Order: all three, built in steps
@@ -70,7 +70,9 @@ and does not pause the world. Pack deployment and additional modules belong late
 
 ## Hunter's remaining decisions
 
-- Is headlamp B → physical pack C → broader harness B and carry-view A the right order?
-- May the Surveyor skip fitting before departure, or must fitting be a readiness check?
-- Should the starter lamp survive impact when fitted or packed, as proposed?
-- Approve the one-time fitted lamp for old saves and fitted starts for origins without a ship?
+Hunter, 2026-10-22: “1. yes 2. optional 3. yes 4. yes”.
+
+1. Is headlamp B → physical pack C → broader harness B and carry-view A the right order? **Yes.**
+2. May the Surveyor skip fitting before departure, or must fitting be a readiness check? **Optional:** no launch blocker.
+3. Should the starter lamp survive impact when fitted or packed, as proposed? **Yes.**
+4. Approve the one-time fitted lamp for old saves and fitted starts for origins without a ship? **Yes.**
