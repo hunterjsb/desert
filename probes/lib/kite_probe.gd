@@ -1,16 +1,14 @@
 class_name KiteProbe
 extends ShieldProbe
-## A radio with a shortwave converter and a rope hook on its top, an antenna
-## kite set down off it, and a cable from the hook's stem to the kite reel's
-## lead terminal, through a driven stake between them or straight.
+## A radio with a shortwave converter, an antenna kite set down off it, and a
+## cable from the radio's aerial clip to the kite reel's lead terminal, through
+## a driven stake between them or straight.
 
 
 ## The rig, made: {radio, kite, cable, stake (or null)}.
 func kite_rig(staked: bool, strong := false, at := Vector2(0.0, 2.0)) -> Dictionary:
 	var radio := Scenarios.standing(world, &"radio", [&"battery", &"sw_converter"], [at.x, at.y]) as Radio
 	radio.freeze = true
-	var ring := _socket(radio, &"radio_top")
-	radio.fit(Catalog.part(&"hook"), ring)
 	var kite := Scenarios.standing(world, &"antenna_kite", [], [at.x + 4.0, at.y]) as AntennaKite
 	kite.freeze = true
 	var stake: Stake = null

@@ -1,22 +1,24 @@
 class_name AntennaKite
 extends Device
-## An antenna kite on its own reel of flying line (gonkhub, 2026-10-21: "The
-## kite needs to be able to be connected to the top of the radio with a rope
-## hook as its connection point"). Use it and it flies up on the wind, paying
+## An antenna kite on its own reel of flying line, its lead plugged straight
+## into a radio's top (gonkhub, 2026-10-22: "remove the hook from the setup").
+## Use it and it flies up on the wind, paying
 ## out its line, kite_line_m of it; use it again and it reels in. Placed by the
 ## wind, not flown by physics: its line stands at an angle that rises with the
 ## wind (kite_angle_deg), so it flies 50 to 90 m up on its full line, and
 ## comes down below kite_lift_ms.
 ##
-## A cable, plain or strong, from the rope hook on a radio's top to the reel's
-## lead terminal makes the kite that set's shortwave aerial: the higher, the
-## more it hears (Radio.antenna_gain). The cable can run through a driven
-## stake on the way, one cable through all three points, and that earths it.
+## A cable, plain or strong, from a radio's aerial clip to the reel's lead
+## terminal makes the kite that set's aerial on every band: on shortwave the
+## higher, the more it hears (Radio.antenna_gain); on AM a long wire's lift,
+## heard all ways round (Radio.aerial_am); on FM its height is the set's
+## (Radio.receive_fm). The cable can run through a driven stake on the way,
+## one cable through all three points, and that earths it.
 ##
 ## Flown high it gathers charge, the more so in the dust a front drives, and
-## past a point an arc jumps somewhere in the rig and burns out what it hits:
-## the kite's dipole, the lead, the hook, the shortwave converter or the set
-## itself. Its lead through a driven stake, the stake's ring dumps the charge to
+## past a point an arc jumps down the chain and burns out one piece of it, any
+## one alike (gonkhub, 2026-10-22): the kite's dipole, the lead, the converter
+## the set hears it through, or the set itself. Its lead through a driven stake, the stake's ring dumps the charge to
 ## earth; a bleed resistor in the set's misc bay leaks it off. It wears as a
 ## sail does, a little flying at all, fast past a harm wind, and a sandstorm
 ## shreds it in about a minute. (From the radio kit lab: look/radio_kit, and its
@@ -28,12 +30,10 @@ const LINE_FROM := Vector3(0.0, 0.0, 0.0)
 ## Carried in the suit, its line runs from about this high on you, m.
 const ON_YOU := Vector3(0.0, 1.0, 0.0)
 ## It settles to where the wind puts it over about this long, s.
-const SETTLE_S := KiteFlight.SETTLE_S
+const SETTLE_S := 1.5
 ## Its sway on the wind: degrees round and up, and how fast, rad/s.
-const SWAY_DEG := KiteFlight.SWAY_DEG
-const SWAY_RATE := KiteFlight.SWAY_RATE
-## How exposed each piece of the rig is to an arc: [piece, weight].
-const PIECES := [[&"kite", 3.0], [&"lead", 1.0], [&"hook", 2.0], [&"converter", 3.0], [&"radio", 1.5]]
+const SWAY_DEG := Vector2(6.0, 3.0)
+const SWAY_RATE := Vector2(0.31, 0.47)
 ## A scorch takes this much of a device's soundness.
 const SCORCH := 0.15
 ## Flying lower than this over the ground, m, it's on the sand, not up.
@@ -62,7 +62,7 @@ var _flash: OmniLight3D
 var _flash_left := 0.0
 var _placed := false
 var _seed := 0.0
-## Its rig as last found: {radio, cable, hook}, read each tick.
+## Its rig as last found: {radio, cable}, read each tick.
 var rig := {}
 
 
@@ -131,8 +131,6 @@ func use(by: Player, _at: Vector3) -> bool:
 
 
 func _toggle(by: Player) -> bool:
-	if Controls.ui != null:
-		Controls.ui.teach("antenna_kite", "A shortwave aerial: cable its terminal to the radio's top hook. It needs wind to fly; a driven stake grounds static on the lead.")
 	if flying or line_out > 0.0:
 		reel_in()
 		return true
@@ -208,9 +206,8 @@ static func gain(h: float, tuning: Tuning) -> float:
 	return minf(tuning.sw_bare * pow(10.0, db / 20.0), tuning.kite_gain_most)
 
 
-## The radio, cable and hook its lead runs to: the cable with a plug in its
-## lead terminal and the other on a rope hook's stem on a radio's top. {} if
-## its lead goes nowhere.
+## The radio and cable its lead runs to: the cable with a plug in its lead
+## terminal and the other in a radio's aerial clip. {} if its lead goes nowhere.
 func find_rig() -> Dictionary:
 	if world == null:
 		return {}
@@ -228,15 +225,8 @@ func find_rig() -> Dictionary:
 			continue
 		var radio := plug.socket.get_parent() as Radio
 		if radio != null and not radio is SurveyReceiver:
-			return {"radio": radio, "cable": cable, "hook": _hook_of(radio, plug.socket)}
+			return {"radio": radio, "cable": cable}
 	return {}
-
-
-## The mount of the rope hook a lead socket came with, on the radio (fitted,
-## the hook's pieces carry the socket they sit in), or null.
-static func _hook_of(_radio: Radio, lead: Socket) -> Socket:
-	var ring: Socket = lead.get_meta(&"socket", null)
-	return ring if ring != null and ring.part is RopeHook else null
 
 
 ## Whether its lead runs through a driven stake: earthed.
@@ -287,8 +277,7 @@ func _physics_process(delta: float) -> void:
 func _place(w: Vector2, delta: float, tuning: Tuning) -> void:
 	var from := anchor()
 	var direction := KiteFlight.direction(w, world.time, _seed, tuning, not wrecked())
-	var reach := line_out * tuning.kite_sag
-	var target := from + direction * reach
+	var target := from + direction * line_out * tuning.kite_sag
 	target.y = maxf(target.y, world.height_under(target) + 0.3)
 	if not _placed or kite_at == Vector3.ZERO:
 		kite_at = target if line_out > 2.0 else from + Vector3.UP * 0.5
@@ -329,7 +318,7 @@ func _weather(speed: float, real: float, tuning: Tuning) -> void:
 
 
 ## An arc down the rig: it spends most of the charge and burns out, or only
-## scorches, the piece it picks by how exposed each is.
+## scorches, one piece of the chain, picked at random.
 func arc(burns: bool) -> void:
 	var tuning := Tuning.current()
 	charge *= 1.0 - tuning.kite_arc_spends
@@ -347,13 +336,8 @@ func arc(burns: bool) -> void:
 						if plug.socket != null:
 							(plug.socket.get_parent() as Device).take(plug.socket)
 						plug.queue_free()
-		&"hook":
-			var hook: Socket = rig.hook
-			at = hook.global_position
-			if burns:
-				_burn_part(radio, hook)
 		&"converter":
-			var socket := radio.converter_socket(&"sw")
+			var socket := radio.converter_socket(_converts(radio))
 			at = socket.global_position
 			if burns:
 				_burn_part(radio, socket)
@@ -366,22 +350,29 @@ func arc(burns: bool) -> void:
 	_spark_at(at, 40 if burns else 16, true)
 
 
-## The piece an arc hits, by exposure, among those the rig has.
+## The piece an arc hits: any one in the chain alike, the kite, its lead, the
+## converter the set hears it through and the set.
 func _pick() -> StringName:
+	return chain().pick_random()
+
+
+## The pieces of its rig an arc can run down, kite to set.
+func chain() -> Array[StringName]:
 	var radio: Radio = rig.get("radio")
-	var have := {&"kite": true, &"lead": rig.has("cable"), &"hook": rig.get("hook") != null,
-		&"converter": radio != null and radio.converter_socket(&"sw") != null, &"radio": radio != null}
-	var total := 0.0
-	for each: Array in PIECES:
-		if have[each[0]]:
-			total += each[1]
-	var r := randf() * total
-	for each: Array in PIECES:
-		if have[each[0]]:
-			r -= each[1]
-			if r <= 0.0:
-				return each[0]
-	return &"kite"
+	var pieces: Array[StringName] = [&"kite"]
+	if rig.has("cable"):
+		pieces.append(&"lead")
+	if radio != null and _converts(radio) != &"" and radio.converter_socket(_converts(radio)) != null:
+		pieces.append(&"converter")
+	if radio != null:
+		pieces.append(&"radio")
+	return pieces
+
+
+## The stat of the converter a set hears its band through (&"fm", &"sw"), or
+## &"" on the AM dial, which needs none.
+static func _converts(radio: Radio) -> StringName:
+	return {Radio.FM_BAND: &"fm", Radio.SW_BAND: &"sw"}.get(radio.band, &"")
 
 
 ## A part burnt out in its socket: gone, smoke and all.

@@ -1,7 +1,7 @@
 extends ShieldProbe
 ## Radio probe 60: the valve preamp. In the radio's misc bay it lifts what the
 ## set hears: a god comes in preamp_gain times as strong, so one lost in the
-## hiss comes through; and the set draws three times the power.
+## hiss comes through, at no cost in power (gonkhub, 2026-10-22).
 
 
 func run() -> void:
@@ -23,4 +23,4 @@ func run() -> void:
 	print("the Ledger %.3f bare, %.3f through the preamp; drawing %.1f W, then %.1f W" % [before, after, drew,
 		radio.demand_w()])
 	check(absf(after - before * Tuning.current().preamp_gain) < 1e-4, "it lifts a god's signal")
-	check(radio.demand_w() >= drew * 2.9, "and the set draws three times the power")
+	check(is_equal_approx(radio.demand_w(), drew), "and the set draws no more power")

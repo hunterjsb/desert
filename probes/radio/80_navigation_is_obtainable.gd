@@ -13,8 +13,9 @@ func run() -> void:
 		Tuning.current().run_seed = run_seed
 		Tuning.current().salvage = true
 		main = MAIN.instantiate()
-		main.opens_on_menu = false
+		main.opens_on_menu = true
 		add_child(main)
+		await main.new_game(false, false, Kit.standard())
 		world = main.world()
 		var prep := await cabin()
 		if prep == null:
@@ -53,10 +54,15 @@ func _audit(run_seed: int, available: Dictionary) -> void:
 	for site: Site in shape.sites.query(area, false):
 		if not site is Structure or site.distance_to(ground.x, ground.y) > ACQUISITION_M:
 			continue
+		var fresh: Wreckage = Wreckage.new(site, {}, shape.height_at) if site.piece.wreck != null else null
 		for spec: Dictionary in SiteLoot.plan(site, shape.height_at):
+			if fresh != null and fresh.held_fast(spec.index) != "":
+				continue
 			var distance := ground.distance_to(Vector2(spec.x, spec.z))
 			if distance <= ACQUISITION_M:
 				_record(spec.id, distance, available)
+		if fresh != null:
+			fresh.free()
 	if not _complete(available):
 		_loose(shape, ground, flight.arrival_time, rules, available)
 	for id: StringName in REQUIRED:

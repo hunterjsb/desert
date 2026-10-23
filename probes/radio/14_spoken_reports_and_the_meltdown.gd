@@ -19,9 +19,7 @@ func run() -> void:
 	var radio := Scenarios.standing(world, &"radio", [&"battery", &"fm_converter", &"sw_converter"],
 		[0.0, 2.0]) as Radio
 	radio.freeze = true
-	var reel := Scenarios.standing(world, &"antenna_reel", [], [10.0, 2.0]) as AntennaReel
-	reel.freeze = true
-	reel.clip(radio)
+	radio.fit(Catalog.part(&"valve_preamp"), Scenarios._free(radio, &"radio_bay"))
 	await physics_frames(2)
 	var gods := Radio.gods_of(world)
 	var length := Sounds.RADIO_STOKER.get_length()

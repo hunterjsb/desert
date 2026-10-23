@@ -74,3 +74,20 @@ func fast_forward(seconds: float, k := 10) -> void:
 ## Where a node sits in its device's own frame.
 func relative(device: Node3D, node: Node3D) -> Transform3D:
 	return device.global_transform.affine_inverse() * node.global_transform
+
+
+## A headset stood beside a radio, a cable from its jack to the radio's misc
+## bay: the headset, its cable on it as meta "cable".
+func wire_headset(radio: Radio) -> Device:
+	var headset := Catalog.device(&"headset")
+	world.content.add_child(headset)
+	headset.global_position = radio.global_position + Vector3(0.0, 0.3, 0.6)
+	var cable := Catalog.cable(world, radio.global_position + Vector3.UP, false)
+	for pair: Array in [[radio, &"radio_bay", 0], [headset, &"jack", 1]]:
+		for socket in (pair[0] as Device).sockets():
+			if socket.kind == pair[1] and socket.is_open():
+				(pair[0] as Device).fit(cable.plugs[pair[2]], socket)
+				break
+	check(radio.headset() == headset, "a headset on a cable from the radio's misc bay")
+	headset.set_meta(&"cable", cable)
+	return headset

@@ -7,6 +7,9 @@ extends Node3D
 ## (AntennaKite), which carries no power. Held at a driven stake, a cable passes
 ## through its ring (route), one cable through three points: set, stake, kite.
 
+## Sockets a plug carries a signal through, never power: a kite's lead, and a
+## headset's cable from its jack to a radio's misc bay.
+const SIGNAL_ONLY: Array[StringName] = [&"lead", &"jack", &"radio_bay"]
 ## How hard an overstretched wire pulls its loose end back, 1/s.
 const PULL := 10.0
 
@@ -95,7 +98,7 @@ func _rope_through() -> void:
 func joined() -> Array[Device]:
 	var ends: Array[Device] = []
 	for plug in plugs:
-		if is_instance_valid(plug) and plug.socket != null and plug.socket.kind != &"lead":
+		if is_instance_valid(plug) and plug.socket != null and plug.socket.kind not in SIGNAL_ONLY:
 			ends.append(plug.socket.get_parent())
 	if ends.size() == 2 and ends[0] != ends[1]:
 		return ends

@@ -1,7 +1,7 @@
 extends ShieldProbe
 ## Radio probe 67: the radio's tiers. A crystal set draws nothing and hears a
 ## god weaker than a field radio does at the same spot, with no knob to turn,
-## barely heard and chewed up; a headset jacked into it, the set in your
+## barely heard and chewed up; a headset on a cable from its bay, in your
 ## hands, brings it nearer and cleaner. A field radio in any maker's look
 ## relights its band window in the band's own colour as its band switches.
 
@@ -29,8 +29,8 @@ func run() -> void:
 	check(not crystal.turn_volume(-1) and crystal.volume == 1.0, "it has no volume knob")
 	await physics_frames(2)
 	var bare := [crystal.knob_db(), crystal.dirt]
-	fit_part(crystal, &"headset_jack")
-	world.player.hands.hold(crystal)
+	var headset := wire_headset(crystal)
+	world.player.hands.hold(headset)
 	await physics_frames(3)
 	var close := [crystal.knob_db(), crystal.dirt]
 	print("a crystal set: %.1f dB, dirt %.2f bare; %.1f dB, dirt %.2f through a headset in your hands" % [bare[0],

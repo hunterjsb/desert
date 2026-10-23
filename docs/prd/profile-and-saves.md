@@ -17,6 +17,20 @@ to build every origin. Existing profile, unlock and save behavior remains as bui
 older balance classifications below describe implementation/history, not a new gate.
 
 
+## Starter headlamp compatibility (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [first-slice brief](../briefs/suit-first-slice-2026-10-22.md):
+
+> 1. yes 2. optional 3. yes 4. yes
+
+Answer 4 approves one fitted starter lamp for legacy saves, exactly once, and a
+fitted starter lamp for new origins without a ship. This includes legacy cabin and
+flight saves; migration must not duplicate a module already present. Selected, not
+built. [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22)
+owns the after-Spaceport sequence; [Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
+owns the new Surveyor's optional fitting and impact protection.
+
+
 ## Halloran's first fire (agreed, 2026-10-20)
 
 **First Fire**, hidden in Far, is recorded when a preserved coalcane bundle is physically consumed
@@ -285,11 +299,11 @@ the frame is a part stuck on the deck.
 | Signals | **Follow the Signal** | Reach a real ruin beacon using a survey receiver | | `SurveyReceiver`: acquire at least 60 m away, then arrive within 15 m carrying or holding the live receiver, tuned to its beacon; target and acquisition distance persist in a save |
 | Signals | **First Light** | Hear a god inside its window | | `Radio`'s tick: tuned to a god while its words are useful, coming through and not cut, and you hearing it: its line in your view, or its sound within earshot with the volume up |
 | Signals | **Line of Sight** | Hear an FM station come through quiet | First Light | `Radio`'s tick on the FM band: a station over its threshold enough to be quiet, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Over the Horizon** | Hear an FM station clear on a kite that the radio can't hear alone | Line of Sight | `Radio`'s tick on the FM band: a station quiet on a flown kite's height whose margin on the set's own whip is under the threshold, the volume up and you hearing it (built 2026-10-22, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Foxhole Radio** | Hear a god inside its window on a crystal set | First Light | `Radio`'s tick on a god with a crystal set: its words useful, coming through and not cut, you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **Close Listening** | Hear a god inside its window on a crystal set, through a headset | Foxhole Radio | the same tick as Foxhole Radio, with a headset in the set's bay and the set carried or in your hands (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **Close Listening** | Hear a god inside its window on a crystal set, through a headset | Foxhole Radio | the same tick as Foxhole Radio, with a headset worn on a cable from the set's bay (built 2026-10-21, a headset item since 2026-10-22, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Null** | Turn a radio until a god you hear falls silent | First Light | `Radio`'s tick on a god: one that would come through whole broadside to the set's ferrite rod, silent end-on to it, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **Long Wire** | Hear a satellite clear on an antenna reel's wire strung from the radio | First Light | `Radio`'s tick on shortwave: an antenna reel's wire strung `sw_wire_m` or more from it and a satellite coming through whole, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
-| Signals | **High Wire** | Hear a satellite clear on a kite flown 50 m up on a radio's lead | Long Wire | `Radio`'s tick on shortwave: an antenna kite on its top hook's lead 50 m or more up and a satellite coming through whole, the volume up and you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
+| Signals | **High Wire** | Hear a satellite clear on a kite flown 50 m up on a radio's lead | First Light | `Radio`'s tick on shortwave: an antenna kite on its top hook's lead 50 m or more up and a satellite coming through whole, the volume up and you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Grounded** | Let a staked kite lead take an arc to earth | First Light | `AntennaKite`'s tick: its lead through a driven stake, the stake's ring dumping charge that had climbed past an arc's (built 2026-10-21) |
 | Signals | **Storm on Tu** | Hear Tu roar on shortwave | First Light | `Radio`'s tick on the shortwave band: Tu's roar coming in as loud as an anomaly's crackle is a tell, the volume up and you hearing it (built 2026-10-20, [Radio](radio-sound-and-atmosphere.md)) |
 | Signals | **Mayday** | Hear a wreck's distress call come through whole | First Light | `Radio`'s tick on the AM dial: a wreck calling SOS near 240 kHz coming through whole, the volume up and you hearing it (built 2026-10-21, [Radio](radio-sound-and-atmosphere.md)) |
@@ -888,6 +902,13 @@ its record, unshown: the deeds grid lists only `Deeds.TABLE`.
 
 **High Wire and Grounded (2026-10-21).** The antenna kite brings two signals
 deeds (Radio, sound & atmosphere) add two entries to the Signals family.
+
+**Long Wire cut (2026-10-22).** The antenna reel was scrapped (Radio, sound &
+atmosphere), and its deed with it; High Wire now follows First Light. A
+profile that earned it keeps its record, unshown.
+
+**Over the Horizon (2026-10-22).** The kite as an FM aerial brings one signals
+deed (Radio, sound & atmosphere).
 
 ## Surveyor preflight deeds (selected 2026-10-21; candidate)
 

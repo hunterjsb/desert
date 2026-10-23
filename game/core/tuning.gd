@@ -1199,19 +1199,15 @@ static var _current: Tuning
 @export var crystal_dirt: float = 0.85
 @export var crystal_headset_quiet_db: float = 12.0
 @export var crystal_headset_dirt: float = 0.45
-## An antenna reel holds this much wire, m: walked farther from its radio, its
-## clip pops off the set.
-@export var antenna_reel_m: float = 30.0
-## A shortwave set's long wire: on its converter's terminals alone it hears
-## this share of what's sent from above the ceiling; an antenna reel's wire
-## strung out this long, m, hears all of it, strung low only this share,
-## and fully once it's this high over the ground somewhere, m. Under the
-## ceiling, on the AM dial, a wire adds nothing: the world's own noise is the
-## floor there, not the set's.
+## A shortwave set on its converter's terminals alone hears this share of
+## what's sent from above the ceiling.
 @export var sw_bare: float = 0.25
-@export var sw_wire_m: float = 10.0
-@export var sw_wire_low: float = 0.75
-@export var sw_wire_high_m: float = 3.0
+## A satellite near straight overhead comes through decently on the terminals
+## alone (gonkhub, 2026-10-22): from this elevation, degrees, rising to this
+## share by this one.
+@export var sw_bare_overhead: float = 0.6
+@export var sw_overhead_from_deg: float = 60.0
+@export var sw_overhead_full_deg: float = 80.0
 ## The antenna kite (AntennaKite), from the radio kit lab's charge model
 ## (look/radio_kit/charge_model.gd): on this much flying line, paid out and
 ## reeled in this fast, m/s. It flies from this wind, m/s, its line at the
@@ -1232,6 +1228,13 @@ static var _current: Tuning
 @export var kite_whip_m: float = 0.3
 @export var kite_gain_db: float = 26.0
 @export var kite_gain_most: float = 2.5
+## The kite on the AM dial (gonkhub, 2026-10-22): a long wire hung this high,
+## m, lifts what the set hears to this many times; heard all ways round, it has
+## no null. On FM its height is the set's aerial's, less this much, dB, lost
+## down its long lead.
+@export var kite_am_most: float = 2.0
+@export var kite_am_full_m: float = 60.0
+@export var kite_fm_feed_db: float = 2.0
 ## Its charge, 0 to 1 of what arcs for certain: gathered this fast a second
 ## at 100 m in clear air, and this fast in a front's full outflow; leaking off
 ## into the air over this long, s. Past the first, an arc may jump somewhere
@@ -1258,21 +1261,19 @@ static var _current: Tuning
 @export var kite_wear_wind: float = 0.0011
 @export var kite_storm_ruin_s: float = 75.0
 ## The radio's misc bay modules. The valve preamp lifts what it hears this
-## many times; the static choke leaves this share of storm static, this share
-## of the garbling, and this share of the signal; the direction loop's null
-## is this deep, by day or night, within this much of end-on; tuned within
-## this far of a carrier, kHz, a frequency counter locks on; a report heard
-## dirtier than this the wire logger plays back clean; a headset's cord
-## reaches this far, m, and turns the wind and storm down this many dB.
+## many times; the static choke takes out every storm's interference and leaves
+## this share of other static (a jammer's, a kite's), this share of the
+## garbling, and this share of the signal; the wire logger's transcript stays
+## this long, s, after the last phrase; a headset worn turns the wind and storm
+## down this many dB.
 @export var preamp_gain: float = 2.0
 @export var choke_static: float = 0.5
 @export var choke_dirt: float = 0.6
 @export var choke_signal: float = 0.8
-@export var loop_null: float = 0.0
-@export var loop_width: float = 0.1
-@export var counter_lock_khz: float = 8.0
-@export var logger_dirty: float = 0.3
-@export var headset_cord_m: float = 3.0
+@export var logger_hold_s: float = 4.0
+## In this much light or more a solar lid's cells run the set, drawing nothing
+## from its battery while the cells still fill it.
+@export var solar_lid_runs_light: float = 0.05
 @export var headset_duck_db: float = -14.0
 ## Tu's roar on shortwave: it comes in from the bottom of this span, kHz, to
 ## full at its top; Tu storms while Zan is within half of tu_roar_window (a
@@ -1283,8 +1284,8 @@ static var _current: Tuning
 @export var tu_roar_phases: PackedFloat32Array = PackedFloat32Array([0.25, 0.67])
 @export var tu_roar_window: float = 0.12
 @export var tu_roar_turn: float = 1.2
-## The AM dial plays sound up to this, Hz: AM's narrow audio, and the FM
-## converter's too, since it plays through the AM set.
+## The AM dial plays sound up to this, Hz: AM's narrow audio. FM plays its full
+## range (gonkhub, 2026-10-22: "let the fm converter have clear quality").
 @export var am_audio_hz: float = 5000.0
 ## A signal flare burns this long, s (Flare). The deliveryship fires its
 ## care-package cannon at a lit one it passes this high over, degrees, and the

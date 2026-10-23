@@ -17,7 +17,7 @@ func run() -> void:
 	print("straight %.2f m, round the stake %.2f m" % [straight, cable.span()])
 	check(cable.through == stake and cable.span() > straight, "it runs through the stake, measured round it")
 	check(kite.earthed(), "and that earths the kite's lead")
-	check(cable.joined().is_empty(), "a lead on a hook carries no power")
+	check(cable.joined().is_empty(), "a lead carries no power")
 	check(cable.route(stake) == "" and cable.through == null and not kite.earthed(), "passed again, it comes off")
 	var loose := Catalog.stake()
 	world.content.add_child(loose)

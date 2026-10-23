@@ -1057,15 +1057,13 @@ static func radio(world: World) -> Array[Node3D]:
 	return dropped
 
 
-## A radio with a shortwave converter, switched on to shortwave, a rope hook
-## on its top; the antenna kite set down off it, and a cable from the hook's
-## stem to the kite reel's lead terminal through a stake driven between: use
-## the kite to fly it.
+## A radio with a shortwave converter, switched on to shortwave; the antenna
+## kite set down off it, and a cable from the radio's aerial clip to the kite
+## reel's lead terminal through a stake driven between: use the kite to fly it.
 static func kite(world: World) -> Array[Node3D]:
 	var shortwave := standing(world, &"radio", [&"battery", &"sw_converter"], RADIO_AT) as Radio
 	shortwave.on = true
 	shortwave.switch_band()
-	shortwave.fit(Catalog.part(&"hook"), _open(shortwave, &"radio_top"))
 	var flier := standing(world, &"antenna_kite", [], [RADIO_AT[0] + 4.0, RADIO_AT[1]]) as AntennaKite
 	var stake := Catalog.stake()
 	world.content.add_child(stake)
@@ -1087,19 +1085,13 @@ static func _open(device: Device, kind: StringName) -> Socket:
 
 
 ## The radio of "radio" on the weather station, beside its charged shield,
-## switched off.
+## switched off, a valve preamp in its bay to lift the relay on shortwave.
 static func weather_station(world: World) -> Array[Node3D]:
 	var dropped := radio(world)
 	var tuned := dropped[0] as Radio
-	var reel := standing(world, &"antenna_reel", [], [RADIO_AT[0] - WIRE_M, RADIO_AT[1]]) as AntennaReel
-	reel.clip(tuned)
-	dropped.append(reel)
+	tuned.fit(Catalog.part(&"valve_preamp"), _free(tuned, &"radio_bay"))
 	_on_station(world, tuned)
 	return dropped
-
-
-## The weather scenario's antenna reel stands this far off its radio, m.
-const WIRE_M := 10.0
 
 
 ## A radio switched on and tuned to the weather: far from Port Morgan, the

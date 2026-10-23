@@ -227,7 +227,7 @@ above. So nothing in orbit is heard on the AM dial; under the ceiling is the gro
 | Band | Gets there | Hearing it | Draw | Who's on it |
 |---|---|---|---|---|
 | LW/MW, 150–280 and 530–1700 kHz (the AM dial) | ground wave, and at night past the skip | crystal set, then the field radio | 0, then 2 W | the far gods; the beacon; wrecks calling SOS; the nomads' ghost relay; beacons sending their names in Morse |
-| Shortwave, 2–30 MHz | skip, with a dead zone between | a wire, then a kite | ~1 W | every satellite; the relay repeating Port Morgan Tower; Tu's roar on a timetable; weather maps by fax; numbers stations |
+| Shortwave, 2–30 MHz | skip, with a dead zone between | the bare terminals, then a kite | ~1 W | every satellite; the relay repeating Port Morgan Tower; Tu's roar on a timetable; weather maps by fax; numbers stations |
 | VHF/UHF, 30 MHz–1 GHz | line of sight: height is range | the FM converter, then an FM set; a whip; a handheld beam | 0.5–2 W | Port Morgan Tower and the port's music; the living city's chatter and music; the near gods; ruin intercoms; the skimmer field's navigation beacon |
 | L/S, 1–4 GHz | space | dish, LNB and decoder | 5–10 W | a digital bundle; the deliveryship's downlink |
 | X, 8 GHz and up | deep space | a big dish and a cooled amplifier | high | Varran, and the far end of the lane, from the far side's quiet |
@@ -249,9 +249,8 @@ how Daventry could hear you. The FM converter is the first step, as 1960s conver
 a real FM set the second.
 
 **Built so far:** the crystal set and the field radio in makers' looks; the realistic AM dial; the FM
-converter and band; the shortwave converter and band; the antenna reel and the kite; the misc bay's modules;
-the ferrite rod's null and the direction loop; the survey receiver. **Still direction:** an FM set, the
-dish, decoder and digital, the uplink.
+converter and band, playing FM clear; the shortwave converter and band; the kite; the misc bay's modules;
+the ferrite rod's null; the survey receiver. **Still direction:** the dish, decoder and digital, the uplink.
 
 ### The bands rebuilt (gonkhub, 2026-10-21; built)
 
@@ -287,8 +286,8 @@ again, as Hunter tied it, besides repeating the tower on shortwave.
   dish `relay_fm_db` over a mast, until the ground near you hides it, read `fm_sky_reach_m` out), clean
   anywhere on the near side. Changing station clears the last one's queued words.
 - **Shortwave, the sky's:** every satellite and Tu's roar, and **the relay** at L1 on 7250 kHz, repeating Port
-  Morgan Tower. It's heard as a satellite is (`Radio.receive_from`): faint on a bare shortwave converter,
-  better on an antenna reel's wire, best by a kite. So the weather near the port is FM's, and anywhere on the
+  Morgan Tower. It's heard as a satellite is (`Radio.receive_from`): faint on a bare shortwave converter
+  unless near overhead, far better by a kite. So the weather near the port is FM's, and anywhere on the
   near side with a good rig.
 - **Not yet:** the sleep offer "Until a storm's called" still wakes you by the storm at your camp, while the
   radio it tunes reads the tower's weather.
@@ -306,8 +305,8 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
 - **Quiet, and the headset** (gonkhub, 2026-10-21: "Crystal set should have no adjustable audio, and needs to
   be much quieter. If the player has the headphones module, they can attach it ... to hear more clearly.
   Otherwise, transmissions should remain hardly audible and highly distorted"): no volume knob; it plays
-  `crystal_quiet_db` down and at least `crystal_dirt` dirty. Its tray has one bay; a headset jack in it, the
-  set carried or in your hands, brings it to `crystal_headset_quiet_db` and `crystal_headset_dirt`. Powered
+  `crystal_quiet_db` down and at least `crystal_dirt` dirty. Its tray has one bay; a headset on a cable from it,
+  worn, brings it to `crystal_headset_quiet_db` and `crystal_headset_dirt`. Powered
   modules don't run on it. The deed **Close Listening**: hear a god in its window on a crystal set through a
   headset.
 - **The field radio in makers' looks:** the radio the game always had is company issue (teal and gunmetal),
@@ -325,9 +324,9 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
 
 ### The FM band (built 2026-10-20)
 
-- **The FM converter** (`fm_converter`), a radio mod: 0.6 kg, 0.5 W from the radio's battery or pool, in a
-  socket on the radio's left side (kind `radio_mod`). Found on colonial and First Kingdom shelves and in
-  relay mast cabinets.
+- **The FM converter** (`fm_converter`), a radio mod: 0.6 kg, no power of its own (Radio upgrades vetted,
+  below), in a socket on the radio's left side (kind `radio_mod`). A fairly easy midgame find: First Kingdom
+  shelves (weighted 2), skimmer-era and colonial shelves, and relay mast cabinets.
 - **The band switch** works the radio the tuning actions work: round AM, FM and shortwave through a burst
   of static, skipping a band without its converter. Each band keeps its place; take a converter off and the
   radio goes back to the AM dial.
@@ -340,8 +339,8 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
   2.5 km up.
 - **Its sound.** Over `fm_threshold_db` it quiets over `fm_quiet_db`; under, hiss takes it. No storm static,
   no anomaly crackle. Ground bounce fades it as the radio moves (`Fm.fade_db`), so near the threshold it
-  flutters as you walk. Two within `fm_capture_db` fight. Through the converter it plays as narrow as AM:
-  the AM dial and shortwave play up to `am_audio_hz` (5 kHz), the gap an FM set will open.
+  flutters as you walk. Two within `fm_capture_db` fight. Through the converter it plays FM's full range,
+  clear, while the AM dial and shortwave play up to `am_audio_hz` (5 kHz) (Radio upgrades vetted, below).
 - **The converters' look** (`Dress._converter`): another maker's add-ons after 1960s car-radio FM converters,
   black enamel boxes bolted to the set's side, each with a chrome-rimmed bone face, small dial and needle, a
   knob, a chrome throw and its band's name; the FM one has a three-section whip, the shortwave one brass
@@ -350,8 +349,9 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
 
 ### Shortwave and Tu's roar (built 2026-10-20)
 
-- **The shortwave converter** (`sw_converter`), the FM converter's sibling, 0.6 kg, 0.5 W; the radio's left
-  side takes two mods. Found on skimmer-era shelves and in relay mast cabinets.
+- **The shortwave converter** (`sw_converter`), the FM converter's sibling, 0.6 kg, no power of its own; the radio's left
+  side takes two mods. Late-game tech: found only among the colonial and skimmer eras' best, the deepest
+  sockets of their sites.
 - **The band** runs 2–30 MHz, the dial going on in kHz past the AM dial (`Shortwave`, `sw_notch_khz`, fine
   tuning 1 kHz): "Radio · 29.07 MHz". AM and shortwave share one `frequency`, each keeping its place
   (`am_khz`, `sw_khz`), so skirts and the jammer work unchanged. Nothing on the ground sends here.
@@ -360,25 +360,13 @@ radio and several visual styles," each band its own colour (`game/look/radio_kit
   loudest storms, and while Tu's turn faces its source to Zan (`tu_roar_turn`): a timetable to learn. In a
   storm it comes in slow swells. Seed 1234 at the start, 22 MHz: 13 dB in a storm, silent out of one. The
   deed **Storm on Tu**: hear it.
-- **Not yet:** skip and dead zones for ground stations; Tu's "popcorn" bursts; the roar's own sound.
+- **Not yet:** Tu's "popcorn" bursts; the roar's own sound. Shortwave is for space; no ground stations
+  (gonkhub, 2026-10-22).
 
-### The antenna reel (built 2026-10-21)
+### The antenna reel (built 2026-10-21; scrapped 2026-10-22)
 
-*gonkhub, playtesting a rope line strung to a stake, 2026-10-21: "using a rope for a line to the stake
-doesn't make much sense, and using a stake in this way is not intuitive at all." Chosen: a reel, and a kite
-to lift a wire (below).*
-
-- **The reel** (`antenna_reel`, `AntennaReel`), after the WWII survival radios' aerial reel: copper wire on a
-  drum, 0.8 kg. Use it on a radio and its wire clips to the set's aerial terminal; carry it off and the wire
-  pays out; set it down or stick it anywhere and it stays strung; use it again and it reels in. Past
-  `antenna_reel_m` (30 m) the clip pops off. The look-at line gives how far it's strung. A strung reel
-  survives a save. Found on skimmer-era shelves.
-- **On shortwave the wire is gain** (`Radio.antenna_gain`, `Radio.wire`): on a converter's terminals alone
-  the set hears `sw_bare` of what's sent from above the ceiling; strung `sw_wire_m` it hears all of it,
-  `sw_wire_low` with both ends on the sand, fully with an end `sw_wire_high_m` up. On the AM dial a wire adds
-  nothing: the world's own noise is the floor there. Seed 1234, a satellite overhead: dirt 0.65 on the
-  terminals, 0.03 on 10.4 m.
-- **The deed** Long Wire: hear a satellite clear on an antenna reel's wire.
+*gonkhub, walking through the radio's upgrades, 2026-10-22: "scrap this."* The reel of aerial wire and its
+deed, Long Wire, are gone; Radio upgrades vetted, below, has what changed.
 
 ### The antenna kite and the radio's modules (gonkhub, 2026-10-21; built)
 
@@ -391,10 +379,10 @@ the stake earthing it; the kite placed by the wind rather than flown by physics.
 an earlier reel-flown one.* Numbers from the radio kit lab ([look/radio_kit](../../look/radio_kit/README.md)),
 now in `tuning.tres` (`kite_*`).
 
-- **The rig.** A mount on the radio's top takes a rope hook (socket kind `radio_top`); a fitted hook has a
-  **lead clip** on its stem (kind `lead`), and so does the kite's reel. A cable's plug, plain or strong, fits a
-  lead clip as it fits a port: one plug on the hook, the other on the kite's reel, and the kite is the set's
-  shortwave aerial (`AntennaKite.find_rig`). A lead carries no power. Holding a plug at a **driven stake**,
+- **The rig.** The radio's top has an **aerial clip** (socket kind `lead`), and so do a crystal set's tray
+  and the kite's reel; no hook (Radio upgrades vetted, below). A cable's plug, plain or strong, fits a lead
+  clip as it fits a port: one plug on the set, the other on the kite's reel, and the kite is the set's aerial
+  on every band (`AntennaKite.find_rig`). A lead carries no power. Holding a plug at a **driven stake**,
   use passes the cable through the stake's ring or takes it off, one cable through set, stake and kite, its
   legs measured against its length (`Cable.route`). A snapped strong cable keeps its plugs but connects and
   earths nothing.
@@ -405,11 +393,17 @@ now in `tuning.tres` (`kite_*`).
   flies about 90 m up (measured 87 m), and it sways. Under the lift wind it comes down. It keeps its place in
   the world as the world's origin shifts.
 - **Height is signal:** on shortwave the kite adds about 10 dB a tenfold of height over the whip, to
-  `kite_gain_db`, capped at `kite_gain_most` times a full long wire, so a satellite low over the horizon
-  comes through that the reel's wire loses.
+  `kite_gain_db`, capped at `kite_gain_most` (1 is a satellite heard whole),
+  so a satellite low over the horizon comes through that the bare terminals lose. On the AM dial it is a
+  long wire hung high (`Radio.aerial_am`): what the set hears rises to `kite_am_most` by `kite_am_full_m`
+  up, heard all ways round, so the rod's null is gone while it flies. On FM its height is the set's aerial's,
+  less `kite_fm_feed_db` down its lead (`Radio.receive_fm`). Seed 1234: the Quartermaster 0.70 on an upright
+  rod, 1.41 on the kite; Port Morgan's station 4.5 km off, -0.4 dB on the whip, 6.2 dB on the kite 86 m up
+  (radio probe 79). The deed **Over the Horizon**: hear an FM station clear on a kite that the whip can't.
 - **Static.** Flown high it gathers charge, little in clear air and fast in a front's outflow or a storm, and
-  it raises the set's static (`kite_static`). Past `kite_arc` an arc may jump; it burns out or scorches what it
-  hits: the kite's dipole, the lead, the hook, the shortwave converter, or the set. A crack of sparks, a violet
+  it raises the set's static (`kite_static`). Past `kite_arc` an arc may jump; it burns out or scorches one piece
+  of the chain, any one alike: the kite's dipole, the lead, the converter the set hears it through (none on
+  AM), or the set. A crack of sparks, a violet
   flash and a zap. **Its lead through a driven stake** dumps the charge to earth, so it never climbs to an arc
   (the deed **Grounded**). Unearthed in a 9 m/s breeze the charge arcs within minutes; staked it never does.
 - **Wear,** as a sail's, faster past `kite_harm_ms`; a sandstorm tears it to rags in about 75 s. Its sail
@@ -418,20 +412,89 @@ now in `tuning.tres` (`kite_*`).
   `Dress._module`). Powered ones need the set's power (none on a crystal set):
   - **Bleed resistor:** leaks a kite's charge off (`kite_bleed_tau`), so a breeze never arcs it unearthed; a
     dust front outruns it.
-  - **Valve preamp:** lifts everything heard `preamp_gain` times, so a far god lost in the hiss comes through,
-    for 4 W more.
-  - **Direction loop:** takes the ferrite rod's place, its null deeper and narrower (`loop_width`), and as
-    deep by night's sky wave.
-  - **Static choke:** a storm's static at half, the garbling at 0.6, the signal at 0.8.
-  - **Wire logger:** a report or a god's words read through a signal dirtier than `logger_dirty` it plays
-    back once they're done, from the set's own speaker, clean of the storm.
-  - **Frequency counter:** tuned within `counter_lock_khz` of a carrier, the dial stands right on it.
-  - **Headset jack:** with the set playing and you within `headset_cord_m`, it's in your ears from where it
-    stands, and the wind and storm turned down 14 dB.
-  - **Solar lid:** `solar_w` of cells fill a switched-off set's battery by day, far less on Tu's light.
-- **Found** on skimmer-era floors (the kite), colonial and First Kingdom shelves and relay mast cabinets
-  (the modules). **High Wire:** hear a satellite clear on a kite flown 50 m up. Scenario `kite`. **Not
-  yet:** the kite's pull on its reel; a drawn arc down the lead.
+  - **Valve preamp:** lifts everything heard `preamp_gain` times, so a far god lost in the hiss comes through.
+  - **Static choke:** takes out all of a storm's interference: no storm static, anomaly crackle, garbling,
+    cuts or sliding between the set and what it hears (`Radio.storm_along`). Other static (a jammer's, a
+    kite's) at half, other garbling at 0.6, the signal at 0.8. Seed 1234, the Ledger through a thin storm:
+    dirt 0.62 bare, 0.16 choked (radio probe 62).
+  - **Wire logger:** writes out what comes in over the air: each phrase of a report, an advisory, a god's
+    words or a distress call floats over the set as a subtitle while it's read, clean whatever the signal
+    came through, and stays `logger_hold_s` after (`Radio._show_transcript`). The same size on screen near
+    or far, over the set's whip and any dune between, out to 15 m. A crystal set can't run it (radio
+    probes 63, 73). It no longer plays reports back.
+  - **A headset's cable** (not a module): a cable's plug fits the bay, its other end a headset's jack (below).
+  - **Solar lid:** `solar_w` of cells: by day they run the set, so it draws nothing from its battery while
+    the cells still fill it, switched on or off (`solar_lid_runs_light`); by night, on Tu's light, far less,
+    and a playing set draws on its battery again (radio probe 66).
+- **Found** on skimmer-era floors (the kite), colonial and First Kingdom shelves, every era's shelves (the
+  headset and solar lid) and relay mast cabinets (the modules). **High Wire:** hear a satellite clear on a
+  kite flown 50 m up. Scenario `kite`. **Not yet:** the kite's pull on its reel; a drawn arc down the lead.
+
+### Radio upgrades vetted (gonkhub, 2026-10-22)
+
+*Walking through the radio's upgrades one by one. gonkhub: "make upgrades cost no additional power for
+now," and the FM converter "should be a fairly easy to find midgame upgrade for the radio." Then: "just
+let the fm converter have clear quality." On the shortwave converter: "If the satellite is directly
+overhead, let the signal come through decently, sure"; "Late game tech upgrade. Should be rare or
+restricted to late game areas"; keep the risk of a kite's arc burning it out; "drop the ground stations.
+SW is for space stuff."*
+
+- **No upgrade draws power** for now: the converters, valve preamp and wire logger carry no
+  `draw_w` (they were 0.5, 0.5, 4 and 0.2 W). The powered ones still need a powered set, so a
+  crystal set can't run them (radio probe 73).
+- **The antenna reel is scrapped** ("scrap this"): its item, its deed Long Wire, and
+  the wire's gain. Shortwave hears on the bare terminals, better near overhead, or by a kite. Saves holding
+  a reel wake with an antenna kite (`Catalog.RENAMED`; saves probe 52). The weather scenario and radio
+  probes 13 and 14 lift the relay with a valve preamp in place of the reel's wire.
+- **The FM converter is a midgame find:** First Kingdom shelves weight it 2, and skimmer-era shelves now
+  hold it too, beside colonial shelves and relay mast cabinets.
+- **FM plays clear:** through the converter FM keeps its full range; AM and shortwave stay narrow.
+- **A satellite overhead on bare terminals:** from 60° up the converter's terminals alone hear more, to 0.6
+  by 80° (`sw_bare_overhead`). Seed 1234: the deliveryship overhead 0.60, the windsock low 0.25 (radio
+  probe 78). A kite still does better.
+- **The shortwave converter is late-game:** off skimmer shelves and relay mast cabinets, onto the colonial
+  and skimmer eras' best tables, the deepest sockets.
+- **No ground stations on shortwave:** the planned skip and dead zones are dropped.
+
+*Then, on the kite: "If it's reasonable from a realism perspective to use the kite to amplify AM/FM signals,
+then expand it to also be able to affect those frequencies"; "remove the hook from the setup. Allow a cable
+to connect straight to the top of the radio"; "If an arc charge happens, pick a random equipment in the
+chain. Only one piece is ever damaged"; and "There is another implementation of a kite from Hunter's
+implementations yesterday.. we should act to consolidate approaches and keep things consistent."*
+
+- **The kite on every band.** Realistic: a long wire hung high is the classic mediumwave aerial (Marconi's
+  1901 transatlantic reception hung one from a kite), louder than a ferrite rod but without its null; on
+  VHF, height is line of sight, though a long lead loses some at FM. So on AM it lifts what's heard to 2×
+  and hears all ways round; on FM it lends the set its height, less 2 dB down the lead. On a moon 24 km
+  round, 80 m of height takes Port Morgan's station from about 4 km to about 5.
+- **No hook:** a cable plugs straight into the radio's top aerial clip; a crystal set's tray has one too,
+  a crystal set on a long wire being what they were for. The `radio_top` mount and the hook's lead clip
+  are gone. The kite patch never shipped, so no player save has a hook on a radio.
+- **An arc hits one piece of the chain at random** (`AntennaKite.chain`), all alike.
+- **Consolidating with the salvage kite** (Spaceport candidate): both use `KiteFlight` for the wind angle, sway, settling and wear. The antenna kite retains its own aerial wiring, all-band gain and arc chain; the traction kite loads an ordinary rope.
+- **The bleed resistor stays as it is:** "a stake is stationary," so the bleed is the kite's protection on
+  the move, as the stake is at camp.
+- **The direction loop is scrapped** ("scrap this one"): the ferrite rod is the set's only direction
+  finder. Saves holding one wake with a static choke (`Catalog.RENAMED`). Radio probe 61 went with it.
+- **The static choke eliminates storm interference:** "have it eliminate ALL interference from storms.
+  otherwise good." Its signal cost stays.
+- **The wire logger gives a transcript:** "The wire logger should give a text transcript that shows as a
+  subtitle floating above the radio." It replaces the logger's playback. Real Forward+ captures at 1.6, 6
+  and 12 m checked it reads, clear of the whip, over a dune's lip.
+- **The frequency counter is scrapped** ("scrap this one"): tuning stays by ear. Saves holding one wake
+  with a valve preamp (`Catalog.RENAMED`). Radio probe 64 went with it.
+- **The headset is an item of its own** (`headset`): "just a headset item, that can attach a cable. The
+  other end of the cable can attach to a radio misc mod slot"; and "Common, easy to find upgrade." Two cups
+  on a band, a jack on one. A cable, plain or strong, from its jack to a radio's misc bay carries no power
+  (`Cable.SIGNAL_ONLY`); worn in the suit with its cable in, or in your hands, the set playing is in your ears
+  from where it stands, no panning, the wind and storm 14 dB down (`headset_duck_db`), and a crystal set
+  nearer and cleaner. The cable is the cord: walk past its length and a plug pulls out. On every era's
+  shelves and in relay mast cabinets. Saves with the old jack module wake with a valve preamp. Radio probes
+  65 and 67; saves probe 53 (worn, it survives a save).
+- **The solar lid charges by day even while the set plays:** "Make it always charge during the day, even
+  when on"; and "make it more common": on every era's shelves now, beside colonial ones.
+- **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
+  one misc bay stops forcing a choice between modules.
 
 ### The ferrite rod's null (built 2026-10-20)
 
@@ -440,8 +503,7 @@ now in `tuning.tres` (`kite_*`).
   end-on (`rod_width`) it falls into the null (`rod_null`). Turning finds a station's line by its silence;
   the line runs both ways.
 - **The night effect** (`Dial.by_sky`): a sky-wave station comes down from above and wanders, so its null is
-  only `rod_night_null` deep: night bearings can't be trusted, as real direction finders found. The direction
-  loop module keeps its null deep.
+  only `rod_night_null` deep: night bearings can't be trusted, as real direction finders found.
 - **The deed** Null: turn a radio until a god you hear falls silent. **Not yet:** a sense antenna for which
   way along the line; no rod on shortwave or FM.
 
@@ -467,11 +529,13 @@ labels on the Console Map. No new tier, signal service, asset or Home range.
 
 **As built, 2026-10-22.** Physical ship stores include the optional receiver;
 ordinary wreck/nomad tables provide replacements, field-radio bodies and aerial
-gear. First-use hints explain the existing sets, converters, wire, aerial and
+gear. The 2026-10-23 radio merge retains the direct antenna-kite cable,
+all-band aerial behavior, headset and solar lid. Retired aerial reels, direction
+loops and frequency counters are absent from navigation placements. First-use hints explain the existing sets, converters, aerial and
 Home limits. Console Home marks are filled while live and outlined when stale,
 with explicit labels; a saved stale fix keeps that distinction. Follow the
 Signal continues to record actual receiver approaches to the advertised loot.
-Radio probe 78 checks real ship stores and exposed ordinary salvage within
+Radio probe 80 checks real ship stores and exposed ordinary salvage within
 6 km on the default pulse at departure clock zero, including a real unclaimed
 target and seed 1's walk toward a nomad rig. It expands only the audit index's
 coverage, retaining ordinary terrain, weather, exposure and loot rules.
@@ -912,20 +976,21 @@ One real failure each, in `probes/radio/`:
 - **What you hear:** static with the storm, only when nothing plays (4, 18); storms garble and cut (7, 15,
   19); day and night music, the relay at L1 (5, 13, 17); Clear Skies and the Stoker (11, 12, 14); the Eye's
   drones (16); skirts overlap (31); the jammer and the burn (37); FM line of sight and capture (42, 48);
-  Tu's roar (50); the long wire, the rod's null and the reel (51, 52, 54).
+  Tu's roar (50); the rod's null (52); a satellite overhead on bare terminals (78).
 - **Speech:** only with news, short sentences, advisories once (14); every phrase recorded, from the set's
   own speaker (23); a god's and a beacon's words reach speech (39); station voices keep their timing (46);
   the tower's deliveryship schedule (47); a new FM station clears the old one's words (72).
 - **The set in your hands:** volume (10), tuning and the close view (20, 21), carried in your ears (30),
   marks and lamps (33, 36), the survey receiver's controls (41), the printed dial (74).
-- **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59–66); powered modules
+- **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59, 60, 62, 63, 65, 66); powered modules
   need power (73).
 - **The kite:** it flies on the wind (55); one cable through the stake (56); unearthed it burns out (57); a
-  sandstorm shreds it (58); it follows the world's origin (69); a broken lead can't earth it (70).
+  sandstorm shreds it (58); it follows the world's origin (69); a broken lead can't earth it (70); it's the
+  set's aerial on AM and FM (79).
 - **The sky:** satellites distinct and heard (32), about two up at once (34), the lantern and the
   deliveryship (38).
 - **Frame:** sets don't share effects (40); a song keeps its occurrence and catches up after a glitch (43,
-  44); an old survey receiver keeps its tuning (71); a strung reel and the run's marks survive a save (75);
+  44); an old survey receiver keeps its tuning (71); the run's marks survive a save;
   the tick stays cheap on every band (76, runs alone).
 
 ## Out of scope
@@ -945,7 +1010,7 @@ One real failure each, in `probes/radio/`:
   machine treatment per station, and in tones (Speech).
 - **How far does a radio reach, and how much does an antenna add?** A beacon is heard from 3 km. Under the
   ceiling a bigger antenna adds little, since the world's noise sets the floor; above it an antenna is gain
-  (the reel, the kite), and the price of gain is aim.
+  (the kite), and the price of gain is aim.
 - **Do religious broadcasts have a voice?** Left open: whether they "still have a voice or are just tones and
   numbers," and whether the Ledger still broadcasts. *Answered for the gods:* they are on the air and speak,
   by Hunter's call. Open: whether a second-age broadcast is a god's or its priests'.

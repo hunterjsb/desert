@@ -540,24 +540,31 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			return KiteLooks.packed(size)
 		&"salvage_kite":
 			return KiteLooks.packed(size, KiteLooks.SALVAGE_CLOTH, KiteLooks.SALVAGE_TRIM)
-		&"antenna_reel":
-			# A drum of copper aerial wire between two gunmetal cheeks, a crank on
-			# one, and the wire's clip on its lead.
-			var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
-			var copper := Paint.coat(Paint.COPPER, 0.8, 0.6, 0.4)
-			var turned := Basis(Vector3.FORWARD, PI / 2.0)
-			b.drum(0.035, size.x - 0.03, Vector3.ZERO, copper, turned, 14)
-			for x in [-h.x + 0.008, h.x - 0.008]:
-				b.drum(h.y, 0.012, Vector3(x, 0.0, 0.0), gun, turned, 18)
-			b.box(Vector3(0.01, 0.05, 0.01), Vector3(h.x + 0.008, -0.02, 0.0), steel, 0.002)
-			b.drum(0.008, 0.03, Vector3(h.x + 0.02, -0.045, 0.0), black, turned, 8)
-			b.box(Vector3(0.02, 0.012, 0.03), Vector3(0.0, h.y - 0.004, h.z - 0.004), Paint.coat(Paint.BRASS, 0.8, 0.7, 0.4), 0.002)
 		&"radio", &"radio_colonial", &"radio_skimmer", &"radio_kingdoms", &"radio_second_age":
 			# The field radio in its maker's look, its body alone: its needle,
 			# knobs, lamps and band window are the radio's own, live.
 			return RadioKitLooks.field_radio(Catalog.DEVICES[id].style, {}, &"am", false, true)
 		&"crystal_set":
 			return RadioKitLooks.crystal_set()
+		&"headset":
+			# Two padded cups on a sprung steel band, the jack on the left cup.
+			var pad := Paint.coat(Paint.BLACK, 0.7)
+			var band := Paint.coat(Paint.STEEL, 0.6, 0.6, 0.3)
+			var sideways := Basis(Vector3.BACK, PI / 2.0)
+			var cups := -h.y + 0.04
+			for x in [-1, 1]:
+				b.drum(0.035, 0.03, Vector3(x * (h.x - 0.015), cups, 0.0), pad, sideways, 14)
+				b.drum(0.028, 0.006, Vector3(x * (h.x - 0.033), cups, 0.0), Paint.coat(Paint.BONE, 0.6), sideways, 14)
+			var reach := Vector2(h.x - 0.015, size.y - 0.05)
+			for i in 9:
+				var a0 := PI * i / 9.0
+				var a1 := PI * (i + 1) / 9.0
+				var p0 := Vector2(-cos(a0) * reach.x, sin(a0) * reach.y)
+				var p1 := Vector2(-cos(a1) * reach.x, sin(a1) * reach.y)
+				var mid := (p0 + p1) * 0.5
+				b.box(Vector3(p0.distance_to(p1) + 0.004, 0.006, 0.022), Vector3(mid.x, cups + mid.y, 0.0), band, 0.002,
+					Basis(Vector3.BACK, (p1 - p0).angle()))
+			b.drum(0.006, 0.012, Vector3(-h.x - 0.004, cups, 0.0), Paint.coat(Paint.STEEL, 0.3, 0.9, 0.2), sideways, 10)
 		&"chassis":
 			# A flatbed's section: rails round a ribbed plate, sticky top and
 			# bottom, caps at the corners where it meets the next, and hazard
@@ -901,7 +908,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				b.drum(0.0055, 0.003, at + Vector3(0.0, 0.0015, 0.0), Paint.coat(post[1], 0.3, 0.0, 0.35), Basis.IDENTITY, 10)
 				b.drum(0.0022, 0.006, at + Vector3(0.0, 0.005, 0.0), brass, Basis.IDENTITY, 8)
 				b.drum(0.0042, 0.0028, at + Vector3(0.0, 0.0068, 0.0), brass, Basis.IDENTITY, 8)
-		&"bleed_resistor", &"valve_preamp", &"direction_loop", &"static_choke", &"wire_logger", &"frequency_counter", &"headset_jack", &"solar_lid":
+		&"bleed_resistor", &"valve_preamp", &"static_choke", &"wire_logger", &"solar_lid":
 			_module(b, size, id)
 		&"radar":
 			# A dish on a post, up from the Console's top.
@@ -1197,11 +1204,6 @@ static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 				var a := TAU * i / 6.0
 				b.box(Vector3(0.0018, 0.0018, 0.046), Vector3(cos(a) * 0.012, 0.006 + sin(a) * 0.012, on + 0.024), steel, 0.0)
 			b.drum(0.015, 0.0025, Vector3(0.0, 0.006, on + 0.047), steel, along, 12)
-		&"direction_loop":
-			# A copper loop up off its top on a turning post, a bearing ring under it.
-			b.drum(0.016, 0.004, Vector3(0.0, h.y + 0.002, size.z * 0.5), Paint.coat(Paint.BONE, 0.4), Basis.IDENTITY, 16)
-			b.drum(0.003, 0.03, Vector3(0.0, h.y + 0.017, size.z * 0.5), steel, Basis.IDENTITY, 8)
-			b.ring(0.03, 0.035, Vector3(0.0, h.y + 0.065, size.z * 0.5), copper, Basis(Vector3.UP, 0.4) * Basis(Vector3.RIGHT, PI / 2.0) * Basis(Vector3.RIGHT, PI / 2.0), 14)
 		&"static_choke":
 			# A choke's can, its windings showing through a slot.
 			b.drum(0.017, 0.03, Vector3(0.0, 0.006, on + 0.015), Paint.coat(Color(0.2, 0.38, 0.6), 0.5, 0.5, 0.3), along, 14)
@@ -1214,17 +1216,6 @@ static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 				b.drum(0.013, 0.004, Vector3(x, 0.008, on + 0.004), Paint.coat(Paint.BONE, 0.4), along, 14)
 				b.drum(0.006, 0.005, Vector3(x, 0.008, on + 0.005), copper, along, 12)
 			b.ball(0.003, Vector3(0.04, 0.024, on + 0.002), Paint.coat(Color(1.0, 0.2, 0.1), 0.0, 0.0, 0.3, 0.0, 1.5))
-		&"frequency_counter":
-			# Glowing digits behind a dark window.
-			b.box(Vector3(0.076, 0.026, 0.002), Vector3(0.0, 0.012, on + 0.001), Paint.coat(Color(0.05, 0.03, 0.03), 0.0, 0.0, 0.1), 0.001)
-			_numeral(b, "1020", Vector3(0.0, 0.012, on + 0.0025), 0.016, Paint.coat(Color(1.0, 0.35, 0.12), 0.0, 0.0, 0.3, 0.0, 2.0))
-		&"headset_jack":
-			# A jack, and the headset hung on it by its cord.
-			b.drum(0.005, 0.008, Vector3(-0.03, 0.02, on + 0.004), steel, along, 10)
-			b.ring(0.026, 0.03, Vector3(0.006, 0.0, on + 0.012), Paint.coat(Paint.BLACK, 0.6), Basis.IDENTITY, 10)
-			for x in [-1, 1]:
-				b.drum(0.012, 0.01, Vector3(0.006 + x * 0.028, -0.004, on + 0.012), Paint.coat(Paint.BLACK, 0.6), Basis(Vector3.BACK, PI / 2.0), 14)
-				b.drum(0.01, 0.003, Vector3(0.006 + x * 0.034, -0.004, on + 0.012), Paint.coat(Paint.BONE, 0.6), Basis(Vector3.BACK, PI / 2.0), 14)
 		&"solar_lid":
 			# A lid of cells, hinged open off its top.
 			var lid := Basis(Vector3.RIGHT, -0.5)

@@ -1304,8 +1304,9 @@ its own; everything else sticks on a chassis's sticky faces.
 | Helm seat | | | | use on it sits you at the helm ([Movement](movement.md#sailing-from-kite-to-yacht-agreed-2026-10-18-spec-built)) | stands |
 | Light solar panel | | | 1 | | any face |
 | Hoverboard | 1 | | 1 | | any face; charges from a deck's pool |
-| Radio | 1 | | 1 | two radio mods on its left side (the FM and shortwave converters, 2026-10-20); a misc bay on its right for one module, and a mount on its top for a rope hook, its stem a kite lead's clip (2026-10-21, [Radio](radio-sound-and-atmosphere.md#the-antenna-kite-and-the-radios-modules-gonkhub-2026-10-21-built)) | any face |
+| Radio | 1 | | 1 | two radio mods on its left side (the FM and shortwave converters, 2026-10-20); a misc bay on its right for one module, and an aerial clip on its top for a kite's lead (2026-10-22, [Radio](radio-sound-and-atmosphere.md#the-antenna-kite-and-the-radios-modules-gonkhub-2026-10-21-built)) | any face |
 | Antenna kite | | | | a lead clip on its reel; use flies it and reels it in | any face |
+| Headset | | | | a jack for a cable to a radio's misc bay; worn in the suit with its cable plugged in (2026-10-22) | any face |
 | Heat cutter | 1 | | | | any face |
 | Bedroll | | | | use on it sleeps, and in your hands lays it out ([Survival](survival.md#sleep-as-built-2026-10-18)) | any face |
 | Survival kit | | | | a water and a food socket, 2 standard and 1 pot slot | any face |

@@ -135,9 +135,11 @@ func fits(body: Object) -> bool:
 		return not stake.driven and stake.parts().is_empty() and not _player.waist.carries_line(stake)
 	var device := body as Device
 	if device != null:
+		# A headset's worn with its cable plugged in, trailing to its radio.
+		var worn: bool = Catalog.DEVICES.get(device.get_meta(&"catalog", &""), {}).get("worn", false)
 		return device.carryable and device.host() == null and device.mounted().is_empty() \
 			and not _player.waist.carries_line(device) \
-			and not device.parts().any(_fastens)
+			and (worn or not device.parts().any(_fastens))
 	var part := body as Part
 	if part == null:
 		return false
