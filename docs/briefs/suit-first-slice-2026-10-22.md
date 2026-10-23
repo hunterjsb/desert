@@ -1,8 +1,8 @@
 # Suit and inventory: first playable slice
 
-*Proposal for Hunter, 2026-10-22. Docs only; no build authorization. After Spaceport,
-not 0.4, per the [selected timing](../prd/menus-and-ui.md). All mechanics below are
-proposed unless identified as selected. Sources: [answered concept](inventory-and-suit-modules-2026-10-22.md)
+*Proposal for Hunter, 2026-10-22. **Approved the same day** (“1. yes 2. optional 3. yes 4. yes”): the order, optional
+fitting, an impact-proof starter lamp and the compatibility lamps. Docs only; no build authorization. After Spaceport,
+not 0.4, per the [selected timing](../prd/menus-and-ui.md). The canonical owners record each answer. Sources: [answered concept](inventory-and-suit-modules-2026-10-22.md)
 and canonical decisions at `f9348bb4`; current code audited at `dba4ad92`.*
 
 ## Order: all three, built in steps
@@ -31,13 +31,13 @@ visible. Removing it disables the beam. No Console, tutorial text page or new su
 power meter is needed; [neotech power](../prd/survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
 is already selected to last years. Camp and carried-device batteries remain separate.
 
-Recommend an optional lesson with no new launch blocker. A fitted lamp travels with
+Selected: an optional lesson with no new launch blocker. A fitted lamp travels with
 the wearer; an unfitted lamp in the pod follows physical cargo placement rules.
-Recommend protecting this starter lamp from impact loss in either state. Neither
-recommendation is settled. Departure and recovery hints must reflect its real state;
+Selected: protect this starter lamp from impact loss in either state.
+Other implementation details remain proposals. Departure and recovery hints must reflect its real state;
 an absent lamp cannot produce the current recovery instruction to switch it on.
 
-Proposed compatibility: legacy saves receive one fitted starter lamp exactly once,
+Selected compatibility ([owner](../prd/profile-and-saves.md#starter-headlamp-compatibility-selected-2026-10-22)): legacy saves receive one fitted starter lamp exactly once,
 including old cabin/flight saves; new non-Surveyor origins start with one fitted.
 New Surveyors learn fitting aboard ship. Persist identity and fitted state through
 cabin, departure, impact and reload: never both spawn a starter and migrate one.
@@ -68,9 +68,11 @@ Inspect real GPU captures of grip, layout and beam, then play the cabin-to-dark-
 sequence without coaching. Confirm inventory closes promptly, preserves status access,
 and does not pause the world. Pack deployment and additional modules belong later.
 
-## Hunter's remaining decisions
+## Hunter's answers
 
-- Is headlamp B → physical pack C → broader harness B and carry-view A the right order?
-- May the Surveyor skip fitting before departure, or must fitting be a readiness check?
-- Should the starter lamp survive impact when fitted or packed, as proposed?
-- Approve the one-time fitted lamp for old saves and fitted starts for origins without a ship?
+Hunter, 2026-10-22: “1. yes 2. optional 3. yes 4. yes”.
+
+1. Is headlamp B → physical pack C → broader harness B and carry-view A the right order? **Yes.**
+2. May the Surveyor skip fitting before departure, or must fitting be a readiness check? **Optional:** no launch blocker.
+3. Should the starter lamp survive impact when fitted or packed, as proposed? **Yes.**
+4. Approve the one-time fitted lamp for old saves and fitted starts for origins without a ship? **Yes.**
