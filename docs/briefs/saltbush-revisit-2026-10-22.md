@@ -40,13 +40,56 @@ rejected; neither the Saltbush name nor existing crop code reinstates it.
   These are later ideas, not selected timers; Spaceport's deliberate stamina buffs
   must not quietly become another early race against hunger.
 
-## Three possible promises — none preferred or selected
+## Four possible promises — none preferred or selected
 
 | Candidate promise | Release it would make; exclusions | Depends on what Spaceport leaves behind |
 | --- | --- | --- |
 | **“Your equipment becomes something you wear and unpack.”** | Headlamp first slice plus a snappy physical pack; broader harness follows in the approved order. No required farming, kiln, Mother quest or hardcore layer. | Ship/pod persistence, existing holding and weight carry, stable rest-buff HUD. Needs actual pack interaction/recovery design and compatibility tests. |
 | **“Old waterworks give you a new reason to travel.”** | A bounded Mother Cistern encounter, with an explicitly chosen water benefit. Portable Almanac, full crop roster, mandatory far-side ice travel and hardcore needs stay out. | Navigable expeditions, real sites, water containers/hoses and camp power. Needs an audit of Mother-specific behavior and a chosen discovery → interaction → useful result; no ending or portable god implied. |
 | **“A ruin's furnace turns a find into something useful.”** | One complete kiln processing loop using the selected era forms; choose which forms ship. Repairs, raw-material gathering and farming remain out unless separately reopened. | Coalcane fuel, real power, ruins and cargo mobility. Needs obtainable inputs and an output worth the trip; cannot promise a ceramic repair loop while repairs remain deferred. |
+| **“Better gear opens a journey you could not safely make before.”** | A bounded exploration-progression release across latitude and history: discover useful equipment, reach a meaningfully different destination and return. No automatic farming, repair, hardcore-needs or far-side ice requirement; thermal equipment needs an explicit design if chosen. | Spaceport's ordinary acquisition, kite hauling, navigation and completed trip evidence. Audit era/region availability and thermal gates, finish only the instrument dependencies the chosen journey needs, then prove outward and return legs with ordinary finds. |
+
+## Fourth option: bounded exploration audit (2026-10-23)
+
+The [roadmap](../alpha-roadmap.md) places exploration progression after 0.5:
+“Better gear opens meaningful new journeys across latitude and history.” Bringing
+it forward is only a candidate. This audit reads PRD as-built accounts and loot
+rows at master `553bf37e`, plus held Spaceport text; it is not a new route test.
+
+- **Actual travel limits.** [Survival](../prd/survival.md) describes the existing
+  suit's temperature tolerance and latitude-dependent exposure; neotech power does
+  not imply improved thermal protection. [Shields](../prd/bubble-shield-and-camp.md)
+  describes ordinary bubbles as wind/dust protection, with thermal shielding still
+  future direction. No thermal-suit upgrade appears in the inspected loot tables.
+  [Boards and rigs](../prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)
+  improve speed, carrying and wind travel, constrained by load, battery and weather;
+  these are practical travel limits, not biome unlock switches. Navigation supplies
+  evidence and return bearings, not protection. The antenna kite improves reception;
+  the held traction kite supplies pull, not free hover power.
+- **Where gear comes from.** [SiteLoot](../../game/salvage/site_loot.gd) puts ordinary
+  boards on colonial floors, racers in skimmer floors/best sockets, temple boards in
+  second-age best sockets; nomad sites supply boards, sailing parts and recoverable
+  rigs. Consoles/shields occur in several eras' best sockets and selected wreck/house
+  sockets; colonial infrastructure supplies panels, batteries and chassis. The
+  antenna kite is on skimmer floors. Region rules alter abundance/best-item chances:
+  Han is sparse with more best-table rolls; the far side holds less. Dune-specific
+  sockets supply scoops, sieves and ground radar. These are era/site/region sources,
+  not evidence of a complete biome-by-biome equipment ladder or guaranteed access.
+- **Held Spaceport input, not master.** `origin/verify-navigation-acquisition`
+  (observed `e4710d86`) owns the [radio acquisition account](https://github.com/hunterjsb/desert/blob/verify-navigation-acquisition/docs/prd/radio-sound-and-atmosphere.md#the-survey-receiver-agreed-and-built-2026-10-20)
+  and [traction-kite account](https://github.com/hunterjsb/desert/blob/verify-navigation-acquisition/docs/prd/movement.md#one-line-salvage-kite-hunter-2026-10-20-selected-2026-10-22).
+  Its tables add traction kites to nomad floors/camps and receivers to wreck/nomad
+  sources; receiver and Home also have optional ship-store slots. Three-seed coverage
+  within 6 km includes a Console 5,608 m away on seed 1234; the 1–2 km trip objective
+  is a separate distance. Coverage proves available exposed finds, not intuitive
+  acquisition or a completed outward/return journey. Use the integrated trip's
+  final results after Spaceport; do not treat the controlled kite energy fixture as
+  proof of safe travel through every weather, latitude or era.
+- **Gap to choose, not silently fill.** Select one destination and the useful find
+  that makes it worth reaching, then identify its actual limiting condition. A
+  thermal route lacks an established obtainable protection chain; an information
+  or hauling route needs its equipment dependency and return margin demonstrated.
+  Neither the near/far look-test nor a loot-table entry proves that progression.
 
 ## Questions to ask after release
 
