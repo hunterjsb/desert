@@ -108,7 +108,6 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE and is_instance_valid(shelter) and shelter.get_parent() == null:
 		shelter.free()
-	super._notification(what)
 
 
 func _exit_tree() -> void:
