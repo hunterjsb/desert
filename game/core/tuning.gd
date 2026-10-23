@@ -1246,15 +1246,12 @@ static var _current: Tuning
 ## The radio's misc bay modules. The valve preamp lifts what it hears this
 ## many times; the static choke takes out every storm's interference and leaves
 ## this share of other static (a jammer's, a kite's), this share of the
-## garbling, and this share of the signal; tuned within
-## this far of a carrier, kHz, a frequency counter locks on; the wire
-## logger's transcript stays this long, s, after the last phrase; a headset's cord
+## garbling, and this share of the signal; the wire logger's transcript stays this long, s, after the last phrase; a headset's cord
 ## reaches this far, m, and turns the wind and storm down this many dB.
 @export var preamp_gain: float = 2.0
 @export var choke_static: float = 0.5
 @export var choke_dirt: float = 0.6
 @export var choke_signal: float = 0.8
-@export var counter_lock_khz: float = 8.0
 @export var logger_hold_s: float = 4.0
 @export var headset_cord_m: float = 3.0
 @export var headset_duck_db: float = -14.0

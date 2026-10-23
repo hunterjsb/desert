@@ -418,7 +418,6 @@ now in `tuning.tres` (`kite_*`).
     came through, and stays `logger_hold_s` after (`Radio._show_transcript`). The same size on screen near
     or far, over the set's whip and any dune between, out to 15 m. A crystal set can't run it (radio
     probes 63, 73). It no longer plays reports back.
-  - **Frequency counter:** tuned within `counter_lock_khz` of a carrier, the dial stands right on it.
   - **Headset jack:** with the set playing and you within `headset_cord_m`, it's in your ears from where it
     stands, and the wind and storm turned down 14 dB.
   - **Solar lid:** `solar_w` of cells fill a switched-off set's battery by day, far less on Tu's light.
@@ -435,8 +434,8 @@ overhead, let the signal come through decently, sure"; "Late game tech upgrade. 
 restricted to late game areas"; keep the risk of a kite's arc burning it out; "drop the ground stations.
 SW is for space stuff."*
 
-- **No upgrade draws power** for now: the converters, valve preamp, wire logger and frequency counter
-  carry no `draw_w` (they were 0.5, 0.5, 4, 0.2 and 0.3 W). The powered ones still need a powered set, so a
+- **No upgrade draws power** for now: the converters, valve preamp and wire logger carry no
+  `draw_w` (they were 0.5, 0.5, 4 and 0.2 W). The powered ones still need a powered set, so a
   crystal set can't run them (radio probe 73).
 - **The antenna reel is scrapped** ("scrap this"): its item, its deed Long Wire (the roster is 71), and
   the wire's gain. Shortwave hears on the bare terminals, better near overhead, or by a kite. Saves holding
@@ -477,6 +476,8 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
 - **The wire logger gives a transcript:** "The wire logger should give a text transcript that shows as a
   subtitle floating above the radio." It replaces the logger's playback. Real Forward+ captures at 1.6, 6
   and 12 m checked it reads, clear of the whip, over a dune's lip.
+- **The frequency counter is scrapped** ("scrap this one"): tuning stays by ear. Saves holding one wake
+  with a valve preamp (`Catalog.RENAMED`). Radio probe 64 went with it.
 - **Idea, not built:** "a better radio with more slots, possibly a chassis mounted large receiver," so the
   one misc bay stops forcing a choice between modules.
 
@@ -899,7 +900,7 @@ One real failure each, in `probes/radio/`:
   the tower's drone schedule (47); a new FM station clears the old one's words (72).
 - **The set in your hands:** volume (10), tuning and the close view (20, 21), carried in your ears (30),
   marks and lamps (33, 36), the survey receiver's controls (41), the printed dial (74).
-- **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59, 60, 62–66); powered modules
+- **Tiers and modules:** the crystal set and its headset (67); each misc-bay module (59, 60, 62, 63, 65, 66); powered modules
   need power (73).
 - **The kite:** it flies on the wind (55); one cable through the stake (56); unearthed it burns out (57); a
   sandstorm shreds it (58); it follows the world's origin (69); a broken lead can't earth it (70); it's the

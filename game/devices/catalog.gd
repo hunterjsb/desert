@@ -217,15 +217,12 @@ const PARTS := {
 	# Lifts what it hears out of the hiss.
 	&"valve_preamp": {"kind": &"radio_bay", "label": "Valve preamp", "mass": 0.7,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.42, 0.1), "stats": {"preamp": 1}},
-	# Takes the edge off a storm's hash, and a little of the signal.
+	# Takes out all of a storm's interference, at a little of the signal.
 	&"static_choke": {"kind": &"radio_bay", "label": "Static choke", "mass": 0.5,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.3, 0.55, 0.85), "stats": {"choke": 1}},
 	# Records what comes in on wire, its transcript floating over the set as it's read.
 	&"wire_logger": {"kind": &"radio_bay", "label": "Wire logger", "mass": 0.6,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.85, 0.8, 0.68), "stats": {"logger": 1}},
-	# Reads the frequency exactly: tuned near a carrier, the dial locks onto it.
-	&"frequency_counter": {"kind": &"radio_bay", "label": "Frequency counter", "mass": 0.4,
-		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.9, 0.25, 0.15), "stats": {"counter": 1}},
 	# A headset on its cord: the set in your ears near it, the wind and storm turned down.
 	&"headset_jack": {"kind": &"radio_bay", "label": "Headset jack", "mass": 0.3,
 		"size": Vector3(0.12, 0.095, 0.06), "color": Color(0.1, 0.1, 0.1), "stats": {"headset": 1}},
@@ -246,7 +243,9 @@ const RENAMED := {&"carrot": &"root_tuber", &"fungus": &"vat_fungus", &"carrots"
 	&"antenna_reel": &"antenna_kite",
 	# So was the direction loop (2026-10-22): its saves wake with a static choke,
 	# another bay module.
-	&"direction_loop": &"static_choke"}
+	&"direction_loop": &"static_choke",
+	# And the frequency counter (2026-10-22): its saves wake with a valve preamp.
+	&"frequency_counter": &"valve_preamp"}
 ## Part kinds that go only in a slot of their own, never stuck loose on a
 ## chassis: hooks on rings, plugs in ports, a line's end, a hose's end, crops
 ## in beds, mods in their mounts, a sail on its mast.

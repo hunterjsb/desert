@@ -867,7 +867,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				b.drum(0.0055, 0.003, at + Vector3(0.0, 0.0015, 0.0), Paint.coat(post[1], 0.3, 0.0, 0.35), Basis.IDENTITY, 10)
 				b.drum(0.0022, 0.006, at + Vector3(0.0, 0.005, 0.0), brass, Basis.IDENTITY, 8)
 				b.drum(0.0042, 0.0028, at + Vector3(0.0, 0.0068, 0.0), brass, Basis.IDENTITY, 8)
-		&"bleed_resistor", &"valve_preamp", &"static_choke", &"wire_logger", &"frequency_counter", &"headset_jack", &"solar_lid":
+		&"bleed_resistor", &"valve_preamp", &"static_choke", &"wire_logger", &"headset_jack", &"solar_lid":
 			_module(b, size, id)
 		&"radar":
 			# A dish on a post, up from the Console's top.
@@ -1175,10 +1175,6 @@ static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 				b.drum(0.013, 0.004, Vector3(x, 0.008, on + 0.004), Paint.coat(Paint.BONE, 0.4), along, 14)
 				b.drum(0.006, 0.005, Vector3(x, 0.008, on + 0.005), copper, along, 12)
 			b.ball(0.003, Vector3(0.04, 0.024, on + 0.002), Paint.coat(Color(1.0, 0.2, 0.1), 0.0, 0.0, 0.3, 0.0, 1.5))
-		&"frequency_counter":
-			# Glowing digits behind a dark window.
-			b.box(Vector3(0.076, 0.026, 0.002), Vector3(0.0, 0.012, on + 0.001), Paint.coat(Color(0.05, 0.03, 0.03), 0.0, 0.0, 0.1), 0.001)
-			_numeral(b, "1020", Vector3(0.0, 0.012, on + 0.0025), 0.016, Paint.coat(Color(1.0, 0.35, 0.12), 0.0, 0.0, 0.3, 0.0, 2.0))
 		&"headset_jack":
 			# A jack, and the headset hung on it by its cord.
 			b.drum(0.005, 0.008, Vector3(-0.03, 0.02, on + 0.004), steel, along, 10)

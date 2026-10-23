@@ -325,7 +325,6 @@ kite_wear_wind = 0.0011
 kite_storm_ruin_s = 75.0
 choke_dirt = 0.6
 choke_signal = 0.8
-counter_lock_khz = 8.0
 logger_hold_s = 4.0
 headset_cord_m = 3.0
 headset_duck_db = -14.0

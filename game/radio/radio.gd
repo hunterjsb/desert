@@ -506,23 +506,8 @@ func tune(notches: int, fine := false) -> bool:
 	frequency = clampf(snappedf(frequency + notches * step, snap), _lowest(), _highest())
 	if band == AM_BAND:
 		frequency = Dial.on_dial(frequency, notches > 0)
-	if _runs(&"counter"):
-		_lock_on()
 	_retuned(before)
 	return true
-
-
-## Its frequency counter reads the carrier near the dial exactly: within
-## counter_lock_khz of one, the dial stands right on it.
-func _lock_on() -> void:
-	var nearest := _tuning.counter_lock_khz
-	var on_it := NAN
-	for each in carriers():
-		if absf(each - frequency) < nearest:
-			nearest = absf(each - frequency)
-			on_it = each
-	if not is_nan(on_it):
-		frequency = on_it
 
 
 ## On FM, use sweeps up to the next station, and off past the last, coming
