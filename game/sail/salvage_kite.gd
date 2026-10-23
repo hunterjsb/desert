@@ -215,6 +215,12 @@ func _exit_tree() -> void:
 		_rope.hauls = Callable()
 
 
+func _notification(what: int) -> void:
+	# Release the mesh while its per-kite cloth override is still alive.
+	if what == NOTIFICATION_PREDELETE and is_instance_valid(_wing):
+		_wing.mesh = null
+
+
 func _process(_delta: float) -> void:
 	_orient()
 

@@ -485,6 +485,8 @@ coverage, retaining ordinary terrain, weather, exposure and loot rules.
 Receiver and Home also have real physical ship-store slots; packing and impact
 survival remain the player's risks. The check proves acquisition availability,
 not a complete unassisted expedition. Radio upgrades may be absent locally.
+Buried crystal sets rest on edge, using the existing flat-equipment rule: their
+thin trays cannot lie partly buried while leaving the required height visible.
 
 An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
 bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,

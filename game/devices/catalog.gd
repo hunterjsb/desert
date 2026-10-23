@@ -511,7 +511,7 @@ const DEVICES := {
 	# strong AM carriers near it, faint and chewed up in its earpiece, unless a
 	# headset's jacked into its one bay.
 	&"crystal_set": {"label": "Crystal set", "size": Vector3(0.2, 0.012, 0.13), "mass": 0.5, "radio": true,
-		"crystal": true, "carryable": true, "sticks": true,
+		"crystal": true, "carryable": true, "on_end": true, "sticks": true,
 		"sockets": [[&"radio_bay", Vector3(0.075, 0.006, -0.045), Vector3.UP]]},
 	# An antenna kite on its own reel of flying line (AntennaKite): use it to fly
 	# it up on the wind and again to reel it in; a cable from a radio's top hook
