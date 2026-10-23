@@ -1,3 +1,16 @@
+## 0.4.0-alpha “Spaceport” — development, unreleased
+
+- Fly a found salvage kite on one ordinary line to tow a hoverboard. Downwind travel
+  can draw propulsion from the wind instead of the motor, reducing battery use.
+- Anchor the kite to a camp hook, then reel it in and recover the same line and gear.
+- Find navigation equipment in Surveyor stores and exposed salvage. First-use hints
+  explain its limits, and the Home map distinguishes live fixes from last-known ones.
+- Rest, eat and drink deliberately to gain Rested, Fed and Hydrated stamina benefits;
+  hunger and thirst no longer deplete or cause damage.
+- Keep lost pod cargo from being left attached to a wall that impact has already
+  destroyed.
+- Fix shield-generator teardown so a detached shelter is freed with its owner.
+
 ## 0.3.1-alpha “Leeward Sanddune” — development, unreleased
 
 - Compare your heading and sail trim with an ideal on the Console Map's Nav layer.
