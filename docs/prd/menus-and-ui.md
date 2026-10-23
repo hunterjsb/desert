@@ -10,11 +10,31 @@ Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, 
 
 > it does not need that, but we do want to star thinking about an inventory rework and suit module system.
 
-No wrist instrument is required for Spaceport. Begin thinking about an inventory
-rework and suit-module system; their interactions, layout and scope remain open,
-not 0.4 release dependencies or built features. Existing inventory behavior stays
+No wrist instrument is required for Spaceport. The later answer below selects the
+inventory direction and places it after Spaceport. Existing behavior remains
 as built. [Survival](survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
-owns the selected food/drink buff direction and removal of surfaced hunger/thirst bars.
+owns food/drink buffs; those statuses are not equipment sockets.
+
+### Combined inventory direction and first module (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built. **Timing, 2026-10-22:** after Spaceport. Asked whether it goes in 0.4 or after, Hunter said: “after”.
+
+> A, B and C was my actual vision. B is going to completely overhaul what inventory means. C. needs to feel really good and snappy and white is open you can see the objects physically. A. must be done at some pt.
+
+**SANDGAME's reading:** all three belong in the vision, not competing alternatives.
+B, the visible harness, fundamentally changes inventory. C, the set-down pack, must
+open/use snappily with the objects physically visible while open; “white is open”
+is read as “while it's open”. A, the clearer carry view, is needed at some point.
+This does not settle implementation order, socket counts or pack-opening mechanics.
+
+> 2. start with headlamp. tarkove-style visual layour of your gear in tab. bring it on the pod. that way we can introdice that mecahnic on the ship.
+
+**SANDGAME's reading:** start with a physical headlamp suit module. The inventory
+action opens a Tarkov-style visual arrangement of gear; this selects presentation,
+not an imported slot count, packing puzzle or entire Tarkov inventory system.
+[Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
+owns bringing it on the pod and teaching fitting aboard the ship. The headlamp
+supersedes its built-in status in [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22).
 
 
 ## Why this system exists

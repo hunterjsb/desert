@@ -17,6 +17,18 @@ only colonial/skimmer items, from before Starcom's collapse, can be dragged. Thi
 selected direction, not a claim that existing physics already enforces it. Socket
 interoperability does not grant portability to later-era fixed installations.
 
+### Portable parts from later installations (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+
+> 4. yes some parts that make sense but not all the installations will have them
+
+**SANDGAME's reading:** some later-era installations can yield physically portable
+parts where that makes sense. Not every installation contains one. Extraction does
+not make its fixed host draggable; the whole-installation rule above still applies.
+Which parts, attachment points and sites qualify remains to be designed, not a
+guaranteed core reward, universal dismantling system or new raw-material economy.
+
 
 ## Why this system exists
 
@@ -905,6 +917,12 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
 *[Session 4, part 5](../briefs/gods-gear-farside-2026-10-17.md), section 4; it supersedes the 17 Oct notes'
 "trade-offs, not a ladder" crate table ([Salvage & ruins](salvage-and-ruins.md#gear-and-ruins-by-era)
 has the eras and the ruins). Today there is one crate frame, and none of this is built.*
+
+**Neotech exception (Hunter, 2026-10-22):** the player's suit is “neotech”, “the only
+thing better than colonial”. [Lore](../world/lore-research.md#neotech-the-players-suit-hunter-2026-10-22)
+owns that new technology statement; [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
+owns its power reading. This is not a new historical ruin era or a code/catalog tier
+added by this docs change. Existing era stats and wear remain as built.
 
 **Socket compatibility, not mobility:** the [2026-10-22 restriction](#repairs-and-era-mobility-selected-2026-10-22) supersedes older claims that any era can be dragged.
 

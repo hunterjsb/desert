@@ -5,6 +5,21 @@ falls to Zan seated in it and makes a first camp from whatever survives. This pa
 that opening. It answers to the [vision](../vision.md) and extends [Survival](survival.md).
 Other origins, developer scenarios and saves from before the opening keep their own starts.
 
+## Headlamp fitting on the ship (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+
+> 2. start with headlamp. tarkove-style visual layour of your gear in tab. bring it on the pod. that way we can introdice that mecahnic on the ship.
+
+**SANDGAME's reading:** the headlamp comes on the pod, and fitting it to the suit is
+introduced aboard the ship before arrival. Use the inventory action and its physical
+gear layout, owned by [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22).
+This is a real module introduction, not a newly granted invisible built-in after
+landing. Exact placement, lesson, persistence and any launch-readiness requirement
+remain to design; this decision does not select a mandatory launch blocker or
+change the existing pod manifest. [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
+owns module/power behavior. No milestone assigned.
+
 ## Hunter's decisions
 
 - "Subnautica style launch pod… take apart the launch pod to form your chassis… you have
