@@ -17,6 +17,18 @@ only colonial/skimmer items, from before Starcom's collapse, can be dragged. Thi
 selected direction, not a claim that existing physics already enforces it. Socket
 interoperability does not grant portability to later-era fixed installations.
 
+### Portable parts from later installations (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+
+> 4. yes some parts that make sense but not all the installations will have them
+
+**SANDGAME's reading:** some later-era installations can yield physically portable
+parts where that makes sense. Not every installation contains one. Extraction does
+not make its fixed host draggable; the whole-installation rule above still applies.
+Which parts, attachment points and sites qualify remains to be designed, not a
+guaranteed core reward, universal dismantling system or new raw-material economy.
+
 
 ## Why this system exists
 
@@ -115,7 +127,8 @@ board tie while preserving its other anchor passes (7 s).
   moving"; then, 2026-10-18, the other way round, as lines matter more: the wheel bare reels,
   held with control it moves what you hold): on anything you hold or have hold of, they bring it nearer or push it farther,
   within reason, and never touch a line. *As built:* a notch is 0.25 m. What you carry goes from
-  0.5 m to 2 m in front of your eyes, never nearer than clears you, and still stops short
+  0.5 m to 2 m in front of your eyes, never nearer than clears you (a small thing
+  all the way in rests low in your arms, [Movement](movement.md)), and still stops short
   of the sand or anything in the way; what you have hold of goes from just clear of you
   out to your 2.5 m reach, following only as far as your strength and the slip allow.
 - **Rotate** (Hunter, 2026-10-16): held down, the mouse turns what you hold, or what you
@@ -380,7 +393,8 @@ gives a long view for spotting glints, plumes and storm fronts." Found with the 
   the ground shows from it. 42, the streamer hangs, streams and flaps by the wind, shows a moving
   deck's air, and reads in your suit.
 
-## The Console (proposed; first version built)
+<a id="the-console-proposed-first-version-built"></a>
+## The Console (first version built 2026-10-17; Map filters built 2026-10-22; wider specification open)
 
 *Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)), a voice session. Its own
 framing: "Treat them as direction, not a final spec: the Console's slot layout is explicitly due
@@ -904,6 +918,12 @@ room. Either way the kit's board, hung on the Surveyor's upright, is unchanged.
 "trade-offs, not a ladder" crate table ([Salvage & ruins](salvage-and-ruins.md#gear-and-ruins-by-era)
 has the eras and the ruins). Today there is one crate frame, and none of this is built.*
 
+**Neotech exception (Hunter, 2026-10-22):** the player's suit is “neotech”, “the only
+thing better than colonial”. [Lore](../world/lore-research.md#neotech-the-players-suit-hunter-2026-10-22)
+owns that new technology statement; [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
+owns its power reading. This is not a new historical ruin era or a code/catalog tier
+added by this docs change. Existing era stats and wear remain as built.
+
 **Socket compatibility, not mobility:** the [2026-10-22 restriction](#repairs-and-era-mobility-selected-2026-10-22) supersedes older claims that any era can be dragged.
 
 **All eras interoperate** (Agreed): "any crate takes any module, and there are no per-era compatibility
@@ -1027,7 +1047,8 @@ Readings, not in the session:
   therefore TILG; the successor's issue is a later, current make if/when maker-specific crates
   are built.
 
-## The burner and the humidifier
+<a id="the-burner-and-the-humidifier-proposed-not-built"></a>
+## The burner (built 2026-10-22) and the humidifier (proposed)
 
 The burner is agreed and built through the [coalcane chain](power.md#fuel-crops-and-the-burner-agreed-2026-10-22):
 a deck-mounted device with a fuel hopper and cable port. The humidifier remains proposed.
@@ -1041,16 +1062,10 @@ specified; direction only.*
   for light ([Farming](farming.md#progression-agreed)). Its water and power draw are not said.
 - **The lamp** that grows the office fern is the existing lamp-on-crate snap.
 
-Readings before implementation; the burner choice above resolves its frame and fuel-socket
-questions. The humidifier remains open:
+The burner implementation resolves its frame and fuel-input questions. The humidifier remains open:
 - **"Crate parts like the existing devices" has two readings.** A part fits a socket (a battery, a
-  panel, a hook), and a device is a frame with sockets of its own, and the existing devices include
-  both: the shield and the radio seat on a top mount while the condenser and the charger stand on a
-  deck mount. Which the burner and humidifier are is not said. They would need a fuel input (a stalk
-  of coalcane is neither a battery nor a canister) and a water input, so a frame with its own sockets
-  is the likelier. If so, each gets a row in "what each frame has" below.
-- **The socket kind is open.** A top mount, a deck mount and the planter's mod mount are the
-  candidates for the humidifier, and a new fuel socket for the burner. The session names none.
+  panel, a hook), and a device is a frame with sockets of its own. The humidifier would need water
+  and power inputs; its form and socket kind remain undecided.
 
 ## The kiln (Agreed, session 4, part 5; not built)
 

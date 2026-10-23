@@ -110,6 +110,11 @@ seed 1234, storm threshold -0.15) at 1920x1080, cropped to
 keeps the title readable. PyInstaller now bundles the launcher asset directory so the
 banner appears in packaged builds as well as when run from source.
 
+**Source launch import, 2026-10-22:** before opening a checked-out source worktree in the
+editor or game, the launcher runs Godot's headless import so its class cache and imported
+resources match the current source. The Source page shows an “Updating…” state while this
+runs; downloaded release builds launch directly.
+
 `launcher-release.yml` packages Linux x86_64, Windows x86_64, and macOS arm64 and x86_64
 builds on launcher tags. Its first `workflow_dispatch` packaging run on master passed all
 four platform jobs on 2026-10-20. The workflow was also updated to label the Windows and

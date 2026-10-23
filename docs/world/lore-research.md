@@ -895,6 +895,25 @@ Against session 3's six eras, this table begins at the collapse (its era 5) and 
 falls in the table is not said ([section 16](#16-open-after-session-4-part-2)). Burial doesn't
 need the time: dunes and eruptions bury ruins within centuries.
 
+### Neotech: the player's suit (Hunter, 2026-10-22)
+
+Hunter, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md):
+
+> out suit is neotech. the only thing better than colonial.
+
+**Reading:** the player's suit is neotech, a technology above colonial equipment.
+This is Hunter's new lore statement, not an inferred relic era. It does not add a
+neotech period to Zan's historical sequence, date its invention, name a maker or
+make every present-day object neotech. Those details remain open.
+
+> we have a nano-HeG3N and wont be a problem for years for 3.
+
+**SANDGAME's reading:** a nano helium-3 generator powers the suit for years, making
+suit-module power a non-constraint now. “nano-HeG3N” is preserved as spoken/transcribed;
+the expansion is tentative. [Survival](../prd/survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22)
+owns gameplay implications; no reactor physics, exact lifetime or new fuel supply
+chain is established. Release timing is unassigned.
+
 ### Era names, again (Agreed, session 4, part 4; corrected in part 5)
 
 Session 4, part 4 ([the plants session](../briefs/plants-worldgen-ruins-2026-10-17.md)) renamed the eras for the

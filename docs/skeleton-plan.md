@@ -311,11 +311,12 @@ These probes need content the skeleton doesn't have:
 part 3 (2026-10-17, the lore session) lists seven buildable
 pieces, roughly in order of how soon they could land. The same day's part 4 lists ten of its own,
 which is the newer proposed order ([below](#the-newer-proposed-order-session-4-part-4)); where the two
-overlap part 4's wins. This is a proposed order, not a schedule. None has a stage or a date,
-none is built, and each waits for the skeleton's gate as the full version does. They follow the
+overlap part 4's wins. This is a historical proposed order, not a schedule. The weather-sign plant
+was built with the feral layer on 2026-10-18; the remaining pieces have no stage or date and wait
+for the skeleton's gate as the full version does. They follow the
 existing conventions, with no one-off exceptions in core systems.
-1. **Feral plants as a weather sign.** A plant prop whose pose, open to closed or leaves turning,
-   is driven by the storm intensity curve with some lead time. The curve can already be queried
+1. **Feral plants as a weather sign (built 2026-10-18).** Wild saltbush folds before storms, driven
+   by the storm curve at its location. The wider feral trail and history ideas remain open. The curve can be queried
    ahead ([Wind & storms](prd/wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
 2. **Feral plant lines.** Scatter feral scrub along procedural old-road lines that trend toward
    Cistern shrines or water. Visual only at first, with no gameplay beyond the weather pose
@@ -361,24 +362,32 @@ index) is built (2026-10-17), and its build plan names the five packages that fo
 
 *Session 4, part 4 (2026-10-17, [the plants session](briefs/plants-worldgen-ruins-2026-10-17.md)) lists ten
 steps, "roughly in the order things can land. Follow existing conventions; no one-off exceptions in
-core systems." It is a proposed order, not a schedule: none has a stage or a date, none is built, and
-each waits for the skeleton's gate as the full version does. It is the newer, so it supersedes part
-3's list above where they overlap. [Part 5's list](#the-newest-proposed-order-session-4-part-5), below,
+core systems." It is a historical proposed order, not a schedule. Several items have since been
+built: the feral layer on 2026-10-18 and the coalcane-burner chain on 2026-10-22. Other items
+retain their current status in the linked system PRDs. It is the newer, so it supersedes part 3's
+list above where they overlap. [Part 5's list](#the-newest-proposed-order-session-4-part-5), below,
 is newer still. The session's scope warning stands: "the game has no structures and
-no terrain generation yet. Lore here is deliberately deeper than what should be built now."*
-1. **The crop data model.** Replace carrot and fungus with a data-driven crop definition: family,
+no terrain generation yet. Lore here is deliberately deeper than what should be built now." This
+warning describes the project at that session; world generation and structures have since advanced
+([World & terrain](prd/world-and-terrain.md), [Salvage & ruins](prd/salvage-and-ruins.md)).*
+1. **The crop data model (core built 2026-10-16; first crops and shared growth built 2026-10-17).**
+   The planned roster and some crop behaviors remain open. The original proposal was to replace carrot
+   and fungus with a data-driven crop definition: family,
    water need, light source, growth speed, yield, output type, per-axis tolerances, planter socket
    kind, propagule type and stage behaviour. Root-tuber and vat fungus go in first, as direct
    replacements, then the rest ([Farming](prd/farming.md#the-crop-data-model-the-first-step-of-the-proposed-order)).
-2. **Planter socket kinds.** Small, standard and deep sockets in the typed-socket system, appended to
+2. **Planter socket kinds (built 2026-10-17).** Small, standard and deep sockets in the typed-socket
+   system, appended to
    existing frames and never inserted ([Devices & mods](prd/devices-and-mods.md#slots-and-sticky-faces)).
-3. **Shared growth stages.** Seedling, growing, mature, to seed, with per-crop flags: keeps growing
+3. **Shared growth stages (core built 2026-10-17; some proposed crop behaviors remain open).**
+   Seedling, growing, mature, to seed, with per-crop flags: keeps growing
    (sandroot), storm-burst fruiting, cyclic water output (dewleaf, stormcup), regrow from the stump
    (coalcane), stall until rain (rainseed).
 4. **Propagules and clean against wild.** One pick-up-and-plant mechanic with a propagule item per crop;
    a clean or wild flag that affects yield and output quality; going to seed flips clean toward wild.
-5. **New devices.** The burner (consumes coalcane, produces power) and the humidifier, and the lamp as
-   the office fern's light through the existing lamp-on-crate snap ([Power](prd/power.md#fuel-crops-and-the-burner-proposed-not-built),
+5. **New devices.** The burner that consumes coalcane and produces power is built (2026-10-22); the
+   humidifier remains proposed. The office fern's lamp uses the existing lamp-on-crate snap
+   ([Power](prd/power.md#fuel-crops-and-the-burner-built-2026-10-22),
    [Devices & mods](prd/devices-and-mods.md#the-burner-and-the-humidifier-proposed-not-built)).
 6. **The terrain and history generation phase.** Fixed landmarks placed per seed, then the colonial
    skeleton, then the later layers, as invisible paths. It starts with the colonial skeleton and the
@@ -388,19 +397,20 @@ no terrain generation yet. Lore here is deliberately deeper than what should be 
    table. Then the other eras' kits ([Salvage & ruins](prd/salvage-and-ruins.md#structures-by-era-and-the-loot-model-agreed-session-4-part-4-not-built)).
 8. **Loot relocation.** Move loot out of open sand into the structures' loot tables, keeping a
    low-value drift channel carried by storm wind.
-9. **Wild plant placement.** The feral layer places wild crops by habitat rules: roads, water lines,
-   ruins, hollows and rifts.
+9. **Wild plant placement (feral layer built 2026-10-18; coalcane added 2026-10-22).** The feral
+   layer places its implemented crops by habitat rules. The wider crop roster and some habitats from
+   this proposal remain open.
 10. **Spawn by kit.** Surveyor in deep desert, salvager near wrecks, homesteader on a road.
 
-*Deferred, in the session's own words:* feral plants as a weather sign ("needs the queryable storm
-curve from the sleep work"), storm-only mechanics ([Wind & storms](prd/wind-and-storms.md#storm-only-mechanics-back-burner)),
+*Deferred in the original session's proposed order:* feral plants as a weather sign ("needs the queryable storm
+curve from the sleep work"), later built with the feral layer on 2026-10-18; storm-only mechanics ([Wind & storms](prd/wind-and-storms.md#storm-only-mechanics-back-burner)),
 landmark interiors and heat shields.
 
 **Where it overlaps part 3's list.**
 
 | Part 4 | Part 3 | How they meet |
 |---|---|---|
-| Deferred: the weather sign | 1. Feral plants as a weather sign | Part 4 defers what part 3 put first. **Saltbush is the weather-sign plant**, so the sign is the roster's saltbush with its pose driven by `storm_at`. The dependency part 4 names, a queryable storm curve, is already met ([Wind & storms](prd/wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)), so the deferral is an order choice and not a missing piece. |
+| The weather sign (implemented) | 1. Feral plants as a weather sign | Part 4 historically deferred what part 3 put first. **Saltbush is the weather-sign plant**; the wild layer and its storm-driven pose were built on 2026-10-18. The dependency part 4 named, a queryable storm curve, is met ([Wind & storms](prd/wind-and-storms.md#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)). |
 | 6. The history phase (second-age roads) and 9. Wild plant placement | 2. Feral plant lines along old roads | The same work, split: the roads come with step 6, and the saltbush lines that trace them with step 9. Part 3's "visual only first" is what the lines are until then. |
 | 6. Fixed landmarks per seed | 6. Sister and Mother Cistern as a fixed-coordinate landmark | Sister is one of the eight fixed landmarks (Halfrise is the other second-age anchor), placed per seed and not at fixed coordinates. |
 | 7. The second-age kit (wayshrine, watchtower, house ruin) | 6. Sister (a half-buried temple) | Sister is a landmark, not the kit, but its temple is the second age's biggest piece, so the kit's tables and its exposure states come first. |

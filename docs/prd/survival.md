@@ -64,11 +64,36 @@ radiation reaches the ground.
 First and foremost, you're out here to survive. (Session 4, part 2 gives each start an origin;
 the default is a Tilg & Standard contractor. See [the vision](../vision.md#player-origins-and-kits).)
 
+## Neotech suit and modular headlamp (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built; timing is unassigned.
+
+> out suit is neotech. the only thing better than colonial. we have a nano-HeG3N and wont be a problem for years for 3.
+
+**SANDGAME's reading:** the suit is neotech, above colonial technology. Its power
+source is read as a nano helium-3 generator; that expansion of “nano-HeG3N” is an
+interpretation, not a settled technical name or reactor specification. Suit-module
+power is not a present gameplay constraint: it should last years. This does not
+make camp equipment or carried devices free to power. [Lore](../world/lore-research.md#neotech-the-players-suit-hunter-2026-10-22)
+owns the technology's provenance; no generator output, refuelling loop or timer is set.
+
+> 2. start with headlamp.
+
+**SANDGAME's reading:** the headlamp becomes the first fitted suit module, replacing
+its free built-in status. It uses the suit's effectively ample power, not a new
+battery chore. [Menus](menus-and-ui.md#combined-inventory-direction-and-first-module-selected-2026-10-22)
+owns the visual equipment layout; [Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
+owns the fitting introduction. No changes to built-in air/radiation protection were
+requested. The runtime headlamp is still built in until this direction is implemented.
+
 ## The suit
+
+The headlamp history below describes earlier implementation; the selected modular
+headlamp and ample neotech power above supersede its design status.
 
 - **The suit is the one gift this brutal world gives you.** Its air and radiation
   protection are free, with no power and no bar. You have a sick suit, and you're not
-  dead. So is its **headlamp** (Hunter, 2026-10-16), which comes on by itself in the
+  dead. Historically its **headlamp** was also built in (Hunter, 2026-10-16); it came on in the
   dark, at night or in a storm, so your tracks can be followed when nothing else lights
   the sand. **Switched by hand for now** (Hunter, 2026-10-17: "have b toggle the headlamp
   for now and then add eye adaptation"): its own action turns it on and off, fading
@@ -89,9 +114,9 @@ the default is a Tilg & Standard contractor. See [the vision](../vision.md#playe
   noise of four runs); its shadows would add 0.06 to 0.3 ms. Tuning's Light group
   holds its thresholds and beam.
 - **Losing the suit kills you.** For now that's the whole rule.
-- **It's a device like any other,** with sockets (Devices & mods) plus some built-in
-  features. Fit a heater, a cooler, a water reclaimer, a better battery or harness
-  hooks.
+- **The suit-module direction** starts with a headlamp. Earlier heater/cooler,
+  reclaimer and harness ideas remain unselected; a better suit battery is not a
+  current power-progression requirement under the neotech decision.
 - **It shapes how you tether.** Harness points, how strong a waist line can be, and how
   hard a gust drags you all depend on the suit.
 

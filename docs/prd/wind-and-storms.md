@@ -121,7 +121,7 @@ whether the hardest thing is possible before we depend on it.
 ## Reading the weather
 
 - **Your own senses first:** the wind on you, the colour of the sky, the sound.
-- **The plants** (Agreed, session 4, part 3; not built): feral scrub closes up before a storm,
+- **The plants** (Agreed, session 4, part 3; built 2026-10-18): wild saltbush closes up before a storm,
   a free barometer for anyone ([below](#feral-plants-the-free-barometer-agreed-session-4-part-3-not-built)).
 - **Instruments are finds and upgrades.** A barometer shows a storm coming hours ahead.
   A wind vane shows direction and strength. A weather radio picks up forecasts, and
@@ -138,7 +138,8 @@ was tuned to. Resting on sand, a thing has a friction of 0.5 to beat, so a breez
 leaves a loaded deck be and a storm slides it. Floating, nothing holds it, so it drifts off
 downwind unless it's tied down. That's what rope is for.
 
-### Instruments and the Console screen (proposed; first version built)
+<a id="instruments-and-the-console-screen-proposed-first-version-built"></a>
+### Instruments and the Console screen (first version built 2026-10-17; Map filters built 2026-10-22; wider specification open)
 
 *Hunter, 2026-10-17 ([session](../briefs/console-sensors-sleep-2026-10-17.md)). Direction, not a final
 spec. A first version is built (As built, below).* Weather sensing is "multifaceted: each instrument adds its own
@@ -260,10 +261,12 @@ second of world time.
   whole pass each second of world time, at most 42 by 42 samples, one a cell. At a fast clock both
   go faster, to keep up.
 
-### Feral plants: the free barometer (Agreed, session 4, part 3; not built)
+<a id="feral-plants-the-free-barometer-agreed-session-4-part-3-not-built"></a>
+### Feral plants: the free barometer (built 2026-10-18)
 
-*Session 4, part 3 (lore session); the first piece of its
-build order, and none of it is built.* Feral scrub "closes up or turns its leaves before a storm."
+*Session 4, part 3 (lore session). The wild saltbush weather sign described here is built
+(2026-10-18); see [Farming](farming.md#as-built-the-feral-layer-2026-10-18) and probes 10 and 13.*
+Feral scrub "closes up or turns its leaves before a storm."
 It is "a free, slotless, low-tech barometer for players without weather consoles, and the
 knowledge nomads would have had by heart" ([the
 lore](../world/lore-research.md#life-on-zan-feral-plants-agreed-session-4-part-3)). It sits beside the
@@ -297,21 +300,18 @@ Readings, not in the session:
 
 The plants are also a trail and a source of lore and loot ([Farming](farming.md#feral-plants-and-a-crops-history-agreed-session-4-part-3-not-built)).
 
-**Session 4, part 4 names the plant, and defers it (Agreed).** The weather-sign plant is
+**Session 4, part 4 names the plant and defers it in its proposed order (Agreed).** The weather-sign plant is
 **saltbush**: its leaves fold when pressure drops, protecting the salt bladders, and the Sisters
 seeded it along pilgrim roads, so a line of it is also a trail ([Farming](farming.md#each-crop-ancestor-engineering-drift-and-hooks-agreed)).
 That is the generic feral scrub of part 3 given a species and a reason. The same session puts
 "feral plants as weather sign" among its deferred pieces, "needs the queryable storm curve from the
 sleep work," and orders the plants' placement after world generation. Part 3's order had the weather
-sign first. The newest wins, so it is deferred in the proposed order.
+sign first. That historical ordering was superseded by the built feral layer.
 
-**The dependency it names is already met.** The session waits on "the queryable storm curve from the
-sleep work." That curve exists: `storm_at(place, time)` is a pure function of the run's seed, the
-place and the time, `WeatherField` samples it forward, and the radio's weather station reads it 20
-minutes ahead every 5 seconds (the section above answers the Console session's same question, "yes,
-already"). Nothing in the field or in sleep has to be built first, so the deferral is a matter of
-order, not of a missing piece. A saltbush's pose is `storm_at` at its own place, a lead time ahead.
-It can be built whenever the plant prop exists, and it needs nothing from sleep.
+**The dependency is met in the implementation.** The session waited on "the queryable storm curve from
+the sleep work." That curve exists: `storm_at(place, time)` is a pure function of the run's seed, the
+place and the time, and `WeatherField` samples it forward. The wild saltbush reads the storm at its
+own place, with its leaves folding ahead of it; the behavior and probes are recorded in [Farming](farming.md#as-built-the-feral-layer-2026-10-18).
 
 ## Storms as planning sessions (Agreed, session 4, part 4; not built)
 
@@ -928,9 +928,10 @@ Readings, not in the session:
   with latitude, so the poles are clear and calm, and their price is temperature (owned
   by Survival). Prevailing wind bands by latitude.
 - Storm sizes, from dust haze to an ordinary storm to a great wall.
-- Instruments and forecasts (the Console's set is proposed above).
-- Feral plants as a free weather sign (proposed above; first in part 3's proposed order and
-  deferred in part 4's, the newer: [skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
+- The full instrument and forecast set remains open; the first Console instruments and weather map are built.
+- Feral-plant trails and their history remain open; wild saltbush as a free weather sign is built
+  (2026-10-18). Its placement was deferred in session 4, part 4's proposed order, then implemented
+  with the feral layer ([skeleton plan](../skeleton-plan.md#the-newer-proposed-order-session-4-part-4)).
 - Real dune shapes facing the prevailing wind (decided; see World & terrain).
 - Wind particles and sound, with Sand Game's particles and recordings as the reference.
 - **Storms wear dunes down** (Hunter, 2026-10-17, loose: "later on in the game, when we

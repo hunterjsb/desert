@@ -10,11 +10,31 @@ Hunter, 2026-10-22; submitted decisions `1bbceea8-b056-493d-8fbe-a12498c61c3c`, 
 
 > it does not need that, but we do want to star thinking about an inventory rework and suit module system.
 
-No wrist instrument is required for Spaceport. Begin thinking about an inventory
-rework and suit-module system; their interactions, layout and scope remain open,
-not 0.4 release dependencies or built features. Existing inventory behavior stays
+No wrist instrument is required for Spaceport. The later answer below selects the
+inventory direction and places it after Spaceport. Existing behavior remains
 as built. [Survival](survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22)
-owns the selected food/drink buff direction and removal of surfaced hunger/thirst bars.
+owns food/drink buffs; those statuses are not equipment sockets.
+
+### Combined inventory direction and first module (selected 2026-10-22)
+
+Hunter, 2026-10-22, answering the [inventory/suit concept](../briefs/inventory-and-suit-modules-2026-10-22.md). Quotes retain speech-to-text wording; readings are attributed separately. Selected direction, not built. **Timing, 2026-10-22:** after Spaceport. Asked whether it goes in 0.4 or after, Hunter said: “after”.
+
+> A, B and C was my actual vision. B is going to completely overhaul what inventory means. C. needs to feel really good and snappy and white is open you can see the objects physically. A. must be done at some pt.
+
+**SANDGAME's reading:** all three belong in the vision, not competing alternatives.
+B, the visible harness, fundamentally changes inventory. C, the set-down pack, must
+open/use snappily with the objects physically visible while open; “white is open”
+is read as “while it's open”. A, the clearer carry view, is needed at some point.
+This does not settle implementation order, socket counts or pack-opening mechanics.
+
+> 2. start with headlamp. tarkove-style visual layour of your gear in tab. bring it on the pod. that way we can introdice that mecahnic on the ship.
+
+**SANDGAME's reading:** start with a physical headlamp suit module. The inventory
+action opens a Tarkov-style visual arrangement of gear; this selects presentation,
+not an imported slot count, packing puzzle or entire Tarkov inventory system.
+[Surveyor opening](surveyor-opening.md#headlamp-fitting-on-the-ship-selected-2026-10-22)
+owns bringing it on the pod and teaching fitting aboard the ship. The headlamp
+supersedes its built-in status in [Survival](survival.md#neotech-suit-and-modular-headlamp-selected-2026-10-22).
 
 
 ## Why this system exists
@@ -268,7 +288,7 @@ is a menu of its own, reached from the main menu and the system menu.
 
 **Built** (2026-10-18, `game/ui/deeds_grid.gd`), after Hunter's "show relations and a hierarchy":
 Deeds stands under New game on the main menu and under Options in the system menu. It opens a tree
-of every deed under how many show done ("16 of 44 deeds"), with Back: a branch or two for each family
+of every deed under the current completed and total counts, with Back: a branch or two for each family
 (Board, Wind, Weather, Camp, Farming, Ruins, Scrap, Signals, Far, Story, Nomad since round two,
 2026-10-19, named down the left), each deed a step right of the furthest it waits on, and a line across
 from each to what it opens, brighter once that's open. It's laid out as every menu is where it opens:
@@ -421,7 +441,7 @@ four steps of 190 px cards); over a run, in the middle on the soft dark field.
   Under it, the save's numbers: time played, when it was saved by the clock on the wall
   (today 13:40, yesterday 21:05, 3 days ago), the run's day (counted from its own start, the
   day it began day 1), and who you came as; then how many
-  deeds show done ("Deeds 6 of 15"). A save
+  deeds show done using the current completed and total counts. A save
   from before time played was kept lists the rest. Confirm carries on; back goes back.
 - **Music** at the main menu: Hunter's "Salt" (`assets/audio/menu_theme.ogg`, 80 s, looping,
   stereo), from its start as the menu's desert shows, on the menus' bus while the menu's storm

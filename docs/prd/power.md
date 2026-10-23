@@ -90,8 +90,9 @@ lets wind through, like the late-game temperature shield. That trade-off comes f
 the felt-weather rule.
 
 <a id="fuel-crops-and-the-burner-proposed-not-built"></a>
+<a id="fuel-crops-and-the-burner-agreed-2026-10-22"></a>
 
-## Fuel crops and the burner (agreed 2026-10-22)
+## Fuel crops and the burner (built 2026-10-22)
 
 **Hunter, 2026-10-22:** "coalcane is a go", the roadmap's farming-and-processing stretch goal, as one
 complete chain: grow coalcane, burn it in the burner, power at night and through storms.

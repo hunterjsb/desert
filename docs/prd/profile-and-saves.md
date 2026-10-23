@@ -803,15 +803,14 @@ call, alongside its persistent one-call flag. Developer scenarios/commands do
 not award it, following the existing deed contract.
 
 
-**Manual hoist deed (2026-10-20).** All Hands brings the roster to 55 deeds
-in eleven families. It is recorded where a worked hand winch winds an actual
-halyard to the configured raised fraction; setting cloth height or loading a
+**Manual hoist deed (2026-10-20).** All Hands adds the manual-hoist deed to its existing
+family. It is recorded where a worked hand winch winds an actual halyard to the configured raised fraction; setting cloth height or loading a
 save alone does not award it. Mast hoist/legacy state joins ordinary rig state;
 the existing line/end/guide references preserve its physical halyard route.
 
 ### Home identity and return (2026-10-20; integration verification pending)
 
-Home Again adds one deed, bringing the roster to 56 in eleven families. CampHome
+Home Again adds one deed in the Camp family. CampHome
 records it on returning within 30 m after a departure of at least 700 m, while
 support is ready. The saved Home contains stable assembly/member references,
 its geographic anchor, local poses and last received fix. Snapshot prepares the
@@ -822,8 +821,7 @@ safe unmark after return; broader combined verification remains pending.
 
 ### Surveyor arrival and recovery (development, 2026-10-20)
 
-Making Landfall adds one camp deed, bringing the integrated development roster to
-57 in eleven families. Hands records it when a physical surviving pod object is
+Making Landfall adds one Camp deed. Hands records it when a physical surviving pod object is
 taken; generation and restoration do not award recovery or construction deeds.
 Snapshot stores arrival phase/elapsed time, resolved survivors and recovery flags,
 and reconnects roles through actual object references, including held objects and
@@ -835,9 +833,7 @@ rerooted panel saves; combined CI and playtest acceptance remain pending.
 
 A Moment's Rest (`ground_rest`, camp family, bedroll icon) records the first
 successful voluntary ground sit or lie. Together with Home Again and Making
-Landfall, it brings the integrated development roster to 58 deeds in eleven families (55 released baseline plus
-three additions). Loading a save must not record it again. Posture
-persists independently of the transient camera transition, with standing as
+Landfall, it adds a deed to the Camp family. Loading a save must not record it again. Posture persists independently of the transient camera transition, with standing as
 the default for saves written before this feature.
 
 
@@ -846,8 +842,7 @@ the default for saves written before this feature.
 Flight Plan (`flight_plan`, signals family, radio icon) records the first time
 you hear Port Morgan Control Tower read the deliveryship's schedule on FM (Radio
 probe 47); since the bands were rebuilt (2026-10-21), hearing Port Morgan Tower's
-report, the weather at the tower and then the schedule. With the radio progression's five, the roster is 64 deeds in eleven
-families.
+report, the weather at the tower and then the schedule. It is one of the radio-progression deeds.
 
 ### Radio upgrades' deeds (2026-10-21; implemented development)
 
@@ -857,7 +852,7 @@ the bands rebuilt, is hearing a wreck's distress call whole on the AM dial.
 *Merged 2026-10-21:* the kite from the radio broadcasts work replaced this
 branch's reel-flown one, so its High Wire and Grounded (radio probes 55-58)
 stand in for Sky Wave and the earth stake's Grounded, and Whistler went with
-natural radio: 69 deeds in eleven families (`Deeds.TABLE`).
+natural radio: the current roster, which is owned by `Deeds.TABLE`.
 
 
 **Combined development resume check (2026-10-20).** The preparatory Sanddune
@@ -880,19 +875,18 @@ untie timing is transient; taking a snapshot does not mutate a live interaction.
 **Make Fast** belongs to Wind after Set Sail. Record it when an ordinary player
 placement finishes securing a gathered group with at least two distinct live
 lines to one anchor. Gathering, dropping, failed placement and restore do not
-record it. Its card uses the existing stake image. This adds one candidate deed,
-bringing the development roster from 64 to 65 in the same eleven families;
-the real placement check passes (Rope 30, 7 s) and real save/resume passes
+record it. Its card uses the existing stake image. This adds one candidate deed to the Wind
+family; the real placement check passes (Rope 30, 7 s) and real save/resume passes
 (Save 46, 19 s). Gathering alone does not award it; ordinary anchoring does.
 Combined candidate verification remains pending.
 
 **Whistler cut (2026-10-21).** Natural radio went when the AM dial became a real
 set's longwave and mediumwave (Radio, sound & atmosphere), and its deed with it:
-the roster is 64 in the same eleven families. A profile that earned it keeps
+the deed was removed from the current roster. A profile that earned it keeps
 its record, unshown: the deeds grid lists only `Deeds.TABLE`.
 
 **High Wire and Grounded (2026-10-21).** The antenna kite brings two signals
-deeds (Radio, sound & atmosphere): the roster is 66 in the same eleven families.
+deeds (Radio, sound & atmosphere) add two entries to the Signals family.
 
 ## Surveyor preflight deeds (selected 2026-10-21; candidate)
 
@@ -900,13 +894,12 @@ Plot a Course records an actual valid choice through the ship's launch computer;
 Drop In records successful committed launch from the loaded pod. Both belong to
 Camp, with Drop In following Plot a Course, using existing Console/chassis art.
 Restoring a plan, reconstructing the cabin or resuming flight records neither.
-With the radio's deeds and the antenna kite's (above), these two bring the
-roster to 71 deeds in the same eleven families.
+They add two deeds to the Camp family alongside the radio and antenna-kite deeds above.
 Preflight saves retain actual object references and the selected plan/cargo,
 not a second kit grant. Integrated evidence remains pending.
 
 **Summit deed (2026-10-22).** Above the Dunes (`summit`, far family, summit mark)
-records standing on a mountain's summit structure; the roster is 72 deeds.
+records standing on a mountain's summit structure.
 
 ## Towing and gathering deeds (2026-10-22)
 
@@ -914,20 +907,17 @@ The board's powered towing and gathering several line ends in one hand came with
 **Pack Mule** (Board, after Frequent Flyer) is driving a loaded line along with the board's
 motor, recorded by the ride; **Bogged Down** (Board, after Pack Mule) is loading that motor
 until it sputters. **Fistful** (Wind, after Set Sail) is gathering a second line's end into the
-hand, recorded by the waist as the end joins the knot; Make Fast now follows it. Three more
-deeds in the same eleven families; with the summit deed the roster is 75.
+hand, recorded by the waist as the end joins the knot; Make Fast now follows it. Three more deeds
+across the Board and Wind families, following the summit deed.
 
 ## Lookout (2026-10-22)
 
 Climbing into a crow's nest on a standing mast records **Lookout** (Wind, after
-Hand-Me-Down): the nest is the nomads' gear and came without one. The roster is
-76 deeds in eleven families. Devices 41 checks it.
+Hand-Me-Down): the nest is the nomads' gear and came without one. Devices 41 checks it.
 
 ## Sailing learning aid deed (2026-10-22)
 
 Learning the Ropes (`sail_by_wire`) follows All Hands in the wind family. It is
 recorded at the real drum when a Console actually changes a raised, loaded sail's
-sheet; selecting a control mode alone earns nothing. This brings the roster to
-81 deeds in eleven families. The course and Home choice
-are saved with the Console, while automatic control resumes in hand mode.
+sheet; selecting a control mode alone earns nothing. This adds the learning-aid deed to the Wind family. The course and Home choice are saved with the Console, while automatic control resumes in hand mode.
 The controls are described in [Movement](movement.md#sailing-learning-aid-selected-2026-10-22-built).

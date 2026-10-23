@@ -62,15 +62,15 @@ upgrade the camp → the camp sustains more of itself → go further, or into th
   on caterpillar tracks, is strong for the camp but slows you down.
 - **Parts are found, never crafted** (for now), and they wear out only from the
   elements. Salvage is the whole economy.
-- **The farm is a roster of crops with a history** (Agreed, session 4, part 4; not built). The
-  carrots and fungus are placeholders for eleven Earth-lineage crops that colonial biotech engineered
-  and that went feral, in two families, one that runs on light and one on dark and humidity. Early on,
-  weather decides what you can grow; late, shields take the weather away and light and water become
-  the managed inputs. One shared system, with a unique feel per item: differences come from data
+- **The data-driven farm and feral crop layer are partly built** (feral layer, 2026-10-18). The
+  original carrot and fungus placeholders have been replaced by root-tuber, vat fungus, saltbush and
+  coalcane systems. The full Earth-lineage roster and crop-history loop remain direction. Early on,
+  weather decides what you can grow; later, light and water become managed inputs
   ([Farming](prd/farming.md#the-plant-system-agreed-session-4-part-4-partly-built)).
-- **The camp may get a computer, and a bed** (Hunter, 2026-10-17, proposed and loose). A Console
-  reads the weather instruments onto a screen ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built)),
-  and sleep may skip the wait on a long storm ([Survival](prd/survival.md#sleep-proposed)).
+- **The camp has a Console and bedroll sleep** (first versions built 2026-10-18; Map filters built
+  2026-10-22). The Console reads weather instruments onto a screen, and sleep can skip the wait on a
+  long storm ([Devices & mods](prd/devices-and-mods.md#the-console-proposed-first-version-built),
+  [Survival](prd/survival.md#sleep-as-built-2026-10-18)).
 - **The camp moves at walking pace, and storms are weathered, not outrun.** Each storm
   is a judgment call: stay and let it pass, or push through inside the bubble. Early on,
   a post or ruin to tie to is precious.

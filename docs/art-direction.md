@@ -1113,4 +1113,4 @@ are drawn only for their shadow and for others; the slim chest stays below and b
 (gonkhub chose it over hiding the torso). The gloves take what you hold by its real sides and the
 arms keep their lengths; vaulting, empty hands reach for the ledge and a knee gathers. How it moves
 and what it costs are in [Movement](prd/movement.md#your-body-2026-10-21). Look-test:
-`look/player_body`.
+`look/player_body`; held things, `look/player_body/held.tscn`.
