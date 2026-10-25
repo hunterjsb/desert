@@ -46,11 +46,14 @@ func run() -> void:
 			for entry: Array in table:
 				if not ids.has(entry[0]):
 					ids.append(entry[0])
+	# Each laid find still settles tick by tick; only the wall clock runs faster.
+	speed_up(6)
 	for id in ids:
 		if not kinds.has(id):
 			kinds[id] = true
 			await _check_laid(id, Catalog.DEVICES.has(id) or id == &"stake", laid, tally, worst)
 			laid += 1
+	speed_up(1)
 	print("%d buried (%d deep) and %d loose (%d on a ruin's floor), %d kinds laid by hand; worst depth error %.4f m, worst rest %.3f m"
 		% [tally.buried, tally.deep, tally.loose, tally.floor, laid, worst.depth, worst.rest])
 	check(tally.buried >= 20 and tally.loose >= 5 and tally.floor >= 3, "finds of every kind were checked")
