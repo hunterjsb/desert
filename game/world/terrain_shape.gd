@@ -139,6 +139,75 @@ func held(i: float, j: float) -> float:
 	return h
 
 
+## The bare dunes' lattice under a world rectangle, read once for the many
+## highest_in and held_height_at a big body's shapes ask inside it; null
+## where a structure's ground may lie in it, or it's too big to be worth it.
+## Asked of anywhere outside it, it asks the shape.
+func patch_in(x0: float, z0: float, x1: float, z1: float) -> Patch:
+	var patch := Patch.new()
+	patch.shape = self
+	patch.x0 = x0 - Patch.MARGIN
+	patch.z0 = z0 - Patch.MARGIN
+	patch.x1 = x1 + Patch.MARGIN
+	patch.z1 = z1 + Patch.MARGIN
+	patch.i0 = floori(patch.x0)
+	patch.j0 = floori(patch.z0)
+	patch.across = floori(patch.x1) + 2 - patch.i0
+	var rows := floori(patch.z1) + 2 - patch.j0
+	if not (patch.across * rows <= Patch.MOST) or not sites.bare_in(patch.x0, patch.z0, patch.x1, patch.z1):
+		return null
+	patch.narrowest = sites.narrowest()
+	patch.heights.resize(patch.across * rows)
+	for b in rows:
+		for a in patch.across:
+			patch.heights[b * patch.across + a] = held(patch.i0 + a, patch.j0 + b)
+	return patch
+
+
+class Patch:
+	## Read this far past what it's asked for, m, and at most this many points.
+	const MARGIN := 1.0
+	const MOST := 4096
+	var shape: TerrainShape
+	## World metres it holds, at full precision; its first lattice point, and
+	## points a row.
+	var x0: float
+	var z0: float
+	var x1: float
+	var z1: float
+	var i0: int
+	var j0: int
+	var across: int
+	var heights := PackedFloat64Array()
+	var narrowest: float
+
+	## TerrainShape.highest_in, with no structure inside it to look for.
+	func highest_in(from_x: float, from_z: float, to_x: float, to_z: float) -> float:
+		if not (from_x >= x0 and from_z >= z0 and to_x <= x1 and to_z <= z1):
+			return shape.highest_in(from_x, from_z, to_x, to_z)
+		if not (to_x - from_x <= narrowest and to_z - from_z <= narrowest):
+			return INF
+		var top := -INF
+		for j in range(floori(from_z), floori(to_z) + 2):
+			for i in range(floori(from_x), floori(to_x) + 2):
+				top = maxf(top, heights[(j - j0) * across + i - i0])
+		return top
+
+	## TerrainShape.held_height_at, with no structure inside it to look for.
+	func held_height_at(x: float, z: float) -> float:
+		if not (x >= x0 and z >= z0 and x <= x1 and z <= z1):
+			return shape.held_height_at(x, z)
+		var i := floorf(x)
+		var j := floorf(z)
+		var fx := x - i
+		var fz := z - j
+		var k := (int(j) - j0) * across + int(i) - i0
+		if fx == 0.0 and fz == 0.0:
+			return heights[k]
+		return TerrainShape.across(fx, fz, heights[k + 1], heights[k + across],
+			heights[k] if fx + fz <= 1.0 else heights[k + across + 1])
+
+
 ## Between lattice points: the triangle a point falls in, split from (i+1, j)
 ## to (i, j+1) as the mesh and collision split each square. east is (i+1, j),
 ## south (i, j+1), and corner (i, j) when fx + fz <= 1, else (i+1, j+1).

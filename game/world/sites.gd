@@ -261,6 +261,19 @@ func covering(x: float, z: float) -> Structure:
 	return null
 
 
+## Whether covering() is null all over a world rectangle: no structure is
+## listed in any chunk it touches.
+func bare_in(x0: float, z0: float, x1: float, z1: float) -> bool:
+	if not _built:
+		return true
+	for cz in range(floori(z0 / _size), floori(z1 / _size) + 1):
+		for cx in range(floori(x0 / _size), floori(x1 / _size) + 1):
+			for site: Site in _sites.get(Vector2i(cx, cz), []):
+				if site is Structure:
+					return false
+	return true
+
+
 ## A structure of a kind made by hand at a world place, facing `bearing`,
 ## lying `depth` m deep and leaning `lean` rad, surveyed: what the dev
 ## console, probes and look-tests stand where they need one. Not laid.
