@@ -130,6 +130,20 @@ func draw_w() -> float:
 	return (_tuning.board_hover_w + _tuning.board_push_w * push + tow_work_w) * BoardMakes.of(BoardMakes.make_of(self)).draw
 
 
+## Keeping the ridden board afloat, independent of how its rider is propelled.
+func hover_w() -> float:
+	if rider == null or wrecked():
+		return 0.0
+	return _tuning.board_hover_w * BoardMakes.of(BoardMakes.make_of(self)).draw
+
+
+## Electrical input commanded at the motor, including its work against a line.
+func propulsion_w() -> float:
+	if rider == null or wrecked():
+		return 0.0
+	return (_tuning.board_push_w * push + tow_work_w) * BoardMakes.of(BoardMakes.make_of(self)).draw
+
+
 ## One tick ridden: what it drew over its own `seconds`, spread over the world
 ## time they took, from..to.
 func meter(from: float, to: float, seconds: float) -> void:

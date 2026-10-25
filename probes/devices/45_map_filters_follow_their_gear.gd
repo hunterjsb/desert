@@ -25,6 +25,17 @@ func run() -> void:
 		want.append(gear[0])
 		var shown := _shown(made)
 		check(_same(shown[0], want) and _same(shown[1], want), "%s given: %s offered and laid (%s)" % [gear[1], want, shown])
+	var live := Chart.layer(made)
+	var beacon := world.home.beacon
+	beacon.powered = false
+	var saved := world.home.snapshot(func(body: Node) -> int: return body.get_instance_id())
+	world.home.prepare_restore(saved)
+	var stale := Chart.layer(made)
+	check(live.live and not stale.live and live.rows != stale.rows and live.home == stale.home,
+		"a saved last-known Home fix has a different label from the same live fix")
+	world.home.finish_restore(saved, func(id: int) -> Object: return instance_from_id(id))
+	beacon.powered = true
+	world.home.refresh()
 	for name: String in want:
 		_press(made, name)
 		var shown := _shown(made)

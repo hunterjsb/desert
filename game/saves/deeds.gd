@@ -47,6 +47,8 @@ const TABLE := {
 	&"yard_sale": {"name": "Yard Sale", "asks": "Tumble %s m in one wipeout", "family": &"board",
 		"after": [&"board_height"], "icon": &"board", "goal": "deed_tumble_m", "unit": "m", "step": 1.0, "hidden": true},
 	&"sail_waist": {"name": "Set Sail", "asks": "Tie a sail's sheet at your waist", "family": &"wind", "icon": &"sail"},
+	&"kite_board": {"name": "Kite Rider", "asks": "Ride a board %s m under a loaded kite", "family": &"wind",
+		"after": [&"sail_waist"], "icon": &"salvage_kite", "goal": "deed_kite_m", "unit": "m", "step": 10.0},
 	&"gather_lines": {"name": "Fistful", "asks": "Gather two lines' ends into one hand", "family": &"wind",
 		"after": [&"sail_waist"], "icon": &"hook"},
 	&"make_fast": {"name": "Make Fast", "asks": "Secure gathered lines to one anchor", "family": &"wind",

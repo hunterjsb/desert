@@ -5,6 +5,7 @@
 [resource]
 deed_fairlead_n = 10.0
 deed_fairlead_seconds = 1.0
+deed_kite_m = 100.0
 script = ExtResource("1_tuning")
 run_seed = 0
 moon_circumference = 150000.0
@@ -514,3 +515,14 @@ airdrop_roll_share = 0.5
 airdrop_skid = Vector2(7, 3)
 airdrop_settle_seconds = 7.0
 airdrop_packed_share = 0.75
+
+traction_area_m2 = 5.5
+traction_scale = 2.875
+traction_catch = 0.7
+traction_vertical_drag = 1.2
+traction_line_m = 55.0
+traction_payout_ms = 3.0
+traction_launch_slack_m = 1.5
+traction_toss_ms = 2.0
+traction_spin_damp = 4.0
+traction_deed_load_n = 15.0

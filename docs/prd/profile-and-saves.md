@@ -274,6 +274,7 @@ the frame is a part stuck on the deck.
 | Camp | **On Reserve** | Run your camp on a power box's batteries | All Mod Cons | `Power`'s tick: a pool drawing more than it makes, carried through, a power box in it with a charged bay supplying. Built 2026-10-22 |
 | Board | **Yard Sale** (hidden) | Tumble 12 m in one wipeout | Big Air | `Tumble`'s tick: how far you've tumbled since you were thrown off ([Movement](movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)). Built 2026-10-19 |
 | Wind | Set Sail | Tie a sail's sheet at your waist (as now) | | your waist |
+| Wind | **Kite Rider** | Ride a board 100 m under a loaded kite | Set Sail | The salvage kite's tick: real board travel while its ordinary line is loaded and the kite does positive work on the rider; `deed_kite_m` sets the distance. See [Movement](movement.md#one-line-salvage-kite-hunter-2026-10-20-selected-2026-10-22) |
 | Wind | **Fairlead** | Redirect a loaded rope through a fitted hook | | `Line`: a player-routed guide carries at least 10 N sustained load for one second; saved routing retains the real guide reference |
 | Wind | **Quick Haul** | Yank a loaded rope through your hands | | `Reel`: a yank takes in at least 0.1 m against at least 20 N; clicking without an actual haul does not count |
 | Wind | **Hand-Me-Down** | Take the sail off a wrecked nomad rig | Set Sail | `Salvage.claim`: the find a nomad rig always carries (its mast with its sail, the socket `SiteLoot.RIGGED`) becoming yours |
@@ -942,3 +943,10 @@ Learning the Ropes (`sail_by_wire`) follows All Hands in the wind family. It is
 recorded at the real drum when a Console actually changes a raised, loaded sail's
 sheet; selecting a control mode alone earns nothing. This adds the learning-aid deed to the Wind family. The course and Home choice are saved with the Console, while automatic control resumes in hand mode.
 The controls are described in [Movement](movement.md#sailing-learning-aid-selected-2026-10-22-built).
+
+## Salvage kite deed (2026-10-22)
+
+The selected [salvage kite](movement.md#one-line-salvage-kite-hunter-2026-10-20-selected-2026-10-22)
+adds Kite Rider (`kite_board`) to Wind after Set Sail. Its qualifying travel is
+defined in the tree above; `Deeds.measure` records progress in 10 m steps. This
+brings `Deeds.TABLE` to 82 deeds in eleven families.

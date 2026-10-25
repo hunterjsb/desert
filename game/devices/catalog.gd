@@ -509,7 +509,7 @@ const DEVICES := {
 	# strong AM carriers near it, faint and chewed up in its earpiece, unless a
 	# headset's jacked into its one bay.
 	&"crystal_set": {"label": "Crystal set", "size": Vector3(0.2, 0.012, 0.13), "mass": 0.5, "radio": true,
-		"crystal": true, "carryable": true, "sticks": true,
+		"crystal": true, "carryable": true, "on_end": true, "sticks": true,
 		"sockets": [[&"radio_bay", Vector3(0.075, 0.006, -0.045), Vector3.UP],
 			# A long wire is what a crystal set was made for: a kite's lead clips here.
 			[&"lead", Vector3(-0.08, 0.006, -0.05), Vector3.UP]]},
@@ -519,6 +519,9 @@ const DEVICES := {
 	# set's aerial.
 	&"antenna_kite": {"label": "Antenna kite", "size": Vector3(0.36, 0.2, 0.18), "mass": 2.2, "kite": true,
 		"carryable": true, "sticks": true, "sockets": [[&"lead", Vector3(0.18, -0.02, 0.0), Vector3.RIGHT]]},
+	# Its one bridle takes an ordinary rope; the cloth folds around its line drum.
+	&"salvage_kite": {"label": "Salvage kite", "size": Vector3(0.5, 0.22, 0.22), "mass": 3.0, "salvage_kite": true,
+		"carryable": true, "sockets": [[&"tie", Vector3.ZERO, Vector3.DOWN]]},
 	# A headset (gonkhub, 2026-10-22: "just a headset item, that can attach a
 	# cable. The other end of the cable can attach to a radio misc mod slot").
 	# Worn, carried or in your hands, on a cable to a radio's misc bay, the set
@@ -858,7 +861,7 @@ static func _maker(spec: Dictionary) -> Device:
 			["planter", Planter], ["board", Hoverboard], ["receiver", SurveyReceiver], ["radio", Radio],
 			["winch", ManualWinch], ["rig", Mast], ["streamer", Streamer], ["nest", CrowsNest], ["helm", Helm],
 			["chassis", Chassis], ["bedroll", Bedroll], ["console", Console], ["power_box", PowerBox],
-			["cutter", Cutter], ["kite", AntennaKite], ["surveyor_guide", SurveyorGuide],
+			["cutter", Cutter], ["kite", AntennaKite], ["salvage_kite", SalvageKite], ["surveyor_guide", SurveyorGuide],
 			["notes", SailingNotes]]:
 		if spec.get(each[0], false):
 			return each[1].new()

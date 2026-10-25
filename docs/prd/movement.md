@@ -1857,3 +1857,95 @@ keep functional checks without claiming equivalent CPU accounting. These are
 shared-host reference averages, not worst-tick, rendered-frame or arbitrary-load
 guarantees. The dense load exceeds Home's cap; its admitted variant is documented
 under [Marked Home](bubble-shield-and-camp.md#large-home-main-thread-budget-2026-10-22).
+
+## One-line salvage kite (Hunter, 2026-10-20; selected 2026-10-22)
+
+Hunter: "its own little rig, contained, so like a super light version of a rig.
+So just like you'd be the keel of your hoverboard, you could be the keel of this
+kite... I probably like one line". Camp use is "almost like a decorative piece,
+or a little bit of extra pull"; "I leave my shield on a lot just so it is easier
+to see from far away when I'm scouting... Adding a kite solves that problem".
+"Kite-powered board is such a good idea" and "if you're on the board and being
+pulled by the wind, it should not really take much battery".
+
+**Selected scope.** A found packed kite unfolds into a contained light rig. Its
+bridle belongs to the item; the player manages one ordinary rope, using the same
+waist, hook, stake, gathering, reeling and recovery interactions as other lines.
+The board and rider supply the moving keel. Board steering and rider position
+change the wind window, while hauling or easing that one line changes its reach;
+looking around never changes trim. The same line can be made fast to a camp hook
+or stake, leaving the kite flying as a physical landmark and adding limited pull.
+Visibility depends on distance, terrain and weather, not a HUD marker through them.
+
+Reuse the antenna kite's wind/elevation and settling model and its existing
+procedural art. The antenna kite is deliberately wind-positioned on a visual
+line ([Radio](radio-sound-and-atmosphere.md#the-antenna-kite-and-the-radios-modules-gonkhub-2026-10-21-built));
+the salvage kite adds an ordinary rope and aerodynamic load coupling for traction.
+The radio's flight, gain, charge, grounding and wear behavior remain their own.
+Keep the reusable flight law shared rather than making another kite simulator.
+
+The light wing's aerodynamic impulse arrives before the ordinary rope solve,
+so that solve can brake its wind load within the same tick. Register the already
+applied velocity change so the rope predictor does not count it twice. Existing
+rope strength, stretch and closing limits remain in force.
+
+**Energy direction (approved gate, SANDGAME 2026-10-22).** Motor draw follows
+propulsion the motor supplies, including powered catch-up and work against a
+loaded line. Wind propulsion itself costs no motor power. Hover and equipped
+devices still draw normally, and wind travel never creates charge. Apply this to
+real board motion rather than a kite discount. The matched-trip gate is below;
+kite area, force and line behavior remain Tuning parameters.
+
+**Acceptance.** Real one-line flight and board towing, ordinary recovery and camp
+anchoring, a rendered kite visible from a nearby scouting dune, and equivalent flight at
+supported physics rates. A deed is recorded at actual wind-powered travel.
+
+
+**As built, 2026-10-22.** The found `salvage_kite` packs a 5.5 m² wing and one
+55 m ordinary line. It shares the antenna's wing, packed mesh, sway, elevation
+and cloth-wear law, with teal cloth and yellow trim. A second included line is
+never issued after the first is removed. Existing carry selection, reeling,
+yanking and ordinary hook/stake transfers manage its one bridle; a flying kite
+line stays tied when boarding. In a lull the same line can be reeled back into
+reach, tied at the waist to free a hand, and the kite folded through ordinary use.
+Folding removes the deployed canopy's collision shape, so ordinary pickup and
+held clearance use only the packed item's bounds.
+Kite Rider records 100 m of actual board travel with positive work from the
+loaded line, including gathered knots and routed ends.
+
+Flight, paid-out reserve, settling angle, sway phase and travel progress save
+with the ordinary rope; the saved camp also builds its menu preview. At steady
+9 m/s, the same original anchored rope survived 30, 60 and 120 physics ticks,
+with a largest flight difference of 1.70 m against a 3 m limit. Actual GPU
+captures show the packed find, worn wing, camp flight and a small physical
+landmark at 200 m. Terrain and dust still obscure it.
+
+## Kite propulsion energy gate (SANDGAME, 2026-10-22)
+
+The approved gate is at least 50% lower propulsion Wh/km than motor-only travel
+over the same route, with the same representative payload, initial charge and
+matched wind. The comparison must also demonstrate wind-driven movement with
+motor input released and finish both legs before the battery runs flat. Record
+propulsion, hover, equipment and total energy separately; total battery energy
+has no percentage target.
+
+The existing board law already meters motor input and work against a loaded
+line separately from hover. Coasting under wind supplies no motor input and
+receives no special electrical discount. `Hoverboard.propulsion_w` and `hover_w`
+expose those existing components for the comparison; equipment keeps its normal
+device demand. Sail probe 37 compares equal-distance travel with the same
+ordinary chassis tow and a common speed controller.
+
+**Measured 2026-10-22:** on the same 250 m downwind corridor in a steady 10 m/s
+wind, towing a 19.8 kg chassis on powered hover through an ordinary waist line,
+the 5.5 m² kite used 0.783 propulsion Wh/km against the motor-only leg's 1.632,
+a 52.0% reduction. A fixed sway phase and the same look-and-steer input policy
+kept both riders within the same 15 m corridor (kite maximum 7.72 m across).
+Both board and payload began with 100 Wh each and finished charged. The same
+4 m/s minimum cruise controller let the wind carry the kite leg faster; it
+finished in 58.05 s against 70.45 s. With motor input released for the first 25 s,
+the kite carried the loaded rider 92.34 m with zero propulsion draw. Combined
+board and payload hover used 5.081 Wh/km against 6.215; equipment used zero in
+both fixtures, and total draw was 5.864 against 7.848 Wh/km. These numbers cover
+this clear downwind fixture only. Probe 37 also reconciles integrated components
+against both actual battery withdrawals within 0.05 Wh.

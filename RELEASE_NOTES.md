@@ -1,3 +1,20 @@
+## 0.4.0-alpha “Spaceport” — development, unreleased
+
+- Put the survey receiver in the Surveyor's physical ship stores and extend
+  ordinary radio, receiver and aerial salvage. Existing wreck and nomad loot
+  beacons can guide it to real unclaimed gear. Optional cargo still risks impact.
+- Explain navigation equipment through short first-use hints. Distinguish live
+  and last-known Home fixes on the Console Map, including saved stale data.
+
+- Fly a found salvage kite on one ordinary rope from your waist or a camp hook.
+  The board and rider steer beneath it; reeling controls its reach. Recover and
+  relaunch the same line, or leave it aloft as a physical camp landmark.
+  Shares the antenna kite's wind law and worn procedural wing, without changing
+  radio reception, charge or aerial behavior.
+- Meter existing board propulsion and hover draw separately for the loaded
+  kite-travel comparison; wind travel receives no special electrical discount.
+  Existing run and profile formats are retained.
+
 ## 0.3.1-alpha “Leeward Sanddune” — development, unreleased
 
 - Compare your heading and sail trim with an ideal on the Console Map's Nav layer.

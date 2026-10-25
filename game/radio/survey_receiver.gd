@@ -5,7 +5,7 @@ extends Radio
 const DEFAULT_VISUAL := preload("res://game/look/receiver/survey_receiver_visual.tscn")
 
 const HOW_TO := "survey_receiver"
-const HOW_TO_SAYS := "{interact} switches it on; turn it to find the strongest needle."
+const HOW_TO_SAYS := "{interact} switches it on; turn it to find the strongest needle. Loot beacons only, not broadcasts."
 
 @export var visual_scene: PackedScene = DEFAULT_VISUAL
 var visual: ReceiverVisual

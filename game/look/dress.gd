@@ -538,6 +538,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			return SurveyReceiverLooks.frame()
 		&"antenna_kite":
 			return KiteLooks.packed(size)
+		&"salvage_kite":
+			return KiteLooks.packed(size, KiteLooks.SALVAGE_CLOTH, KiteLooks.SALVAGE_TRIM)
 		&"radio", &"radio_colonial", &"radio_skimmer", &"radio_kingdoms", &"radio_second_age":
 			# The field radio in its maker's look, its body alone: its needle,
 			# knobs, lamps and band window are the radio's own, live.

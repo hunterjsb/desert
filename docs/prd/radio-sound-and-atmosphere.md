@@ -471,7 +471,7 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   a crystal set on a long wire being what they were for. The `radio_top` mount and the hook's lead clip
   are gone. The kite patch never shipped, so no player save has a hook on a radio.
 - **An arc hits one piece of the chain at random** (`AntennaKite.chain`), all alike.
-- **Consolidating with the salvage kite** (Spaceport): open; Hunter's prototype isn't in the repository.
+- **Consolidating with the salvage kite** (Spaceport candidate): both use `KiteFlight` for the wind angle, sway, settling and wear. The antenna kite retains its own aerial wiring, all-band gain and arc chain; the traction kite loads an ordinary rope.
 - **The bleed resistor stays as it is:** "a stake is stationary," so the bleed is the kite's protection on
   the move, as the stake is at camp.
 - **The direction loop is scrapped** ("scrap this one"): the ferrite rod is the set's only direction
@@ -508,6 +508,49 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   way along the line; no rod on shortwave or FM.
 
 ### The survey receiver (agreed and built 2026-10-20)
+
+**Acquisition decision, 2026-10-22 (SANDGAME, delegated by Hunter).** Hunter's
+Spaceport direction is "we should make it obt and und". Add the existing receiver
+to physical Surveyor ship stores, retaining optional cargo risk, and to ordinary
+nomad/wreck loot as a replacement. Existing wrecks, lifeboats and nomad rigs with
+real unclaimed loot may carry the same 530 kHz loot beacon as house ruins. Add
+missing crystal sets, maker variants and antenna/band gear to plausible existing
+loot tables; do not create a cache around the landing or move the landing to gear.
+An eligible wreck or nomad rig qualifies through either its existing distress
+transmitter or the same seeded 530 kHz beacon survival roll used by houses.
+Neither rule depends on the acceptance seed. Audit seeds 1234, 1 and 2 within
+6 km; the expedition objective remains 1–2 km. FM, SW and antenna upgrades may
+vary by world; receiver, one broadcast set, Console, Home and traction kite are
+the required acquisition chain. A real exposed Console at 5.6 km on seed 1234
+is accepted without increasing its loot weight.
+Report remaining gaps before promising guaranteed placements. Existing readouts
+and short hints explain uses and limits, with explicit LIVE / LAST KNOWN Home
+labels on the Console Map. No new tier, signal service, asset or Home range.
+
+**As built, 2026-10-22.** Physical ship stores include the optional receiver;
+ordinary wreck/nomad tables provide replacements, field-radio bodies and aerial
+gear. The 2026-10-23 radio merge retains the direct antenna-kite cable,
+all-band aerial behavior, headset and solar lid. Retired aerial reels, direction
+loops and frequency counters are absent from navigation placements. First-use hints explain the existing sets, converters, aerial and
+Home limits. Console Home marks are filled while live and outlined when stale,
+with explicit labels; a saved stale fix keeps that distinction. Follow the
+Signal continues to record actual receiver approaches to the advertised loot.
+Radio probe 80 checks real ship stores and exposed ordinary salvage within
+6 km on the default pulse at departure clock zero, including a real unclaimed
+target and seed 1's walk toward a nomad rig. It expands only the audit index's
+coverage, retaining ordinary terrain, weather, exposure and loot rules.
+
+| Required find | Seed 1234 | Seed 1 | Seed 2 |
+|---|---:|---:|---:|
+| Broadcast set | 1,093 m | 1,011 m | 441 m |
+| Console | 5,608 m | 625 m | 999 m |
+| Traction kite | 2,588 m | 1,752 m | 885 m |
+
+Receiver and Home also have real physical ship-store slots; packing and impact
+survival remain the player's risks. The check proves acquisition availability,
+not a complete unassisted expedition. Radio upgrades may be absent locally.
+Buried crystal sets rest on edge, using the existing flat-equipment rule: their
+thin trays cannot lie partly buried while leaving the required height visible.
 
 An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
 bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,
