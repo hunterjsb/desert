@@ -927,7 +927,7 @@ Everything that matters can be heard, so you can read the world by ear:
 - **The wind:** always present, with its strength audible, and humming in taut ropes.
 - **Rope:** a creak that rises with load, and the crack of a snap.
 - **The shield:** boot, hum and shutdown, and a hum that sags when power runs low.
-- **You:** footsteps in sand, sliding down slip faces, the board's hover hum.
+- **You:** footsteps by what you walk on, sliding down slip faces, the board's hover hum.
 - **Parts:** the clunk of a snap, and clanks when things knock together.
 
 **Kept from Sand Game:** the radio tracks and the "this isn't a beach, this is a desert!" clip; the storm and
@@ -947,6 +947,26 @@ radio interference; the sand footsteps and slide, and the planter's hover hum.
   how loud it's heard (the table in `assets/audio/CREDITS.md`). The radio is in the world, not the weather,
   so a bubble never muffles it. Every sound's file is named once, in `game/core/sounds.gd`.
 - **Not yet:** a turbine's whir by its speed, and clanks when things knock together.
+
+### Footsteps by what's underfoot (gonkhub, 2026-10-25; built)
+
+**Asked:** "Right now we just always use the couple of sand footstep sounds. Need to detect when the
+player is standing on something else, like inside a wreck or on their own chassis, and be able to play an
+appropriate sound effect to go with it."
+
+**As built:** each footfall, and a jump's push-off or a soft landing, feels just below your feet for what
+it lands on (`Player.underfoot`, `Footing`): the dunes are sand; a deck, a device or a part is metal; a
+structure's box is what its coat is made of (steel and hull plate metal; stone, concrete, render, lime,
+clay and plaster stone; wood, seats and cloth wood; an uncoated box its era's make); a wreck's plates and
+hazards are metal and its storm-packed holds sand; the Stoker's fixtures and the ship's cabin metal.
+Anything else solid says nothing and is stone. Metal, stone and wood each have four steps made here,
+levelled to the sand's (`assets/audio/CREDITS.md`); every step plays 3 dB under its file
+(`step_db`, gonkhub: "lower footstep volume a few db"). A new coat needs its footing
+(`probes/kits/17_every_coat_has_a_footing.gd`); stepping off the dunes onto a deck changes the sound
+(`probes/movement/45_steps_sound_what_is_underfoot.gd`).
+
+**Not yet:** slides and landings past a jar still hiss and thud as sand on any floor; recorded steps
+could replace the made ones without touching code.
 
 ### Distant phenomena (agreed, 2026-10-18 spec; built)
 

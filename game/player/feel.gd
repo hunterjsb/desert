@@ -81,6 +81,8 @@ var _clock := 0.0
 var _last_own := Vector2.ZERO
 var _last_gust := -1.0
 var _last_step := -1
+## What the last step landed on, kept for a jump's push-off just clear of it.
+var _footing: StringName = Footing.SAND
 var _foot := 0
 ## Its own dice, so sound never shifts what a probe's seed decides.
 var _rng := RandomNumberGenerator.new()
@@ -264,15 +266,20 @@ func _footfall(speed: float) -> void:
 	_step(t.step_db + pace * 4.0 - (6.0 if _player.crouched else 0.0))
 
 
-## A step sound, never the same one twice running, on alternate feet.
+## A step sound on what's underfoot, never the same one twice running, on
+## alternate feet.
 func _step(db: float) -> void:
-	var pick := _rng.randi_range(0, Sounds.STEPS.size() - 2)
+	var under := _player.underfoot()
+	if not under.is_empty():
+		_footing = under
+	var steps: Array = Sounds.STEPS.get(_footing, Sounds.STEPS[Footing.SAND])
+	var pick := _rng.randi_range(0, steps.size() - 2)
 	if pick >= _last_step:
 		pick += 1
 	_last_step = pick
 	_foot = 1 - _foot
 	var foot := _feet[_foot]
-	foot.stream = Sounds.STEPS[pick]
+	foot.stream = steps[_last_step]
 	foot.pitch_scale = _rng.randf_range(0.9, 1.1)
 	foot.volume_db = db + _rng.randf_range(-1.5, 1.5)
 	foot.play()

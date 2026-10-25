@@ -644,6 +644,7 @@ func add_shapes(body: CollisionObject3D, s: int, owner := Rect2()) -> void:
 		holder.basis = piece.box_turns.get(i, Basis.IDENTITY)
 		if i in piece.beds:
 			holder.set_meta(&"bed", true)
+		holder.set_meta(Footing.META, Footing.of_coat(piece.coats[i], piece.era))
 		body.add_child(holder)
 	for fitted in piece.fitted_boxes:
 		if not _owns_solid(fitted[1].origin, owner):
@@ -651,6 +652,7 @@ func add_shapes(body: CollisionObject3D, s: int, owner := Rect2()) -> void:
 		var holder := CollisionShape3D.new()
 		holder.shape = fitted[0]
 		holder.transform = fitted[1]
+		holder.set_meta(Footing.META, Footing.of_coat("", piece.era))
 		body.add_child(holder)
 
 

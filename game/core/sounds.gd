@@ -41,11 +41,20 @@ const BAG_CLOSE := preload("res://assets/audio/bag_close.ogg")
 const CHIME_FIRST := preload("res://assets/audio/chime_first.ogg")
 const CHIME_LAST := preload("res://assets/audio/chime_last.ogg")
 const CHIME_LOST := preload("res://assets/audio/chime_lost.ogg")
-# You on foot.
+# You on foot: steps by what's underfoot (Footing), made here
+# (make_footstep_sounds.py) but for the sand's.
 # step_c is gone: a spike ten times its own body made it crack like a clip.
-const STEPS: Array[AudioStream] = [preload("res://assets/audio/step_a.ogg"),
-	preload("res://assets/audio/step_b.ogg"), preload("res://assets/audio/step_d.ogg"),
-	preload("res://assets/audio/step_e.ogg"), preload("res://assets/audio/step_f.ogg")]
+const STEPS := {
+	Footing.SAND: [preload("res://assets/audio/step_a.ogg"), preload("res://assets/audio/step_b.ogg"),
+		preload("res://assets/audio/step_d.ogg"), preload("res://assets/audio/step_e.ogg"),
+		preload("res://assets/audio/step_f.ogg")],
+	Footing.METAL: [preload("res://assets/audio/step_metal_a.wav"), preload("res://assets/audio/step_metal_b.wav"),
+		preload("res://assets/audio/step_metal_c.wav"), preload("res://assets/audio/step_metal_d.wav")],
+	Footing.STONE: [preload("res://assets/audio/step_stone_a.wav"), preload("res://assets/audio/step_stone_b.wav"),
+		preload("res://assets/audio/step_stone_c.wav"), preload("res://assets/audio/step_stone_d.wav")],
+	Footing.WOOD: [preload("res://assets/audio/step_wood_a.wav"), preload("res://assets/audio/step_wood_b.wav"),
+		preload("res://assets/audio/step_wood_c.wav"), preload("res://assets/audio/step_wood_d.wav")],
+}
 const SLIDE := preload("res://assets/audio/slide.ogg")
 const LANDING := preload("res://assets/audio/impact.ogg")
 # The board, its hums also a hover tray lifting off and settling.

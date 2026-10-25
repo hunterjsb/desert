@@ -257,6 +257,8 @@ func _box(parent: Node3D, size: Vector3, at: Vector3, coat: Paint.Coat, solid :=
 		box.size = size
 		shape.shape = box
 		shape.position = at
+		# Steel and rust plate underfoot, like everything the Stoker keeps.
+		shape.set_meta(Footing.META, Footing.METAL)
 		solid_parent.add_child(shape)
 	return view
 
@@ -311,5 +313,6 @@ func _furnace(at: Vector3) -> void:
 	cylinder.radius = 2.4
 	cylinder.height = 5
 	collision.shape = cylinder
+	collision.set_meta(Footing.META, Footing.METAL)
 	body.add_child(collision)
 	_fixtures.add_child(body)

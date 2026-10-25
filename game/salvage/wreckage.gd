@@ -638,6 +638,8 @@ func _pack(h: int) -> void:
 			body.name = "Sand%d_%d" % [h, k]
 			var shape := CollisionShape3D.new()
 			shape.shape = BoxShape3D.new()
+			# Storm-packed sand, as soft underfoot as the dunes'.
+			shape.set_meta(Footing.META, Footing.SAND)
 			body.add_child(shape)
 			var look := MeshInstance3D.new()
 			look.mesh = _unit_box()
@@ -937,6 +939,8 @@ static func _shape(body: CollisionObject3D, middle: Vector3, size: Vector3) -> v
 	box.size = size
 	shape.shape = box
 	shape.position = middle
+	# Plates and hazards are the wreck's metal underfoot.
+	shape.set_meta(Footing.META, Footing.METAL)
 	body.add_child(shape)
 
 

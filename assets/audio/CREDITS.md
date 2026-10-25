@@ -17,7 +17,7 @@ integrated loudness, peaks never past -6 dBTP. A hard limiter on Master holds -1
 | storm.ogg | the storm's roar | Sand Game `object_sandstorm.wav`, its harsh top eased | Sand Game | -20 LUFS full, -32 in a bubble | -9 |
 | wind.ogg | the desert wind | Sand Game `ambient_desertwind.wav` | Sand Game | -30 LUFS at a gale | -11 |
 | clang.ogg | metal a storm has just laid bare, banging on the wind, heard through the dust | Sand Game `object_metal_clank-001.wav`, mono, its ring kept, under two short echoes | Sand Game | -19 at 20 m | -7 |
-| step_a, b, d–f.ogg | footsteps in sand | Sand Game's sand footsteps | Sand Game | -36 walking, -32 sprinting | -9 to -17 |
+| step_a, b, d–f.ogg | footsteps in sand | Sand Game's sand footsteps | Sand Game | -36 in the file; -39 walking, -35 sprinting | -9 to -17 |
 | slide.ogg | sliding down a slip face | Sand Game `player_slide.wav` | Sand Game | -30 at full | -16 |
 | impact.ogg | a hard landing | Sand Game `player_impact1.wav` | Sand Game | -28 hardest | -8 |
 | seat_a.ogg, seat_b.ogg | fitting a part or mod | Sand Game `object_metal_clank-005`/`-002`, ring cut off, under Kenney Interface `click_001`/`click_003` | Sand Game + CC0 | -30 | -11, -16 |
@@ -108,6 +108,16 @@ levelled the same way (a loop by its whole):
 | battery_low.wav | a board's battery low, once, about a minute from flat | made here: a soft falling two-note "do-doo" | CC0 | about -34 | -24 |
 | battery_critical.wav | and critical, once, about 15 s from flat | made here: the same, lower, shorter and trembling | CC0 | about -30 | -19 |
 | tumble_a.wav, tumble_b.wav | your body hitting the sand as you tumble, by how hard | made here: a padded thud and whump, the sand crunching, a spray pattering back and your kit knocking | CC0 | about -29 at the hardest | -12, -14 |
+
+Footsteps on what isn't sand are made here too, numpy only, by `make_footstep_sounds.py` (CC0), as
+WAV, levelled the same way to match the sand's, and played as quietly (`step_db`): each a heel and then the toe, with desert grit under the
+boot. Which set plays is what's underfoot (`game/player/footing.gd`):
+
+| File | What it is | Made from | Licence | Heard at | Peak |
+|---|---|---|---|---|---|
+| step_metal_a–d.wav | footsteps on metal plate: a deck, a wreck's hull | made here: a boot's click, the plate's damped ring and the hollow under it | CC0 | about -36 walking | -15 to -17 |
+| step_stone_a–d.wav | footsteps on stone, concrete, render or clay | made here: a dull thud, a sole's scuff and grit | CC0 | about -36 walking | -15 to -16 |
+| step_wood_a–d.wav | footsteps on wood: a second-age floor, a camp's planks | made here: a hollow knock and its short low modes | CC0 | about -36 walking | -17 to -18 |
 
 The issue board's hum is still `hover.ogg`. The rope's snap is still made in code (`ropes.gd`), at about -28 LUFS from 8 m.
 
