@@ -49,18 +49,19 @@ land_it() {
 	git push -q origin "$target:master"
 	echo "landed ${target:0:7} on master"
 }
-# Waits for run $1 to finish, at most ci_wait seconds.
+# Waits for run $1 to finish, at most ci_wait seconds. Checked often, since
+# every landing waits on it; a failed check is only asked again.
 wait_run() {
 	local waited=0 status
 	while :; do
-		status=$(gh run view "$1" --json status -q .status)
+		status=$(gh run view "$1" --json status -q .status || echo unknown)
 		[[ $status == completed ]] && return 0
 		if ((waited >= ci_wait)); then
 			echo "run $1 still $status after $((ci_wait / 60)) min: check it" >&2
 			return 1
 		fi
-		sleep 60
-		waited=$((waited + 60))
+		sleep 20
+		waited=$((waited + 20))
 	done
 }
 sha=$(git rev-parse HEAD)
