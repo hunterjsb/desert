@@ -1,4 +1,5 @@
 extends SavesProbe
+## Exclusive on noisy runners
 ## Profile & saves probe 1: the round trip. A camp runs mid-storm: a shield
 ## up on its plate, a chassis floating outside it on two lines to stakes with
 ## a light shield stuck on it, a planter growing inside, their batteries

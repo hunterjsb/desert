@@ -16,6 +16,7 @@
 # GODOT picks the binary (default: godot on PATH). PROBE_TIMEOUT is in seconds;
 # a probe whose header says "## Time limit: N s" gets N instead.
 # PROBE_TIMES overrides the scheduling history file (default .godot/probe_times).
+# PROBE_ENGINE_NOISE=1 prints ERROR/WARNING diagnostics from passing probes.
 # PROBE_EXCEPT lists folders to leave out of a full run, so CI can split the
 # suite into parallel jobs and still catch every folder nobody listed.
 # PROBE_JOBS probes run at once (default one per physical core, at least 4, or
@@ -84,8 +85,17 @@ run_probe() {
 	judge $?
 	took=$((SECONDS - started))
 	say_verdict "$1"
-	# Preserve only opt-in measurements; ordinary successful diagnostics stay quiet.
+	# Keep successful output quiet by default; diagnostics are opt-in.
 	grep '^PROBE_METRIC ' <<<"$output" || true
+	if [[ $verdict == pass && ${PROBE_ENGINE_NOISE:-} == 1 ]]; then
+		awk '
+			/^(ERROR:|WARNING:)/ { print "    " $0; want_at=1; next }
+			want_at {
+				if ($0 ~ /^[[:space:]]+at:/) print "    " $0
+				want_at=0
+			}
+		' <<<"$output"
+	fi
 }
 
 show_output() {
