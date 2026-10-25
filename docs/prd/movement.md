@@ -1849,6 +1849,8 @@ main-thread CPU before versus 9.40–9.94 ms after; the contact pass fell from
 2.56–2.75 to 2.12–2.19 ms with matching displacement and heel. The large camp stays
 supported after an origin shift. A slower exact-position dictionary was rejected.
 
+2026-10-25: devices keep their sockets' parts, seated devices and batteries until a socket changes, `stats()` walks only filled sockets, and runner, tray and tipped-frame corners read the pose once and move in bulk; five alternating local runs on a shared host moved the medians from 10.60 to 9.71 ms sailing and 10.69 to 9.75 ms capsized, with bitwise-identical final poses and velocities.
+
 Both probes run alone. Linux user+system CPU for the calling main thread is read
 over 480 ordinary 60 Hz ticks and divided by the count, including main-loop work
 between ticks. Engine physics elapsed p50/p95 and subsystem times are separate

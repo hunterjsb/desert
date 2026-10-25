@@ -470,6 +470,8 @@ They are reference averages, not tail-latency, GPU or larger-camp guarantees.
 The fixture and accounting method are shared with the
 [moving and capsized budgets](movement.md#representative-large-camp-budgets-2026-10-22).
 
+2026-10-25: the same device-list and corner work moved alternating local runs from 6.5, 7.5 and 6.8 ms to 5.6, 6.6 and 6.1 ms near, scouting and returned.
+
 **Decision: cap 272, admitted by the heavy-camp study, 2026-10-22, SANDGAME.** The fully loaded fixture is 262 work items
 including its mounted gear, not 234; 17 physical members. With a private diagnostic
 admission override it completed the same trip at 7.88 / 9.04 / 8.25 ms per tick
