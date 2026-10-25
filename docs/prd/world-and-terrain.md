@@ -13,6 +13,15 @@ open; this does not select an ice biome, change the climate simulation or requir
 far-side water expeditions. Frost/ice collection and its travel economy remain later
 direction. No terrain or weather code changed with this decision.
 
+**Look-test** (2026-10-22, not chosen). `look/sides` keys its candidates to the side you
+stand on: the sine of Tu's mean height in your sky, the same geometry as the far side's
+deed (`DayCycle.never_rises`), since the game has longitude in its sky but no longitude
+regions. **A** fills near-side nights with Tu-shine scattered round Tu, which hides all
+but the brightest stars, while the far side keeps every star. **B** rimes the far side's
+sand overnight and lets the morning take the frost, sun-facing slopes first. **C** is both.
+Each patches the game's sky and sand shaders from inside the look-test, so nothing runs in
+the game, and each costs under 0.1 ms a frame.
+
 
 ## Reachable horizons (built, 2026-10-20)
 
