@@ -10,11 +10,17 @@ const STUCK := &"stuck"
 
 @export var kind: StringName
 ## The part fitted here, or null.
-var part: Part
+var part: Part:
+	set(to):
+		part = to
+		_held_changed()
 ## The part's shapes and meshes while they live in the device's body.
 var fitted: Array[Node3D] = []
 ## A device seated here instead, like a shield stuck on a deck, or null.
-var mounted: Device
+var mounted: Device:
+	set(to):
+		mounted = to
+		_held_changed()
 ## A flat tell on the frame showing where this kind of part goes, hidden when full.
 var marker: MeshInstance3D
 ## A chassis piece's edge ring with another piece joined across it, or a
@@ -31,6 +37,13 @@ func is_open() -> bool:
 
 func stuck() -> bool:
 	return kind == STUCK
+
+
+## What its device keeps of what its sockets hold goes with any change here.
+func _held_changed() -> void:
+	var device := get_parent() as Device
+	if device != null:
+		device._held_known = false
 
 
 ## Its way out of its body, in the body's frame.

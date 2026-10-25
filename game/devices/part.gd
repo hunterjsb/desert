@@ -23,9 +23,12 @@ func _ready() -> void:
 
 
 ## What sits in its own sockets (a line's end on a loose hook) waits off the
-## tree, so nothing else would free it.
+## tree, so nothing else would free it. Freed while fitted, its device no
+## longer lists it.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
+		if is_instance_valid(socket):
+			socket._held_changed()
 		for child in get_children():
 			var own := child as Socket
 			if own != null and own.part != null and not own.has_meta(&"socket"):

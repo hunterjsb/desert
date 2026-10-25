@@ -106,6 +106,13 @@ var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
 ## change: a deck has hundreds of children, and both are asked for every tick.
 var _sockets: Array[Socket] = []
 var _sockets_known := false
+## What those sockets hold, kept until one changes or what's in one does
+## (Socket): a deck's are asked for its devices and batteries many times a tick.
+var _parts: Array[Part] = []
+var _mounted: Array[Device] = []
+var _batteries: Array[Battery] = []
+var _stuck: Array[Socket] = []
+var _held_known := false
 var _face := NAN
 ## All its shapes' bounds together, in its own frame, kept until its children
 ## change or move (a recompute): what the world holds clear of the sand.
@@ -123,6 +130,7 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
 		_sockets_known = false
+		_held_known = false
 		_shapes_changed()
 	elif what == NOTIFICATION_PREDELETE:
 		for socket in sockets():
@@ -207,11 +215,8 @@ func battery() -> Battery:
 
 ## Every battery in its battery slots, and loose on its sticky faces.
 func batteries() -> Array[Battery]:
-	var found: Array[Battery] = []
-	for socket in sockets():
-		if (socket.kind == &"battery" or socket.kind == Socket.STUCK) and socket.part is Battery:
-			found.append(socket.part)
-	return found
+	_read_held()
+	return _batteries.duplicate()
 
 
 ## The batteries it lends its pool (Power).
@@ -242,11 +247,8 @@ func charge_share() -> float:
 
 ## The devices seated on its sockets, or stuck on it.
 func mounted() -> Array[Device]:
-	var found: Array[Device] = []
-	for socket in sockets():
-		if socket.mounted != null:
-			found.append(socket.mounted)
-	return found
+	_read_held()
+	return _mounted.duplicate()
 
 
 ## A sticky face of this host as Stick sets things on it, in its own frame:
@@ -322,11 +324,8 @@ func frame_sockets() -> Array[Socket]:
 
 ## What's stuck on its sticky faces, as their sockets.
 func stuck() -> Array[Socket]:
-	var found: Array[Socket] = []
-	for socket in sockets():
-		if socket.stuck() and (socket.part != null or socket.mounted != null):
-			found.append(socket)
-	return found
+	_read_held()
+	return _stuck.duplicate()
 
 
 ## Sticks a part or a device on it at a pose in its frame, on a sticky face
@@ -474,11 +473,29 @@ func _show_blast() -> void:
 
 
 func parts() -> Array[Part]:
-	var found: Array[Part] = []
+	_read_held()
+	return _parts.duplicate()
+
+
+## Its sockets' parts, seated devices, batteries and stuck things, in socket order.
+func _read_held() -> void:
+	if _held_known:
+		return
+	_parts.clear()
+	_mounted.clear()
+	_batteries.clear()
+	_stuck.clear()
 	for socket in sockets():
-		if socket.part != null:
-			found.append(socket.part)
-	return found
+		var part := socket.part
+		if part != null:
+			_parts.append(part)
+		if socket.mounted != null:
+			_mounted.append(socket.mounted)
+		if (socket.kind == &"battery" or socket.kind == Socket.STUCK) and part is Battery:
+			_batteries.append(part)
+		if socket.stuck() and (part != null or socket.mounted != null):
+			_stuck.append(socket)
+	_held_known = true
 
 
 ## The socket a fitted shape or mesh belongs to, or null for the frame itself.
