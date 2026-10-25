@@ -553,46 +553,6 @@ func throw() -> void:
 	_release(_player.velocity - _player.camera.global_basis.z * _tuning.throw_speed)
 
 
-## One line: what it is and, at most, the one thing you need about it now
-## (Hunter, 2026-10-18: "almost everything is overload"). The rest shows
-## another way or isn't said: weight in what you carry, a device's charge on
-## its light, a line's strain in its creak, floating by where it hangs, what
-## take would move by its highlight.
-static func describe(label: String, stats: Dictionary) -> String:
-	var now := _state(stats)
-	return label if now == "" else "%s · %s" % [label, now]
-
-
-## The first of these a thing has: a crop ripe or why it isn't growing, a
-## device that would run but has no power, a radio's frequency, what a thing
-## holds, then power, said as the device does it: output, or draws.
-static func _state(stats: Dictionary) -> String:
-	if stats.get("ripe", false):
-		return "ripe"
-	if stats.has("growing") and stats.growing != Plant.GROWING:
-		return str(stats.growing)
-	if stats.get("dark", false):
-		return "no power"
-	if stats.get("making_lph", 0.0) > 0.0:
-		return "water %.1f L/h" % stats.making_lph
-	if stats.has("water_l"):
-		return "%.1f/%.1f L" % [stats.get("water_left_l", 0.0), stats.water_l]
-	if stats.has("food_kcal"):
-		return "%d kcal" % roundi(stats.get("food_left_kcal", 0.0))
-	# A radio's frequency before its battery's charge: its dial is what you need.
-	if stats.has("tuned"):
-		return str(stats.tuned)
-	if stats.has("charge_wh") and stats.get("capacity_wh", 0.0) > 0.0:
-		return "%d/%d Wh" % [floori(stats.charge_wh), roundi(stats.capacity_wh)]
-	if stats.get("in_w", 0.0) > 0.0:
-		return "output %d W" % roundi(stats.in_w)
-	if stats.get("out_w", 0.0) > 0.0:
-		return "draws %d W" % roundi(stats.out_w)
-	if stats.has("rope_m"):
-		return "%d m" % roundi(stats.rope_m)
-	return ""
-
-
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("hands_grab"):
 		if grab():
@@ -1191,16 +1151,14 @@ func refresh_held_shape() -> void:
 	var part := held
 	_shapes.clear()
 	_skins.clear()
-	var first := true
 	for child in part.get_children():
 		var shape := child as CollisionShape3D
 		if shape == null or shape.shape == null:
 			continue
 		_shapes.append(shape)
 		_skins.append(_skin(shape.shape))
-		var box := shape.transform * Catalog.bounds(shape.shape)
-		_bounds = box if first else _bounds.merge(box)
-		first = false
+	if not _shapes.is_empty():
+		_bounds = _shapes_box(_shapes)
 	_middle = _bounds.get_center()
 	_build_ghost(part)
 
@@ -1797,61 +1755,14 @@ func _build_hud() -> void:
 	hud.add_child(_readout)
 
 
-## A part's stats as they stand: a battery's charge, a crop's state, a coil's length.
-func _part_stats(part: Part) -> Dictionary:
-	var now := part.stats.duplicate()
-	if part is Battery:
-		now["charge_wh"] = part.charge_wh
-	if part is Plant:
-		now["ripe"] = part.ripe()
-		if part.socket != null:
-			now["growing"] = part.state
-	if part.has_meta(&"line"):
-		now.merge((part.get_meta(&"line") as Line).readout())
-	return now
-
-
-## What the look-at line says now: why take or use did nothing, why what you
-## hold won't stick where it's shown or what to mind, else what you look at.
+## What the look-at line says now (Readout).
 func line() -> String:
-	if _player.world.arrival != null:
-		var opening := _player.world.arrival.hint()
-		if opening != "":
-			return opening
-	if notice != "":
-		return notice
-	if phase == Phase.HELD and held is Part and held.has_meta(&"line") and look_hook() != null:
-		var laid: Line = held.get_meta(&"line")
-		return Controls.key_for(&"interact") + " · " + ("remove line from hook" if laid.rope != null \
-			and laid.rope.through == look_hook().guide else "pass line through hook")
-	var through := _cable_at_stake()
-	if not through.is_empty():
-		return Controls.key_for(&"interact") + " · " + ("take cable off stake" \
-			if (through.cable as Cable).through == through.stake else "pass cable through stake")
-	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
-		return sticking.why if sticking.why != "" else sticking.warn
-	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \
-			and sticking.deck is Mast and sticking.face == Mast.MASTHEAD:
-		return "Crow's nest on masthead"
-	if look_wreck != null and (look_work != null or look_scrap != null):
-		return look_wreck.describe(look_work if look_work != null else look_scrap)
-	if look_line != null:
-		return Controls.key_for(&"hands_grab") + " · gather rope · %.1f m" % look_line.full
-	if look_part != null:
-		return describe(look_part.label, _part_stats(look_part))
-	if look_socket != null and look_socket.part != null:
-		return describe(look_socket.part.label, _part_stats(look_socket.part))
-	if look_device == null:
-		return "Bed" if look_bed else ""
-	if look_device is ManualWinch:
-		return "%s · %s / %s" % [look_device.label, Controls.key_for(&"reel_in"), Controls.key_for(&"pay_out")]
-	var stats := look_device.stats()
-	# A device's charge is on its light.
-	stats.erase("charge_wh")
-	stats["in_w"] = look_device.production_w()
-	stats["out_w"] = look_device.demand_w() if look_device.powered else 0.0
-	stats["dark"] = not look_device.powered and look_device.demand_w() > 0.0
-	return describe(look_device.label, stats)
+	return Readout.line(self, _player)
+
+
+## A thing's label and, at most, the one thing you need about it now (Readout).
+static func describe(label: String, stats: Dictionary) -> String:
+	return Readout.describe(label, stats)
 
 
 func _show(delta: float) -> void:
@@ -1859,12 +1770,7 @@ func _show(delta: float) -> void:
 	_notice_left = maxf(_notice_left - delta, 0.0)
 	if _notice_left <= 0.0:
 		notice = ""
-	var said := line()
-	var waisted := _player.waist.release_readout()
-	if waisted == "" and _player.waist.untying >= 0.0:
-		waisted = ("Gathering line · %.1f s" if _player.waist.gathering() else "Untying line · %.1f s") % _player.waist.untying
-	if waisted != "":
-		said += ("\n" if said != "" else "") + waisted
+	var said := Readout.said(self, _player)
 	if said != "" and said != _readout.text:
 		_readout.text = said
 	_readout.modulate.a = move_toward(_readout.modulate.a, 1.0 if said != "" else 0.0, delta * 8.0)

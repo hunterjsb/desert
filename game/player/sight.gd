@@ -112,18 +112,18 @@ func _ground_line() -> void:
 			continue
 		var points := line.rope.strand.points
 		for i in range(1, points.size()):
-			var near := Geometry3D.get_closest_points_between_segments(from, to, points[i - 1], points[i])
-			var gap := near[0].distance_to(near[1])
+			var closest := Geometry3D.get_closest_points_between_segments(from, to, points[i - 1], points[i])
+			var gap := closest[0].distance_to(closest[1])
 			if gap >= best:
 				continue
-			var ray := PhysicsRayQueryParameters3D.create(from, near[1])
+			var ray := PhysicsRayQueryParameters3D.create(from, closest[1])
 			ray.exclude = hands._exclusions()
 			var hit := hands.get_world_3d().direct_space_state.intersect_ray(ray)
-			if not hit.is_empty() and hit.position.distance_to(near[1]) > RopeStrand.RADIUS * 2.0:
+			if not hit.is_empty() and hit.position.distance_to(closest[1]) > RopeStrand.RADIUS * 2.0:
 				continue
 			best = gap
 			hands.look_line = line
-			hands.look_point = near[1]
+			hands.look_point = closest[1]
 
 
 ## A ring's hole has no collider: aim near its visible end to take the knot.
@@ -176,9 +176,9 @@ func _under() -> void:
 		return
 	var best: Socket = null
 	var nearest := UNDER
-	var near: Array = [hands.look_device] if hands.look_device != null \
+	var among: Array = [hands.look_device] if hands.look_device != null \
 		else _player.world.content.get_children() + _player.world.salvage.near(hands.sight_from)
-	for child in near:
+	for child in among:
 		var device := child as Device
 		if device == null or device.host() != null or device.has_meta(&"buried") or far(device):
 			continue
@@ -203,10 +203,10 @@ static func _is_bed(hit: Dictionary) -> bool:
 	return shape != null and shape.has_meta(&"bed")
 
 
-## How far along your look it meets something, out to `far`, m, or INF.
-func meets(far: float) -> float:
+## How far along your look it meets something, out to `distance`, m, or INF.
+func meets(distance: float) -> float:
 	var eye := _player.camera.global_transform
-	var ray := PhysicsRayQueryParameters3D.create(eye.origin, eye.origin - eye.basis.z * far)
+	var ray := PhysicsRayQueryParameters3D.create(eye.origin, eye.origin - eye.basis.z * distance)
 	ray.exclude = _hands._exclusions()
 	var hit := _hands.get_world_3d().direct_space_state.intersect_ray(ray)
 	return INF if hit.is_empty() else eye.origin.distance_to(hit.position)
