@@ -77,9 +77,9 @@ func setup(world: World, day: DayCycle, environment: Environment, face: StormFac
 ## Every frame, after Weather has worked out the light: where the sun stands
 ## and how much of it shows past Tu, the air's glow and haze, Tu's light as a
 ## share of the sun's, how far into a storm's dust the camera is, and the
-## eclipse ring's light low in the air.
+## eclipse ring's light low in the air; and the storm face's reading at the eye.
 func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3, haze: Vector3,
-		tu_light: float, seen_shade: float, dim: float, ring_air: Vector3) -> void:
+		tu_light: float, seen_shade: float, dim: float, ring_air: Vector3, at_eye: StormFace.Reading) -> void:
 	var moon := _world.moon
 	var dip := SurfaceProjection.horizon_dip(maxf(eye.y, 0.0), SurfaceProjection.radius(_world.tuning))
 	material.set_shader_parameter("horizon_dip", dip)
@@ -108,7 +108,7 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 	_face.set_light("sun_shown", sun_shown)
 
 	# The storms between you and Tu dim its light as they do the sun's.
-	var through := maxf(_face.sun_at(eye, tu), seen_shade * 0.6)
+	var through := maxf(_face.sun_of(at_eye, tu), seen_shade * 0.6)
 	var energy := _sun_energy * tu_light * through * dim
 	_tu_shine.light_energy = energy
 	# By day it's lost in the sun's light, so it isn't drawn at all.

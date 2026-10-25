@@ -486,10 +486,11 @@ func _show(delta: float) -> void:
 	var tu_light := day.tu_light(t, moon.latitude, moon.longitude) * _tuning.tu_shine_scale
 	var sunlit := smoothstep(-0.1, 0.2, sun.y) * shown
 	var daylight := sunlit + tu_light + ring + NIGHT_LIGHT
-	seen_storm = face.seen_at(here)
-	seen_shade = face.open_at(here)
-	seen_sun = maxf(face.sun_at(here, sun), 0.02)
-	seen_front = face.front_at(here).x if map.ready else -INF
+	var reading := face.reading_at(here)
+	seen_shade = face.open_of(reading)
+	seen_storm = 0.0 if shelter_at(here, &"storm") >= 1.0 else seen_shade
+	seen_sun = maxf(face.sun_of(reading, sun), 0.02)
+	seen_front = reading.front.x if map.ready else -INF
 
 	# The light dims in stages: a wall blots out the sun, then towers over half
 	# the sky, then swallows you. Inside, the light is the storm glowing from
@@ -548,7 +549,8 @@ func _show(delta: float) -> void:
 	_world.terrain.show_far(not in_storm)
 	var air := lerpf(1.0, 0.45, coverage) * dim
 	sky.show(t, here, sun, shown, Vector3(fill.r, fill.g, fill.b) * daylight * air,
-		_linear(haze_color) * haze_light, tu_light, seen_shade, dim, _linear(RING_COLOR) * ring * RING_HORIZON * air)
+		_linear(haze_color) * haze_light, tu_light, seen_shade, dim, _linear(RING_COLOR) * ring * RING_HORIZON * air,
+		reading)
 	seen_light += sky.tu_seen / (1.0 + _tuning.sky_fill)
 
 	var sun_light := _linear(sun_color) * _sun_energy * risen
@@ -578,7 +580,7 @@ func _show(delta: float) -> void:
 	var grains := _linear(_tuning.sand_color) * GRAIN_GLOW \
 		* (sun_light * maxf(seen_sun, seen_shade * 0.6) * 0.6 + sky_light * sky_left) * dim
 	var near := exp(minf(seen_front, 0.0) / 350.0) if map.ready else 0.0
-	var ring_grains := ring_light * face.ring_at(here, sun) if ring > 0.0 else Vector3.ZERO
+	var ring_grains := ring_light * face.ring_of(reading, sun) if ring > 0.0 else Vector3.ZERO
 	atmosphere.show_eclipse(sun, _linear(_tuning.sand_color) * GRAIN_GLOW * ring_grains, (1.0 - shown) * up, delta)
 	atmosphere.show_weather(camera, _world.height_under(here), open_wind(_world.player.global_position),
 		shelter_at(here, &"storm"), seen_shade, in_plume, near, grains,
