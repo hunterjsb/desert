@@ -38,6 +38,7 @@ func setup(in_world: World, pose: Transform3D, build_pod := true) -> void:
 	view.set_instance_shader_parameter(&"lit", 1.0)
 	var hull := StaticBody3D.new()
 	hull.name = "CabinHull"
+	hull.set_meta(Footing.META, Footing.METAL)
 	hull.collision_layer = 1
 	hull.collision_mask = 0
 	add_child(hull)

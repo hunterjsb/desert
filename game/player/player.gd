@@ -37,6 +37,8 @@ const LOW_SECONDS := 0.12
 const SLIP_HOLD := 2.0
 ## A board this near your feet, m, is one you can step onto.
 const BOARD_REACH := 1.5
+## How far below your feet a step feels for what it lands on, m.
+const FEEL_DOWN := 0.1
 ## Thrown off, the board stops in the sand and throws you on: it keeps this
 ## share of its way, tumbling over its edge and end over end at this share of
 ## that, rad/s, popping up off the sand, m/s; off something solid it bounces
@@ -863,6 +865,14 @@ func _after_move(from: Vector3, meant: Vector2, delta: float, was_on_floor: bool
 			_sliding = (crouched and own.length() >= _tuning.slide_start_speed) or own.length() > _tuning.sprint_speed
 		vy = 0.0
 	velocity.y = vy
+
+
+## What's underfoot now (Footing), felt for just below your feet, since the
+## floor snap that holds you to it never reports what it found; nothing, off
+## the ground. Only a test: it moves nothing.
+func underfoot() -> StringName:
+	var hit := move_and_collide(Vector3.DOWN * FEEL_DOWN, true)
+	return Footing.of(hit.get_collider(), hit.get_collider_shape()) if hit != null else &""
 
 
 ## Walking into a loose thing pushes it on at the pace you meant, as hard as
