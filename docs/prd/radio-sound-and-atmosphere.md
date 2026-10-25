@@ -542,8 +542,8 @@ coverage, retaining ordinary terrain, weather, exposure and loot rules.
 
 | Required find | Seed 1234 | Seed 1 | Seed 2 |
 |---|---:|---:|---:|
-| Broadcast set | 1,093 m | 1,011 m | 441 m |
-| Console | 5,608 m | 625 m | 999 m |
+| Broadcast set | 1,437 m | 2,872 m | 999 m |
+| Console | 4,443 m | 625 m | 999 m |
 | Traction kite | 2,588 m | 1,752 m | 885 m |
 
 Receiver and Home also have real physical ship-store slots; packing and impact
@@ -551,6 +551,51 @@ survival remain the player's risks. The check proves acquisition availability,
 not a complete unassisted expedition. Radio upgrades may be absent locally.
 Buried crystal sets rest on edge, using the existing flat-equipment rule: their
 thin trays cannot lie partly buried while leaving the required height visible.
+
+### Acquisition across departure choices (measured, 2026-10-23)
+
+Starting through New Game with the Surveyor origin, audit the default pulse
+and the fixed 32-drag sweep at 11 minute-spaced departure clocks, beginning
+56 seconds after the cabin trajectory epoch. Of 1,089 forecasts, seeds 1234,
+1 and 2 yield 199, 188 and 263 safe landings. Replaying those same 650 arrival
+places and clocks, all four required items have a source within 6 km in
+**100%** of the safe samples after excluding modules that need missing tools.
+Sources were searched to 8 km; surviving selected pod cargo contributes zero.
+
+Exposure uses the game's fresh `Wreckage.held_fast` predicate: welded plates
+and sand-packed holds count as work. This packing has no cutter, scoop or
+stake, so none of its surviving gear unlocks those gates. Distances below
+are **median / worst kilometres** for tool-free placements, not completed
+physical retrievals or unassisted discovery. “Tool-gated-only” counts landings
+with a source within 6 km but no tool-free source within 6 km, in seed order
+1234 / 1 / 2.
+
+| Item | Seed 1234 (199/199) | Seed 1 (188/188) | Seed 2 (263/263) | Tool-gated-only |
+|---|---:|---:|---:|---:|
+| Home beacon | 2.874 / 4.163 | 0 / 0 | 0 / 0 | 0 / 0 / 0 |
+| Console | 4.457 / 5.242 | 0.621 / 3.298 | 1.056 / 3.154 | 0 / 0 / 0 |
+| Traction kite | 2.532 / 3.777 | 1.694 / 4.397 | 0.939 / 3.078 | 0 / 0 / 0 |
+| Survey receiver | 0 / 0 | 2.801 / 3.465 | 0 / 0 | 0 / 0 / 0 |
+
+The nearest source itself needs tools in 173 of seed 1's receiver samples and
+6 of seed 1234's Console samples; each has a tool-free alternative inside the
+radius. The continuous seed-1 driver also encountered a broadcast set behind
+a sand-packed locker, so it must choose an exposed alternative or recover the
+ordinary tool rather than aim through the locker. No loot change follows
+from this coverage study. The continuous physical expedition remains open.
+
+The packed beacon is lost on seed 1234 and survives on seeds 1 and 2 in all
+sampled approaches. That is two surviving seeds out of three; repeated
+landings are not independent impact rolls. This bounded sample establishes
+coverage over the tested safe departures, not every possible launch choice.
+
+
+**Radio rework replay, 2026-10-23.** Repeating these same 650 stored arrivals
+against the merged radio rework retains 199/199, 188/188 and 263/263
+within 6 km for each of the four items, with zero tool-gated-only cases.
+The median and worst distances in the table remain unchanged. The direct
+antenna-kite aerial and headset/solar-lid shelves are retained; no coverage-driven
+loot change was needed.
 
 An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
 bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,
