@@ -99,22 +99,9 @@ const SOCKET_NAMES := {&"fuel": "fuel hopper", &"battery": "battery slot", &"rin
 	&"radio_mod": "converter mount", &"radio_bay": "misc bay", &"lead": "lead clip", &"jack": "headset jack"}
 const RIDING := "not from the board"
 const STUNNED := "your hands won't close"
-## What a piece of a wreck needs before it gives, said when you try it without.
-const WRECK_NEEDS := {&"cut": "needs a heat cutter: hold use along its seams",
-	&"clear": "needs a sand scoop: hold use on it", &"ground": "live: ground it with a stake first",
-	&"seal": "breached: seal it first"}
-## The cutter's hot spot off a seam, on one the sand holds, and flat.
-const NO_SEAM := "trace the seam: the weld round its edge"
-const SEAM_BURIED := "that seam's under the sand"
-const CUTTER_FLAT := "the cutter's battery is flat"
-## A scoop stroke takes this long, s.
-const STROKE := 0.45
-## A scoop on sand with no ruin under it, or on one dug out; a sieve this
-## near the dig sifts it, m.
-const NO_RUIN := "no ruin under this sand"
-const DUG_OUT := "dug out: what's left is the weather's"
-const SIFT_REACH := 4.0
 const AT_HELM := "not from the helm"
+## The cutter's hot spot off a seam (Scrapping).
+const NO_SEAM := Scrapping.NO_SEAM
 
 var held: RigidBody3D
 var phase := Phase.EMPTY
@@ -128,6 +115,8 @@ var _stand_turns := 0
 var _stand_why := ""
 ## The line you work hand over hand.
 var reel: Reel
+## Your hands' work on wrecks and ruins with a tool.
+var _scrapping: Scrapping
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
 ## part, that part's socket, or the sand itself (not a ruin standing in it);
 ## and where it hit.
@@ -231,15 +220,12 @@ var _ghost_look: StandardMaterial3D
 var _marks: Node3D
 var _mark_look: StandardMaterial3D
 var _readout: Label
-## The aim dot and its line, out of the way while a menu is up.
 ## A physical display has its own readable controls while the eye is focused.
 var display_focused := false
+## The aim dot and its line, out of the way while a menu is up.
 var _hud: CanvasLayer
 var _dot: Control
 var _sound: AudioStreamPlayer
-## Until a cutter or a scoop at work sounds again, s.
-## Until a scoop's next stroke, s.
-var _stroke := 0.0
 var _hum: AudioStreamPlayer
 var _seated_count := 0
 var _notice_left := 0.0
@@ -250,6 +236,7 @@ var _inside := PhysicsShapeQueryParameters3D.new()
 func _ready() -> void:
 	_player = get_parent() as Player
 	grasp = Grasp.new(_player)
+	_scrapping = Scrapping.new(self, _player)
 	reel = Reel.new()
 	add_child(reel)
 	for child in _player.get_children():
@@ -417,7 +404,7 @@ func interact() -> bool:
 	if look_bed and held == null and look_device == null and look_part == null:
 		return _player.world.sleep.offer(_player)
 	if look_work != null:
-		return _work_once()
+		return _scrapping.work_once()
 	var op := Wreckage.tool_op(held) if phase == Phase.HELD else &""
 	if look_wreck != null and op in [Wreckage.CUT, Wreckage.CLEAR]:
 		var where := look_wreck.nearest_work(op, look_point)
@@ -710,148 +697,10 @@ func tuned_by_look() -> Radio:
 	return null
 
 
-## Use on a piece of a wreck: what you hold does that piece's work. A hazard's
-## is done at once: a stake laid across a capacitor bank's terminals shorts it
-## to the hull, and falls where it was; sealant is used up over a breached
-## store. A cutter or a scoop works while use is held down (scrap). Without
-## the tool for it, it says what it needs.
-func _work_once() -> bool:
-	var what := Wreckage.work_of(look_work)
-	var wreck: Wreckage = look_work.get_meta(&"wreckage")
-	var op := Wreckage.tool_op(held) if phase == Phase.HELD else &""
-	if op != what[0]:
-		return refuse(WRECK_NEEDS[what[0]])
-	if op == Wreckage.CUT or op == Wreckage.CLEAR:
-		if op == Wreckage.CUT and not (held as Cutter).cuts():
-			return refuse(CUTTER_FLAT)
-		return true
-	var at := look_point + look_normal * 0.12
-	if not wreck.make_safe(look_work, op):
-		return false
-	var used := stow()
-	if used is Stake:
-		used.global_position = at
-		used.freeze = false
-		ScrapFx.burst(_player.world.content, look_point, 50, 3.5)
-		Sounds.play_at(used, Sounds.ZAP, -4.0, 3.0)
-		say("grounded: the bank's dead")
-	else:
-		Sounds.play_at(_player, Sounds.SEAL, -4.0, 2.0)
-		used.queue_free()
-		say("sealed")
-	return true
-
-
-## Use held down with a heat cutter or a scoop, for `delta` s. The cutter
-## fires where you aim, and on a plate's seam its hot spot cuts the weld away
-## as you trace it; a scoop clears the open slice of a hold a stroke at a
-## time. Says whether it did any work.
+## Use held down with a heat cutter or a scoop, for `delta` s (Scrapping).
+## Says whether it did any work.
 func scrap(delta: float) -> bool:
-	if phase != Phase.HELD or not is_instance_valid(held):
-		return false
-	var op := Wreckage.tool_op(held)
-	var what := Wreckage.work_of(look_work)
-	if op == Wreckage.CUT:
-		var cutter := held as Cutter
-		if not cutter.cuts():
-			say(CUTTER_FLAT)
-			return false
-		if what.is_empty() or what[0] != Wreckage.CUT:
-			cutter.fire(look_point if look_point != Vector3.ZERO else sight_to, false)
-			return false
-		var wreck: Wreckage = look_work.get_meta(&"wreckage")
-		var label: String = wreck.plan.plates[what[1]].label
-		var result := wreck.cut(look_work, look_point, delta)
-		if not result.seam:
-			cutter.fire(look_point, false)
-			say(NO_SEAM)
-			return false
-		cutter.fire(result.at, not result.get("buried", false))
-		if result.get("buried", false):
-			say(SEAM_BURIED)
-			return false
-		if result.get("through", false):
-			ScrapFx.burst(_player.world.content, result.at, 60, 3.0)
-			say("the %s comes away" % label)
-		return true
-	if op == Wreckage.CLEAR and what.is_empty() and look_sand:
-		return _dig(delta)
-	if op != Wreckage.CLEAR or what.is_empty() or what[0] != Wreckage.CLEAR:
-		return false
-	var wreck: Wreckage = look_work.get_meta(&"wreckage")
-	_stroke -= delta
-	if _stroke <= 0.0:
-		_stroke = STROKE
-		Sounds.play_at(_player, Sounds.SCOOP, -4.0, 2.0)
-		ScrapFx.spray(_player.world.content, look_point, sight_from - look_point, Wreckage.SAND)
-	if not wreck.clear(look_work, delta):
-		say(wreck.not_yet(look_work))
-		return false
-	return true
-
-
-## A scoop held on the sand over a ruin digs it out, a stroke and a spray at
-## a time, as a storm would lay it bare (Sites.dig_at); a sieve in your suit
-## or set down near sifts what it digs for the small things in it. A dune's
-## ruin dug out with half its sand or more off by your hand is yours, not a
-## storm's. Says whether it dug.
-func _dig(delta: float) -> bool:
-	var world := _player.world
-	var got := world.shape.sites.dig_at(world.world_x(look_point.x), world.world_z(look_point.z), delta, world.time)
-	var site: Structure = got[0]
-	if site == null:
-		say(NO_RUIN)
-		return false
-	if got[1] <= 0.0:
-		say(DUG_OUT)
-		return false
-	_stroke -= delta
-	if _stroke <= 0.0:
-		_stroke = STROKE
-		Sounds.play_at(_player, Sounds.SCOOP, -4.0, 2.0)
-		ScrapFx.spray(world.content, look_point, sight_from - look_point, Wreckage.SAND)
-	if _sieved():
-		_sift(site, got[2])
-	if site.source == &"dune" and site.dug_m >= site.depth * _tuning.dig_own_share \
-			and site.with_dug(site.pure_taken(world.time)) >= site.depth:
-		Deeds.done(world, &"dune_dig")
-	return true
-
-
-## Whether a sieve sifts what you dig: carried, or lying or stuck on a deck near.
-func _sieved() -> bool:
-	for each in _player.suit.carried:
-		if is_instance_valid(each) and each.get_meta(&"catalog", &"") == &"sieve":
-			return true
-	var world := _player.world
-	for node in world.content.get_children():
-		var near := node is Node3D and (node as Node3D).global_position.distance_to(_player.global_position) <= SIFT_REACH + 3.0
-		if not near:
-			continue
-		var things: Array = (node as Chassis).camp() if node is Chassis else [node]
-		for each: Node in things:
-			if each is Node3D and each.get_meta(&"catalog", &"") == &"sieve" \
-					and (each as Node3D).global_position.distance_to(_player.global_position) <= SIFT_REACH:
-				return true
-	return false
-
-
-## What a sieve finds in `m3` more of a site's sand: one of the light things of
-## its lesser rows (Drift.carried_from) each time sift_per_m3 more is
-## through, from its own stream of the site's id and how many have come, laid
-## on the sand at your feet.
-func _sift(site: Structure, m3: float) -> void:
-	var world := _player.world
-	var before := floori(site.sifted_m3 * _tuning.sift_per_m3)
-	site.sifted_m3 += m3
-	for k in range(before, floori(site.sifted_m3 * _tuning.sift_per_m3)):
-		var rng := RandomNumberGenerator.new()
-		rng.seed = hash([site.id, "sift", k])
-		var at := Vector2(world.player_world_x(), world.player_world_z()) + Vector2.from_angle(rng.randf() * TAU) * 0.8
-		Drift.lay(world, {"id": Finds._pick(rng, Drift.carried_from(site)), "x": at.x, "z": at.y,
-			"yaw": rng.randf() * TAU, "charge": rng.randf() * Drift.CHARGE,
-			"layer": SiteLoot.ERAS[site.era].layer if SiteLoot.ERAS.has(site.era) else Finds.SURFACE})
-		say("the sieve turns something up")
+	return _scrapping.scrap(delta)
 
 
 func _physics_process(delta: float) -> void:
@@ -867,7 +716,7 @@ func _physics_process(delta: float) -> void:
 	if Controls.playing() and Controls.held(&"interact"):
 		scrap(delta)
 	else:
-		_stroke = 0.0
+		_scrapping.stop()
 	_held_at = _away + (_held_at - _away) * exp(-HOLD_EASE * delta)
 	var reads := 1.0 if _reading() else 0.0
 	_reads = reads + (_reads - reads) * exp(-HOLD_EASE * delta)
@@ -954,7 +803,7 @@ func _look() -> void:
 	look_point = hit.position
 	look_normal = hit.normal
 	var body: Object = hit.collider
-	look_sand = _is_sand(hit)
+	look_sand = _sand(hit)
 	if body is CollisionObject3D and body.has_meta(&"fixture"):
 		look_fixture = body
 	if body is CollisionObject3D and body.has_meta(&"wreckage"):
@@ -1078,13 +927,14 @@ func _under() -> void:
 		look_socket = best
 
 
-## The ground's own heightmap; a ruin's boxes share its body.
-static func _is_sand(hit: Dictionary) -> bool:
+## Whether a hit is the sand's own surface, its heightmap, which a deck lifts
+## itself clear of: a ruin's boxes share its body and still count as in the way.
+static func _sand(hit: Dictionary) -> bool:
 	var body := hit.collider as StaticBody3D
 	if body == null:
 		return false
-	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
-	return shape != null and shape.shape is HeightMapShape3D
+	var holder := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
+	return holder != null and holder.shape is HeightMapShape3D
 
 
 ## A box of a ruin's that's a bed.
@@ -1114,7 +964,7 @@ func sand_beyond_reach() -> bool:
 	var ray := PhysicsRayQueryParameters3D.create(eye.origin, eye.origin - eye.basis.z * _player.camera.far)
 	ray.exclude = _exclusions()
 	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-	return not hit.is_empty() and _is_sand(hit)
+	return not hit.is_empty() and _sand(hit)
 
 
 ## Says in the readout, for a moment, why use did nothing.
@@ -1724,11 +1574,6 @@ func _offer(device: Device) -> Socket:
 	return best
 
 
-## Whether your look ray is on the device a socket belongs to, or one seated on it.
-func _on(each: Socket) -> bool:
-	return look_device != null and _root(look_device) == _root(each.get_parent() as Device)
-
-
 ## The device whose sockets a look at this one offers: its host, unless it
 ## stands on a deck, where it keeps its own.
 static func _root(device: Device) -> Device:
@@ -1782,16 +1627,6 @@ func _takes(each: Socket) -> bool:
 	if held is Device:
 		return (held as Device).fits_in(each)
 	return Catalog.fits(held.get(&"kind"), each.kind) or each.kind == &"face" and Frame.takes(held)
-
-
-## Whether a hit is the sand's own surface, which a deck lifts itself clear
-## of: a ruin's wall still counts as in the way.
-static func _sand(hit: Dictionary) -> bool:
-	var body := hit.collider as StaticBody3D
-	if body == null:
-		return false
-	var holder := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
-	return holder != null and holder.shape is HeightMapShape3D
 
 
 ## How near your line of sight passes to the part as it would sit in this
@@ -2291,7 +2126,8 @@ func line() -> String:
 			and laid.rope.through == look_hook().guide else "pass line through hook")
 	var through := _cable_at_stake()
 	if not through.is_empty():
-		return Controls.key_for(&"interact") + " · " + ("take cable off stake" if (through.cable as Cable).through 			== through.stake else "pass cable through stake")
+		return Controls.key_for(&"interact") + " · " + ("take cable off stake" \
+			if (through.cable as Cable).through == through.stake else "pass cable through stake")
 	if not sticking.is_empty() and (sticking.why != "" or sticking.warn != ""):
 		return sticking.why if sticking.why != "" else sticking.warn
 	if not sticking.is_empty() and (held is CrowsNest or grasp.body is CrowsNest) \
