@@ -24,6 +24,10 @@ const GLINT_CLEAR := 0.15
 ## A site's loaded ground follows it out of the sand in steps that move no
 ## sand more than this, m, so the ground and what stands in it never part.
 const STEP_M := 0.025
+## A start among house ruins stands this far off a town's middle, m, with at
+## least this many of them standing round it.
+const AMONG_ASIDE := 400.0
+const AMONG_LEAST := 4
 
 
 static var _pieces := {}
@@ -374,19 +378,19 @@ static func nearest_on_moon(history: History, p: Vector3, kind: StringName, most
 	return found
 
 
-## Where on the moon to start runs among history's house ruins: `aside` m
+## Where on the moon to start runs among history's house ruins: AMONG_ASIDE m
 ## off the middle of each of the `count` towns nearest `from` round which at
-## least `least` of them stand, laid from about where a run's ground starts
-## (`ground`, world metres), and that `wanted(shape, ground)` keeps, laid so.
-## For probes, look-tests and dev scenarios: a run's own start is deep
-## desert, where history left next to nothing. Nearest first.
-static func starts_among(run_seed: int, tuning: Tuning, from: Vector3, ground: Vector2, count := 1,
-		aside := 400.0, least := 4, wanted := Callable()) -> Array[Vector3]:
+## least AMONG_LEAST of them stand, laid from about where a run's ground
+## starts (`ground`, world metres). For probes, look-tests and dev scenarios:
+## a run's own start is deep desert, where history left next to nothing.
+## Nearest first.
+static func starts_among(run_seed: int, tuning: Tuning, from: Vector3, ground: Vector2,
+		count := 1) -> Array[Vector3]:
 	var found: Array[Vector3] = []
 	var shape := TerrainShape.new(run_seed, tuning)
 	for town in towns_near(shape.history, from):
-		var at := beside(shape.history, town, from, aside)
-		if stands_among(shape, at, ground, aside + town.radius, least, wanted):
+		var at := beside(shape.history, town, from, AMONG_ASIDE)
+		if stands_among(shape, at, ground, AMONG_ASIDE + town.radius, AMONG_LEAST):
 			found.append(at)
 			if found.size() >= count:
 				break

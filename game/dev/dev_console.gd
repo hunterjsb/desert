@@ -363,10 +363,7 @@ func _give(args: PackedStringArray, world: World) -> void:
 				Catalog.cable(world, at, id == &"strong_cable")
 			ahead += 0.3
 		elif player.hands.held == null:
-			var part := Catalog.part(id)
-			world.content.add_child(part)
-			part.global_position = player.global_position + Vector3.UP
-			player.hands.hold(part)
+			Scenarios.in_hands(world, id)
 		else:
 			var lying := Transform3D(Basis(Vector3.UP, player.global_rotation.y) * Basis(Vector3.RIGHT, -PI / 2.0), Vector3.ZERO)
 			Scenarios.drop(world, Catalog.part(id), lying, 0.0, ahead)
@@ -407,10 +404,7 @@ func _airdrop(args: PackedStringArray, world: World) -> void:
 		return
 	world.time = t - AIRDROP_LEAD
 	if player.hands.held == null:
-		var flare := Catalog.part(&"flare")
-		world.content.add_child(flare)
-		flare.global_position = player.global_position + Vector3.UP
-		player.hands.hold(flare)
+		Scenarios.in_hands(world, &"flare")
 	_say("airdrop: the deliveryship passes high over you in %d s; light the flare (use)" % roundi(AIRDROP_LEAD))
 
 

@@ -407,14 +407,12 @@ static func lay(world: World, scenario: Dictionary, place: Dictionary) -> Array[
 		&"clear":
 			dropped = weather_station(world)
 			dropped.append_array(deliveryship_pass(world))
-		&"deliveryship": dropped = deliveryship_pass(world)
 		&"yours": dropped = yours(world)
 		&"survive": dropped = survive(world)
 		&"farm": dropped = farm(world)
 		&"board": dropped = board(world)
 		&"receiver": dropped = [standing(world, &"survey_receiver", [&"battery"], RADIO_AT)]
 		&"radio": dropped = radio(world)
-		&"weather_station": dropped = weather_station(world)
 		&"far_god": dropped = far_god(world)
 		&"afk": dropped = afk(world)
 		&"catch_line": dropped = catch_line(world)
@@ -676,10 +674,10 @@ static func _among(world: World, scenario: Dictionary) -> Dictionary:
 			func(_site: int, _socket: int) -> bool: return false).is_empty()
 	var shape := TerrainShape.new(world.run_seed, tuning)
 	for town in StructureKit.towns_near(shape.history, from, 12):
-		var at := StructureKit.beside(shape.history, town, from, 400.0)
+		var at := StructureKit.beside(shape.history, town, from, StructureKit.AMONG_ASIDE)
 		var place := _search(world, scenario, fresh, Sphere.longitude(at))
-		if not place.is_empty() and StructureKit.stands_among(shape, at, Vector2(place.x, place.z), 400.0 + town.radius,
-				4, heard):
+		if not place.is_empty() and StructureKit.stands_among(shape, at, Vector2(place.x, place.z),
+				StructureKit.AMONG_ASIDE + town.radius, StructureKit.AMONG_LEAST, heard):
 			place.moon = Vector2(rad_to_deg(Sphere.latitude(at)), rad_to_deg(Sphere.longitude(at)))
 			return place
 	return {}
@@ -1070,18 +1068,10 @@ static func kite(world: World) -> Array[Node3D]:
 	var mid := shortwave.global_position.lerp(flier.global_position, 0.5) + Vector3(0.0, 0.0, 0.6)
 	stake.drive(mid, world.height_under(mid))
 	var cable := Catalog.cable(world, shortwave.global_position + Vector3.UP, false)
-	shortwave.fit(cable.plugs[0], _open(shortwave, &"lead"))
-	flier.fit(cable.plugs[1], _open(flier, &"lead"))
+	shortwave.fit(cable.plugs[0], _free(shortwave, &"lead"))
+	flier.fit(cable.plugs[1], _free(flier, &"lead"))
 	cable.route(stake)
 	return [shortwave, flier, stake]
-
-
-## A device's first open socket of a kind, or null.
-static func _open(device: Device, kind: StringName) -> Socket:
-	for socket in device.sockets():
-		if socket.kind == kind and socket.is_open():
-			return socket
-	return null
 
 
 ## The radio of "radio" on the weather station, beside its charged shield,
@@ -1165,11 +1155,7 @@ static func walker_camp(world: World) -> Array[Node3D]:
 ## A flare in your hands, and the deliveryship forced over you in DELIVERYSHIP_LEAD
 ## s: light it as it comes over and its cannon fires. Returns the flare.
 static func deliveryship_pass(world: World) -> Array[Node3D]:
-	var player := world.player
-	var flare := Catalog.part(&"flare")
-	world.content.add_child(flare)
-	flare.global_position = player.global_position + Vector3.UP
-	player.hands.hold(flare)
+	var flare := in_hands(world, &"flare")
 	deliveryship_over(world, DELIVERYSHIP_LEAD)
 	return [flare]
 
@@ -1443,7 +1429,7 @@ static func plumb(world: World, a: Device, b: Device) -> Hose:
 	return hose
 
 
-## A device's first free socket of a kind.
+## A device's first free socket of a kind, or null.
 static func _free(device: Device, kind: StringName) -> Socket:
 	for socket in device.sockets():
 		if socket.kind == kind and socket.is_open():
@@ -1596,6 +1582,15 @@ static func vent(world: World) -> Array[Node3D]:
 ## Your own bare chassis on the sand beside you, to stick what you find on.
 static func yours(world: World) -> Array[Node3D]:
 	return [standing(world, &"chassis", [], YOURS)]
+
+
+## A part, by its catalog id, in your hands.
+static func in_hands(world: World, id: StringName) -> Part:
+	var part := Catalog.part(id)
+	world.content.add_child(part)
+	part.global_position = world.player.global_position + Vector3.UP
+	world.player.hands.hold(part)
+	return part
 
 
 ## A device standing on the sand, squared to you, with these parts fitted.
