@@ -52,6 +52,22 @@ owns the approved compatibility grants. Still after Spaceport.
 
 ## As built
 
+**Impact retirement correction (2026-10-23).** Unseat lost cargo
+before any lost carrier leaves the world. Seed 1's lost front wall and packed
+panel reproduce an invalid mount teardown; arrival probe 52 fails before the
+correction and passes after it, alongside nested-cargo probes 24 and 44. The
+real opening followed by an immediate save/reload keeps neither lost body nor
+its live socket. Historical impact outcomes remain in the manifest. Seeded
+losses, survivor placement and the save format are unchanged.
+
+**Selected for Spaceport, 2026-10-22 (SANDGAME, delegated by Hunter).** The
+existing survey receiver joins the physical ship stores, loaded by hand with
+the same optional cargo survival as other extras. The guide briefly explains
+turning it to compare the needle and its limitation to loot beacons. Ordinary
+nomad and wreck finds supply replacements; the world and the chosen landing
+are not rearranged to guarantee a kit. Acquisition is audited within 6 km on
+fixed ordinary seeds 1234, 1 and 2; the expedition objective stays 1–2 km.
+
 **Cabin.** A small walkable room hangs over the start in the same World, sheltered from
 weather. Its window faces Tu, 9° across as from the surface and placed by the same geometry,
 through a separate orbital renderer; the station's globe shows Zan. Nothing aboard has been

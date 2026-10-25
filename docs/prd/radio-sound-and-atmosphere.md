@@ -471,7 +471,7 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   a crystal set on a long wire being what they were for. The `radio_top` mount and the hook's lead clip
   are gone. The kite patch never shipped, so no player save has a hook on a radio.
 - **An arc hits one piece of the chain at random** (`AntennaKite.chain`), all alike.
-- **Consolidating with the salvage kite** (Spaceport): open; Hunter's prototype isn't in the repository.
+- **Consolidating with the salvage kite** (Spaceport candidate): both use `KiteFlight` for the wind angle, sway, settling and wear. The antenna kite retains its own aerial wiring, all-band gain and arc chain; the traction kite loads an ordinary rope.
 - **The bleed resistor stays as it is:** "a stake is stationary," so the bleed is the kite's protection on
   the move, as the stake is at camp.
 - **The direction loop is scrapped** ("scrap this one"): the ferrite rod is the set's only direction
@@ -508,6 +508,94 @@ implementations yesterday.. we should act to consolidate approaches and keep thi
   way along the line; no rod on shortwave or FM.
 
 ### The survey receiver (agreed and built 2026-10-20)
+
+**Acquisition decision, 2026-10-22 (SANDGAME, delegated by Hunter).** Hunter's
+Spaceport direction is "we should make it obt and und". Add the existing receiver
+to physical Surveyor ship stores, retaining optional cargo risk, and to ordinary
+nomad/wreck loot as a replacement. Existing wrecks, lifeboats and nomad rigs with
+real unclaimed loot may carry the same 530 kHz loot beacon as house ruins. Add
+missing crystal sets, maker variants and antenna/band gear to plausible existing
+loot tables; do not create a cache around the landing or move the landing to gear.
+An eligible wreck or nomad rig qualifies through either its existing distress
+transmitter or the same seeded 530 kHz beacon survival roll used by houses.
+Neither rule depends on the acceptance seed. Audit seeds 1234, 1 and 2 within
+6 km; the expedition objective remains 1–2 km. FM, SW and antenna upgrades may
+vary by world; receiver, one broadcast set, Console, Home and traction kite are
+the required acquisition chain. A real exposed Console at 5.6 km on seed 1234
+is accepted without increasing its loot weight.
+Report remaining gaps before promising guaranteed placements. Existing readouts
+and short hints explain uses and limits, with explicit LIVE / LAST KNOWN Home
+labels on the Console Map. No new tier, signal service, asset or Home range.
+
+**As built, 2026-10-22.** Physical ship stores include the optional receiver;
+ordinary wreck/nomad tables provide replacements, field-radio bodies and aerial
+gear. The 2026-10-23 radio merge retains the direct antenna-kite cable,
+all-band aerial behavior, headset and solar lid. Retired aerial reels, direction
+loops and frequency counters are absent from navigation placements. First-use hints explain the existing sets, converters, aerial and
+Home limits. Console Home marks are filled while live and outlined when stale,
+with explicit labels; a saved stale fix keeps that distinction. Follow the
+Signal continues to record actual receiver approaches to the advertised loot.
+Radio probe 80 checks real ship stores and exposed ordinary salvage within
+6 km on the default pulse at departure clock zero, including a real unclaimed
+target and seed 1's walk toward a nomad rig. It expands only the audit index's
+coverage, retaining ordinary terrain, weather, exposure and loot rules.
+
+| Required find | Seed 1234 | Seed 1 | Seed 2 |
+|---|---:|---:|---:|
+| Broadcast set | 1,437 m | 2,872 m | 999 m |
+| Console | 4,443 m | 625 m | 999 m |
+| Traction kite | 2,588 m | 1,752 m | 885 m |
+
+Receiver and Home also have real physical ship-store slots; packing and impact
+survival remain the player's risks. The check proves acquisition availability,
+not a complete unassisted expedition. Radio upgrades may be absent locally.
+Buried crystal sets rest on edge, using the existing flat-equipment rule: their
+thin trays cannot lie partly buried while leaving the required height visible.
+
+### Acquisition across departure choices (measured, 2026-10-23)
+
+Starting through New Game with the Surveyor origin, audit the default pulse
+and the fixed 32-drag sweep at 11 minute-spaced departure clocks, beginning
+56 seconds after the cabin trajectory epoch. Of 1,089 forecasts, seeds 1234,
+1 and 2 yield 199, 188 and 263 safe landings. Replaying those same 650 arrival
+places and clocks, all four required items have a source within 6 km in
+**100%** of the safe samples after excluding modules that need missing tools.
+Sources were searched to 8 km; surviving selected pod cargo contributes zero.
+
+Exposure uses the game's fresh `Wreckage.held_fast` predicate: welded plates
+and sand-packed holds count as work. This packing has no cutter, scoop or
+stake, so none of its surviving gear unlocks those gates. Distances below
+are **median / worst kilometres** for tool-free placements, not completed
+physical retrievals or unassisted discovery. “Tool-gated-only” counts landings
+with a source within 6 km but no tool-free source within 6 km, in seed order
+1234 / 1 / 2.
+
+| Item | Seed 1234 (199/199) | Seed 1 (188/188) | Seed 2 (263/263) | Tool-gated-only |
+|---|---:|---:|---:|---:|
+| Home beacon | 2.874 / 4.163 | 0 / 0 | 0 / 0 | 0 / 0 / 0 |
+| Console | 4.457 / 5.242 | 0.621 / 3.298 | 1.056 / 3.154 | 0 / 0 / 0 |
+| Traction kite | 2.532 / 3.777 | 1.694 / 4.397 | 0.939 / 3.078 | 0 / 0 / 0 |
+| Survey receiver | 0 / 0 | 2.801 / 3.465 | 0 / 0 | 0 / 0 / 0 |
+
+The nearest source itself needs tools in 173 of seed 1's receiver samples and
+6 of seed 1234's Console samples; each has a tool-free alternative inside the
+radius. The continuous seed-1 driver also encountered a broadcast set behind
+a sand-packed locker, so it must choose an exposed alternative or recover the
+ordinary tool rather than aim through the locker. No loot change follows
+from this coverage study. The continuous physical expedition remains open.
+
+The packed beacon is lost on seed 1234 and survives on seeds 1 and 2 in all
+sampled approaches. That is two surviving seeds out of three; repeated
+landings are not independent impact rolls. This bounded sample establishes
+coverage over the tested safe departures, not every possible launch choice.
+
+
+**Radio rework replay, 2026-10-23.** Repeating these same 650 stored arrivals
+against the merged radio rework retains 199/199, 188/188 and 263/263
+within 6 km for each of the four items, with zero tool-gated-only cases.
+The median and worst distances in the table remain unchanged. The direct
+antenna-kite aerial and headset/solar-lid shelves are retained; no coverage-driven
+loot change was needed.
 
 An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
 bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,

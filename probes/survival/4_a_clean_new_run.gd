@@ -16,8 +16,8 @@ extends WorldProbe
 ## clock days on.
 ## Then you die, by your own body's tick. A new run starts on a new seed, and
 ## nothing of the old one is left anywhere, not a device, a part, a line, a
-## bubble or a watt-hour. You start at the beginning, fed and watered, with
-## only what the kit carries on you and the rest of it beside you.
+## bubble or a watt-hour. You start at the beginning, whole and with no buffs,
+## with only what the kit carries on you and the rest of it beside you.
 
 const MAIN := preload("res://game/run.tscn")
 const DAYS := 3.0
@@ -77,11 +77,9 @@ func run() -> void:
 	for child in main.get_children():
 		if child is Runs:
 			child.started.connect(func(next: World) -> void: fresh.merge(_start_of(next)))
-	# Dying of thirst, on the next tick.
-	for part in player.suit.carried:
-		if part is Supply and part.kind == &"water":
-			part.drain(INF)
-	player.vitals.thirst = 0.0
+	# Fed from the ration in hand, then dying of a sickness, on the next tick.
+	check(ration.use(player, Vector3.ZERO) and player.vitals.buffs.fed > 0.0, "a meal from the ration in hand")
+	player.vitals.wounds.sick = 1.0
 	player.vitals.health = 0.01
 	for i in 120:
 		await get_tree().physics_frame
@@ -110,7 +108,7 @@ func run() -> void:
 		and world.power.stored_wh() >= kit_wh - 1.0,
 		"the new world has nothing in it but you and the kit (%d things, %d lines)" % [strays.size(), world.ropes.ropes.size()])
 	print("the new run began with %s" % fresh)
-	check(fresh.get("you") == [Vitals.FULL, Vitals.FULL, Vitals.FULL, false, 0.0, 0.0, 0.0, 0.0, 0.0, null, 0]
+	check(fresh.get("you") == [Vitals.FULL, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, null, 0]
 		and fresh.get("spawn", INF) < 1.0 and fresh.get("time", INF) == 0.0,
 		"you start fresh, empty-handed, at the run's beginning")
 	check(fresh.get("carried") == ["Water canister 1.00", "Ration 1.00", "Bedroll -1.00", "Surveyor's Guide -1.00", "Home beacon -1.00"],
@@ -127,8 +125,9 @@ func _start_of(next: World) -> Dictionary:
 		carried.append("%s %.2f" % [part.label,
 			(part as Supply).amount / (part as Supply).capacity() if part is Supply else -1.0])
 	return {
-		"you": [vitals.health, vitals.hunger, vitals.thirst, vitals.dead, vitals.drunk, vitals.eaten]
-			+ vitals.taken.values() + [you.hands.held, you.waist.tied.size()],
+		"you": [vitals.health, vitals.dead, vitals.drunk, vitals.eaten]
+			+ vitals.taken.values() + [vitals.buffs.rested, vitals.buffs.fed, vitals.buffs.hydrated,
+			vitals.buffs.resting, vitals.wounds.sick, you.hands.held, you.waist.tied.size()],
 		"carried": carried,
 		"spawn": Vector2(next.player_world_x(), next.player_world_z()).distance_to(next.spawn),
 		"time": next.time,

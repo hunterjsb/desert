@@ -165,8 +165,8 @@ func reading() -> Dictionary:
 		out.numbers["line %d m" % i] = rope.length
 		out.numbers["line %d sustained N" % i] = rope.sustained
 	out.numbers["health"] = player.vitals.health
-	out.numbers["hunger"] = player.vitals.hunger
-	out.numbers["thirst"] = player.vitals.thirst
+	for buff in Snapshot.BUFFS:
+		out.numbers[buff] = player.vitals.buffs.get(buff)
 	out.numbers["stamina"] = player.stamina
 	out.numbers["held"] = 1.0 if player.hands.held != null else 0.0
 	out.numbers["at waist"] = player.waist.tied.size()

@@ -148,6 +148,8 @@ func interact(by: Player) -> bool:
 	if by != null and screen != null and by.hands.look_device == self and by.hands.look_socket == screen:
 		if not running():
 			return by.hands.refuse("no power")
+		if Controls.ui != null:
+			Controls.ui.teach("console_map", "Map filters follow connected gear. Received bearings and survey evidence are kept; Home shows live or last-known fixes.")
 		press(_on_screen(by.hands.look_point))
 		return true
 	return super(by)

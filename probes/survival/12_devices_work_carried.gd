@@ -57,12 +57,11 @@ func run() -> void:
 		"and on again, its dial where it stood, playing")
 	var canister := suit.supply(&"water")
 	var water := canister.amount
-	player.vitals.thirst = 50.0
 	point_at(suit.tile_rect(stack_of(canister)).get_center())
 	press(&"interact")
 	await physics_frames(2)
-	print("used on the canister: %.2f L drunk, thirst %.0f" % [water - canister.amount, player.vitals.thirst])
-	check(canister.amount < water and player.vitals.thirst > 99.0 and suit.carried.has(canister) and not shield.on,
+	print("used on the canister: %.2f L drunk, hydrated %.0f s" % [water - canister.amount, player.vitals.buffs.hydrated])
+	check(canister.amount < water and player.vitals.buffs.hydrated > 0.0 and suit.carried.has(canister) and not shield.on,
 		"use on the canister drinks from it where it is, and nothing in the world")
 	point_at(Vector2(576.0, 60.0))
 	press(&"interact")

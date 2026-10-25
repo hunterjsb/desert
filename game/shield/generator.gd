@@ -105,6 +105,11 @@ func _ready() -> void:
 	_show()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and is_instance_valid(shelter) and shelter.get_parent() == null:
+		shelter.free()
+
+
 func _exit_tree() -> void:
 	# A looping stream still playing at quit holds its resources past exit.
 	hum.stop()

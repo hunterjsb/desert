@@ -277,11 +277,11 @@ func _afk_lands(dropped: Array[Node3D]) -> void:
 	check(stakes.size() == 1 + planters.size() and world.ropes.ropes.size() == 2 + 2 * planters.size(),
 		"afk: the deck and each planter moored to a driven stake, the turbine on its strong cable, the planters on their hoses")
 	var carried := player.suit.carried.map(func(p: RigidBody3D) -> String: return Suit._name(p))
-	check(player.vitals.health > 99.0 and player.vitals.hunger > 99.0 and player.vitals.thirst > 99.0
+	check(player.vitals.health > 99.0
 		and carried.count("Water canister") == Scenarios.AFK_CANISTERS and carried.count("Stake") == Scenarios.AFK_STAKES
 		and carried.count("Rope coil") == 1 and carried.count("Hose") == 1
 		and carried.size() == Scenarios.AFK_CANISTERS + Scenarios.AFK_STAKES + 2,
-		"afk: you start fed and watered, carrying water, spare stakes, a coil and a hose (%s)" % ", ".join(carried))
+		"afk: you start whole, carrying water, spare stakes, a coil and a hose (%s)" % ", ".join(carried))
 
 
 ## Chassis pieces lie flat on the sand in front of you, a tray before each,
@@ -481,14 +481,13 @@ func _catch_line_lands(dropped: Array[Node3D], upwind: Vector2) -> void:
 		"lee: a catch line strung across the wind")
 
 
-## Hurt, thirsty and carrying a battery, as a fresh start mustn't leave you.
+## Hurt and carrying a battery, as a fresh start mustn't leave you.
 func _hurt_and_burdened() -> void:
 	world.player.vitals.health = 10.0
-	world.player.vitals.thirst = 90.0
 	world.player.suit.carried.append(Catalog.part(&"battery"))
 
 
-## You start over on sealed water: fed, watered and whole with a fresh suit's
+## You start over on sealed water: whole with a fresh suit's
 ## kit, a deck in front of you with a condenser making water into its empty
 ## canister on the deck's panel and batteries, a charged shield beside it,
 ## and spare rations.
@@ -501,9 +500,9 @@ func _survival_starts(dropped: Array[Node3D]) -> void:
 	var shields := dropped.filter(func(b: Node3D) -> bool: return b is ShieldGenerator and _charged(b))
 	var rations := dropped.filter(func(b: Node3D) -> bool: return b is Supply and b.kind == &"food")
 	var carried := world.player.suit.carried.map(func(p: RigidBody3D) -> String: return p.label)
-	check(vitals.health > 99.0 and vitals.hunger > 99.0 and vitals.thirst > 99.0
+	check(vitals.health > 99.0
 		and carried == ["Water canister", "Ration", "Bedroll", "Surveyor's Guide", "Home beacon"] and world.player.suit.supply(&"water").amount > 1.99,
-		"survive: you start fed, watered and whole, on sealed water and a ration (%s)" % ", ".join(carried))
+		"survive: you start whole, on sealed water and a ration (%s)" % ", ".join(carried))
 	check(condenser.powered and condenser.canister().amount > 0.0 and condenser.canister().amount < 0.01
 		and condenser.host().stats().solar_w > 0.0 and condenser.host() == _first(dropped, ShieldGenerator).host(),
 		"survive: the condenser is filling its empty canister on its deck's panel, beside the shield (%.4f L)"

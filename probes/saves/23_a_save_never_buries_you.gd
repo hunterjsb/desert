@@ -1,4 +1,5 @@
 extends WorldProbe
+## Exclusive on noisy runners
 ## Profile & saves probe 23: a save never buries you. A cistern stood by hand
 ## where a storm digs its pit out; you stand on its floor as the storm lets
 ## go, the sand held off it over you, and the run is saved once the weather

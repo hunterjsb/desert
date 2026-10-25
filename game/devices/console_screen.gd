@@ -366,9 +366,14 @@ func _draw_chart(chart: Dictionary, middle: Vector2, scale: float, side: float) 
 		var spot: Vector2 = on.call(chart.home)
 		var at := _pin(spot, side)
 		var color := text if chart.get("live", false) else dim
-		draw_colored_polygon(PackedVector2Array([at + Vector2(-9.0, 9.0), at + Vector2(9.0, 9.0), at + Vector2(9.0, -2.0),
-			at + Vector2(0.0, -11.0), at + Vector2(-9.0, -2.0)]), color)
-		_label_at(at, "HOME" if at == spot else "HOME %s" % Console._distance((chart.home as Vector2).length()), MID, color, side)
+		var roof := PackedVector2Array([at + Vector2(-9.0, 9.0), at + Vector2(9.0, 9.0), at + Vector2(9.0, -2.0),
+			at + Vector2(0.0, -11.0), at + Vector2(-9.0, -2.0), at + Vector2(-9.0, 9.0)])
+		if chart.get("live", false):
+			draw_colored_polygon(roof, color)
+		else:
+			draw_polyline(roof, color, 2.0)
+		var label := "HOME LIVE" if chart.get("live", false) else "HOME LAST KNOWN"
+		_label_at(at, label if at == spot else label + " " + Console._distance((chart.home as Vector2).length()), MID, color, side)
 	if chart.has("fix"):
 		var spot: Vector2 = on.call(chart.fix)
 		var at := _pin(spot, side)

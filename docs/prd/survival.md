@@ -25,8 +25,26 @@ shelter should be time to enjoy rest and meals, not a race to establish agricult
 Deep starvation after 2+ weeks at low levels, acute thirst after a few days and
 macronutrients as buff/debuff modifiers are ideas for a later hardcore layer, not
 implemented timers or present acceptance criteria. Exact buff values remain open.
-Existing needs, depletion, auto-consumption and historical probe measurements below
-still describe the current implementation, not the selected replacement design.
+
+**As built (2026-10-22).** Hunger and thirst are gone: no bars, no depletion damage,
+no auto-consumption and no empty-need sleep wakeup. Health and stamina show as bars;
+active buffs show by name under them, and with the inventory open each shows its
+hours left, Fed and Hydrated beside the food and water you carry. Rested comes from
+sitting or lying still on support, or sleeping, while no exposure harm reaches you;
+it stays full while you rest and counts down once you get up. Using food (rations and
+crops alike) eats one measured meal for Fed; using water drinks one measured drink for
+Hydrated; either is refused while its buff lasts, and a remainder under a portion gives
+that share of the duration. Rested and Hydrated add to base stamina recovery and Fed
+to base stamina; the meal adds no stamina at once. Expiry returns to the base, nothing
+worse. Exposure, storms, temperature, shield failure, falls, shocks and sickness still
+harm; unharmed you heal. Sleep lives the buffs on its ticks; saves keep each buff's
+time and the rest so far, and an older save's hunger and thirst load as nothing. A
+first ground rest still records A Moment's Rest; no new deed. Starting values, all in
+`game/tuning.tres`: rest 30 world-seconds; meal 400 kcal; drink 0.25 L; Rested +25%
+recovery for ½ day; Fed +20% stamina for 1 day; Hydrated +15% recovery for ½ day.
+Survival probes 22–25 check stamina through expiry, portions, sleep and save timing,
+and that exposure still kills where going without doesn't. Historical need, depletion
+and auto-consumption text below describes the build before this.
 The rejected Saltbush gate and deferred promise are owned by the [roadmap](../alpha-roadmap.md#saltbush-promise-and-acceptance-deferred-2026-10-22).
 
 
@@ -104,15 +122,13 @@ headlamp and ample neotech power above supersede its design status.
 
 ## What you track
 
-**Current implementation, pending the selected buff redesign above.** This is not a
-promise to retain visible hunger/thirst meters or the current depletion deadlines.
+As built 2026-10-22 ([above](#rest-food-and-drink-support-exploration-selected-2026-10-22)).
 
-| Need | What drains it | What restores it |
+| What | What drains it | What restores it |
 |---|---|---|
-| **Health** | The three harms, falls, and empty needs | Rest, food, time inside the shield |
-| **Hunger** | Time | Food |
-| **Thirst** | Time, faster in the heat | Water |
-| **Stamina** | Sprinting, climbing slip faces, holding a line under load | Rest |
+| **Health** | The three harms, falls, shocks, sickness | Time unharmed |
+| **Stamina** | Sprinting, climbing slip faces, holding a line under load | Recovery, quicker Rested or Hydrated |
+| **Rested, Fed, Hydrated** | Time | Safe rest, a meal, a drink |
 
 ## The three harms
 
@@ -162,7 +178,7 @@ food is a ration, sealed or carried, and eaten by the suit. Whether it should is
 
 ## AFK is something you build
 
-**Historical depletion-loop design and current auto-consumption behavior.** This is
+**Historical depletion-loop design;** auto-consumption was removed 2026-10-22. This is
 not a requirement to farm before an early food/water deadline under the new direction.
 
 There's no hard-coded "camp feeds you" rule. Instead:
@@ -430,10 +446,9 @@ broadcasts. [Wind & storms](wind-and-storms.md): the curve.
 
 ## On screen
 
-The selected direction has no surfaced hunger or thirst bars; rest, food and drink
-support exploration buffs as specified [above](#rest-food-and-drink-support-exploration-selected-2026-10-22).
-The current implementation still shows the older health/hunger/thirst/stamina bars.
-This documentation change does not remove them or choose a replacement HUD layout.
+Health and stamina bars, with active buffs named under them; Fed lengthens the
+stamina bar. Durations and carried food and water show with the inventory open
+([as built](#rest-food-and-drink-support-exploration-selected-2026-10-22)).
 
 ## Death
 
@@ -444,8 +459,8 @@ Death means a new run (see Runs in the vision).
 1. **Needs tick at a fixed rate,** independent of frame rate.
 2. **Every harm reads the felt weather,** so inside a shield that blocks a harm, it
    doesn't touch you.
-3. **Auto-eating and auto-drinking only draw from your inventory.** Anything else, you
-   build.
+3. **Eating and drinking are deliberate,** from what you hold or carry. Anything else,
+   you build.
 4. **Every number is visible in dev mode.**
 
 ## Skeleton version
@@ -776,10 +791,11 @@ visible hunger/thirst requirement.
 
 ## Probes
 
-1. **The AFK promise, with a body.** A reference camp with an automated farm keeps an
-   idle player alive through 24 simulated hours. Take the farm away and the same player
-   dies, which proves the test can fail.
-2. **Frame-rate proof.** Needs drain the same at 30, 60 and 120 frames per second.
+1. **The AFK promise, with a body.** A reference camp keeps an idle player alive and
+   unharmed through three simulated days. Its starve-without-the-farm half was retired
+   with depletion on 2026-10-22; probe 25 checks that exposure still kills.
+2. **Frame-rate proof.** Harms and buff timers run the same at 30, 60 and 120 frames per
+   second.
 3. **Shelter means safe.** Inside a shield that blocks a harm, that harm does nothing to
    you.
 4. **A clean new run.** Death starts a new run with nothing left over from the old one.

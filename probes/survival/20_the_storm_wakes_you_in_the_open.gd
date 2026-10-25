@@ -17,8 +17,8 @@ func run() -> void:
 	var x := world.player_world_x()
 	var z := world.player_world_z()
 	var day := world.tuning.day_minutes * 60.0
-	# Clear in the morning, a storm due in a few hours, so neither the cold
-	# nor thirst wakes you first.
+	# Clear in the morning, a storm due in a few hours, so the cold doesn't
+	# wake you first.
 	var t := 0.0
 	while not _within(world.weather.day.time_of_day(t, world.moon.longitude), MORNING) \
 			or field.raw_storm_at(x, z, t) > 0.0 or not _within(field.next_change(x, z, t, day, 10.0) / day, DUE):
@@ -30,13 +30,15 @@ func run() -> void:
 
 	var from := world.time
 	var comes := from + field.next_change(x, z, from, day, Weather.FORECAST_STEP)
-	var thirst := world.player.vitals.thirst
+	# A meal, to count the night down.
+	var buffs := world.player.vitals.buffs
+	buffs.fed = day
 	await world.sleep.fall_asleep(Sleep.HOURS, HOURS)
 	var woke := world.time
 	print("a storm due %.0f s on; woke %.0f s on: %s" % [comes - from, woke - from, " / ".join(world.sleep.said)])
 	check(world.sleep.last.woke == &"storm" and woke >= comes - 1.0 and woke <= comes + world.tuning.sleep_tick + 1.0,
 		"the storm's arrival wakes you (%.0f s from it)" % (woke - comes))
-	check(world.player.vitals.thirst < thirst, "the night was lived up to then")
+	check(absf(day - buffs.fed - (woke - from)) < 1e-3, "the night was lived up to then")
 	check("The storm woke you" in world.sleep.said, "waking says so")
 
 

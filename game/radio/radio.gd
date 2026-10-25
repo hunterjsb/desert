@@ -450,6 +450,10 @@ func interact(_by: Player) -> bool:
 	var before := channel
 	on = not on
 	_retuned(before)
+	if on and Controls.ui != null:
+		Controls.ui.teach("crystal_listening" if crystal else "field_radio_bands",
+			"Passive AM: no battery needed. Strong nearby signals are clearest; a headset helps."
+			if crystal else "AM is built in. Fit FM or shortwave converters for those bands; shortwave benefits from an aerial.")
 	if powered:
 		_click(Sounds.RADIO_TUNE, minf(_tuning.radio_loudness_db, 3.0))
 	return true

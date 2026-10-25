@@ -465,7 +465,7 @@ func step(delta: float, dir: Vector2, hop: bool, digging := 0.0, kick := false, 
 			var spare := clampf(1.0 - velocity.length() / top, 0.0, 1.0)
 			velocity += ahead * t.board_kick / KICK_SECONDS * spare * contact * h
 		if not kick:
-			player.stamina = minf(player.stamina + t.stamina_regen * h, t.stamina_max)
+			player.stamina = minf(player.stamina + player.stamina_regen() * h, player.stamina_full())
 		# Its hover grips sideways, so your way follows the board round, as
 		# far as its grip; past that it breaks loose into a skid, which grips
 		# less until the board comes back near your way, and a skid bleeds

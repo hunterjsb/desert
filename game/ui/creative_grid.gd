@@ -20,7 +20,7 @@ const GROUPS := [
 		&"bleed_resistor", &"valve_preamp", &"static_choke", &"wire_logger",
 		&"headset", &"solar_lid", &"survey_receiver", &"lamp",
 		&"planter", &"deep_planter", &"coalcane", &"harvester", &"bedroll", &"survival_kit"]],
-	["Sail and rope", [&"mast", &"sail", &"hand_winch", &"keel", &"helm_seat", &"crows_nest", &"streamer", &"sailing_notes", &"coil", &"hook", &"stake"]],
+	["Sail and rope", [&"mast", &"sail", &"salvage_kite", &"hand_winch", &"keel", &"helm_seat", &"crows_nest", &"streamer", &"sailing_notes", &"coil", &"hook", &"stake"]],
 	["Tools", [&"surveyor_guide", &"cutter", &"sand_scoop", &"sieve", &"sealant", &"med_kit", &"compass", &"home_beacon", &"hull_plate", &"flare", &"cargo"]],
 	["Food and water", [&"canister", &"hose", &"ration", &"tubers", &"fungus_caps", &"saltbush_leaves", &"salt",
 		&"root_tuber", &"vat_fungus", &"saltbush"]],

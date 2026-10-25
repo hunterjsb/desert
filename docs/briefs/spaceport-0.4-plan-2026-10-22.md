@@ -173,6 +173,15 @@ Use a fresh profile and normal Surveyor start on three fixed ordinary seeds. No 
 forced wind, prebuilt rig or unlocked origin. Record how the player acquires the kite and
 navigation gear; acquisition is part of the check, not a debug precondition.
 
+The fixed seeds are **1234, 1 and 2**, chosen from the existing start probes
+before inspecting their loot. The navigation acquisition radius is **6 km**
+(SANDGAME, 2026-10-22); the trip objective below remains 1–2 km away. Required:
+receiver, one broadcast radio, Console, Home and traction kite, from real exposed
+finds or physical ship stores. FM, SW, antenna reel and antenna kite are optional
+reception upgrades whose local availability may differ. On seed 1, check that
+the receiver acquires a real target on the way toward the sighted site or nearest
+nomad rig, even if it hears nothing at the landing.
+
 After a safe camp is established, use a real salvage objective 1–2 km away, beyond normal
 local retention but initially within the beacon's designed range. Carry a useful payload—a farm box, chassis, console, condenser, large mast or sail—
 and return with a real find. There is no food/water deadline. Distance is a test scale, not a
