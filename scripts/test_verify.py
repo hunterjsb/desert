@@ -185,5 +185,31 @@ elif args[:1]==['api']: print(os.environ.get('VERIFY_PLATFORM_LOG','2026-10-22T0
         self.assertEqual(self.calls(), [])
 
 
+class ProbeGroups(unittest.TestCase):
+    """A folder in REST_EXCEPT but in no group would never run."""
+
+    def test_rest_except_matches_the_groups(self):
+        lines = (VERIFY.parent.parent / '.github/workflows/probes.yml').read_text().splitlines()
+        for start, line in enumerate(lines):
+            if line.strip() != 'group:':
+                continue
+            groups = []
+            for item in lines[start + 1:]:
+                if not item.strip().startswith('- '):
+                    break
+                groups += item.strip()[2:].split()
+            at = next(i for i in range(start, len(lines)) if 'REST_EXCEPT: >-' in lines[i])
+            rest = []
+            for item in lines[at + 1:]:
+                if not item.strip().startswith('probes/'):
+                    break
+                rest += item.split()
+            listed = [g for g in groups if g.startswith('probes/')]
+            self.assertEqual(sorted(listed), sorted(rest), f'groups at line {start + 1}')
+            self.assertEqual(len(set(listed)), len(listed), f'a folder twice at line {start + 1}')
+            for folder in listed:
+                self.assertTrue((VERIFY.parent.parent / folder).is_dir(), folder)
+
+
 if __name__ == '__main__':
     unittest.main()
