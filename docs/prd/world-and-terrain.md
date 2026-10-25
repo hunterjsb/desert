@@ -489,6 +489,11 @@ extra reads are gated to nearby marked ground and the map stays 64 MB. Headline 
 0.2 to 0.4 ms of GPU on an RTX 3070 at 1080p, inside the 0.8 ms budget. The quarter-metre
 map still limits boot detail.
 
+Big bodies (2026-10-25): pressing skips a shape clear of the highest loaded sample under it
+(`Terrain.highest_in`), and holding a deck above the sand reads its bare lattice once into a
+kept `TerrainShape.Patch`; on the 108-frame camps (sail 26, 27) pressing fell from 1.49 to 0.52
+ms a tick and holding from 1.97–2.50 to 1.24–1.48 ms, with the same paths.
+
 ## Skeleton version
 
 This is the minimum that makes the whole game loop possible. Every item gets built.
@@ -637,6 +642,10 @@ All of these run without a window, use a fixed seed, and assert:
     against 0.5), as `World.grip`, the sleep's drift and the wind's balance count on.
     Godot's Jolt takes the lesser of two frictions, not their mean: the sand's own number
     against every body's 1.0. Squared, as it was, it held them by 0.27.
+16. **A walk in weather fits its frame.** Fifteen seconds' walk among sites with a storm's wall
+    in view stays under 3.6 ms of main-thread CPU a frame. On 2026-10-25 reading the storm face
+    once a tick at the camera, and dropping per-frame recounts and re-placements, took it from
+    3.39 to 2.87 ms (local medians; CI's runner measured 1.49).
 
 Every probe gets checked against a deliberately broken build first, to prove it can
 fail.
