@@ -9,6 +9,7 @@
   hunger and thirst no longer deplete or cause damage.
 - Keep lost pod cargo from being left attached to a wall that impact has already
   destroyed.
+- Resume a save with a shield carried in your suit without losing its state.
 
 ## 0.3.1-alpha “Leeward Sanddune” — development, unreleased
 

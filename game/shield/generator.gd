@@ -58,6 +58,11 @@ func _init() -> void:
 	carryable = true
 	# Its bubble is what keeps you alive: the last thing on a pool to go dark.
 	rank = 1
+	# Built with it: a save restores one you carry before it's in the world.
+	var looping := Sounds.SHIELD_HUM.duplicate() as AudioStreamOggVorbis
+	looping.loop = true
+	hum = _sound(looping)
+	hum.volume_db = HUM_DB
 
 
 func _ready() -> void:
@@ -97,10 +102,6 @@ func _ready() -> void:
 	_light.shadow_enabled = false
 	add_child(_light)
 	_boot = _sound(Sounds.SHIELD_BOOT)
-	var looping := Sounds.SHIELD_HUM.duplicate() as AudioStreamOggVorbis
-	looping.loop = true
-	hum = _sound(looping)
-	hum.volume_db = HUM_DB
 	_down = _sound(Sounds.SHIELD_DOWN)
 	_show()
 
@@ -118,7 +119,7 @@ func _exit_tree() -> void:
 ## Seated on a device or taken off one, it leaves the tree and comes back
 ## running as it was.
 func _enter_tree() -> void:
-	if hum != null and _up:
+	if _up:
 		# Its sounds come into the tree after it does.
 		_resume.call_deferred()
 
@@ -171,7 +172,8 @@ func stand(up: bool) -> void:
 	on = up
 	_up = running()
 	_since = INF
-	if _up and not hum.playing:
+	# Out of the world, it starts humming as it comes in.
+	if _up and not hum.playing and is_inside_tree():
 		hum.pitch_scale = HUM_PITCH
 		hum.play()
 	elif not _up:
@@ -247,6 +249,9 @@ func _follow() -> void:
 
 
 func _show() -> void:
+	# Restored before it's in the world, it has no shell yet: _ready shows it.
+	if _light == null:
+		return
 	var x := clampf(_since / _tuning.shield_bloom_seconds, 0.0, 1.0)
 	# Sand Game's tween: out fast and settle on the way up, gather then go on
 	# the way down.
