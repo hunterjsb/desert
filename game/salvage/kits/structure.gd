@@ -686,13 +686,8 @@ func frame_on_at(at_level: float, under: float) -> Transform3D:
 	return Transform3D(basis(), Vector3(x, under - piece.sink_at(at_level), z)) * _lean()
 
 
-## Its far look in a state: each box as [a unit cube's transform in its
-## frame, tone, finish], cut off at the sand.
-func far_look(s: int) -> Array[Array]:
-	return far_look_at(s)
-
-
-## The same at a level between states.
+## Its far look at a level between states: each box as [a unit cube's
+## transform in its frame, tone, finish], cut off at the sand.
 func far_look_at(at_level: float) -> Array[Array]:
 	var out: Array[Array] = []
 	var line := piece.sink_at(at_level) if piece.lean == 0.0 else -INF
@@ -726,22 +721,9 @@ func top_at(at_level: float) -> float:
 	return top
 
 
-## Its glints the sand leaves bare in a state: [place in its frame, the way
-## it faces, how wide it sweeps].
-func bare_glints(s: int) -> Array[Array]:
-	var lean := _lean()
-	var out: Array[Array] = []
-	for each in piece.glints:
-		var at: Vector3 = lean * (each[0] as Vector3)
-		var bare := at.y - piece.sink[s] >= StructureKit.GLINT_CLEAR if piece.lean > 0.0 \
-			else StructureKit.shows(piece, s, at.y - StructureKit.GLINT_CLEAR, Vector2(at.x, at.z))
-		if bare:
-			out.append([at, lean.basis * (each[1] as Vector3), each[2]])
-	return out
-
-
-## The same at a level between states, each with its index among its kind's
-## glints, so it's the same glint as it comes and goes.
+## Its glints the sand leaves bare at a level between states: [place in its
+## frame, the way it faces, how wide it sweeps, its index among its kind's
+## glints], so it's the same glint as it comes and goes.
 func bare_glints_at(at_level: float) -> Array[Array]:
 	var lean := _lean()
 	var out: Array[Array] = []

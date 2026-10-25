@@ -16,7 +16,6 @@ extends Structure
 ## Half its length and width to the outer faces, m.
 const HALF := Vector2i(9, 6)
 const WALL := 1.0
-const PARTITION := 0.4
 const HEIGHT := 3.0
 const DOOR_WIDTH := 1.4
 const DOOR_HEIGHT := 2.3

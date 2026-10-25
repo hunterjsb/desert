@@ -537,11 +537,3 @@ static func _pick(rng: RandomNumberGenerator, table: Array) -> StringName:
 
 static func _any(rng: RandomNumberGenerator, ids: Array) -> StringName:
 	return ids[rng.randi() % ids.size()]
-
-
-static func _shuffle(items: Array, rng: RandomNumberGenerator) -> void:
-	for i in range(items.size() - 1, 0, -1):
-		var j := rng.randi() % (i + 1)
-		var swap: Variant = items[i]
-		items[i] = items[j]
-		items[j] = swap
