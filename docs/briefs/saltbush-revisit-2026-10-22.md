@@ -75,10 +75,9 @@ rows at master `553bf37e`, plus held Spaceport text; it is not a new route test.
   Han is sparse with more best-table rolls; the far side holds less. Dune-specific
   sockets supply scoops, sieves and ground radar. These are era/site/region sources,
   not evidence of a complete biome-by-biome equipment ladder or guaranteed access.
-- **Held Spaceport input, not master.** `origin/verify-navigation-acquisition`
-  (observed `e4710d86`) owns the [radio acquisition account](https://github.com/hunterjsb/desert/blob/verify-navigation-acquisition/docs/prd/radio-sound-and-atmosphere.md#the-survey-receiver-agreed-and-built-2026-10-20)
-  and [traction-kite account](https://github.com/hunterjsb/desert/blob/verify-navigation-acquisition/docs/prd/movement.md#one-line-salvage-kite-hunter-2026-10-20-selected-2026-10-22).
-  Its tables add traction kites to nomad floors/camps and receivers to wreck/nomad
+- **Spaceport input, merged 2026-10-25.** The [radio acquisition account](../prd/radio-sound-and-atmosphere.md#the-survey-receiver-agreed-and-built-2026-10-20)
+  and [traction-kite account](../prd/movement.md#one-line-salvage-kite-hunter-2026-10-20-selected-2026-10-22)
+  own these results. The merged tables add traction kites to nomad floors/camps and receivers to wreck/nomad
   sources; receiver and Home also have optional ship-store slots. Three-seed coverage
   within 6 km includes a Console 5,608 m away on seed 1234; the 1–2 km trip objective
   is a separate distance. Coverage proves available exposed finds, not intuitive

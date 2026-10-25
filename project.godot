@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Desert"
-config/version="0.3.1-alpha"
+config/version="0.4.0-alpha"
 config/release_name="Sanddune"
 config/icon="res://icon.svg"
 run/main_scene="res://game/main.tscn"
