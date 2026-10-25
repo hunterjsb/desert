@@ -126,12 +126,16 @@ static func land(world: World, state: Dictionary) -> Dictionary:
 		var panel := objects.get(role) as Chassis
 		if is_instance_valid(panel) and panel.deck != null:
 			panel.deck.detach(panel)
+	# Lost cargo still needs its carrier in the tree to come out of its mount.
+	for entry: Dictionary in state.structure + state.equipment:
+		var body := objects.get(StringName(entry.uid)) as RigidBody3D
+		if not entry.survives and is_instance_valid(body):
+			_unseat(body)
 	for entry: Dictionary in state.structure + state.equipment:
 		var uid := StringName(entry.uid)
 		var body := objects.get(uid) as RigidBody3D
 		if not entry.survives:
 			if is_instance_valid(body):
-				_unseat(body)
 				if body.get_parent() != null:
 					body.get_parent().remove_child(body)
 				body.queue_free()
