@@ -208,19 +208,22 @@ tiers or electrostatic hazards are implemented. Existing FM/shortwave converters
 are part of the current runtime radio progression; the antenna reel was scrapped 2026-10-22.
 
 
-| Feature | Status as of 2026-10-21 | Scope and remaining evidence |
+| Feature | Status as of 2026-10-23 | Scope and remaining evidence |
 | --- | --- | --- |
-| Salvage kite | **In progress**: isolated prototype and verification exist; not integrated or accepted as finished. **Agreed Spaceport defining feature.** | Found, contained light rig using existing rope/attachment systems. One controllable tether, item-owned bridle, board/rider as keel and counterbalance. Wind, line length and rider position govern flight; looking around must not secretly steer it. |
-| Kite at camp | **In progress in the isolated kite prototype; not integrated.** | Tie it to camp as a moving decorative landmark with possible small pull. Demonstrate launch, board travel, reel/recovery, camp anchoring and finding it again from a nearby dune. Weather and terrain may still obscure it; it complements electronic navigation. |
-| Wind-powered board energy behavior | **Planned requirement**, existing motor/hover accounting is a foundation. | Wind supplies propulsion; hover/equipment still draw power and powered catch-up remains available. Measure energy under real towing, steering and motor assistance rather than assuming speed alone determines draw. |
-| Camp navigation equipment | **Selected 2026-10-22.** | Make existing equipment obtainable and understandable. New receiver tiers and Starcom repair are not selected release requirements. |
-| Rest, food and drink buffs | **Selected for 0.4, 2026-10-22** (“1. 0.4 2. deliberate 3. stamina only 4. yes”). | Rested, Fed and Hydrated buffs to stamina replace the hunger and thirst bars and their depletion damage. You eat and drink deliberately. [Survival](prd/survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22) owns it; the values live in Tuning. |
+| Salvage kite | **Built and probed on `verify-navigation-acquisition`; integration and play acceptance remain open.** **Agreed Spaceport defining feature.** | `probes/sail/33_a_kite_tows_on_one_line.gd` measured 145.35 m downwind, 25.31 m altitude and 445.62 N peak pull with motor off; `probes/sail/35_kite_flight_keeps_its_pace.gd` kept flight within 1.70 m across 30/60/120 Hz. The found 5.5 m² kite uses one ordinary 55 m line. |
+| Kite at camp | **Built and probed on `verify-navigation-acquisition`; expedition integration remains open.** | `probes/sail/34_a_kite_marks_a_moored_camp.gd` kept the kite flying from an ordinary camp hook at over 15 m above ground with more than 10 N pull; reeling and recovery preserve the same line and attachments. |
+| Wind-powered board energy behavior | **Built and measured on `verify-navigation-acquisition`; broader routes and play acceptance remain open.** | `probes/sail/37_kite_propulsion_uses_less_energy.gd` compared a 250 m downwind route at 10 m/s with a 19.8 kg chassis payload: kite propulsion used 0.783 Wh/km versus 1.632 Wh/km motor-only (52.0% less). With motor input released, the kite moved 92.34 m in 25 s with zero propulsion draw. This is a controlled downwind fixture. |
+| Camp navigation equipment | **Acquisition and first-use explanation built and probed on `verify-navigation-acquisition`; full trip remains open.** | `probes/radio/78_navigation_is_obtainable.gd` verified the broadcast set, Console and traction kite within 6 km in seeds 1234, 1 and 2. Distances by seed: broadcast set 1,093/1,011/441 m; Console 5,608/625/999 m; traction kite 2,588/1,752/885 m. Survey receiver and Home beacon have ship-store slots; first-use hints and LIVE/LAST KNOWN labels explain operation and stale fixes. |
+| Rest, food and drink buffs | **Built and probed on `verify-rest-buffs`; integrated trip and play acceptance remain open.** | `probes/survival/22`–`25` cover expiry, deliberate portions, sleep/save clocks and survival hazards. Rested gives +25% stamina recovery for ½ day; Fed gives +20% stamina for 1 day; Hydrated gives +15% recovery for ½ day. Rest, a 400 kcal meal and a 0.25 L drink grant them; hunger/thirst depletion and damage are removed. [Survival](prd/survival.md#rest-food-and-drink-support-exploration-selected-2026-10-22) owns the design; values live in Tuning. |
 | Suit and wrist instrument | **No wrist instrument required for 0.4, 2026-10-22.** | Inventory rework and suit modules are open design in [Menus](prd/menus-and-ui.md#inventory-and-suit-modules-open-design-2026-10-22), not release dependencies. |
 
 **Updated scope, 2026-10-22:** the earlier suit/wrist and broader-variant deferral
 into Spaceport is superseded by the [recorded decisions](briefs/spaceport-0.4-plan-2026-10-22.md#recorded-decisions-2026-10-22).
 Keep the kite expedition, current navigation acquisition/readability and its selected
 energy gate. No wrist instrument or balanced-variant package is required.
+
+The component results above are from separate candidate branches, not release
+acceptance. The integrated expedition and Hunter's play remain open.
 
 Multi-line kite controls are outside the first kite. They require a deeper control
 design and quicker line selection before adoption. Suit battery costs, upgrades,
