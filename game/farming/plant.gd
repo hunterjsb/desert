@@ -25,12 +25,10 @@ const DRY := &"dry"
 const WAITING := &"waiting for a storm"
 const FRUITING := &"fruiting"
 const BURNT := &"too much sun"
-## The shared stages. Going to seed is how a plant drifts toward wild stock;
-## nothing does yet.
+## The shared stages.
 const SEEDLING := &"seedling"
 const YOUNG := &"growing"
 const MATURE := &"mature"
-const TO_SEED := &"to seed"
 ## Below this share grown it's a seedling.
 const SEEDLING_UNTIL := 0.25
 ## Each tolerance, [the crop's, what its planter feels, which way is worse,
