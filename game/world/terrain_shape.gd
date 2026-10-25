@@ -49,6 +49,8 @@ var landforms: Landforms
 ## when it holds HELD_MAX, a few chunks' worth.
 const HELD_MAX := 16384
 var _held := {}
+## How many times it's been emptied: a Patch holds what it held since.
+var _held_clears := 0
 
 
 func _init(run_seed: int, tuning: Tuning) -> void:
@@ -134,6 +136,7 @@ func held(i: float, j: float) -> float:
 	if h == null:
 		if _held.size() >= HELD_MAX:
 			_held.clear()
+			_held_clears += 1
 		h = sample(i, j)
 		_held[key] = h
 	return h
@@ -146,6 +149,7 @@ func held(i: float, j: float) -> float:
 func patch_in(x0: float, z0: float, x1: float, z1: float) -> Patch:
 	var patch := Patch.new()
 	patch.shape = self
+	patch.clears = _held_clears
 	patch.x0 = x0 - Patch.MARGIN
 	patch.z0 = z0 - Patch.MARGIN
 	patch.x1 = x1 + Patch.MARGIN
@@ -161,14 +165,18 @@ func patch_in(x0: float, z0: float, x1: float, z1: float) -> Patch:
 	for b in rows:
 		for a in patch.across:
 			patch.heights[b * patch.across + a] = held(patch.i0 + a, patch.j0 + b)
-	return patch
+	# Reading it emptied the held points: what it read first isn't held now.
+	return patch if patch.clears == _held_clears else null
 
 
 class Patch:
 	## Read this far past what it's asked for, m, and at most this many points.
-	const MARGIN := 1.0
+	const MARGIN := 2.0
 	const MOST := 4096
 	var shape: TerrainShape
+	## The shape's held points it was read from, as of how many times they'd
+	## been emptied: until they are again, it holds exactly what they hold.
+	var clears: int
 	## World metres it holds, at full precision; its first lattice point, and
 	## points a row.
 	var x0: float
@@ -180,6 +188,13 @@ class Patch:
 	var across: int
 	var heights := PackedFloat64Array()
 	var narrowest: float
+
+	## Whether it still answers for a world rectangle as the shape would: it
+	## holds it, its lattice is still what the shape holds, and no structure
+	## has been laid in it since.
+	func still_holds(from_x: float, from_z: float, to_x: float, to_z: float) -> bool:
+		return clears == shape._held_clears and from_x >= x0 and from_z >= z0 and to_x <= x1 and to_z <= z1 \
+			and shape.sites.bare_in(x0, z0, x1, z1)
 
 	## TerrainShape.highest_in, with no structure inside it to look for.
 	func highest_in(from_x: float, from_z: float, to_x: float, to_z: float) -> float:

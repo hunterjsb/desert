@@ -494,9 +494,16 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 		var whole := body.global_transform * device.shape_bounds()
 		if _clear_of_sand(whole):
 			return
-		# A deck's hundreds of shapes read the lattice under it once.
-		patch = shape.patch_in(world_x(whole.position.x), world_z(whole.position.z), world_x(whole.end.x),
-			world_z(whole.end.z))
+		# A deck's hundreds of shapes read the lattice under it once, and again
+		# only once it's moved off what was read.
+		var x0 := world_x(whole.position.x)
+		var z0 := world_z(whole.position.z)
+		var x1 := world_x(whole.end.x)
+		var z1 := world_z(whole.end.z)
+		patch = body.get_meta(&"sand_patch", null)
+		if patch == null or not patch.still_holds(x0, z0, x1, z1):
+			patch = shape.patch_in(x0, z0, x1, z1)
+			body.set_meta(&"sand_patch", patch)
 	var deepest := 0.0
 	for child in body.get_children():
 		var shape := child as CollisionShape3D
