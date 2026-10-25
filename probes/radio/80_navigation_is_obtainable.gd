@@ -1,10 +1,13 @@
 extends MenuProbe
-## Ordinary Surveyor stores and exposed salvage supply the expedition chain.
+## A navigation source must agree with live planning and its streamed body.
+## Spatial availability fixture; it does not drive the expedition.
 ## The launch choice is the untouched default pulse at departure clock zero.
 ## Time limit: 600 s
 
 const SEEDS := [1234, 1, 2]
 const ACQUISITION_M := 6000.0
+var candidates := {}
+
 const REQUIRED := [&"survey_receiver", &"radio", &"console", &"home_beacon", &"salvage_kite"]
 
 
@@ -22,8 +25,9 @@ func run() -> void:
 			return
 		var available := {}
 		for body: Node in world.arrival_nodes.values():
-			_record(body.get_meta(&"catalog", &""), 0.0, available)
-		_audit(run_seed, available)
+			if body.get_meta(&"catalog", &"") != &"home_beacon":
+				_record(body.get_meta(&"catalog", &""), 0.0, available)
+		await _audit(run_seed, available)
 		main.queue_free()
 		world = null
 		await get_tree().process_frame
@@ -31,8 +35,8 @@ func run() -> void:
 
 
 func _audit(run_seed: int, available: Dictionary) -> void:
-	# Lay the future exploration area in the index, without loading its chunks.
-	# Only index coverage changes; terrain, weather and loot use ordinary rules.
+	# The broad index guides the search; only live witnesses can satisfy it.
+	candidates.clear()
 	var rules := Tuning.current().duplicate() as Tuning
 	rules.history_lay_m = ACQUISITION_M + rules.history_cell_m
 	rules.history_lift_m = rules.history_lay_m + rules.history_cell_m
@@ -60,18 +64,38 @@ func _audit(run_seed: int, available: Dictionary) -> void:
 				continue
 			var distance := ground.distance_to(Vector2(spec.x, spec.z))
 			if distance <= ACQUISITION_M:
-				_record(spec.id, distance, available)
+				var candidate := spec.duplicate(true)
+				candidate.site = site.id
+				_offer(candidate, distance)
 		if fresh != null:
 			fresh.free()
-	if not _complete(available):
+	if not _planned(available):
 		_loose(shape, ground, flight.arrival_time, rules, available)
+	world.arrival.cancel()
+	world.arrival_state = {}
+	world.counts_deeds = false
+	world.player.set_physics_process(false)
 	for id: StringName in REQUIRED:
-		check(available.has(id), "seed %d supplies %s through physical stores or exposed salvage within %.0f m" % [run_seed, id, ACQUISITION_M])
+		if not available.has(id):
+			var choices: Array = candidates.get(id, [])
+			choices.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.distance < b.distance)
+			for candidate: Dictionary in choices:
+				await _visit(flight, Vector2(candidate.x, candidate.z))
+				var read := NavigationWitness.read(world, candidate)
+				if read.matches:
+					_record_body(read.body, ground, available)
+				else:
+					for replacement: Dictionary in NavigationWitness.observed(world, candidate.id, ground, ACQUISITION_M):
+						_record_body(NavigationWitness.read(world, replacement).body, ground, available)
+				if available.has(id):
+					break
+		check(available.has(id), "seed %d supplies a witnessed %s or physical ship store within %.0f m" % [run_seed, id, ACQUISITION_M])
 		if available.has(id):
-			metric("seed %d %s acquisition" % [run_seed, id], available[id], "m")
-	var untouched := func(_site: int, _index: int) -> bool: return false
-	var target := Finds.beacon(run_seed, shape.sites, ground.x, ground.y, rules, untouched, ACQUISITION_M)
-	check(_real_target(shape.sites, area, target), "seed %d has a real unclaimed loot target within acquisition range" % run_seed)
+			metric("seed %d %s witness" % [run_seed, id], available[id], "m")
+	await _visit(flight, ground)
+	var taken := func(site: int, index: int) -> bool: return world.salvage.taken(site, index)
+	var target := Finds.beacon(run_seed, world.shape.sites, ground.x, ground.y, rules, taken, ACQUISITION_M)
+	check(await _real_target(flight, area, target), "seed %d has a real unclaimed loot target within acquisition range" % run_seed)
 	if run_seed == 1:
 		var rig := shape.sites.nearest(ground.x, ground.y, ACQUISITION_M, func(site: Site) -> bool: return site.kind == &"nomad_rig")
 		var encountered := false
@@ -79,8 +103,9 @@ func _audit(run_seed: int, available: Dictionary) -> void:
 			var toward := Vector2(rig.x, rig.z)
 			for step in ceili(ground.distance_to(toward) / 100.0) + 1:
 				var at := ground.move_toward(toward, step * 100.0)
-				var heard := Finds.beacon(run_seed, shape.sites, at.x, at.y, rules, untouched, rules.receiver_reach_m)
-				if _real_target(shape.sites, area, heard):
+				await _visit(flight, at)
+				var heard := Finds.beacon(run_seed, world.shape.sites, at.x, at.y, rules, taken, rules.receiver_reach_m)
+				if await _real_target(flight, area, heard):
 					encountered = true
 					metric("seed 1 walk before receiver pickup", ground.distance_to(at), "m")
 					break
@@ -88,8 +113,40 @@ func _audit(run_seed: int, available: Dictionary) -> void:
 	shape.sites.finish()
 
 
-func _complete(available: Dictionary) -> bool:
-	return REQUIRED.all(func(id: StringName) -> bool: return available.has(id))
+func _planned(available: Dictionary) -> bool:
+	return REQUIRED.all(func(id: StringName) -> bool: return available.has(id) or candidates.has(id))
+
+
+func _offer(spec: Dictionary, metres: float) -> void:
+	var id := _kind(spec.id)
+	if id not in REQUIRED:
+		return
+	spec.distance = metres
+	if not candidates.has(id):
+		candidates[id] = []
+	candidates[id].append(spec)
+
+
+func _visit(flight: Dictionary, at: Vector2) -> void:
+	world.respawn(at.x, at.y, 0.0, flight.arrival_time)
+	var origin: Vector2 = flight.landing_world
+	var anchor := Sites.Anchor.new(origin.x, origin.y, flight.landing_point, 1.0, world.shape.history.radius)
+	var here := anchor.point_at(at.x, at.y)
+	world.moon.place(rad_to_deg(Sphere.latitude(here)), rad_to_deg(Sphere.longitude(here)))
+	await physics_frames(3)
+	await settle(true)
+	for tick in 6000:
+		if world.salvage.is_idle():
+			return
+		await get_tree().process_frame
+	check(false, "ordinary salvage finishes streaming at the witness")
+
+
+func _record_body(body: RigidBody3D, origin: Vector2, available: Dictionary) -> void:
+	var at := Vector2(world.world_x(body.global_position.x), world.world_z(body.global_position.z))
+	var metres := origin.distance_to(at)
+	if metres <= ACQUISITION_M:
+		_record(body.get_meta(&"catalog", &""), metres, available)
 
 
 func _loose(shape: TerrainShape, ground: Vector2, t: float, rules: Tuning, available: Dictionary) -> void:
@@ -109,24 +166,40 @@ func _loose(shape: TerrainShape, ground: Vector2, t: float, rules: Tuning, avail
 		for spec: Dictionary in Finds.plan(shape.history.run_seed, coord, exposed, rules, shape.height_at, way, on):
 			var distance := ground.distance_to(Vector2(spec.x, spec.z))
 			if distance <= ACQUISITION_M:
-				_record(spec.id, distance, available)
-		if _complete(available):
+				var candidate := spec.duplicate(true)
+				candidate.coord = coord
+				_offer(candidate, distance)
+		if _planned(available):
 			return
 
 
-func _record(id: StringName, metres: float, available: Dictionary) -> void:
+func _kind(id: StringName) -> StringName:
 	var definition: Dictionary = Catalog.DEVICES.get(id, {})
 	if definition.get("radio", false) and not definition.get("receiver", false) and not definition.get("crystal", false):
-		id = &"radio"
+		return &"radio"
+	return id
+
+
+func _record(id: StringName, metres: float, available: Dictionary) -> void:
+	id = _kind(id)
 	if id in REQUIRED and (not available.has(id) or metres < available[id]):
 		available[id] = metres
 
 
-func _real_target(sites: Sites, area: Rect2, target: Dictionary) -> bool:
+func _real_target(flight: Dictionary, area: Rect2, target: Dictionary) -> bool:
 	if target.is_empty():
 		return false
-	for site: Site in sites.query(area, false):
-		if site.id == target.site and site is Structure:
-			return target.index >= 0 and target.index < site.piece.sockets.size() \
-				and not SiteLoot.draw(site, target.index).is_empty()
+	for site: Site in world.shape.sites.query(area, false):
+		if site.id != target.site or not site is Structure:
+			continue
+		for spec: Dictionary in SiteLoot.plan(site, world.height_at):
+			if spec.index != target.index:
+				continue
+			var candidate := spec.duplicate(true)
+			candidate.site = site.id
+			await _visit(flight, Vector2(spec.x, spec.z))
+			var read := NavigationWitness.read(world, candidate)
+			# A receiver can advertise a real locked hold; taking it may still need a tool.
+			return read.body != null and read.actual.get("id", &"") == spec.id \
+				and read.body.get_meta(&"catalog", &"") == spec.id
 	return false

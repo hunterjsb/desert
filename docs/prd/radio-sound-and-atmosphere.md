@@ -535,81 +535,68 @@ loops and frequency counters are absent from navigation placements. First-use hi
 Home limits. Console Home marks are filled while live and outlined when stale,
 with explicit labels; a saved stale fix keeps that distinction. Follow the
 Signal continues to record actual receiver approaches to the advertised loot.
-Radio probe 80 checks real ship stores and exposed ordinary salvage within
-6 km on the default pulse at departure clock zero, including a real unclaimed
-target and seed 1's walk toward a nomad rig. It expands only the audit index's
-coverage, retaining ordinary terrain, weather, exposure and loot rules.
-
-| Required find | Seed 1234 | Seed 1 | Seed 2 |
-|---|---:|---:|---:|
-| Broadcast set | 1,437 m | 2,872 m | 999 m |
-| Console | 4,443 m | 625 m | 999 m |
-| Traction kite | 2,588 m | 1,752 m | 885 m |
-
-Receiver and Home also have real physical ship-store slots; packing and impact
-survival remain the player's risks. The check measures predicted acquisition availability; the callback validation
-below qualifies that evidence. A complete unassisted expedition remains open. Radio upgrades may be absent locally.
+Radio probe 80 checks physical ship stores and live exposed salvage within
+6 km on the default pulse at departure clock zero, including an unclaimed
+receiver target and sampled reception along seed 1's route toward a nomad rig.
+A broad index supplies candidate waypoints only: each find must agree with the
+live World's planning callbacks, untaken source metadata and actual streamed
+body, with no missing-tool gate. Home must have a witnessed replacement rather
+than counting its unlaunched stores slot. Receiver stores remain optional cargo;
+packing and impact survival are separate risks. This is a spatial availability
+fixture, not proof of ordinary discovery, physical retrieval or a completed trip.
+Radio upgrades may be absent locally.
 Buried crystal sets rest on edge, using the existing flat-equipment rule: their
 thin trays cannot lie partly buried while leaving the required height visible.
 
 ### Acquisition across departure choices (measured, 2026-10-23)
 
-**Validity correction, 2026-10-25.** The exposed-only study and its radio-rework
-replay used an independent expanded `TerrainShape` for loose-loot planning.
-Their counts and distances below are **model predictions**. Actual 650-landing
-coverage remains unvalidated. A spatial spot-check of the first stored landing
-per fixed seed compared twelve nearest predicted find sources with the live
-World's callbacks and actual streamed source identities, excluding pod-zero
-shortcuts: **11/12 matched** (site loot 4/4; loose lots 7/8). Seed 1234's
-predicted loose Home beacon at source `(-5, 14), 0` was actually a chassis;
-the modeled and actual positions differed by 35.24 m. A matching site kite's
-position differed by 0.355 m without changing its item identity or tool gate.
-These checks repositioned isolated worlds for measurement; they do not prove
-ordinary travel or retrieval. No loot changes followed. A corrected coverage
-study must establish real source witnesses before claiming availability.
+**Validity correction and actual witnesses, 2026-10-25.** The original
+exposed-only study and its radio-rework replay used an independent expanded
+`TerrainShape` for loose-loot planning. Its open-spot callbacks can differ from
+the live World, changing the source's position and item. A twelve-source
+spot-check matched 11 identities (site loot 4/4, loose lots 7/8); a predicted
+Home beacon on seed 1234 was a chassis. The former nearest-distance table was
+model output and is superseded by the witness bounds below.
 
-Starting through New Game with the Surveyor origin, audit the default pulse
-and the fixed 32-drag sweep at 11 minute-spaced departure clocks, beginning
+**Method.** Through a fresh Surveyor New Game, take the default pulse and a
+fixed 32-drag sweep at eleven minute-spaced departure clocks, beginning
 56 seconds after the cabin trajectory epoch. Of 1,089 forecasts, seeds 1234,
-1 and 2 yield 199, 188 and 263 safe landings. Replaying those same 650 arrival
-places and clocks, the model predicted all four required items within 6 km in
-**100%** of the safe samples after excluding modules that need missing tools.
-Sources were searched to 8 km; surviving selected pod cargo contributes zero.
+1 and 2 yield 199, 188 and 263 safe landings. Replay those same 650 arrival
+places and clocks in isolated Worlds. A model guides candidate searches; every
+accepted find is checked against real `World.height_at`, salvage road/site
+callbacks, saved lot exposure, the actual source's untaken state and streamed
+body metadata. Failed predictions search ordinary alternatives; no loot changes.
+Site loot must pass real `held_fast` without a missing tool. This packing has no
+cutter, scoop or stake. Unclaimed lot/site memories reset between landing cases.
+The previously measured seeded pod survivor outcomes are retained explicitly,
+rather than counting ship stores as post-impact gear.
 
-Exposure uses the game's fresh `Wreckage.held_fast` predicate: welded plates
-and sand-packed holds count as work. This packing has no cutter, scoop or
-stake, so none of its surviving gear unlocks those gates. Distances below
-are **predicted median / worst kilometres** for tool-free placements, not completed
-physical retrievals or unassisted discovery. “Tool-gated-only” counts landings
-with a source within 6 km but no tool-free source within 6 km, in seed order
-1234 / 1 / 2.
+**Result: 650/650 cases have all four required items within 6 km.** The audit
+performed 1,957 candidate validations and rejected 270 forecasts before finding
+valid witnesses. No case relies on a tool-gated-only source. Distances below
+are **verified witness median / worst kilometres**, not nearest distances.
 
-| Item | Seed 1234 (199/199) | Seed 1 (188/188) | Seed 2 (263/263) | Tool-gated-only |
-|---|---:|---:|---:|---:|
-| Home beacon | 2.874 / 4.163 | 0 / 0 | 0 / 0 | 0 / 0 / 0 |
-| Console | 4.457 / 5.242 | 0.621 / 3.298 | 1.056 / 3.154 | 0 / 0 / 0 |
-| Traction kite | 2.532 / 3.777 | 1.694 / 4.397 | 0.939 / 3.078 | 0 / 0 / 0 |
-| Survey receiver | 0 / 0 | 2.801 / 3.465 | 0 / 0 | 0 / 0 / 0 |
+| Item | Seed 1234 (199/199) | Seed 1 (188/188) | Seed 2 (263/263) |
+|---|---:|---:|---:|
+| Home beacon | 3.487 / 5.553 | 0 / 0 (pod) | 0 / 0 (pod) |
+| Console | 4.648 / 5.471 | 0.620 / 3.286 | 1.064 / 3.782 |
+| Traction kite | 2.532 / 3.998 | 1.694 / 4.404 | 0.939 / 3.078 |
+| Survey receiver | 0 / 0 (pod) | 2.801 / 3.465 | 0 / 0 (pod) |
 
-The nearest source itself needs tools in 173 of seed 1's receiver samples and
-6 of seed 1234's Console samples; each has a tool-free alternative inside the
-radius. The continuous seed-1 driver also encountered a broadcast set behind
-a sand-packed locker, so it must choose an exposed alternative or recover the
-ordinary tool rather than aim through the locker. No loot change follows
-from this coverage study. The continuous physical expedition remains open.
+**Home beacon separately.** Seed 1234's packed beacon never survives the
+sampled impact roll: all 199 cases instead have an actual exposed replacement
+witness, at most 5.553 km away. Seeds 1 and 2 retain their packed beacon in
+188 and 263 cases respectively. That is two surviving seeds out of three;
+repeated landings are not independent impact rolls. Receivers retain the pod
+survivor on 1234 and 2; seed 1's 188 cases use physical find witnesses.
+Every Console and traction-kite entry is a physical ordinary find witness.
 
-The packed beacon is lost on seed 1234 and survives on seeds 1 and 2 in all
-sampled approaches. That is two surviving seeds out of three; repeated
-landings are not independent impact rolls. This bounded sample records model predictions over the tested safe departures;
-actual coverage over those departures remains unvalidated.
+These fixtures reposition isolated Worlds to measure sources at arrival clocks.
+They do not prove that a fresh player discovers or reaches them before later
+storms rebury or move them. The continuous physical expedition remains open.
+The separate controlled board-energy comparison also remains separate from
+these spatial coverage results.
 
-
-**Radio rework replay, 2026-10-23.** Repeating these same 650 stored arrivals
-against the merged radio rework retains predicted counts of 199/199, 188/188 and 263/263
-within 6 km for each of the four items, with zero tool-gated-only cases.
-The median and worst distances in the table remain unchanged. The direct
-antenna-kite aerial and headset/solar-lid shelves are retained; no coverage-driven
-loot change was needed.
 
 An early, cheaper set that hears only real ruin loot beacons: no music, gods, forecast or map, and no compass
 bearing or distance. `SurveyReceiver` reuses the radio's physical controls and power contract: battery,
