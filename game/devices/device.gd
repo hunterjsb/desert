@@ -941,12 +941,13 @@ func _rest_seated(h: float) -> void:
 		if each == self and self is Chassis:
 			(self as Chassis).frame_contact_points(points, clearances, clearance)
 			continue
+		var pose := each.global_transform
 		for child in each.get_children():
 			var shape := child as CollisionShape3D
 			if shape == null or shape.shape == null or shape.disabled or shape.has_meta(&"socket"):
 				continue
 			var box := Catalog.bounds(shape.shape)
-			var to_world := each.global_transform * shape.transform
+			var to_world := pose * shape.transform
 			for i in 8:
 				points.append(to_world * box.get_endpoint(i))
 				clearances.append(clearance)
@@ -970,34 +971,38 @@ func _lift(tuning: Tuning, delta: float) -> void:
 	var reach := tuning.hover_falloff
 	var full := (tuning.hover_height + SETTLE_BELOW * reach) * lift_share - SETTLE_BELOW * reach
 	var rate := 2.0 * tuning.hover_damping / sqrt(g * reach)
-	var middle := global_transform * center_of_mass
+	# The pose holds through the tick: read once, not per corner.
+	var frame := global_transform
+	var middle := frame * center_of_mass
 	var turn := PhysicsServer3D.body_get_direct_state(get_rid()).inverse_inertia_tensor
 	var rise_at := linear_velocity.y
 	var spin := angular_velocity
 	var lifted := 0.0
 	var damped := 0.0
 	var twist := Vector3.ZERO
+	var points := PackedVector3Array()
+	var pushes := PackedFloat64Array()
 	for tray: Array in _trays:
 		var corners: PackedVector3Array = tray[1]
-		var facing := clampf(-(global_basis * (tray[2] as Vector3)).normalized().y, 0.0, 1.0)
+		var facing := clampf(-(frame.basis * (tray[2] as Vector3)).normalized().y, 0.0, 1.0)
 		var most: float = tray[0] * g * facing
-		var points: Array[Vector3] = []
+		points.resize(corners.size())
+		pushes.resize(corners.size())
 		var sand := 0.0
-		for corner in corners:
-			var at := global_transform * corner
-			points.append(at)
+		for i in corners.size():
+			var at := frame * corners[i]
+			points[i] = at
 			sand += world.height_under(at) / corners.size()
-		var pushes: Array[float] = []
 		var all := 0.0
-		for at in points:
-			var push := most / corners.size() * exp(minf((full - at.y + sand) / reach, 30.0))
-			pushes.append(push)
+		for i in points.size():
+			var push := most / corners.size() * exp(minf((full - points[i].y + sand) / reach, 30.0))
+			pushes[i] = push
 			all += push
 		var over := maxf(all / most, 1.0) if most > 0.0 else 1.0
 		var spare := most - all / over
 		for i in points.size():
 			var push := pushes[i] / over
-			apply_force(Vector3.UP * push, points[i] - global_position)
+			apply_force(Vector3.UP * push, points[i] - frame.origin)
 			var lever := (points[i] - middle).cross(Vector3.UP)
 			var give := 1.0 / mass + lever.dot(turn * lever)
 			var rise := rise_at + spin.dot(lever)
