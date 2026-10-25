@@ -547,25 +547,39 @@ coverage, retaining ordinary terrain, weather, exposure and loot rules.
 | Traction kite | 2,588 m | 1,752 m | 885 m |
 
 Receiver and Home also have real physical ship-store slots; packing and impact
-survival remain the player's risks. The check proves acquisition availability,
-not a complete unassisted expedition. Radio upgrades may be absent locally.
+survival remain the player's risks. The check measures predicted acquisition availability; the callback validation
+below qualifies that evidence. A complete unassisted expedition remains open. Radio upgrades may be absent locally.
 Buried crystal sets rest on edge, using the existing flat-equipment rule: their
 thin trays cannot lie partly buried while leaving the required height visible.
 
 ### Acquisition across departure choices (measured, 2026-10-23)
 
+**Validity correction, 2026-10-25.** The exposed-only study and its radio-rework
+replay used an independent expanded `TerrainShape` for loose-loot planning.
+Their counts and distances below are **model predictions**. Actual 650-landing
+coverage remains unvalidated. A spatial spot-check of the first stored landing
+per fixed seed compared twelve nearest predicted find sources with the live
+World's callbacks and actual streamed source identities, excluding pod-zero
+shortcuts: **11/12 matched** (site loot 4/4; loose lots 7/8). Seed 1234's
+predicted loose Home beacon at source `(-5, 14), 0` was actually a chassis;
+the modeled and actual positions differed by 35.24 m. A matching site kite's
+position differed by 0.355 m without changing its item identity or tool gate.
+These checks repositioned isolated worlds for measurement; they do not prove
+ordinary travel or retrieval. No loot changes followed. A corrected coverage
+study must establish real source witnesses before claiming availability.
+
 Starting through New Game with the Surveyor origin, audit the default pulse
 and the fixed 32-drag sweep at 11 minute-spaced departure clocks, beginning
 56 seconds after the cabin trajectory epoch. Of 1,089 forecasts, seeds 1234,
 1 and 2 yield 199, 188 and 263 safe landings. Replaying those same 650 arrival
-places and clocks, all four required items have a source within 6 km in
+places and clocks, the model predicted all four required items within 6 km in
 **100%** of the safe samples after excluding modules that need missing tools.
 Sources were searched to 8 km; surviving selected pod cargo contributes zero.
 
 Exposure uses the game's fresh `Wreckage.held_fast` predicate: welded plates
 and sand-packed holds count as work. This packing has no cutter, scoop or
 stake, so none of its surviving gear unlocks those gates. Distances below
-are **median / worst kilometres** for tool-free placements, not completed
+are **predicted median / worst kilometres** for tool-free placements, not completed
 physical retrievals or unassisted discovery. “Tool-gated-only” counts landings
 with a source within 6 km but no tool-free source within 6 km, in seed order
 1234 / 1 / 2.
@@ -586,12 +600,12 @@ from this coverage study. The continuous physical expedition remains open.
 
 The packed beacon is lost on seed 1234 and survives on seeds 1 and 2 in all
 sampled approaches. That is two surviving seeds out of three; repeated
-landings are not independent impact rolls. This bounded sample establishes
-coverage over the tested safe departures, not every possible launch choice.
+landings are not independent impact rolls. This bounded sample records model predictions over the tested safe departures;
+actual coverage over those departures remains unvalidated.
 
 
 **Radio rework replay, 2026-10-23.** Repeating these same 650 stored arrivals
-against the merged radio rework retains 199/199, 188/188 and 263/263
+against the merged radio rework retains predicted counts of 199/199, 188/188 and 263/263
 within 6 km for each of the four items, with zero tool-gated-only cases.
 The median and worst distances in the table remain unchanged. The direct
 antenna-kite aerial and headset/solar-lid shelves are retained; no coverage-driven
