@@ -26,10 +26,7 @@ func run() -> void:
 	var player := world.player
 	var died := []
 	player.vitals.died.connect(func() -> void: died.append(true))
-	for part in player.suit.carried:
-		if part is Supply and part.kind == &"water":
-			part.drain(INF)
-	player.vitals.thirst = 0.0
+	player.vitals.wounds.sick = 1.0
 	player.vitals.health = 0.01
 	for i in 120:
 		await get_tree().physics_frame

@@ -6,8 +6,8 @@ extends Node
 ## system living each step by its own sums against the weather's curve, read
 ## ahead as a forecast reads it. What follows from those numbers happens: a
 ## shield run dry lets the storm in and wakes you, a line loaded past its
-## strength gives and the wind takes what it held, your water runs out. Then
-## the world goes on as it now is.
+## strength gives and the wind takes what it held, a meal and a drink wear
+## off, and a safe night leaves you rested. Then the world goes on as it now is.
 
 ## The ways to sleep: so many hours, until a time of day, through the storm,
 ## until the weather station calls one.
@@ -19,8 +19,7 @@ const STATION := &"station"
 const MOMENTS := [[0.25, "morning"], [0.5, "noon"], [0.75, "dusk"], [0.0, "night"]]
 ## What woke you, said on waking.
 const WOKE := {&"storm": "The storm woke you", &"wind": "The wind woke you", &"heat": "The heat woke you",
-	&"cold": "The cold woke you", &"thirst": "Woke thirsty", &"hunger": "Woke hungry",
-	&"station": "Woke to the station"}
+	&"cold": "The cold woke you", &"station": "Woke to the station"}
 ## The summary stays this long, s.
 const SUMMARY_SECONDS := 7.0
 ## A thing the wind took this far, m, moved in the night.
@@ -314,8 +313,8 @@ func _choose(how: StringName, arg := 0) -> void:
 
 
 ## What wakes you at world time t, or none: harm reaching you, so with no
-## bubble over you a storm's arrival (sleep is no dodge), a need run low with
-## nothing left to take, or the station calling a storm.
+## bubble over you a storm's arrival (sleep is no dodge), or the station
+## calling a storm. Going unfed or unwatered never does.
 func _woken(t: float, call: float, station: Radio) -> StringName:
 	var player := _world.player
 	if player.vitals.dead:
@@ -328,11 +327,6 @@ func _woken(t: float, call: float, station: Radio) -> StringName:
 		return &"wind"
 	if harm.temperature > 0.0:
 		return &"heat" if _world.weather.felt_temperature(at, t) > 0.0 else &"cold"
-	var low := _tuning.sleep_wake_need * Vitals.FULL
-	if player.vitals.thirst <= low and player.suit.supply(&"water") == null:
-		return &"thirst"
-	if player.vitals.hunger <= low and player.suit.supply(&"food") == null:
-		return &"hunger"
 	if t >= call and is_instance_valid(station) and _hears(station, t):
 		return &"station"
 	return &""

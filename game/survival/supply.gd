@@ -3,9 +3,9 @@ extends Part
 ## A sealed container of what you live on: water in a canister, food in a
 ## ration. Open water boils off by afternoon, so water only lasts sealed. It
 ## carries what's left in it wherever it goes, as a battery carries its
-## charge, and its light shows how full it is. Carried, the suit feeds you
-## from it; use one you hold, or one you carry in the inventory, and you drink
-## or eat your fill.
+## charge, and its light shows how full it is. Use one you hold, or one you
+## carry in the inventory, and you eat or drink a portion of it, for a buff
+## (Buffs); the suit never feeds you by itself.
 
 ## What each kind holds: its stats key for how much it holds, and for what's
 ## left, and the tuning that says how much a fresh one holds.
@@ -48,7 +48,17 @@ func drain(some: float) -> float:
 
 
 func use(by: Player, _at: Vector3) -> bool:
-	return by.vitals.take_in(self) > 0.0
+	var why := refusal(by)
+	return by.hands.refuse(why) if why != "" else by.vitals.take_in(self) > 0.0
+
+
+## Why you can't eat or drink from it now, or "": not empty, and not while
+## its last portion still does you good.
+func refusal(by: Player) -> String:
+	if amount <= 0.0:
+		return "empty"
+	var buff: StringName = Buffs.FROM[kind]
+	return "already %s" % buff if by.vitals.buffs.active(buff) else ""
 
 
 ## Kept in its stats too, so a device it's fitted in shows it.

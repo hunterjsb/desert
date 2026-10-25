@@ -2,10 +2,10 @@ extends ShieldProbe
 ## Survival probe 2: frame-rate proof. The same stretch of a hot afternoon,
 ## far enough from the equator for the heat to harm, in a light storm and a
 ## gale, run at 30, 60 and 120 physics ticks a second, leaves you with the
-## same health, hunger and thirst, the same water and food carried and
-## the same harm taken from each of the three harms, to the bit: needs tick
-## on the world clock, not the frame. Then the same sprint and rest spends
-## and wins back the same stamina.
+## same health, the same time left on a meal that runs out in it and a drink
+## that runs on, the same water and food carried and the same harm taken from
+## each of the three harms, to the bit: vitals tick on the world clock, not the
+## frame. Then the same sprint and rest spends and wins back the same stamina.
 
 const RATES := [30, 60, 120]
 ## Five minutes into a run that starts in the morning, just before the heat peaks.
@@ -43,10 +43,10 @@ func run() -> void:
 		world.moon.latitude = deg_to_rad(LATITUDE)
 		world.time = START
 		await physics_frames(2)
-		# Just above where the suit gives you water and food, so it does both.
+		# Fed until halfway, Hydrated past the end.
 		vitals.fresh()
-		vitals.thirst = Vitals.FULL * world.tuning.drink_below + 1.0
-		vitals.hunger = Vitals.FULL * world.tuning.eat_below + 1.0
+		vitals.buffs.fed = (END - START) * 0.5
+		vitals.buffs.hydrated = (END - START) * 1.5
 		world.time_warp = 30.0
 		while world.time + world.time_warp / rate <= END:
 			await get_tree().physics_frame
@@ -54,7 +54,7 @@ func run() -> void:
 		world.time = END
 		await physics_frames(2)
 		var slots: Array = player.suit.carried.map(func(p: RigidBody3D) -> float: return p.amount if p is Supply else -1.0)
-		needs[rate] = [vitals.health, vitals.hunger, vitals.thirst, vitals.drunk, vitals.eaten,
+		needs[rate] = [vitals.health, vitals.buffs.fed, vitals.buffs.hydrated,
 			vitals.taken[&"wind"], vitals.taken[&"storm"], vitals.taken[&"temperature"]] + slots
 		print("%d ticks/s: %s" % [rate, needs[rate]])
 
@@ -78,8 +78,8 @@ func run() -> void:
 
 	var tuning := Tuning.current()
 	var first: Array = needs[60]
-	check(first[3] > 0.0 and first[4] > 0.0 and first[5] > 0.0 and first[6] > 0.0 and first[7] > 0.0,
-		"the suit gave you water and food, and every harm took health")
+	check(first[1] == 0.0 and first[2] > 0.0 and first[3] > 0.0 and first[4] > 0.0 and first[5] > 0.0,
+		"the meal ran out, the drink ran on, and every harm took health")
 	for rate: int in [30, 120]:
 		var apart := 0.0
 		for i in first.size():
