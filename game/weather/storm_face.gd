@@ -222,21 +222,26 @@ static func _billow(n: float) -> float:
 
 
 ## Trilinear, repeating, texel centres at (i + 0.5) / N: what the GPU does.
+## Corners in x, then y, then z order, as the sum has always been taken.
 func _sample(p: Vector3) -> Color:
 	var f := p * NOISE - Vector3(0.5, 0.5, 0.5)
 	var b := f.floor()
 	var fr := f - b
 	var out := Color(0, 0, 0, 0)
-	for corner in 8:
-		var o := Vector3i(corner & 1, (corner >> 1) & 1, (corner >> 2) & 1)
-		var x := posmod(int(b.x) + o.x, NOISE)
-		var y := posmod(int(b.y) + o.y, NOISE)
-		var z := posmod(int(b.z) + o.z, NOISE)
-		var weight := (fr.x if o.x else 1.0 - fr.x) * (fr.y if o.y else 1.0 - fr.y) \
-			* (fr.z if o.z else 1.0 - fr.z)
-		var i := ((z * NOISE + y) * NOISE + x) * 4
-		out += Color(_noise_bytes[i], _noise_bytes[i + 1], _noise_bytes[i + 2],
-			_noise_bytes[i + 3]) * (weight / 255.0)
+	var x0 := posmod(int(b.x), NOISE)
+	var y0 := posmod(int(b.y), NOISE)
+	var z0 := posmod(int(b.z), NOISE)
+	for oz in 2:
+		var z := (z0 + oz) % NOISE
+		var wz := fr.z if oz else 1.0 - fr.z
+		for oy in 2:
+			var row := (z * NOISE + (y0 + oy) % NOISE) * NOISE
+			var wy := fr.y if oy else 1.0 - fr.y
+			for ox in 2:
+				var weight := (fr.x if ox else 1.0 - fr.x) * wy * wz
+				var i := (row + (x0 + ox) % NOISE) * 4
+				out += Color(_noise_bytes[i], _noise_bytes[i + 1], _noise_bytes[i + 2],
+					_noise_bytes[i + 3]) * (weight / 255.0)
 	return out
 
 
