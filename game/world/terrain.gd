@@ -241,6 +241,29 @@ func height_at(world_x: float, world_z: float) -> float:
 	return TerrainShape.across(fx, fz, h[k + 1], h[k + w], h[k] if fx + fz <= 1.0 else h[k + w + 1])
 
 
+## The highest height_at reads anywhere over a world rectangle: between a
+## chunk's samples its triangles, never above the highest of them. INF where
+## any of it lies off loaded 1 m ground, which height_at asks the shape for.
+func highest_in(x0: float, z0: float, x1: float, z1: float) -> float:
+	var lo := chunk_at(x0, z0)
+	var hi := chunk_at(x1, z1)
+	var w := _size + 1
+	var top := -INF
+	for cz in range(lo.y, hi.y + 1):
+		for cx in range(lo.x, hi.x + 1):
+			var chunk: TerrainChunk = _chunks.get(Vector2i(cx, cz))
+			if chunk == null or chunk.step != NEAR_STEP:
+				return INF
+			# The samples round every place of it on this chunk, far edges included.
+			var h := chunk.heights
+			var i0 := clampi(floori(x0 - cx * _size), 0, _size)
+			var i1 := clampi(floori(x1 - cx * _size) + 1, 0, _size)
+			for j in range(clampi(floori(z0 - cz * _size), 0, _size), clampi(floori(z1 - cz * _size) + 1, 0, _size) + 1):
+				for i in range(i0, i1 + 1):
+					top = maxf(top, h[j * w + i])
+	return top
+
+
 ## The loaded chunk a world place lies on, or null: its heights are the
 ## ground's own samples every `step` m, its far edges included.
 func chunk_under(world_x: float, world_z: float) -> TerrainChunk:
