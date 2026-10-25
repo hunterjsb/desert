@@ -18,42 +18,46 @@ jobs:
   probes:
     # The suite split by folder so it runs side by side; "the rest" runs any
     # folder not listed here, so a new one is never skipped. Keep REST_EXCEPT
-    # in step with the groups.
+    # in step with the groups. Balanced by measured wall time, a probe that
+    # runs alone counting the whole runner's.
     strategy:
       fail-fast: false
       matrix:
         group:
-          - probes/foundation probes/world probes/dev probes/radio
-          - probes/weather probes/salvage probes/wrecks
-          - probes/devices probes/menus
-          - probes/power probes/farming
-          - probes/rope
-          - probes/movement
-          - probes/survival probes/sail
-          - probes/saves probes/kits
+          - probes/camp probes/dev probes/geology probes/survival
+          - probes/history probes/sail probes/wrecks
+          - probes/menus probes/radio
+          - probes/devices probes/power
+          - probes/movement probes/water
+          - probes/farming probes/loot probes/saves
+          - probes/rope probes/salvage
+          - probes/shield probes/weather probes/world
           - the rest
     name: ${{ matrix.group }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       REST_EXCEPT: >-
-        probes/foundation probes/world probes/dev probes/radio probes/weather probes/salvage probes/devices probes/menus
-        probes/power probes/farming probes/rope probes/movement probes/survival probes/sail
-        probes/saves probes/kits probes/wrecks
+        probes/camp probes/dev probes/geology probes/survival probes/history probes/sail probes/wrecks
+        probes/menus probes/radio probes/devices probes/power probes/movement probes/water
+        probes/farming probes/loot probes/saves probes/rope probes/salvage probes/shield probes/weather probes/world
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/godot
 
-      # Imported assets can stay unchanged for weeks; scheduling learns every run.
+      # Imported assets can stay unchanged for weeks; scheduling learns every
+      # run. A regrouped group starts from another group's times.
       - name: Probe durations
         uses: actions/cache@v4
         with:
           path: .godot/probe_times
           key: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: probe-times-v1-${{ runner.os }}-${{ matrix.group }}-
+          restore-keys: |
+            probe-times-v1-${{ runner.os }}-${{ matrix.group }}-
+            probe-times-v1-${{ runner.os }}-
 
       - name: The runner can fail
-        if: matrix.group == 'probes/foundation probes/world probes/dev probes/radio'
+        if: matrix.group == 'probes/camp probes/dev probes/geology probes/survival'
         run: |
           python3 scripts/test_verify.py
           scripts/probe-runner-test.sh
