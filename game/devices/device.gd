@@ -109,6 +109,7 @@ var _sockets_known := false
 ## What those sockets hold, kept until one changes or what's in one does
 ## (Socket): a deck's are asked for its devices and batteries many times a tick.
 var _parts: Array[Part] = []
+var _filled: Array[Socket] = []
 var _mounted: Array[Device] = []
 var _batteries: Array[Battery] = []
 var _stuck: Array[Socket] = []
@@ -482,6 +483,7 @@ func _read_held() -> void:
 	if _held_known:
 		return
 	_parts.clear()
+	_filled.clear()
 	_mounted.clear()
 	_batteries.clear()
 	_stuck.clear()
@@ -489,6 +491,7 @@ func _read_held() -> void:
 		var part := socket.part
 		if part != null:
 			_parts.append(part)
+			_filled.append(socket)
 		if socket.mounted != null:
 			_mounted.append(socket.mounted)
 		if (socket.kind == &"battery" or socket.kind == Socket.STUCK) and part is Battery:
@@ -746,13 +749,14 @@ func stats() -> Dictionary:
 	# it lifts counts that share. A lossier make's draws more a kilogram.
 	var lifts := 0.0
 	var draws_kg := 0.0
-	for socket in sockets():
+	# Only a socket with a part adds anything: a deck's thousand are mostly empty.
+	_read_held()
+	for socket in _filled:
 		var part := socket.part
-		if part != null:
-			_sum_into(total, part.stats)
-			var lift: float = part.stats.get("lift_kg", 0.0) * Device.facing_down(socket.outward())
-			lifts += lift
-			draws_kg += lift * part.stats.get("hover_draw", 1.0)
+		_sum_into(total, part.stats)
+		var lift: float = part.stats.get("lift_kg", 0.0) * Device.facing_down(socket.outward())
+		lifts += lift
+		draws_kg += lift * part.stats.get("hover_draw", 1.0)
 		if (socket.kind == &"battery" or socket.stuck()) and part is Battery:
 			charge += (part as Battery).charge_wh
 			cells += 1
@@ -980,18 +984,15 @@ func _lift(tuning: Tuning, delta: float) -> void:
 	var lifted := 0.0
 	var damped := 0.0
 	var twist := Vector3.ZERO
-	var points := PackedVector3Array()
 	var pushes := PackedFloat64Array()
 	for tray: Array in _trays:
 		var corners: PackedVector3Array = tray[1]
 		var facing := clampf(-(frame.basis * (tray[2] as Vector3)).normalized().y, 0.0, 1.0)
 		var most: float = tray[0] * g * facing
-		points.resize(corners.size())
+		var points := frame * corners
 		pushes.resize(corners.size())
 		var sand := 0.0
-		for i in corners.size():
-			var at := frame * corners[i]
-			points[i] = at
+		for at in points:
 			sand += world.height_under(at) / corners.size()
 		var all := 0.0
 		for i in points.size():

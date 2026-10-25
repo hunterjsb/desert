@@ -195,16 +195,12 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 	var origin_x := world.world_x(0.0)
 	var origin_z := world.world_z(0.0)
 	var clearance := world.tuning.runner_clearance
-	var at := PackedVector3Array()
 	var sand := PackedFloat64Array()
 	for runner: Array in runners:
-		var corners: PackedVector3Array = runner[0]
-		at.resize(corners.size())
-		sand.resize(corners.size())
-		for c in corners.size():
-			var p := frame * corners[c]
-			at[c] = p
-			sand[c] = world.height_at(origin_x + p.x, origin_z + p.z)
+		var at := frame * (runner[0] as PackedVector3Array)
+		sand.resize(at.size())
+		for c in at.size():
+			sand[c] = world.height_at(origin_x + at[c].x, origin_z + at[c].z)
 		# The sand's slope under the runner, from its corners' own sand.
 		var one := Vector3(at[3].x - at[0].x, sand[3] - sand[0], at[3].z - at[0].z)
 		var two := Vector3(at[2].x - at[1].x, sand[2] - sand[1], at[2].z - at[1].z)

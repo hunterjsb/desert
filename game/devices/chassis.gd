@@ -853,6 +853,7 @@ func _read_contact_corners(frame: FrameContact) -> void:
 ## Its joined frames' real corners, for resting tipped over on them.
 func frame_contact_points(points: PackedVector3Array, clearances: PackedFloat32Array, clearance: float) -> void:
 	var pose := global_transform
+	var from := points.size()
 	for frame in _frame_contacts():
 		var shape := frame.shape
 		# Replacing a shape has no child-order notification; use it immediately.
@@ -862,10 +863,12 @@ func frame_contact_points(points: PackedVector3Array, clearances: PackedFloat32A
 			continue
 		if frame.source != shape.shape or frame.corners.is_empty():
 			_read_contact_corners(frame)
-		var to_world := pose * shape.transform
-		for corner in frame.corners:
-			points.append(to_world * corner)
-			clearances.append(clearance)
+		points.append_array(pose * shape.transform * frame.corners)
+	# A thousand corners each tick tipped over: placed and paired in bulk.
+	var paired := PackedFloat32Array()
+	paired.resize(points.size() - from)
+	paired.fill(clearance)
+	clearances.append_array(paired)
 
 
 func show_wear() -> void:
