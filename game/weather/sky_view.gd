@@ -101,8 +101,10 @@ func show(t: float, eye: Vector3, sun: Vector3, sun_shown: float, glow: Vector3,
 	material.set_shader_parameter("to_stars", _day.stars_from(t, moon.latitude, moon.longitude))
 	material.set_shader_parameter("eclipse", _day.eclipse(t))
 	material.set_shader_parameter("eclipse_air", ring_air)
-	_show_relay(t)
-	_show_satellites(t)
+	# Every direction drawn turns into your frame by the same axes.
+	var axes := DayCycle.axes_at(moon.latitude, moon.longitude)
+	_show_relay(t, axes)
+	_show_satellites(t, axes)
 	_face.set_light("tu_dir", tu)
 	_face.set_light("tu_edge", Vector2(cos(radius + TU_EDGE), cos(radius - TU_EDGE)))
 	_face.set_light("sun_shown", sun_shown)
@@ -151,12 +153,12 @@ func _deeds(t: float, sun: Vector3, sun_shown: float, tu: Vector3) -> void:
 ## The relay satellite, a bright point crossing the night sky while it's over
 ## the horizon and the sun lights it, gone into Zan's shadow; the stars' own
 ## darkness decides whether it shows.
-func _show_relay(t: float) -> void:
+func _show_relay(t: float, axes: Array[Vector3]) -> void:
 	var moon := _world.moon
 	var relay := Radio.relay_of(_world)
 	var p := Sphere.point(moon.latitude, moon.longitude)
 	var to := relay.at(t) - p
-	var dir := DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
+	var dir := DayCycle.local_in(to.normalized(), axes)
 	var lit := relay.sunlit(t, _day.sun_toward(t))
 	var up := smoothstep(0.0, deg_to_rad(4.0), asin(clampf(dir.y, -1.0, 1.0)))
 	var light := RELAY_LIGHT * up * (1.0 if lit else 0.0) * Radio.constellation_of(_world).glint(&"relay", t) \
@@ -168,8 +170,10 @@ func _show_relay(t: float) -> void:
 
 ## The other satellites, each as the constellation has it look, while it's
 ## over the horizon and the sun lights it; one that blinks, blinking.
-func _show_satellites(t: float) -> void:
+func _show_satellites(t: float, axes: Array[Vector3] = []) -> void:
 	var moon := _world.moon
+	if axes.is_empty():
+		axes = DayCycle.axes_at(moon.latitude, moon.longitude)
 	var sky := Radio.constellation_of(_world)
 	var p := Sphere.point(moon.latitude, moon.longitude)
 	var sun := _day.sun_toward(t)
@@ -186,14 +190,14 @@ func _show_satellites(t: float) -> void:
 			forms.append(Vector3.ZERO)
 			continue
 		var to := orbit.at(t) - p
-		var dir := DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
+		var dir := DayCycle.local_in(to.normalized(), axes)
 		if look.shape == Constellation.Shape.HULK:
 			# Only this finite ship has observer parallax; the ephemerides stay intact.
 			var camera := get_viewport().get_camera_3d()
 			if camera != null:
 				to -= p * (maxf(camera.global_position.y, 0.0) / orbit.radius)
-				dir = DayCycle.local(to.normalized(), moon.latitude, moon.longitude)
-			_show_deliveryship(t, orbit, dir, to.length() * orbit.radius, sky.flash(id, t))
+				dir = DayCycle.local_in(to.normalized(), axes)
+			_show_deliveryship(t, orbit, dir, to.length() * orbit.radius, sky.flash(id, t), axes)
 			dirs.append(dir)
 			colors.append(Color(0.0, 0.0, 0.0, 0.0))
 			forms.append(Vector3(look.shape, 0.0, 0.0))
@@ -237,14 +241,14 @@ func _show_satellites(t: float) -> void:
 ## The deliveryship where its orbit has it, `dir` from you and `metres` off,
 ## lit by the scene's sun, its muzzle flashing as `flash` (the constellation's,
 ## 1 when it isn't firing) says.
-func _show_deliveryship(t: float, orbit: Satellite, dir: Vector3, metres: float, flash: float) -> void:
+func _show_deliveryship(t: float, orbit: Satellite, dir: Vector3, metres: float, flash: float,
+		axes: Array[Vector3]) -> void:
 	var camera := get_viewport().get_camera_3d()
 	if camera == null:
 		deliveryship.visible = false
 		return
-	var moon := _world.moon
-	var along := DayCycle.local((orbit.at(t + 1.0) - orbit.at(t)).normalized(), moon.latitude, moon.longitude)
-	var up := DayCycle.local(orbit.at(t).normalized(), moon.latitude, moon.longitude)
+	var along := DayCycle.local_in((orbit.at(t + 1.0) - orbit.at(t)).normalized(), axes)
+	var up := DayCycle.local_in(orbit.at(t).normalized(), axes)
 	deliveryship.place(camera.global_position, dir, metres, along, up)
 	var ambient := _environment.ambient_light_color * _environment.ambient_light_energy
 	deliveryship.light(-_sun.global_basis.z, _sun.light_color.srgb_to_linear() * _sun.light_energy if _sun.visible

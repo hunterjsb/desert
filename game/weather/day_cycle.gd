@@ -251,5 +251,14 @@ static func _axes(latitude: float, longitude: float) -> Array[Vector3]:
 
 ## A direction in the moon's frame, as engine axes where you stand.
 static func _local(v: Vector3, latitude: float, longitude: float) -> Vector3:
-	var axes := _axes(latitude, longitude)
+	return local_in(v, _axes(latitude, longitude))
+
+
+## The axes local() turns by, for a frame's many directions at one place.
+static func axes_at(latitude: float, longitude: float) -> Array[Vector3]:
+	return _axes(latitude, longitude)
+
+
+## local() with the place's axes (axes_at) already worked out.
+static func local_in(v: Vector3, axes: Array[Vector3]) -> Vector3:
 	return Vector3(v.dot(axes[0]), v.dot(axes[2]), -v.dot(axes[1]))
