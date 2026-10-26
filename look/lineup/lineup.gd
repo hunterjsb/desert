@@ -3,8 +3,8 @@ extends "res://look/style/style.gd"
 ## makes it, laid on the sand in front of the camp at its true size under the
 ## game's one light, in blocks by role with a Surveyor at each block's end for
 ## scale: camp devices, power, boards and rig, what you carry, parts, food and
-## crops by stage; the chassis kit in each era and a few things in their
-## lineages (Dress.lineage); and
+## crops by stage; the chassis kit and the shields in each era and a few
+## things in their lineages (Dress.lineage); and
 ## further out the world's own at theirs: every kit structure and wreck small
 ## enough to stand in a row, the Walker and the pod, and the deliveryship
 ## overhead. Something Dress draws nothing for keeps its grey box.
@@ -49,11 +49,13 @@ const LINES := [
 		[Eras.DARK, &"remade", [&"wood", &"cord", &"ceramic"]], [Eras.SECOND, &"blessed", [&"tu", &"charm"]]]],
 ]
 ## Things in their lineages, camp frame: the block, its middle, and what's in
-## it. The chassis kit changes shape by era (ChassisLooks), the bar the rest
-## is judged against; the others take only their lineage's marks.
+## it. The chassis kit and the shields change shape by era (ChassisLooks,
+## ShieldLooks), the bar the rest is judged against; the others take only
+## their lineage's marks.
 const LINEAGES := [
 	["lineage", Vector2(0.0, 17.0), [&"console", &"condenser", &"board", &"battery"]],
-	["chassis_eras", Vector2(-9.5, 18.5), [&"mast", &"frame", &"helm_seat", &"hand_winch", &"chassis", &"hull_plate", &"stake"]],
+	["eras", Vector2(-9.5, 19.0), [&"mast", &"frame", &"shield", &"light_shield", &"helm_seat", &"hand_winch", &"chassis",
+		&"hull_plate", &"stake"]],
 ]
 ## Blocks of things too small to read from 5 m, shot close too.
 const CLOSE := ["held", "parts", "food"]
