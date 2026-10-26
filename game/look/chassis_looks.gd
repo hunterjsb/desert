@@ -202,9 +202,9 @@ static func _seat(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	if era == Eras.FIRST:
 		b.box(Vector3(size.x - 0.025, 0.025, 0.075), Vector3(0, h.y - 0.014, -h.z + 0.04), Paint.coat(Paint.YELLOW, 0.5, 0.7), 0.01)
 	elif era == Eras.SECOND:
-		b.drum(0.06, 0.025, Vector3(0.1, 0.18, -h.z + 0.045), Paint.coat(Paint.BONE, 0.5), ALONG, 12)
+		b.drum(0.06, 0.025, Vector3(0.1, 0.18, -h.z + 0.12), Paint.coat(Paint.BONE, 0.5), ALONG, 12)
 	elif era == Eras.SKIMMER:
-		b.box(Vector3(0.05, 0.14, 0.022), Vector3(-0.09, 0.13, -h.z + 0.085), Paint.coat(Paint.ROPE), 0.003, Basis(Vector3.BACK, 0.2))
+		b.box(Vector3(0.05, 0.14, 0.022), Vector3(-0.09, 0.13, -h.z + 0.12), Paint.coat(Paint.ROPE), 0.003, Basis(Vector3.BACK, 0.2))
 
 static func _mast(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var h := size * 0.5
