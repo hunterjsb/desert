@@ -1161,3 +1161,42 @@ dusk and storm-bubble views; `look/pod_shell` and `look/paint` retain the pod an
 The second age is the era table's craft object with a machine buried inside: a rounded saltwood
 rail lashed in cord, a ceramic replacement corner, limewash infill and an oval repaired seat with a
 charm, all in Paint's existing ages-after materials.
+
+## Held tools and food fidelity (2026-10-26)
+
+Hunter: "work on graphical fidelity and model consistency aligning with our artistic vision across
+all agents". The six tools you hold and the six foods are real models in B's merged worn kit
+(`HeldLooks`), each one mesh inside its catalog box: collision, sockets, mass, sizes and where the
+hands take them are unchanged.
+
+- **Tools, company issue.** The compass: a ribbed rubber case, a brass ring under a ticked steel
+  bezel, a bone card with north in safety yellow, a luminous lubber line, a tapered needle on a
+  brass jewel, and a lug at one corner with its lanyard ring. The cutter: a copper nozzle in a
+  brass collar behind a bolted heat shield, a finned barrel under the cell's saddle, a teal power
+  unit with a gauge, vents and a safety stripe, a finger-moulded pistol grip where the hand takes
+  it, and a banded rubber butt. The sand scoop: a dished teal blade with ribs, rolled rims and an
+  edge worn bright, riveted to a sleeved shaft with a moulded D-grip. The flare: a red tube between
+  the drop's orange bands round a printed label, a ribbed foot, and the striker cap with its tear
+  strip. The sealant: a steel-rimmed yellow can with a label, a ribbed grip, a moulded head and
+  trigger and a red nozzle. The med kit: the clinic's moulded case on a gasket, guarded corners,
+  latches either side of a medicine-red seal, a hinge, a label and the raised teal cross.
+- **Tools by era.** A lineage's last era picks the cutter's, compass's, scoop's, sealant's and
+  med kit's shape under its marks ([Shape by era](#shape-by-era)). Colonial make is off-white
+  with safety orange, and the compass goes square with guarded corners. The First Kingdoms kept
+  that clean and fitted it in brass and bone: a flared brass nozzle bell and bezel, a crest on the
+  compass. The skimmer era repainted it crew red or olive, taped it and welded scrap on: a ring
+  guard on the nozzle, a bent-rod T-handle, a canvas pouch for the med kit. The second age mended
+  it in limewash, glazed ceramic, saltwood and cord, each with a charm: the cutter's works bound
+  under a round glazed cap, a corded can, a saltwood lid with a water vial. The flare stays the
+  company's.
+- **Food.** The ration is three foil meal bars crimped at their ends, banded in a printed card in
+  food's colour. It shows what's left by its bars, as harvests do, rather than by a charge light:
+  three, one a meal. Tubers are lumpy, eyed potatoes; fungus caps, oyster fans over cream gills;
+  salt, a pan-salt cake crusted with crystals and tied; saltbush leaves, cut sprigs of silvered
+  leaves tied at the foot; the coalcane bundle, ten ringed stalks with pale cut ends, lashed twice.
+
+Triangles, company issue (era range): compass 3,188 (1,144–2,120), cutter 2,896 (2,580–3,240),
+sand scoop 2,068 (1,624–1,792), flare 1,688, sealant 2,048 (1,608–2,088), med kit 1,020
+(356–1,020); ration 788 whole, tubers 2,080 at five, fungus caps 1,980 at three, salt 608,
+saltbush leaves 1,320 at five, coalcane bundle 2,056; the needle 100. Each is one draw, as before;
+the ration loses its light's. Shots: `look/held/shoot.sh`.

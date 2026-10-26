@@ -65,15 +65,9 @@ static func winch_wheel() -> ArrayMesh:
 		return b.commit())
 
 
-## A compass's needle, its north tip along +Y: red, and lit so it glows a
-## little, over a steel south half on a black pivot.
+## A compass's needle (HeldLooks), lit so it glows a little.
 static func needle() -> ArrayMesh:
-	return _cached(&"needle", &"compass", func() -> ArrayMesh:
-		var b := Paint.Pieces.new()
-		b.box(Vector3(0.008, 0.042, 0.003), Vector3(0.0, 0.021, 0.0), Paint.coat(Color(0.85, 0.16, 0.08), 0.0, 0.0, 0.4, 0.0, 1.2), 0.001)
-		b.box(Vector3(0.008, 0.036, 0.003), Vector3(0.0, -0.018, 0.0), Paint.coat(Paint.STEEL, 0.0, 0.6, 0.4, 0.0), 0.001)
-		b.drum(0.005, 0.005, Vector3.ZERO, Paint.coat(Paint.BLACK, 0.0, 0.3), Basis(Vector3.RIGHT, PI / 2.0), 10)
-		return b.commit())
+	return _cached(&"needle", &"compass", HeldLooks.needle)
 
 
 ## A bedroll unrolling, `open` of the way from rolled to flat, in its own
@@ -201,6 +195,8 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 	var own := ChassisLooks.lineage(id, line)
 	if own == null:
 		own = ShieldLooks.lineage(id, line)
+	if own == null:
+		own = HeldLooks.lineage(id, line)
 	var shape := own.get_instance_id() if own != null else 0
 	if own == null:
 		own = _own(id)
@@ -306,6 +302,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var teal := Paint.coat(Paint.TEAL)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
 	if ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
+		return b.commit()
+	if HeldLooks.frame(b, id, size):
 		return b.commit()
 	if ShieldLooks.frame(b, id, size):
 		return b.commit()
@@ -590,18 +588,6 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 						Basis(Vector3.RIGHT, PI / 2.0), 8)
 			b.box(Vector3(size.x - 0.08, 0.04, 0.03), Vector3(0.0, h.y - 0.06, -h.z - 0.015), black, 0.005, front)
 			_hazard(b, Vector3(size.x * 0.8, 0.03, 0.012), Vector3(0.0, -h.y + 0.045, -h.z - 0.004), front)
-		&"cutter":
-			# A heat lance: its barrel and heat shield, a copper nozzle out the
-			# front (-z), a grip under the back, hazard yellow on its housing.
-			var along := Basis(Vector3.RIGHT, PI / 2.0)
-			b.drum(0.045, 0.36, Vector3(0.0, 0.01, 0.05), gun, along, 12)
-			b.drum(0.052, 0.06, Vector3(0.0, 0.01, -0.12), Paint.coat(Paint.YELLOW, 0.8, 0.3), along, 12)
-			b.drum(0.03, 0.08, Vector3(0.0, 0.01, -0.19), Paint.coat(Color(0.72, 0.42, 0.22), 0.6, 0.9, 0.35), along, 10, 0.016)
-			b.drum(0.012, 0.03, Vector3(0.0, 0.01, -0.245), black, along, 8)
-			b.box(Vector3(0.04, 0.09, 0.05), Vector3(0.0, -h.y + 0.04, 0.16), black, 0.01, Basis(Vector3.RIGHT, 0.25))
-			b.box(Vector3(0.012, 0.04, 0.03), Vector3(0.0, -0.05, 0.1), Paint.coat(Paint.YELLOW, 0.6), 0.003)
-			for z in [0.0, 0.12]:
-				b.drum(0.048, 0.012, Vector3(0.0, 0.01, z), black, along, 12)
 		_:
 			return null
 	return b.commit()
@@ -616,13 +602,9 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var along := Basis(Vector3.RIGHT, PI / 2.0)
 	if ChassisLooks.part(b, id, size):
 		return b.commit()
+	if HeldLooks.part(b, id, size, count):
+		return b.commit()
 	match id:
-		&"coalcane_bundle":
-			for x in [-0.12, 0.0, 0.12]:
-				for y in [-0.07, 0.07]:
-					b.drum(0.065, size.z, Vector3(x, y, h.z), Paint.coat(Color(0.24, 0.15, 0.07), 0.7), along, 8)
-			for z in [0.12, size.z - 0.12]:
-				b.box(Vector3(size.x, size.y, 0.045), Vector3(0, 0, z), Paint.coat(Paint.CORD, 0.7), 0.025)
 		&"battery", &"big_battery":
 			# Commodity: no maker's mark, only safety yellow on its terminals.
 			b.box(size - Vector3(0.01, 0.01, 0.01), Vector3(0.0, 0.0, h.z), Paint.coat(Color(0.2, 0.21, 0.19), 0.6), 0.012)
@@ -695,10 +677,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.drum(0.03, 0.17, Vector3(0.0, 0.0, 0.085), gun, along, 10)
 			b.drum(0.055, 0.08, Vector3(0.0, 0.0, 0.205), Paint.coat(Paint.YELLOW, 0.7), along, 16)
 			b.drum(0.045, 0.01, Vector3(0.0, 0.0, size.z - 0.003), Paint.coat(Color(1.0, 0.85, 0.6), 0.0, 0.0, 0.2, 0.2, 3.0), along, 16)
-		&"flare":
-			# A red tube with a black striker cap at its tip, where it burns.
-			b.drum(h.x, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Paint.FLARE_RED, 0.5), along, 10)
-			b.drum(h.x * 1.05, 0.04, Vector3(0.0, 0.0, size.z - 0.02), Paint.coat(Paint.BLACK, 0.3), along, 10)
 		&"plug", &"strong_plug":
 			var collar := Paint.coat(Color(1.0, 0.5, 0.1) if id == &"plug" else Color(0.7, 0.15, 0.1), 0.5)
 			b.drum(h.x * 0.95, 0.025, Vector3(0.0, 0.0, 0.0125), collar, along, 12)
@@ -738,21 +716,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			for z in [0.06, size.z - 0.08]:
 				b.drum(h.x * 0.95, 0.015, Vector3(0.0, 0.0, z), black, along, 16)
 			b.box(Vector3(0.1, 0.012, 0.03), Vector3(0.0, h.y * 0.9, size.z * 0.6), black, 0.003)
-		&"ration":
-			b.box(size - Vector3(0.006, 0.006, 0.006), Vector3(0.0, 0.0, h.z), Paint.coat(Color(0.45, 0.42, 0.25), 0.3, 0.3, 0.5), 0.01)
-			b.box(Vector3(size.x * 0.3, size.y + 0.002, size.z + 0.002), Vector3(-size.x * 0.2, 0.0, h.z), Paint.coat(Paint.YELLOW, 0.3), 0.004)
-		&"compass":
-			# Company issue: a gunmetal case and lug, a bone card under a black
-			# bezel, north marked on the card's top in safety yellow and the
-			# other three points in black. The needle is a piece of its own.
-			b.drum(h.x, size.z - 0.003, Vector3(0.0, 0.0, (size.z - 0.003) * 0.5), gun, along, 24)
-			b.drum(h.x * 0.8, 0.002, Vector3(0.0, 0.0, size.z - 0.002), Paint.coat(Paint.BONE, 0.2, 0.0, 0.5, 0.3), along, 24)
-			b.ring(h.x * 0.8, h.x * 0.98, Vector3(0.0, 0.0, size.z - 0.001), Paint.coat(Paint.BLACK, 0.5, 0.3, 0.5), along, 10)
-			b.box(Vector3(0.012, 0.014, 0.003), Vector3(0.0, h.y * 0.62, size.z), Paint.coat(Paint.YELLOW, 0.2), 0.001)
-			for turn in [PI * 0.5, PI, PI * 1.5]:
-				b.box(Vector3(0.004, 0.01, 0.003), Basis(Vector3.BACK, turn) * Vector3(0.0, h.y * 0.64, size.z), black,
-					0.0005, Basis(Vector3.BACK, turn))
-			b.box(Vector3(0.022, 0.016, 0.012), Vector3(0.0, h.y + 0.004, size.z * 0.4), gun, 0.003)
 		&"harvester":
 			b.box(Vector3(size.x, size.y, size.z * 0.6), Vector3(0.0, 0.0, size.z * 0.3), Paint.coat(Paint.TEAL), 0.012)
 			b.box(Vector3(size.x - 0.02, size.y - 0.04, size.z * 0.4), Vector3(0.0, 0.0, size.z * 0.8), Paint.coat(Paint.YELLOW, 0.7), 0.008)
@@ -838,31 +801,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.box(Vector3(0.06, 0.012, 0.012), Vector3(0.0, 0.0, 0.215), Paint.coat(Paint.YELLOW, 0.6), 0.002)
 		&"root_tuber", &"vat_fungus", &"saltbush":
 			return crop(id, Plant.RIPE)
-		&"tubers":
-			for i in (count if count >= 0 else 5):
-				var at := Vector3(-0.05 + i * 0.025, (i % 2) * 0.025 - 0.012, 0.03 + (i % 3) * 0.006)
-				b.ball(0.026, at, TUBER, Vector3(1.0, 0.85, 0.8))
-		&"fungus_caps":
-			for i in (count if count >= 0 else 3):
-				b.ball(0.05, Vector3(-0.03 + i * 0.03, (i - 1) * 0.012, 0.02 + i * 0.012), CAP, Vector3(1.0, 0.75, 0.22))
-		&"saltbush_leaves":
-			for i in (count if count >= 0 else 5):
-				b.ball(0.5, Vector3((i - 2) * 0.012, 0.0, 0.03), SALTBUSH, Vector3(0.04, 0.11, 0.012),
-					Basis(Vector3.BACK, (i - 2) * 0.3))
-			b.drum(0.012, 0.014, Vector3(0.0, -0.03, 0.03), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), Basis.IDENTITY, 8)
-		&"salt":
-			# A cloth twist of it, tied at the neck.
-			b.ball(0.034, Vector3(0.0, 0.0, 0.022), SALT, Vector3(1.0, 1.0, 0.65))
-			b.drum(0.012, 0.02, Vector3(0.0, 0.0, 0.046), SALT, along, 8, 0.004)
-			b.drum(0.008, 0.006, Vector3(0.0, 0.0, 0.04), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), along, 8)
-		&"sand_scoop":
-			# A broad dished blade on a short shaft, its edge worn bright.
-			b.box(Vector3(size.x, 0.012, size.z * 0.5), Vector3(0.0, -h.y + 0.02, size.z * 0.72), Paint.coat(Paint.GUNMETAL, 0.8, 0.5), 0.004)
-			for x in [-1, 1]:
-				b.box(Vector3(0.012, size.y * 0.8, size.z * 0.5), Vector3(x * (h.x - 0.006), -0.005, size.z * 0.72), gun, 0.003)
-			b.box(Vector3(size.x, 0.006, 0.02), Vector3(0.0, -h.y + 0.02, size.z - 0.01), steel, 0.002)
-			b.drum(0.016, size.z * 0.5, Vector3(0.0, 0.0, size.z * 0.25), Paint.coat(Paint.ROPE, 0.0, 0.0, 1.0, 0.4), along, 8)
-			b.box(Vector3(0.1, 0.03, 0.03), Vector3(0.0, 0.0, 0.02), black, 0.006)
 		&"sieve":
 			# A riddle: a saltwood hoop rimmed in steel, its mesh worn bright
 			# where the sand ran through.
@@ -876,17 +814,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				var long := 2.0 * sqrt(maxf(pow(h.x - 0.02, 2.0) - across * across, 0.0))
 				b.box(Vector3(0.004, long, 0.004), Vector3(across, 0.0, 0.03), mesh, 0.0)
 				b.box(Vector3(long, 0.004, 0.004), Vector3(0.0, across, 0.034), mesh, 0.0)
-		&"sealant":
-			b.drum(h.x * 0.95, size.z * 0.75, Vector3(0.0, 0.0, size.z * 0.375), Paint.coat(Paint.YELLOW, 0.5, 0.2), along, 14)
-			b.drum(h.x * 0.6, size.z * 0.12, Vector3(0.0, 0.0, size.z * 0.81), black, along, 12)
-			b.drum(0.008, size.z * 0.14, Vector3(0.0, 0.0, size.z * 0.93), Paint.coat(Color(0.75, 0.2, 0.08), 0.5), along, 6)
-			b.box(Vector3(h.x * 1.2, 0.03, size.z * 0.4), Vector3(0.0, h.y * 0.92, size.z * 0.4), Paint.coat(Paint.BONE, 0.3), 0.003)
-		&"med_kit":
-			# A sealed pouch of the colony clinic's issue: pale, its cross in teal.
-			b.box(Vector3(size.x, size.y, size.z - 0.005), Vector3(0.0, 0.0, size.z * 0.5), Paint.coat(Paint.BONE, 0.4, 0.0, 0.8), 0.012)
-			b.box(Vector3(0.05, 0.016, 0.004), Vector3(0.0, 0.0, size.z + 0.001), Paint.coat(Paint.TEAL, 0.2), 0.0)
-			b.box(Vector3(0.016, 0.05, 0.004), Vector3(0.0, 0.0, size.z + 0.001), Paint.coat(Paint.TEAL, 0.2), 0.0)
-			b.box(Vector3(size.x + 0.004, 0.012, size.z * 0.3), Vector3(0.0, h.y - 0.01, size.z * 0.5), black, 0.002)
 		&"fabric":
 			# Its hem stitched and its corners grommeted; the canvas is its own
 			# cloth, which bellies and flutters (Faces).
