@@ -1849,7 +1849,7 @@ main-thread CPU before versus 9.40–9.94 ms after; the contact pass fell from
 2.56–2.75 to 2.12–2.19 ms with matching displacement and heel. The large camp stays
 supported after an origin shift. A slower exact-position dictionary was rejected.
 
-2026-10-25: devices keep their sockets' parts, seated devices and batteries until a socket changes, `stats()` walks only filled sockets, and runner, tray and tipped-frame corners read the pose once and move in bulk; five alternating local runs on a shared host moved the medians from 10.60 to 9.71 ms sailing and 10.69 to 9.75 ms capsized, with bitwise-identical final poses and velocities.
+2026-10-25: devices keep their sockets' parts, seated devices and batteries until a socket changes, `stats()` walks only filled sockets, and runner, tray and tipped-frame corners read the pose once and move in bulk; five alternating local runs on a shared host moved the medians from 10.60 to 9.71 ms sailing and 10.69 to 9.75 ms capsized, with bitwise-identical final poses and velocities. On top of the batched sand-patch work, World's hold above the sand reads the deck's kept collision-shape list and the origin once: three alternating runs moved 8.48 to 8.25 ms sailing and 9.63 to 9.19 ms capsized, the hold itself 1.30 to 0.97 and 1.55 to 1.20 ms.
 
 Both probes run alone. Linux user+system CPU for the calling main thread is read
 over 480 ordinary 60 Hz ticks and divided by the count, including main-loop work
