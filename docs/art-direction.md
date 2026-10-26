@@ -1136,3 +1136,9 @@ dusk and storm-bubble views; `look/pod_shell` and `look/paint` retain the pod an
 The second age is the era table's craft object with a machine buried inside: a rounded saltwood
 rail lashed in cord, a ceramic replacement corner, limewash infill and an oval repaired seat with a
 charm, all in Paint's existing ages-after materials.
+
+## Camp device fidelity (2026-10-26)
+
+Hunter’s graphical-fidelity request follows the [chassis kit](#chassis-kit-fidelity-2026-10-26). SANDGAME assigns planters, burner, turbine, condenser, light panel, Console, cargo, survival kit and bedroll to the same worn modular language and [era silhouettes](#shape-by-era). Planting points, the Console’s live screen recess, the turbine’s mast and separate rotor, drop-orange cargo and the bedroll’s existing unrolling path stay in place. Era-specific bedroll cloth follows the same lineage in both poses. Only the looks change.
+
+`CampLooks` builds braced growing tubs, an insulated burner with a vented heat guard and latch, a serviceable turbine base and mast, louvred condenser, framed solar cells, a recessed Console rack, strapped drop cargo, a latched supply case and folded canvas. Colonial panels are modular, First Kingdoms fittings are flared brass, second-age repairs use ceramic and cord-bound saltbush wood, and skimmer parts show welded splices. Lineage repairs project onto the actual era mesh. The bedroll uses the same era cloth as it unrolls. Base/era triangle ranges: planter 1,064–2,284; deep_planter 1,064–2,284; burner 1,636–2,272; turbine 936–1,688; condenser 1,536–2,216; light_panel 1,052–1,264; console 3,264–4,624; cargo 1,056–1,860; survival_kit 720–1,568; bedroll 4,104–4,148. Each static builder has one shared worn surface; the turbine rotor, socket tells and live screen keep their existing draws. The envelope probe covers ten ids in five eras, with the turbine’s existing mast reach.

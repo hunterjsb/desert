@@ -1,0 +1,4 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://look/camp/eras.gd" id="1"]
+[node name="CampEras" type="Node3D"]
+script = ExtResource("1")
