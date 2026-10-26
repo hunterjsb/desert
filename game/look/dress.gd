@@ -81,9 +81,10 @@ static func needle() -> ArrayMesh:
 ## +X behind the roll as it rolls away, thinner as it goes, to its foot; the
 ## pillow at its head plumps up as the roll leaves it, and the straps lie
 ## undone beside it. Stepped, each step made once.
-static func bedroll(open: float) -> ArrayMesh:
+static func bedroll(open: float, line: Array = []) -> ArrayMesh:
 	var step := clampi(roundi(open * BEDROLL_STEPS), 1, BEDROLL_STEPS)
-	return _cached(&"bedroll", StringName(str(step)), func() -> ArrayMesh: return _bedroll(float(step) / BEDROLL_STEPS))
+	var era := Eras.era_of(line)
+	return _cached(&"bedroll", StringName("%s:%d" % [era, step]), func() -> ArrayMesh: return CampLooks.unroll(float(step) / BEDROLL_STEPS, era))
 
 
 ## Its head to its foot, laid, m; the pad's thickness and the foot's hem.
@@ -93,39 +94,6 @@ const BEDROLL_HEM := 0.03
 const BEDROLL_STEPS := 40
 
 
-static func _bedroll(open: float) -> ArrayMesh:
-	var size: Vector3 = Catalog.DEVICES[&"bedroll"].size
-	var h := size * 0.5
-	var b := Paint.Pieces.new(-h.y)
-	var canvas := Paint.coat(Paint.TEAL, 0.0, 0.0, 0.95)
-	var lining := Paint.coat(Paint.BONE, 0.0, 0.0, 0.95)
-	var along := Basis(Vector3.RIGHT, PI / 2.0)
-	var wide := size.z - 0.04
-	var foot := -h.y
-	var head := -h.x
-	var r0 := h.x - 0.005
-	# What lies out has left the roll, which thins by the area it gave.
-	var r := sqrt(r0 * r0 * (1.0 - open) + BEDROLL_HEM * BEDROLL_HEM * open)
-	var x := head + r0 + open * (BEDROLL_LENGTH - r0 - BEDROLL_HEM)
-	var laid := x - head
-	b.box(Vector3(laid, BEDROLL_PAD, wide), Vector3(head + laid * 0.5, foot + BEDROLL_PAD * 0.5, 0.0), canvas, 0.006)
-	var seam := 0.45
-	while head + seam < x - r:
-		b.box(Vector3(0.014, 0.004, wide - 0.05), Vector3(head + seam, foot + BEDROLL_PAD + 0.001, 0.0),
-			Paint.coat(Paint.TEAL.darkened(0.35), 0.0, 0.0, 0.95), 0.0)
-		seam += 0.3
-	if x - r > head + 0.5:
-		# Its top turned back at the head, the lining showing.
-		b.box(Vector3(0.2, 0.012, wide - 0.02), Vector3(head + 0.38, foot + BEDROLL_PAD + 0.006, 0.0), lining, 0.004)
-	var plump := smoothstep(0.0, 0.25, open)
-	b.ball(1.0, Vector3(head + 0.13, foot + BEDROLL_PAD + 0.07 * plump, 0.0), lining,
-		Vector3(0.12, 0.07 * plump + 0.005, 0.36))
-	for z in [-1, 1]:
-		b.box(Vector3(0.34, 0.004, 0.035), Vector3(head - 0.02, foot + 0.002, z * 0.26), Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6), 0.0)
-	b.drum(r, wide, Vector3(x, foot + r, 0.0), canvas, along, 18)
-	for z in [-1, 1]:
-		b.drum(maxf(r - 0.025, r * 0.5), 0.02, Vector3(x, foot + r, z * wide * 0.5), lining, along, 18)
-	return b.commit()
 
 
 ## A radio's needle, standing up its own +Y across the band: thin, red, and
@@ -201,6 +169,8 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 	var own := ChassisLooks.lineage(id, line)
 	if own == null:
 		own = ShieldLooks.lineage(id, line)
+	if own == null:
+		own = CampLooks.lineage(id, line)
 	if own == null:
 		own = CellLooks.lineage(id, line)
 	var shape := own.get_instance_id() if own != null else 0
@@ -307,20 +277,11 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
-	if ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
+	if CampLooks.frame(b, id, size, extra) or ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
 		return b.commit()
 	if ShieldLooks.frame(b, id, size):
 		return b.commit()
 	match id:
-		&"cargo":
-			# A drop container: a safety-orange shell banded in black, its ends
-			# capped, a rail along its flank where the supplies are strapped.
-			b.box(Vector3(size.x, size.y, size.z - 0.12), Vector3.ZERO, Paint.coat(Paint.DROP_ORANGE, 0.45, 0.2), 0.04)
-			for z in [-h.z + 0.03, h.z - 0.03]:
-				b.box(Vector3(size.x + 0.02, size.y + 0.02, 0.06), Vector3(0.0, 0.0, z), Paint.coat(Paint.BLACK, 0.4, 0.3), 0.02)
-			for z in [-size.z * 0.15, size.z * 0.15]:
-				b.box(Vector3(size.x + 0.01, size.y + 0.01, 0.05), Vector3(0.0, 0.0, z), Paint.coat(Paint.BLACK, 0.4, 0.3), 0.01)
-			b.box(Vector3(0.03, size.y * 0.75, 0.9), Vector3(h.x + 0.015, 0.0, -0.1), gun, 0.01)
 		&"home_beacon":
 			var bone := Paint.coat(Paint.BONE)
 			var brass := Paint.coat(Paint.BRASS, 0.5, 0.65)
@@ -341,66 +302,6 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for y in [0.10, 0.115, 0.13, 0.145]:
 				b.drum(0.019, 0.006, Vector3(0, y, 0), gun, Basis.IDENTITY, 10)
 			b.ball(0.018, Vector3(0, 0.161, 0), bone)
-		&"planter", &"deep_planter":
-			# Another maker's growing tub, bone white on gunmetal skids.
-			# Its top sits under the rim, and the rim's rails meet rather than cross.
-			b.box(Vector3(size.x - 0.02, size.y - 0.054, size.z - 0.02), Vector3(0.0, 0.023, 0.0), Paint.coat(Paint.BONE), 0.03)
-			b.box(Vector3(size.x - 0.08, 0.02, size.z - 0.08), Vector3(0.0, h.y - 0.012, 0.0), Paint.coat(Paint.SOIL, 0.0, 0.0, 1.0, 0.0), 0.004)
-			for s in [-1, 1]:
-				b.box(Vector3(size.x, 0.05, 0.05), Vector3(0.0, h.y - 0.025, s * (h.z - 0.025)), teal)
-				b.box(Vector3(0.05, 0.05, size.z - 0.1), Vector3(s * (h.x - 0.025), h.y - 0.025, 0.0), teal)
-				b.box(Vector3(0.12, 0.06, size.z - 0.06), Vector3(s * (h.x - 0.16), -h.y + 0.03, 0.0), gun)
-			b.box(Vector3(size.x - 0.12, 0.012, 0.004), Vector3(0.0, -0.03, h.z - 0.009), black, 0.001)
-		&"burner":
-			var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
-			# A squat insulated chamber, hopper above the fire door, generator on its back.
-			for x in [-0.22, 0.22]:
-				b.box(Vector3(0.025, 0.04, 0.64), Vector3(x, 0.06, 0.59), gun, 0.004)
-			b.box(Vector3(0.46, 0.04, 0.035), Vector3(0, 0.06, 0.89), gun, 0.004)
-			b.box(size - Vector3(0.04, 0.05, 0.04), Vector3.ZERO, gun, 0.04)
-			b.box(Vector3(size.x - 0.12, 0.4, 0.03), Vector3(0, -0.06, h.z), Paint.coat(Paint.BONE), 0.02)
-			b.box(Vector3(0.3, 0.16, 0.025), Vector3(0, -0.11, h.z + 0.02), black, 0.01)
-			for x in [-0.13, 0.13]:
-				b.box(Vector3(0.025, 0.18, 0.035), Vector3(x, -0.11, h.z + 0.03), steel, 0.004)
-			for x in [-0.23, 0.23]:
-				b.box(Vector3(0.08, 0.06, size.z), Vector3(x, -h.y + 0.01, 0), gun, 0.01)
-			b.drum(0.075, 0.38, Vector3(-0.2, h.y + 0.12, -0.2), gun, Basis.IDENTITY, 10)
-			b.drum(0.105, 0.035, Vector3(-0.2, h.y + 0.32, -0.2), steel, Basis.IDENTITY, 10)
-			for i in 5:
-				b.box(Vector3(0.4, 0.025, 0.07), Vector3(0.04, -0.2 + i * 0.08, -h.z), steel, 0.005)
-			_hazard(b, Vector3(0.46, 0.035, 0.012), Vector3(0, 0.08, h.z + 0.025), Basis.IDENTITY)
-		&"turbine":
-			b.box(Vector3(size.x, size.y - 0.04, size.z), Vector3(0.0, -0.02, 0.0), gun, 0.03)
-			b.box(Vector3(size.x - 0.06, 0.04, size.z - 0.06), Vector3(0.0, h.y - 0.02, 0.0), Paint.coat(Paint.YELLOW, 0.8), 0.01)
-			for side in 4:
-				var turn := Basis(Vector3.UP, side * PI * 0.5)
-				# Its maker's sign on the side nothing plugs into.
-				if side == 2:
-					b.stamp(Paint.Mark.WIND_MAKER, turn * Vector3(0.0, -0.02, h.z), 0.24, turn, Paint.Ink.PALE)
-				b.box(Vector3(size.x - 0.12, size.y - 0.14, 0.012), turn * Vector3(0.0, -0.02, h.z - 0.004), teal, 0.004, turn)
-			# The mast; its hub and blades are its rotor, on the mast's head.
-			b.drum(0.04, extra, Vector3(0.0, h.y + extra * 0.5, 0.0), gun, Basis.IDENTITY, 12, 0.03)
-		&"condenser":
-			for x in [-1, 1]:
-				for z in [-1, 1]:
-					b.box(Vector3(0.06, size.y, 0.06), Vector3(x * (h.x - 0.03), 0.0, z * (h.z - 0.03)), gun, 0.01)
-			# The contractor's tag that set it up, under the louvres on its free side.
-			b.stamp(Paint.Mark.CONTRACTOR, Vector3(0.0, -0.12, -h.z + 0.02), 0.2, Basis(Vector3.UP, PI), Paint.Ink.PALE)
-			b.box(Vector3(size.x - 0.04, size.y - 0.06, size.z - 0.04), Vector3.ZERO, teal, 0.01)
-			# Louvres the night air comes in through.
-			for side in 4:
-				var turn := Basis(Vector3.UP, side * PI * 0.5)
-				for i in 5:
-					b.box(Vector3(size.x - 0.16, 0.014, 0.016), turn * Vector3(0.0, 0.08 + i * 0.045, h.z - 0.012), black, 0.003, turn)
-			b.box(Vector3(size.x + 0.006, 0.056, size.z + 0.006), Vector3(0.0, h.y - 0.025, 0.0), gun, 0.012)
-			# Its fan's ring, under the top mount's tell and over the lid.
-			b.drum(0.2, 0.008, Vector3(0.0, h.y + 0.001, 0.0), black, Basis.IDENTITY, 20)
-			_hazard(b, Vector3(size.x * 0.7, 0.035, 0.012), Vector3(0.0, -h.y + 0.05, h.z - 0.006), Basis.IDENTITY)
-		&"light_panel":
-			b.box(Vector3(size.x - 0.006, 0.03, size.z - 0.06), Vector3(0.0, -0.01, 0.0), Paint.coat(Paint.STEEL, 0.4, 0.5), 0.006)
-			for s in [-1, 1]:
-				b.box(Vector3(size.x, size.y, 0.03), Vector3(0.0, 0.0, s * (h.z - 0.015)), gun, 0.006)
-			_cells(b, Vector2(size.x - 0.04, size.z - 0.08), 4, 2, Basis(Vector3.RIGHT, -PI / 2.0), Vector3(0.0, 0.008, 0.0))
 		&"sailing_notes", &"surveyor_guide":
 			var cover := Paint.coat(Paint.BONE) if id == &"surveyor_guide" else teal
 			# A salt-stained field booklet, pale pages held by a dark cloth spine.
@@ -420,23 +321,6 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				for i in 8:
 					var width := 0.02 + i * 0.009
 					b.box(Vector3(width, 0.002, 0.017), Vector3(-0.02 + width * 0.5, h.y - 0.001, -0.07 + i * 0.02), Paint.coat(Paint.BONE), 0.0)
-		&"bedroll":
-			# Company canvas rolled tight on its pad, the pale lining showing at
-			# each end, two black straps round it.
-			var along := Basis(Vector3.RIGHT, PI / 2.0)
-			b.drum(h.x - 0.005, size.z - 0.04, Vector3.ZERO, Paint.coat(Paint.TEAL, 0.0, 0.0, 0.95), along, 18)
-			for z in [-1, 1]:
-				b.drum(h.x - 0.03, 0.02, Vector3(0.0, 0.0, z * (h.z - 0.02)), Paint.coat(Paint.BONE, 0.0, 0.0, 0.95), along, 18)
-				b.drum(h.x + 0.002, 0.04, Vector3(0.0, 0.0, z * 0.26), black, along, 18)
-		&"survival_kit":
-			# Packed to be found: the brightest thing on the sand.
-			b.box(Vector3(size.x - 0.02, size.y - 0.02, size.z - 0.02), Vector3.ZERO, Paint.coat(Paint.YELLOW, 0.7), 0.03)
-			b.box(Vector3(size.x - 0.01, 0.014, size.z - 0.01), Vector3(0.0, h.y - 0.07, 0.0), black, 0.003)
-			for x in [-1, 1]:
-				for y in [-1, 1]:
-					for z in [-1, 1]:
-						b.box(Vector3(0.06, 0.06, 0.06), Vector3(x * (h.x - 0.03), y * (h.y - 0.03), z * (h.z - 0.03)), gun, 0.01)
-				b.box(Vector3(0.03, 0.06, 0.012), Vector3(x * (h.x - 0.03), h.y - 0.07, h.z - 0.003), black, 0.004)
 		&"board":
 			# Tilg & Standard's issue in the company's paint: its batch stencil
 			# on the tail, the company's consignment code on a deep one.
@@ -556,42 +440,6 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 				b.box(Vector3(p0.distance_to(p1) + 0.004, 0.006, 0.022), Vector3(mid.x, cups + mid.y, 0.0), band, 0.002,
 					Basis(Vector3.BACK, (p1 - p0).angle()))
 			b.drum(0.006, 0.012, Vector3(-h.x - 0.004, cups, 0.0), Paint.coat(Paint.STEEL, 0.3, 0.9, 0.2), sideways, 10)
-		&"console":
-			# A rack: four rails on a plinth, a cap, teal side panels vented in two
-			# columns either side of their computer-mod ports, its back panel with
-			# the fitter's tag over a fan, and on its front bolted rack ears either
-			# side of the screen, a black bezel bar over and under it, a hazard
-			# strip along the plinth.
-			for x in [-1, 1]:
-				for z in [-1, 1]:
-					b.box(Vector3(0.05, size.y - 0.04, 0.05), Vector3(x * (h.x - 0.025), 0.0, z * (h.z - 0.025)), gun, 0.01)
-			b.box(Vector3(size.x, 0.09, size.z), Vector3(0.0, -h.y + 0.045, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3), 0.015)
-			for x in [-1, 1]:
-				for z in [-1, 1]:
-					b.box(Vector3(0.1, 0.03, 0.1), Vector3(x * (h.x - 0.06), -h.y + 0.015, z * (h.z - 0.06)), black, 0.008)
-			b.box(Vector3(size.x, 0.04, size.z), Vector3(0.0, h.y - 0.02, 0.0), gun, 0.01)
-			b.box(Vector3(size.x - 0.12, 0.012, size.z - 0.12), Vector3(0.0, h.y + 0.002, 0.0), teal, 0.003)
-			for x in [-1, 1]:
-				var turn := Basis(Vector3.UP, x * PI * 0.5)
-				b.box(Vector3(size.z - 0.08, size.y - 0.16, 0.02), turn * Vector3(0.0, 0.01, h.x - 0.02), teal, 0.006, turn)
-				for column in [-1, 1]:
-					for i in 14:
-						b.box(Vector3(0.11, 0.012, 0.024), turn * Vector3(column * 0.19, -0.5 + i * 0.08, h.x - 0.012), black,
-							0.002, turn)
-			var back := Basis.IDENTITY
-			b.stamp(Paint.Mark.CONTRACTOR, Vector3(0.0, 0.42, h.z - 0.01), 0.22, back, Paint.Ink.PALE)
-			b.box(Vector3(size.x - 0.08, size.y - 0.16, 0.02), Vector3(0.0, 0.01, h.z - 0.02), teal, 0.006)
-			b.ring(0.08, 0.12, Vector3(0.0, 0.15, h.z - 0.004), black, Basis(Vector3.RIGHT, PI / 2.0), 12)
-			# The front: rack ears bolted either side, the screen's bezel between.
-			var front := Basis(Vector3.UP, PI)
-			b.box(Vector3(size.x - 0.06, size.y - 0.14, 0.02), Vector3(0.0, 0.0, -h.z + 0.02), Paint.coat(Paint.BLACK, 0.4, 0.3, 0.5), 0.004)
-			for x in [-1, 1]:
-				b.box(Vector3(0.04, size.y - 0.1, 0.035), Vector3(x * (h.x - 0.02), 0.0, -h.z - 0.0175), gun, 0.006, front)
-				for i in 7:
-					b.drum(0.008, 0.008, Vector3(x * (h.x - 0.02), -0.54 + i * 0.18, -h.z - 0.038), Paint.coat(Paint.STEEL, 0.8, 0.6),
-						Basis(Vector3.RIGHT, PI / 2.0), 8)
-			b.box(Vector3(size.x - 0.08, 0.04, 0.03), Vector3(0.0, h.y - 0.06, -h.z - 0.015), black, 0.005, front)
-			_hazard(b, Vector3(size.x * 0.8, 0.03, 0.012), Vector3(0.0, -h.y + 0.045, -h.z - 0.004), front)
 		&"cutter":
 			# A heat lance: its barrel and heat shield, a copper nozzle out the
 			# front (-z), a grip under the back, hazard yellow on its housing.
