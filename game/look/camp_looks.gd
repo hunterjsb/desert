@@ -204,6 +204,8 @@ static func _console(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 				b.box(Vector3(0.025, size.y - 0.13, 0.16), Vector3(x * (h.x - 0.018), 0, z * 0.19), _skin(era), 0.007)
 			for y in 8: b.box(Vector3(0.01, 0.009, 0.10), Vector3(x * (h.x - 0.005), -0.46 + y * 0.12, z * 0.19), _dark(), 0.001)
 		for y in [-0.54, -0.36, -0.18, 0, 0.18, 0.36, 0.54]: _bolt(b, Vector3(x * (h.x - 0.024), y, -h.z + 0.006), 0.007, ALONG)
+	# Electronics sit behind removable cheeks, with the same live display recess.
+	b.box(Vector3(size.x - 0.12, size.y - 0.16, size.z - 0.12), Vector3(0, 0, 0.015), _dark(), 0.015)
 	# The fitted display remains on the existing screen socket, ahead of this recess.
 	b.box(Vector3(0.61, 1.13, 0.015), Vector3(0, 0.01, -h.z + 0.018), _dark(), 0.005)
 	for y in [-0.57, 0.59]: b.box(Vector3(0.61, 0.025, 0.03), Vector3(0, y, -h.z + 0.017), _skin(era), 0.006)
