@@ -257,3 +257,62 @@ weather and wind. A motor-off segment proves the wind moves the board. Log propu
 hover and equipment separately; total battery use must be lower, but has no fixed
 percentage target. The kite replaces propulsion, not hover or equipment draw. These
 are selected acceptance criteria, not measured results or a claim of implementation.
+
+
+## Three-seed expedition results, 2026-10-25
+
+**The selected ordinary-play gate failed: 0 of 3 seeds passed.** All three
+Surveyors died before the payload expedition. These are failed runs, not proof
+that their worlds are impossible with a different strategy. Hunter is deciding
+what follows; no tuning change is selected here.
+
+Only adopted save segments count below; discarded driver-error retries do not.
+Earlier reports combine walking and riding, so seeds 2 and 1234 have total
+player travel, not a measured ridden-only distance. Distinct storms were not
+counted. Turn-backs and shelter rests are recorded separately; they are not
+counts of distinct storms. Propulsion, hover and carried-equipment meters omit
+shelter draw and charging losses, so are not total battery use.
+
+| Seed | Travel and weather | Wrecks and energy (Wh) | Ending |
+|---|---|---|---|
+| 2 | 38.884 km total; 13 weather turn-backs, 17 shelter rests; sampled wind up to 38.46 m/s. | One board wrecked with 62.351 Wh left. A witnessed replacement 1.440 km from Home returned with 147.274 Wh and durability 0.656. Metered propulsion 110.851, hover 38.606, equipment 4.214. | Later shelter waits drained Home. A physical cell exchange cut its last power; the unstaked camp drifted away. Health 92.645 to 0 during recovery; final walk 742 m in 283 s, mean wind 27.69 m/s. |
+| 1234 | 39.513 km total; 19 weather turn-backs, 17 shelter rests and 10 roadside-kit records (overlapping); sampled wind up to 34.25 m/s. | One board wrecked with 9.689 Wh left. Actual spare cells supplied 20.503, 35.957, 35.532 and 33.677 Wh. Metered propulsion 106.012, hover 41.498, equipment 3.010; roadside cells separately lost 32.879 Wh. | Walked home from the wreck, health 72.067 to 33.877; rest reached 37.335. Died walking 1.624 km in 836.583 s toward a replacement; none witnessed before death. |
+| 1 | Resumed camp chain: 5.450 km ridden plus 1.082 km walked; 2 weather turn-backs, 3 shelter rests. | No board wreck; a loose deck was wrecked/lost after moving 140.7 m in a rest. Metered propulsion 14.584, hover 5.564, equipment 0.000. | Rest recovered health to 100. Home depleted; transferring the board's 68.615 Wh cell restored shelter but left 2.351 Wh in the board. Died seeking a spare on foot: 1.019 km in 1653 s, health 100 to 0. |
+
+Seed 1 resumed an existing fresh-run camp save after an earlier boarding-driver
+assertion. That earlier attempt's 5.097 km acquisition travel and 54.5 m storm
+movement of a loose deck remain separate history, not added to its resumed
+chain. Each later segment used the preceding real save unchanged, through the
+ordinary save/resume path. Actual game failures were retained. No loot grants,
+forced weather, forced fits or save edits rescued a run.
+
+The common causes were charged boards wearing out in storms, long shelter waits
+using the camp reserve, unstaked grounded camps sliding in strong wind, and
+exposure during recovery on foot. Seed 2's grounded camp slid at 9.15 m/s in
+25.79 m/s wind; settling did not anchor it. Recovery after reaching shelter could
+leave little health for the next search. Before acquisition, the driver lacked
+local forecast hardware; AM-only reception did not provide the Console's local
+forecast. Seed 1234's audited light-shield source was about 4.1 km from Home.
+Ordinary protective actions include earlier turn-backs, sheltered recovery,
+checking compatible forecast gear, staking the deck before power exchanges and
+carrying a charged roadside shelter once acquired. These actions were not all
+exercised successfully, and do not change the recorded failures.
+
+### Retained evidence
+
+Full SHA256 values below identify each chain's root, final live parent and death
+report. Normal Saves refuses a dead run, so there is no fabricated death save.
+
+| Seed | Root save | Final live parent | Terminal report |
+|---|---|---|---|
+| 2 | `9b631ba771bf6d72ade48de933ca1d6527da9017c52ad57607460493c0ffcfe2` | `486d294ac4735082eaa8e52736b6da7315d04003429683d874b1a052fcda6497` | `0b235d0db08e2d7695110a0f1260680e592cb77caf8b6b6db05c266aca02bdac` |
+| 1234 | `48aa5aab751eda0a9976c13265d4f630f92ff67c8647ffb05de4525fd2aa2ae3` | `85e7ee80b2082c7165a7e8c39391c21bd67aed48e9986bdcf769b777a106c151` | `3dc954d3cfaf313deaa15b23cdd60551459fcb52d10967e7bd8982f26f0dce92` |
+| 1 | `58d4892a0c0e58911ad4bb2ee112b6680bf53d141f01a755e6a69067f7cc6023` | `437ab4589c9dca0814b112b61419486c5e0e61b23e21450f5d1ffb5045067aea` | `45386291600a339c2581e3d4715726c4d5529695637b9f5de03e7aa54482cc0a` |
+
+The unlanded driver is retained on local branch `codex/spaceport-trip`, head
+`40584aba16e3a43527bf56d8a569f13d38cc5f5f`, in
+`~/.local/state/desert/archive/spaceport-trip-2026-10-25.bundle`.
+The reports, save-chain ledger, unedited saves, logs and per-file SHA256 manifest
+are in `~/.local/state/desert/archive/spaceport-trip-2026-10-25-evidence.tar.gz`.
+This archive is evidence of failed ordinary play, not release acceptance. The
+driver and intentionally failing cases do not land on master.
