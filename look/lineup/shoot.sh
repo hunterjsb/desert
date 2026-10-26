@@ -25,7 +25,7 @@ if [[ ! -f $shots/all20.png ]]; then
 fi
 # Each block's legend from the labelled run: "n id" in its order.
 legend() { awk -F'\t' -v b="$1" '$1 == "legend" && $2 == b && !seen[$3]++ { printf "%s %s%s   ", $3, $4, ($5 ? " (GREY)" : "") }' "$shots/log.txt"; }
-blocks=(camp power boards held parts food lineage)
+blocks=(camp power boards held parts food lineage chassis_eras)
 args=()
 for block in "${blocks[@]}"; do
 	[[ -f $shots/${block}5.png ]] || continue

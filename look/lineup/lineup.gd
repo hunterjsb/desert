@@ -3,7 +3,8 @@ extends "res://look/style/style.gd"
 ## makes it, laid on the sand in front of the camp at its true size under the
 ## game's one light, in blocks by role with a Surveyor at each block's end for
 ## scale: camp devices, power, boards and rig, what you carry, parts, food and
-## crops by stage; a few things in their eras' lineages (Dress.lineage); and
+## crops by stage; the chassis kit in each era and a few things in their
+## lineages (Dress.lineage); and
 ## further out the world's own at theirs: every kit structure and wreck small
 ## enough to stand in a row, the Walker and the pod, and the deliveryship
 ## overhead. Something Dress draws nothing for keeps its grey box.
@@ -36,21 +37,27 @@ const BLOCKS := [
 	["food", Vector2(8.5, 11.0), [&"coalcane", &"coalcane_bundle", &"root_tuber", &"vat_fungus", &"saltbush", &"ration",
 		&"tubers", &"fungus_caps", &"saltbush_leaves", &"salt"], 4.6],
 ]
-## Lineages to show a few things in, one line a thing (from look/lineage).
+## Lineages to show a few things in, one line a thing, one of each era a
+## look can take (Eras.era_of): the company's issue, colonial, a First
+## Kingdoms house's, the skimmer era's, and remade and blessed in the second age.
 const LINES := [
 	["issued", []],
+	["colonial", [[Eras.COLONIAL, &"made", [&"tilg"]]]],
 	["first", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.FIRST, &"marked", [&"haberjack"]]]],
-	["remade", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.DARK, &"remade", [&"plate", &"cord"]]]],
+	["skimmer", [[Eras.SKIMMER, &"made", []]]],
 	["second", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.FIRST, &"marked", [&"pellicott"]],
 		[Eras.DARK, &"remade", [&"wood", &"cord", &"ceramic"]], [Eras.SECOND, &"blessed", [&"tu", &"charm"]]]],
-	["cistern", [[Eras.COLONIAL, &"made", [&"tilg"]], [Eras.DARK, &"remade", [&"cord", &"ceramic"]],
-		[Eras.SECOND, &"blessed", [&"cistern", &"charm"]]]],
 ]
-const LINEAL := [&"console", &"condenser", &"board", &"battery"]
+## Things in their lineages, camp frame: the block, its middle, and what's in
+## it. The chassis kit changes shape by era (ChassisLooks), the bar the rest
+## is judged against; the others take only their lineage's marks.
+const LINEAGES := [
+	["lineage", Vector2(0.0, 17.0), [&"console", &"condenser", &"board", &"battery"]],
+	["chassis_eras", Vector2(-9.5, 18.5), [&"mast", &"frame", &"helm_seat", &"hand_winch", &"chassis", &"hull_plate", &"stake"]],
+]
 ## Blocks of things too small to read from 5 m, shot close too.
 const CLOSE := ["held", "parts", "food"]
-const LINEAGE_AT := Vector2(0.0, 17.0)
-## The lineage block's widest line, and the gaps between things and lines, m.
+## The lineage blocks' widest line, and the gaps between things and lines, m.
 const WIDE := 7.0
 const GAP := 0.3
 const LINE_GAP := 0.45
@@ -93,14 +100,15 @@ func _dress() -> void:
 					print("lineup: %s has no block; laid with the parts" % id)
 					things.append_array(_things(id))
 		_lay(block[0], block[1], things, block[3])
-	var lined: Array = []
-	for id: StringName in LINEAL:
-		for entry: Array in LINES:
-			var body := _thing(id)
-			Catalog.inherit(body, entry[1])
-			lined.append(_item(body, "%s/%s" % [id, entry[0]], Catalog.PARTS.has(id), id))
-		lined.append(null)
-	_lay("lineage", LINEAGE_AT, lined, WIDE)
+	for block: Array in LINEAGES:
+		var lined: Array = []
+		for id: StringName in block[2]:
+			for entry: Array in LINES:
+				var body := _thing(id)
+				Catalog.inherit(body, entry[1])
+				lined.append(_item(body, "%s/%s" % [id, entry[0]], Catalog.PARTS.has(id), id))
+			lined.append(null)
+		_lay(block[0], block[1], lined, WIDE)
 	_world()
 	if args.has("--audit"):
 		for each in _laid:
