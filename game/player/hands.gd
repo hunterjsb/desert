@@ -34,21 +34,11 @@ const OPEN_MARGIN := 0.05
 ## Your line of sight passing this near a device's frame still offers it what
 ## you hold, m.
 const NEAR_FRAME := 0.4
-## Empty-handed, your line of sight passing this near a part fitted under a
-## device looks at it, m: standing, it's out of sight under the frame. A look
-## at the frame itself counts only this low on it, and only in this lower share
-## of its height, so a thin frame like a chassis piece is still itself by its
-## top and the upper half of its edges.
-const UNDER := 0.15
-const UNDER_SHARE := 0.5
 ## An offered socket leans what you hold at least this far in, 0 to 1, so the
 ## tug shows where it goes even with your aim off the spot.
 const OFFER := 0.35
 ## How fast the tug swings over when a nearer socket wins, 1/s.
 const SWING := 16.0
-## The small thing your aim settled on stays the one until another is this much
-## nearer your aim, so a wavering aim doesn't flicker between them.
-const STICKY := 0.7
 ## Shapes are shrunk this much a side when asking whether a part is inside
 ## something, so resting against it doesn't count, m.
 const SKIN := 0.005
@@ -117,6 +107,8 @@ var _stand_why := ""
 var reel: Reel
 ## Your hands' work on wrecks and ruins with a tool.
 var _scrapping: Scrapping
+## What your look meets.
+var _sight: Sight
 ## What the look ray hits: a loose part, or a device and, when it's a fitted
 ## part, that part's socket, or the sand itself (not a ruin standing in it);
 ## and where it hit.
@@ -207,11 +199,8 @@ var _source_was := {}
 ## Take pressed while what you took is still on its way to your hands: done
 ## the moment it's there, so a part taken off goes straight back on.
 var _take_queued := false
-var _aim := Vector3.ZERO
 ## Where on the device you look at you aim, for its offer.
 var _offer_at := Vector3.ZERO
-## The small loose thing your aim settled on.
-var _picked: RigidBody3D
 ## Parts just let go, which can't push you until they're clear of you.
 var _released: Array[Dictionary] = []
 var _body_radius := 0.35
@@ -237,6 +226,7 @@ func _ready() -> void:
 	_player = get_parent() as Player
 	grasp = Grasp.new(_player)
 	_scrapping = Scrapping.new(self, _player)
+	_sight = Sight.new(self, _player)
 	reel = Reel.new()
 	add_child(reel)
 	for child in _player.get_children():
@@ -771,160 +761,19 @@ func _back_to_tick() -> void:
 		held.global_transform = _ticked
 
 
+## What your look meets now, set as look_* (Sight).
 func _look() -> void:
-	look_part = null
-	look_device = null
-	look_socket = null
-	look_line = null
-	look_sand = false
-	look_work = null
-	look_wreck = null
-	look_scrap = null
-	look_bed = false
-	look_fixture = null
-	var eye := _player.camera.global_transform
-	sight_from = eye.origin
-	sight_to = eye.origin - eye.basis.z * _tuning.reach
-	var ray := PhysicsRayQueryParameters3D.create(sight_from, sight_to)
-	ray.exclude = _exclusions()
-	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-	var hit_device := hit.get("collider") as Device
-	var hit_shape: Node = hit_device.shape_owner_get_owner(hit_device.shape_find_owner(hit.shape)) if hit_device != null else null
-	var hit_socket := _outermost(hit_device.socket_of(hit_shape)) if hit_device != null else null
-	# A visible fitted part must not be replaced by its carryable host.
-	if hit.is_empty() or not hit.collider is Part:
-		_assist(eye, hit_device if hit_socket != null and hit_socket.part != null else null)
-	if hit.is_empty():
-		if look_part == null and look_device == null:
-			_under()
-			_ground_line()
-		return
-	sight_to = hit.position
-	look_point = hit.position
-	look_normal = hit.normal
-	var body: Object = hit.collider
-	look_sand = _sand(hit)
-	if body is CollisionObject3D and body.has_meta(&"fixture"):
-		look_fixture = body
-	if body is CollisionObject3D and body.has_meta(&"wreckage"):
-		look_wreck = body.get_meta(&"wreckage")
-		if body.has_meta(&"work"):
-			look_work = body
-		elif body is StaticBody3D:
-			look_scrap = body
-	elif body is StaticBody3D and not look_sand and _player.world != null:
-		# A structure's boxes are its chunk's ground: on a wreck's, its shell.
-		look_wreck = _player.world.salvage.wreckage_near(hit.position)
-	look_bed = _is_bed(hit)
-	if look_part != null or look_device != null:
-		# Assisted: the small thing you aimed near, not the sand under it.
-		return
-	if body is RigidBody3D and body.has_meta(&"boom_mast"):
-		# The spar is articulated, but taking it still removes its fitted sail.
-		look_device = body.get_meta(&"boom_mast") as Mast
-		look_socket = look_device._sail_socket()
-	elif body is Part:
-		look_part = body
-	elif body is Device:
-		look_device = body
-		look_socket = hit_socket
-		if held == null:
-			_near_tie(hit.position)
-		if look_socket == null and not _low_on(look_device, hit_shape as CollisionShape3D, hit.position):
-			return
-	if look_part == null and look_socket == null:
-		_under()
-	if look_part == null and look_device == null:
-		_ground_line()
+	_sight.look()
 
 
-## The drawn strand is pickable without colliders along every moving segment.
-func _ground_line() -> void:
-	if held != null or grasp.body != null:
-		return
-	var best := _tuning.pick_assist
-	for child in _player.world.content.get_children():
-		var line := child as Line
-		if line == null or not line.recoverable():
-			continue
-		var points := line.rope.strand.points
-		for i in range(1, points.size()):
-			var near := Geometry3D.get_closest_points_between_segments(sight_from, sight_to, points[i - 1], points[i])
-			var gap := near[0].distance_to(near[1])
-			if gap >= best:
-				continue
-			var ray := PhysicsRayQueryParameters3D.create(sight_from, near[1])
-			ray.exclude = _exclusions()
-			var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-			if not hit.is_empty() and hit.position.distance_to(near[1]) > RopeStrand.RADIUS * 2.0:
-				continue
-			best = gap
-			look_line = line
-			look_point = near[1]
+## How far along your look it meets something, out to `far`, m, or INF (Sight).
+func meets(far: float) -> float:
+	return _sight.meets(far)
 
 
-## A ring's hole has no collider: aim near its visible end to take the knot.
-func _near_tie(hit_at: Vector3) -> void:
-	var best := _tuning.pick_assist
-	for socket in look_device.sockets():
-		if socket.kind != &"tie" or socket.part == null:
-			continue
-		# A hook's hole needs help; a stake's own frame must still come up whole.
-		if not socket.has_meta(&"socket") or not (socket.get_meta(&"socket") as Socket).part is RopeHook:
-			continue
-		var at := look_device.global_transform * socket.position
-		if at.distance_to(sight_from) > _tuning.reach or at.distance_to(sight_from) > hit_at.distance_to(sight_from) + best:
-			continue
-		var gap := Geometry3D.get_closest_point_to_segment(at, sight_from, sight_to).distance_to(at)
-		if gap >= best or (sight_from - at).dot(look_device.global_basis * socket.outward()) <= 0.0:
-			continue
-		var tip := Line._tip(socket.part) if socket.part.has_meta(&"tip") else null
-		var target := tip.global_position if tip != null else at
-		var ray := PhysicsRayQueryParameters3D.create(sight_from, target)
-		ray.exclude = _exclusions()
-		var seen := get_world_3d().direct_space_state.intersect_ray(ray)
-		if not seen.is_empty():
-			if seen.collider != look_device:
-				continue
-			var met := look_device.shape_owner_get_owner(look_device.shape_find_owner(seen.shape)) as Node
-			if _outermost(look_device.socket_of(met)) != socket:
-				continue
-		best = gap
-		look_socket = socket
-
-
-## Whether a look meets a frame low enough to mean what's fitted under it.
-func _low_on(device: Device, frame: CollisionShape3D, point: Vector3) -> bool:
-	if frame == null or frame.shape == null:
-		return true
-	var box := frame.transform * Catalog.bounds(frame.shape)
-	var up := (device.global_transform.affine_inverse() * point).y - box.position.y
-	return up <= minf(UNDER, box.size.y * UNDER_SHARE)
-
-
-## Empty-handed, what a look at a device's frame, or just past one, finds under
-## it: the part fitted facing down that your line of sight passes nearest.
-func _under() -> void:
-	if held != null:
-		return
-	var best: Socket = null
-	var nearest := UNDER
-	var near: Array = [look_device] if look_device != null \
-		else _player.world.content.get_children() + _player.world.salvage.near(sight_from)
-	for child in near:
-		var device := child as Device
-		if device == null or device.host() != null or device.has_meta(&"buried") or _far(device):
-			continue
-		for each in device.sockets():
-			if each.part == null or (device.global_basis * each.outward()).y > -0.7:
-				continue
-			var d := _gap_to(device.global_transform, _shapes_box(each.fitted))
-			if d < nearest:
-				nearest = d
-				best = each
-	if best != null:
-		look_device = best.get_parent() as Device
-		look_socket = best
+## Whether your look ends on sand out past reach, or on none (Sight).
+func sand_beyond_reach() -> bool:
+	return _sight.sand_beyond_reach()
 
 
 ## Whether a hit is the sand's own surface, its heightmap, which a deck lifts
@@ -935,36 +784,6 @@ static func _sand(hit: Dictionary) -> bool:
 		return false
 	var holder := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as CollisionShape3D
 	return holder != null and holder.shape is HeightMapShape3D
-
-
-## A box of a ruin's that's a bed.
-static func _is_bed(hit: Dictionary) -> bool:
-	var body := hit.collider as StaticBody3D
-	if body == null:
-		return false
-	var shape := body.shape_owner_get_owner(body.shape_find_owner(hit.shape)) as Node
-	return shape != null and shape.has_meta(&"bed")
-
-
-## How far along your look it meets something, out to `far`, m, or INF.
-func meets(far: float) -> float:
-	var eye := _player.camera.global_transform
-	var ray := PhysicsRayQueryParameters3D.create(eye.origin, eye.origin - eye.basis.z * far)
-	ray.exclude = _exclusions()
-	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-	return INF if hit.is_empty() else eye.origin.distance_to(hit.position)
-
-
-## A distant planting aim must not become a waist tie just because its
-## sand is past reach, or past the ground whose collision is streamed.
-func sand_beyond_reach() -> bool:
-	var eye := _player.camera.global_transform
-	if eye.basis.z.y > 0.0:
-		return true
-	var ray := PhysicsRayQueryParameters3D.create(eye.origin, eye.origin - eye.basis.z * _player.camera.far)
-	ray.exclude = _exclusions()
-	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-	return not hit.is_empty() and _sand(hit)
 
 
 ## Says in the readout, for a moment, why use did nothing.
@@ -1011,68 +830,6 @@ func _no_fit() -> String:
 	if piece != null:
 		return "wrecked" if piece.wrecked() or target.wrecked() else "no room at that ring"
 	return ""
-
-
-## Last on, first off: aimed at a hook with a line tied to it, it's the line's
-## end you take, and the hook once it's bare.
-static func _outermost(socket: Socket) -> Socket:
-	if socket == null or socket.part == null:
-		return socket
-	if socket.part is RopeTip and RopeBundle.members(socket.part).size() > 1:
-		return socket
-	for node in socket.fitted:
-		var added := node as Socket
-		if added != null and added.part != null:
-			return _outermost(added)
-	return socket
-
-
-## Aiming at the sand near a small loose thing takes it, so a battery lying
-## there needs no pixel-perfect aim: the nearest your aim among those you can
-## see, and the one it settled on until another is clearly nearer.
-func _assist(eye: Transform3D, except_body: RigidBody3D = null) -> void:
-	if held != null:
-		_picked = null
-		return
-	var forward := -eye.basis.z
-	var space := get_world_3d().direct_space_state
-	var best: RigidBody3D = null
-	var best_score := INF
-	var kept := INF
-	if not is_instance_valid(_picked):
-		_picked = null
-	for child in _player.world.content.get_children() + _player.world.salvage.near(eye.origin):
-		var body := child as RigidBody3D
-		if body == null or body == except_body or not (body is Part or (body is Device and (body as Device).carryable)):
-			continue
-		var box := _box_of(body)
-		var size := box.size.length() * 0.5
-		if size * 2.0 > _tuning.pick_small:
-			continue
-		var middle := body.global_transform * box.get_center()
-		var along := (middle - eye.origin).dot(forward)
-		if along <= 0.0 or along > _tuning.reach:
-			continue
-		var score := (middle - eye.origin - forward * along).length() / (size + _tuning.pick_assist)
-		if score > 1.0 or score >= best_score and body != _picked:
-			continue
-		var ray := PhysicsRayQueryParameters3D.create(eye.origin, middle)
-		ray.exclude = _exclusions()
-		var seen := space.intersect_ray(ray)
-		if not seen.is_empty() and seen.collider != body:
-			continue
-		if body == _picked:
-			kept = score
-		if score < best_score:
-			best_score = score
-			best = body
-	if best != _picked and kept <= 1.0 and best_score > kept * STICKY:
-		best = _picked
-	_picked = best
-	if best is Part:
-		look_part = best
-	elif best is Device:
-		look_device = best
 
 
 ## A body's bounds in its own frame, kept once worked out.
@@ -1258,7 +1015,7 @@ func _find_ring(piece: Chassis) -> Socket:
 	var best: Socket = null
 	var nearest := STAND_REACH
 	var at := grasp.where()
-	for each in _near():
+	for each in _sight.near():
 		var deck := each as Chassis
 		if deck == null or deck == piece or deck.deck != null:
 			continue
@@ -1506,8 +1263,8 @@ func _find_socket() -> void:
 	var target := _looked_at()
 	var best: Socket = null
 	var nearest := INF
-	for device in _near():
-		if device == held or _far(device):
+	for device in _sight.near():
+		if device == held or _sight.far(device):
 			continue
 		for each in device.sockets():
 			if not _takes(each):
@@ -1539,15 +1296,15 @@ func _looked_at() -> Device:
 		return null if root == held else root
 	var best: Device = null
 	var nearest := NEAR_FRAME
-	for device in _near():
+	for device in _sight.near():
 		# A find under the sand you look at is out of sight.
-		if device == held or device.has_meta(&"buried") or _far(device):
+		if device == held or device.has_meta(&"buried") or _sight.far(device):
 			continue
-		var d := _gap_to(device.global_transform, _body_box(device))
+		var d := _sight.gap_to(device.global_transform, _body_box(device))
 		if d < nearest:
 			nearest = d
 			best = device
-			_offer_at = _aim
+			_offer_at = _sight.aim
 	return best
 
 
@@ -1566,7 +1323,7 @@ func _offer(device: Device) -> Socket:
 			continue
 		var frame := _frame_of(each)
 		var facing := (sight_from - frame.origin).dot(frame.basis.z) > 0.0
-		var d := _outside(seat.affine_inverse() * _offer_at, _bounds)
+		var d := Sight.outside(seat.affine_inverse() * _offer_at, _bounds)
 		if best == null or facing and not best_facing or facing == best_facing and d < nearest:
 			best = each
 			best_facing = facing
@@ -1580,37 +1337,6 @@ static func _root(device: Device) -> Device:
 	while device != null and device.host() != null and not device.on_deck():
 		device = device.host()
 	return device
-
-
-## The devices your hands look over: yours in the world, the finds round
-## you, whatever stands on a deck, which keeps its own sockets, and the Walker.
-func _near() -> Array[Device]:
-	var found: Array[Device] = []
-	for child in _player.world.content.get_children() + _player.world.salvage.near(sight_from) \
-			+ Walker.near(_player.world):
-		var device := child as Device
-		if device != null:
-			found.append(device)
-			_on_decks(device, found)
-	return found
-
-
-static func _on_decks(device: Device, found: Array[Device]) -> void:
-	for each in device.mounted():
-		if each.on_deck():
-			found.append(each)
-			_on_decks(each, found)
-
-
-## Whether a device is past what your hands work on from your eyes: a deck
-## by its nearest piece, since its far end can lie well past its first.
-func _far(device: Device) -> bool:
-	var nearest := device.global_position.distance_to(sight_from)
-	var deck := device as Chassis
-	if deck != null:
-		for piece in deck.joined:
-			nearest = minf(nearest, (deck.global_transform * piece.pose().origin).distance_to(sight_from))
-	return nearest > _tuning.reach + 2.0
 
 
 ## Whether a free socket takes what you hold: a part of its kind, a device
@@ -1630,40 +1356,14 @@ func _takes(each: Socket) -> bool:
 
 
 ## How near your line of sight passes to the part as it would sit in this
-## seat, m; _aim is the point on it that passes nearest.
+## seat, m; Sight.aim is the point on it that passes nearest.
 func _sight_gap(seat: Transform3D) -> float:
-	return _gap_to(seat, _bounds)
-
-
-## How near your line of sight passes to a box in a frame, m; _aim is the
-## point on it that passes nearest.
-func _gap_to(frame: Transform3D, box: AABB) -> float:
-	var inverse := frame.affine_inverse()
-	var a := inverse * sight_from
-	var b := inverse * sight_to
-	# The distance to a box along a line has one valley: close in on it.
-	var lo := 0.0
-	var hi := 1.0
-	for i in 24:
-		var one := lerpf(lo, hi, 1.0 / 3.0)
-		var two := lerpf(lo, hi, 2.0 / 3.0)
-		if _outside(a.lerp(b, one), box) <= _outside(a.lerp(b, two), box):
-			hi = two
-		else:
-			lo = one
-	var nearest := a.lerp(b, (lo + hi) * 0.5)
-	_aim = frame * nearest
-	return _outside(nearest, box)
-
-
-## How far a point is outside a box in the same frame.
-static func _outside(local: Vector3, box: AABB) -> float:
-	return local.distance_to(local.clamp(box.position, box.end))
+	return _sight.gap_to(seat, _bounds)
 
 
 func _open(seat: Transform3D, device: Device) -> bool:
 	var out := seat.basis.z
-	if (_aim - seat.origin).dot(out) >= -OPEN_MARGIN:
+	if (_sight.aim - seat.origin).dot(out) >= -OPEN_MARGIN:
 		return true
 	# A seat facing down into the sand is only reached from beside: you slide
 	# the part under, aiming at the device's side.
