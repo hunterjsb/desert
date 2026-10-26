@@ -44,9 +44,16 @@ elif args[:2]==['run','list']:
     if not os.environ.get('VERIFY_FALLBACK') or state.exists(): print('123')
 elif args[:2]==['run','view']:
     field=args[args.index('--json')+1]
-    if field=='status': print('completed')
+    if field=='status':
+        misses=pathlib.Path(str(state)+'.misses')
+        n=int(misses.read_text()) if misses.exists() else 0
+        if n<int(os.environ.get('VERIFY_STATUS_FAILS','0')):
+            misses.write_text(str(n+1)); sys.exit(1)
+        print('completed')
     elif field=='conclusion': print(os.environ.get('VERIFY_RESULT','success'))
+    elif field=='attempt': print(os.environ.get('VERIFY_ATTEMPT','1'))
     elif field=='jobs' and os.environ.get('VERIFY_PLATFORM_RED'): print('failure 456 macOS probes/rope')
+elif args[:1]==['api'] and '/attempts/' in args[-3]: print('789 the rest')
 elif args[:1]==['api']: print(os.environ.get('VERIFY_PLATFORM_LOG','2026-10-22T00:00:00.0000000Z FAIL     probes/rope/1_knot.gd (3s)'))
 ''')
         self.copy = self.root / 'verify.sh'
@@ -149,6 +156,25 @@ elif args[:1]==['api']: print(os.environ.get('VERIFY_PLATFORM_LOG','2026-10-22T0
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('probes/kits/3_slow.gd', result.stdout)
         self.assertEqual(self.git('rev-parse', 'origin/master').strip(), self.git('rev-parse', 'HEAD').strip())
+
+    def test_a_rerun_names_its_failed_attempt(self):
+        self.write('game/main.gd')
+        self.commit()
+        self.env['VERIFY_ATTEMPT'] = '2'
+        result = self.verify()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('attempt 1 failed  the rest', result.stdout)
+        self.assertIn('probes/rope/1_knot.gd', result.stdout)
+
+    def test_status_unread_twice_stops_the_wait(self):
+        self.write('game/main.gd')
+        self.commit()
+        self.env['VERIFY_STATUS_FAILS'] = '1'
+        self.assertEqual(self.verify().returncode, 0)
+        (self.root / 'dispatched.misses').unlink()
+        self.env['VERIFY_STATUS_FAILS'] = '2'
+        self.assertNotEqual(self.verify('--land').returncode, 0)
+        self.assertEqual(self.git('rev-parse', 'origin/master').strip(), self.base)
 
     def master_gains(self, name):
         mine = self.git('rev-parse', 'HEAD').strip()
