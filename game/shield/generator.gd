@@ -80,9 +80,10 @@ func _ready() -> void:
 			housing = Catalog.bounds((child as CollisionShape3D).shape).size
 			break
 	var band := MeshInstance3D.new()
-	# A collar round its round body.
+	# A collar round its emitter, where its look leaves room for it.
+	var collar := ShieldLooks.collar(get_meta(&"catalog", &""), housing)
 	var ring := CylinderMesh.new()
-	ring.top_radius = housing.x * 0.44 + 0.006
+	ring.top_radius = collar.y
 	ring.bottom_radius = ring.top_radius
 	ring.height = 0.05
 	ring.radial_segments = 24
@@ -93,7 +94,7 @@ func _ready() -> void:
 	_band.emission = BLUE
 	ring.material = _band
 	band.mesh = ring
-	band.position.y = housing.y * 0.2
+	band.position.y = collar.x
 	add_child(band)
 	_light = OmniLight3D.new()
 	_light.light_color = BLUE
