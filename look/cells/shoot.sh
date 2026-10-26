@@ -36,7 +36,7 @@ montage "${args[@]}" -tile 3x -geometry 640x360+4+4 -pointsize 18 -background '#
 	-title "${prefix}commodity parts, left to right: issued, colonial, First Kingdoms, skimmer, second age" \
 	-depth 8 "$out/${prefix}eras.png"
 args=()
-for shot in camp5 camp5_dusk camp5_side camp2 bubble5 bubble2 battery_0 battery_35; do
+for shot in camp5 camp5_dusk camp5_side camp2 bubble5 bubble2 battery_35 battery_60; do
 	file="$shots/$shot.png"
 	[[ -f $file ]] || continue
 	args+=(-label "$shot" "$file")
