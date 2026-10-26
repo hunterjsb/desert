@@ -201,6 +201,8 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 	var own := ChassisLooks.lineage(id, line)
 	if own == null:
 		own = ShieldLooks.lineage(id, line)
+	if own == null:
+		own = CellLooks.lineage(id, line)
 	var shape := own.get_instance_id() if own != null else 0
 	if own == null:
 		own = _own(id)
@@ -616,6 +618,8 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var along := Basis(Vector3.RIGHT, PI / 2.0)
 	if ChassisLooks.part(b, id, size):
 		return b.commit()
+	if CellLooks.part(b, id, size):
+		return b.commit()
 	match id:
 		&"coalcane_bundle":
 			for x in [-0.12, 0.0, 0.12]:
@@ -623,14 +627,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 					b.drum(0.065, size.z, Vector3(x, y, h.z), Paint.coat(Color(0.24, 0.15, 0.07), 0.7), along, 8)
 			for z in [0.12, size.z - 0.12]:
 				b.box(Vector3(size.x, size.y, 0.045), Vector3(0, 0, z), Paint.coat(Paint.CORD, 0.7), 0.025)
-		&"battery", &"big_battery":
-			# Commodity: no maker's mark, only safety yellow on its terminals.
-			b.box(size - Vector3(0.01, 0.01, 0.01), Vector3(0.0, 0.0, h.z), Paint.coat(Color(0.2, 0.21, 0.19), 0.6), 0.012)
-			b.box(Vector3(size.x - 0.03, 0.03, size.z * 0.6), Vector3(0.0, h.y - 0.012, h.z), Paint.coat(Paint.YELLOW, 0.6), 0.006)
-			b.box(Vector3(size.x * 0.5, 0.025, 0.02), Vector3(0.0, -h.y * 0.35, size.z + 0.002), black, 0.006)
-		&"hook":
-			b.drum(0.035, 0.02, Vector3(0.0, 0.0, 0.01), Paint.coat(Paint.GUNMETAL, 0.6, 0.3), along)
-			b.drum(0.014, 0.12, Vector3(0.0, 0.0, 0.08), steel, along, 10)
 		&"hover_tray":
 			b.box(Vector3(size.x, size.y, 0.06), Vector3(0.0, 0.0, 0.03), gun, 0.015)
 			for side in 4:
@@ -691,25 +687,10 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 		&"solar_panel":
 			b.box(Vector3(size.x, size.y, 0.03), Vector3(0.0, 0.0, 0.015), Paint.coat(Paint.STEEL, 0.4, 0.5), 0.006)
 			_cells(b, Vector2(size.x - 0.04, size.y - 0.04), 4, 2, Basis.IDENTITY, Vector3(0.0, 0.0, 0.032))
-		&"lamp":
-			b.drum(0.03, 0.17, Vector3(0.0, 0.0, 0.085), gun, along, 10)
-			b.drum(0.055, 0.08, Vector3(0.0, 0.0, 0.205), Paint.coat(Paint.YELLOW, 0.7), along, 16)
-			b.drum(0.045, 0.01, Vector3(0.0, 0.0, size.z - 0.003), Paint.coat(Color(1.0, 0.85, 0.6), 0.0, 0.0, 0.2, 0.2, 3.0), along, 16)
 		&"flare":
 			# A red tube with a black striker cap at its tip, where it burns.
 			b.drum(h.x, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Paint.FLARE_RED, 0.5), along, 10)
 			b.drum(h.x * 1.05, 0.04, Vector3(0.0, 0.0, size.z - 0.02), Paint.coat(Paint.BLACK, 0.3), along, 10)
-		&"plug", &"strong_plug":
-			var collar := Paint.coat(Color(1.0, 0.5, 0.1) if id == &"plug" else Color(0.7, 0.15, 0.1), 0.5)
-			b.drum(h.x * 0.95, 0.025, Vector3(0.0, 0.0, 0.0125), collar, along, 12)
-			b.drum(h.x * 0.8, size.z - 0.025, Vector3(0.0, 0.0, 0.025 + (size.z - 0.025) * 0.5), Paint.coat(Color(0.06, 0.06, 0.06), 0.2, 0.0, 0.85), along, 10, h.x * 0.55)
-		&"hose_end":
-			# A steel coupling on the hose's rubber, a spout on top where another goes on.
-			b.drum(h.x * 0.95, 0.03, Vector3(0.0, 0.0, 0.015), steel, along, 12)
-			b.drum(h.x * 0.7, size.z - 0.03, Vector3(0.0, 0.0, 0.03 + (size.z - 0.03) * 0.5),
-				Paint.coat(Paint.HOSE, 0.3, 0.0, 0.85), along, 10)
-			b.drum(0.016, 0.03, Vector3(0.0, h.y, 0.075), steel, Basis.IDENTITY, 10)
-			b.drum(0.02, 0.008, Vector3(0.0, h.y + 0.011, 0.075), Paint.coat(Catalog.KINDS[&"water"], 0.3), Basis.IDENTITY, 10)
 		&"rope_end":
 			# Three laid cords and a small whipping explain the end without a metal block.
 			var rules := Tuning.current().rope_coil_visual
@@ -732,12 +713,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 					Vector3(0.0, 0.0, float(rules.end_wrap_start) + i * float(rules.end_wrap_spacing)), binding, along, int(rules.sides))
 		&"coil":
 			return coil()
-		&"canister":
-			b.drum(h.x * 0.92, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Color(0.55, 0.62, 0.68), 0.6, 0.5, 0.45), along, 16)
-			b.drum(h.x * 0.5, 0.04, Vector3(0.0, 0.0, size.z - 0.02), Paint.coat(Paint.TEAL, 0.5), along, 12)
-			for z in [0.06, size.z - 0.08]:
-				b.drum(h.x * 0.95, 0.015, Vector3(0.0, 0.0, z), black, along, 16)
-			b.box(Vector3(0.1, 0.012, 0.03), Vector3(0.0, h.y * 0.9, size.z * 0.6), black, 0.003)
 		&"ration":
 			b.box(size - Vector3(0.006, 0.006, 0.006), Vector3(0.0, 0.0, h.z), Paint.coat(Color(0.45, 0.42, 0.25), 0.3, 0.3, 0.5), 0.01)
 			b.box(Vector3(size.x * 0.3, size.y + 0.002, size.z + 0.002), Vector3(-size.x * 0.2, 0.0, h.z), Paint.coat(Paint.YELLOW, 0.3), 0.004)
