@@ -85,6 +85,13 @@ const FLARE_RED := Color(0.75, 0.12, 0.08)
 const COPPER := Color(0.55, 0.36, 0.2)
 const DYED := Color(0.55, 0.22, 0.12)
 const SCRAP: Array[Color] = [YELLOW, TEAL, BONE, STEEL]
+## Boards lane: the hover field's blue, under every tray, board and keel;
+## grip tape, blacker than paint; the Knights Requisitioner's grey; sail cloth,
+## as the raised sail's shader has it.
+const HOVER := Color(0.45, 0.8, 1.0)
+const GRIP := Color(0.05, 0.05, 0.05)
+const ORDER_GREY := Color(0.46, 0.46, 0.44)
+const SAILCLOTH := Color(0.86, 0.8, 0.68)
 
 static var _worn: ShaderMaterial
 static var _noise: NoiseTexture2D

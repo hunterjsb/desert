@@ -19,7 +19,7 @@ const LOOKS := {
 	"c": preload("res://look/style/look_c.gd"),
 	"d": preload("res://look/style/look_d.gd"),
 }
-const MOMENTS := {"morning": 0.285, "midmorning": 0.4, "noon": 0.5, "dusk": 0.715}
+const MOMENTS := {"morning": 0.285, "midmorning": 0.4, "noon": 0.5, "dusk": 0.715, "night": 0.9}
 ## The camp's middle, where the generator stands, in the ruin's plan: off its
 ## end wall, by the corner. The camp faces its camera turned this far from
 ## straight away from that corner, so the corner stands off to one side.

@@ -3,13 +3,15 @@ extends MovementProbe
 func run() -> void:
 	get_window().unfocusable = true
 	AudioServer.set_bus_mute(0, true)
-	var out := OS.get_cmdline_user_args()[0]
+	var args := OS.get_cmdline_user_args()
+	var out := args[0]
 	DirAccess.make_dir_recursive_absolute(out)
 	await load_moving()
 	Dev.hide_overlays()
 	var flat := flat_place(world.player_world_x(), world.player_world_z(), 100.0, 30.0)
 	await place(flat.x, flat.z, Vector2(0, -1))
-	await ride_here(&"big_battery")
+	# A make to ride, after the folder; the issue by default.
+	await ride_here(&"big_battery", StringName(args[1]) if args.size() > 1 else BoardMakes.ISSUE)
 	Engine.physics_ticks_per_second = 60
 	Engine.max_fps = 14
 	hold(["move_forward"])
