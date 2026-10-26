@@ -123,9 +123,13 @@ class GitHub:
 
 
 def collect_run(api, run):
-    jobs = api.pages(f"actions/runs/{run['id']}/jobs?filter=latest", 'jobs')
+    # Every attempt: a rerun that passed never hides the attempt that failed.
+    jobs = api.pages(f"actions/runs/{run['id']}/jobs?filter=all", 'jobs')
     def collect_job(job):
         out = {k: job.get(k) for k in ('id', 'name', 'conclusion', 'started_at', 'completed_at', 'html_url')}
+        out['attempt'] = job.get('run_attempt', run['run_attempt'])
+        if out['attempt'] < run['run_attempt']:
+            out['name'] = f"{job['name']} (attempt {out['attempt']})"
         out['platform'] = platform(job['name'])
         execution_start = min((s['started_at'] for s in job.get('steps', []) if s.get('started_at')), default=None)
         out['seconds'] = seconds(execution_start, job.get('completed_at'))

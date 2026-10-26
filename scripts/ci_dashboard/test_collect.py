@@ -78,5 +78,23 @@ PROBE_METRIC {"probe":"probes/world/a.gd","name":"x","value":"1","unit":"ms"}
                          [('Linux','probes/linux/1.gd'),('macOS','probes/mac/1.gd')])
 
 
+    def test_a_passing_rerun_keeps_the_failed_attempt(self):
+        def job(i, attempt, conclusion):
+            return {'id':i,'name':'the rest','conclusion':conclusion,'run_attempt':attempt,
+                    'started_at':'2026-10-21T18:00:10Z','completed_at':'2026-10-21T18:01:00Z','html_url':'u',
+                    'steps':[{'name':'Probes','conclusion':conclusion,'started_at':'2026-10-21T18:00:10Z',
+                              'completed_at':'2026-10-21T18:01:00Z'}]}
+        class API:
+            def pages(self, path, key):
+                return [] if key == 'artifacts' else [job(1, 1, 'failure'), job(2, 2, 'success')]
+            def get(self, path, raw=False):
+                return 'FAIL     probes/kits/8_x.gd (42s)' if '/1/' in path else 'PASS     probes/kits/8_x.gd (40s)'
+        run={'id':9,'run_attempt':2,'name':'Probes','head_branch':'verify-x','head_sha':'abc',
+             'html_url':'u','created_at':'2026-10-21T18:00:00Z','conclusion':'success'}
+        jobs=collect_run(API(),run)['jobs']
+        self.assertEqual([(j['name'], j['probes'][0]['result']) for j in jobs],
+                         [('the rest (attempt 1)','FAIL'),('the rest','PASS')])
+
+
 if __name__ == '__main__':
     unittest.main()
