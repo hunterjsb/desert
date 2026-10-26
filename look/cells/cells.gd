@@ -1,9 +1,9 @@
 extends "res://look/paint/paint.gd"
 ## Look-test: the commodity parts (CellLooks). Each in the five looks a
-## lineage gives it, on its back on the sand in front of the camp, shot close
-## at midmorning and dusk; the camp with them seated (cells on the decks, a
-## lamp, a canister on a hose, a cable and a strong cable) at 5 m, and under
-## its bubble in a storm.
+## lineage gives it, laid on the sand in front of the camp and shot from about
+## a metre at midmorning and dusk, and through a narrow lens; the camp with
+## them seated (cells on the decks, a lamp, a canister on a hose, a cable and a
+## strong cable) at 5 m and 2 m, and under its bubble in a storm.
 ##   scripts/unseen.sh --path . --disable-vsync res://look/cells/cells.tscn -- --look grey --capture <dir> [--storm]
 ## look/cells/shoot.sh shoots both runs and builds the sheets.
 
