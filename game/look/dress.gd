@@ -168,6 +168,8 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 	var own := ChassisLooks.lineage(id, line)
 	if own == null:
+		own = ShieldLooks.lineage(id, line)
+	if own == null:
 		own = CampLooks.lineage(id, line)
 	var shape := own.get_instance_id() if own != null else 0
 	if own == null:
@@ -241,6 +243,8 @@ static func prepare() -> void:
 	for id: StringName in Catalog.DEVICES:
 		Catalog.device(id).free()
 		shell(id)
+	for era: StringName in ShieldLooks.SHAPES:
+		shell(&"shield", ShieldLooks.look(&"shield", era))
 	Catalog.stake().free()
 	shell(&"stake")
 	for step in BEDROLL_STEPS:
@@ -273,6 +277,8 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
 	if CampLooks.frame(b, id, size, extra) or ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
 		return b.commit()
+	if ShieldLooks.frame(b, id, size):
+		return b.commit()
 	match id:
 		&"home_beacon":
 			var bone := Paint.coat(Paint.BONE)
@@ -294,29 +300,6 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			for y in [0.10, 0.115, 0.13, 0.145]:
 				b.drum(0.019, 0.006, Vector3(0, y, 0), gun, Basis.IDENTITY, 10)
 			b.ball(0.018, Vector3(0, 0.161, 0), bone)
-		&"shield", &"light_shield":
-			# A different maker: bone white, round, finned, on pads for its sockets.
-			# Bought new, it carries its maker's sign on its back; a deep one wears
-			# the tag of the contractor who fitted it there, its maker's only on
-			# the emitter.
-			var r := h.x * 0.88
-			var back := Basis(Vector3.UP, PI)
-			var fitted := id == &"shield"
-			b.drum(h.x * 0.98, size.y * 0.24, Vector3(0.0, -h.y + size.y * 0.12, 0.0), gun, Basis.IDENTITY, 20)
-			b.stamp(Paint.Mark.CONTRACTOR if fitted else Paint.Mark.SHIELD_MAKER, Vector3(0.0, -h.y + size.y * 0.52, -r),
-				0.12 if fitted else 0.16, back)
-			b.drum(r, size.y * 0.6, Vector3(0.0, -h.y + size.y * 0.5, 0.0), Paint.coat(Paint.BONE, 0.4), Basis.IDENTITY, 24)
-			for i in 8:
-				var turn := Basis(Vector3.UP, i * TAU / 8.0 + PI / 8.0)
-				b.box(Vector3(0.015, size.y * 0.4, h.x * 0.25), turn * Vector3(0.0, -0.02, r + h.x * 0.06), gun, 0.004, turn)
-			for turn: Basis in [Basis.IDENTITY, Basis(Vector3.UP, PI * 0.5), Basis(Vector3.UP, -PI * 0.5)]:
-				b.box(Vector3(0.13, 0.13, h.x - r + 0.02), turn * Vector3(0.0, -0.05 * size.y / 0.42, h.x - (h.x - r + 0.02) * 0.5), gun, 0.01, turn)
-			if fitted:
-				b.stamp(Paint.Mark.SHIELD_MAKER, Vector3(0.0, h.y - size.y * 0.14, -h.x * 0.65), 0.1, back, Paint.Ink.PALE)
-			b.drum(h.x * 0.65, size.y * 0.12, Vector3(0.0, h.y - size.y * 0.14, 0.0), gun, Basis.IDENTITY, 20)
-			b.ball(h.x * 0.5, Vector3(0.0, h.y - size.y * 0.13, 0.0), Paint.coat(Paint.CELL, 0.0, 0.4, 0.15, 0.4), Vector3(1.0, 0.55, 1.0))
-			# A bracket out to the box's corner, where every frame's charge light sits.
-			b.box(Vector3(0.09, 0.07, 0.09), Vector3(h.x - 0.045, h.y - 0.05, h.z - 0.05), gun, 0.01)
 		&"sailing_notes", &"surveyor_guide":
 			var cover := Paint.coat(Paint.BONE) if id == &"surveyor_guide" else teal
 			# A salt-stained field booklet, pale pages held by a dark cloth spine.

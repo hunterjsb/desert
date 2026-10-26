@@ -447,6 +447,31 @@ Readings, not in the session:
   (a chamfered housing, the same with a crest and a vent grille, and an asymmetric one with a ceramic cap)
   is the smallest test of the table.
 
+**The shield by era, as built (2026-10-26).** The base shield's shape is the era of its last hands
+(`Eras.era_of`, which already sets its paint's age), so a found one shows where it has been
+(`ShieldLooks`). The company's issue is colonial make. Every era keeps one housing and the maker's emitter,
+with the generator's blue collar ringing a neck between housing and cap, so a storm still shows it by its glow.
+- **Colonial:** a deep-chamfered housing with off-white panels in dark frames, grey corner caps, a
+  safety-orange stripe and a grey pad round the port, under a rounded-rectangle cap with orange ends, the
+  maker's sign and a dark lens.
+- **Skimmer era:** the same, hand-painted crew red with a pale stripe and the crew's patch. Its corner caps
+  and cap ends are taped, a scrap plate is welded over one side, and a steel guard sits over the lens.
+- **First Kingdoms:** the colonial housing kept clean, with brass rails up its edges and a brass filigree vent
+  in front, where the house's crest is fixed. A square brim stands on brass posts, crested at its corners,
+  with the house's enamel round its edge, under a flared copper cap.
+- **Second age:** the lost cap rebuilt round in salt-glazed ceramic, off its axis, on a coil of bare
+  ceramic with a sand-glass eye and corded down. A corner is rebuilt in ceramic, saltbush slats sit under
+  a lashed saltbush rail, and limewash with an oval of ceramic-backed glass fills a panel's place. Cord
+  winds round three sides and up the port's edges, with one charm of cord, bead and tassel. These are
+  the second-age chassis's own materials.
+- **The light shield** stays the maker's round bone white. It now has a gunmetal foot on rubber, eight
+  fins, seams and vent slots, and a rubber-gripped carry handle over its lens.
+
+Each is one merged mesh, so draws are as before. Each stays inside its box (devices probe 48), and a
+lineage's marks go on its era's shape. Triangles: colonial 1,932, skimmer 2,224, First Kingdoms 3,332
+and second age 4,116, against 1,080 for the old round one. The light shield is 2,568, also against
+1,080. A lineage's marks add up to about 700. Shots: `look/shield/shoot.sh`.
+
 ## Marks by era after the collapse
 
 *Session 4, part 2 (lore session); named, not drawn, and
@@ -1141,4 +1166,4 @@ charm, all in Paint's existing ages-after materials.
 
 Hunter’s graphical-fidelity request follows the [chassis kit](#chassis-kit-fidelity-2026-10-26). SANDGAME assigns planters, burner, turbine, condenser, light panel, Console, cargo, survival kit and bedroll to the same worn modular language and [era silhouettes](#shape-by-era). Planting points, the Console’s live screen recess, the turbine’s mast and separate rotor, drop-orange cargo and the bedroll’s existing unrolling path stay in place. Era-specific bedroll cloth follows the same lineage in both poses. Only the looks change.
 
-`CampLooks` builds braced growing tubs, an insulated burner with a vented heat guard and latch, a serviceable turbine base and mast, louvred condenser, framed solar cells, a recessed Console rack, strapped drop cargo, a latched supply case and folded canvas. Colonial panels are modular, First Kingdoms fittings are flared brass, second-age repairs use ceramic and cord-bound saltbush wood, and skimmer parts show welded splices. Lineage repairs project onto the actual era mesh. The bedroll uses the same era cloth as it unrolls. Base/era triangle ranges: planter 1,064–2,284; deep_planter 1,064–2,284; burner 1,636–2,272; turbine 936–1,688; condenser 1,536–2,216; light_panel 1,052–1,264; console 3,264–4,624; cargo 1,056–1,860; survival_kit 720–1,568; bedroll 4,104–4,148. Each static builder has one shared worn surface; the turbine rotor, socket tells and live screen keep their existing draws. The envelope probe covers ten ids in five eras, with the turbine’s existing mast reach.
+`CampLooks` builds braced growing tubs, an insulated burner with a vented heat guard and latch, a serviceable turbine base and mast, louvred condenser, framed solar cells, a recessed Console rack, strapped drop cargo, a latched supply case and folded canvas. Colonial panels are modular, First Kingdoms fittings are flared brass, second-age repairs use ceramic and cord-bound saltbush wood, and skimmer parts show welded splices. Lineage repairs project onto the actual era mesh. The bedroll uses the same era cloth as it unrolls. Base/era triangle ranges: planter 1,064–2,284; deep_planter 1,064–2,284; burner 1,636–2,272; turbine 936–1,688; condenser 1,536–2,216; light_panel 1,052–1,264; console 3,308–4,668; cargo 1,056–1,860; survival_kit 720–1,568; bedroll 4,104–4,148. Each static builder has one shared worn surface; the turbine rotor, socket tells and live screen keep their existing draws. The envelope probe covers ten ids in five eras, with the turbine’s existing mast reach.
