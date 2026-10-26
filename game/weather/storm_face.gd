@@ -21,6 +21,14 @@ const RING_DEPTH := 8.0
 ## roof and all, no ray meets dust, m.
 const ROOF_OVER := 400.0
 
+## What the map and the billows say at one point (reading_at): its height,
+## the front there (front_at) and how far behind the billowed face (edge_at).
+class Reading:
+	var height: float
+	var front: Vector3
+	var edge: float
+
+
 var material := ShaderMaterial.new()
 ## The storm map's uniforms as last handed the shader, which the plumes share.
 var uniforms := {}
@@ -100,9 +108,19 @@ func set_light(param: StringName, value: Variant) -> void:
 ## Twin of storm_front + storm_bulge at full detail: metres an engine-space
 ## point sits behind its billowed face (negative = ahead of it).
 func edge_at(p: Vector3) -> float:
+	return reading_at(p).edge
+
+
+## The map's front and the billows at an engine-space point now, read once
+## for all that follows from them there: the camera's light, dust and sky
+## each ask, and the billows are most of a frame's weather.
+func reading_at(p: Vector3) -> Reading:
 	var t := _world.time
-	var front := _map.front_at(_world.world_x(p.x), _world.world_z(p.z), t)
-	return front.x + _bulge(p, t)
+	var r := Reading.new()
+	r.height = p.y
+	r.front = _map.front_at(_world.world_x(p.x), _world.world_z(p.z), t)
+	r.edge = r.front.x + _bulge(p, t)
+	return r
 
 
 ## How far into the dust a point is, 0 to 1, as the shader draws it: none
@@ -113,14 +131,22 @@ func seen_at(p: Vector3) -> float:
 
 ## The same with every shelter down: the storm's own dust there.
 func open_at(p: Vector3) -> float:
-	return smoothstep(0.0, SKIN, edge_at(p)) if _map.ready else 0.0
+	return open_of(reading_at(p)) if _map.ready else 0.0
+
+
+func open_of(r: Reading) -> float:
+	return smoothstep(0.0, SKIN, r.edge) if _map.ready else 0.0
 
 
 ## Twin of sun_through(storm_sun_path()) as the march calls it: sunlight left
 ## at a point after the storms between it and the sun, 0 to 1, counting depth
 ## from the billowed surface.
 func sun_at(p: Vector3, sun: Vector3) -> float:
-	var path := _sun_path(p, sun)
+	return sun_of(reading_at(p) if _map.ready else null, sun)
+
+
+func sun_of(r: Reading, sun: Vector3) -> float:
+	var path := _sun_path(r, sun)
 	return minf(1.0, exp(-0.004 * path) + 0.3 * exp(-0.0008 * path))
 
 
@@ -128,23 +154,26 @@ func sun_at(p: Vector3, sun: Vector3) -> float:
 ## point, which carries far deeper into the dust than the sun's, in from the
 ## billowed face and down through the roof.
 func ring_at(p: Vector3, sun: Vector3) -> float:
-	if not _map.ready:
+	return ring_of(reading_at(p) if _map.ready else null, sun)
+
+
+func ring_of(r: Reading, sun: Vector3) -> float:
+	if r == null or not _map.ready:
 		return 1.0
-	var depth := edge_at(p)
-	return exp(-0.00015 * minf(_roof_path(p.y) / maxf(sun.y, 0.02), maxf(depth, 0.0) * RING_DEPTH))
+	return exp(-0.00015 * minf(_roof_path(r.height) / maxf(sun.y, 0.02), maxf(r.edge, 0.0) * RING_DEPTH))
 
 
 ## Twin of storm_sun_path: metres of roof-thin dust between a point and the sun.
-func _sun_path(p: Vector3, sun: Vector3) -> float:
-	if not _map.ready:
+func _sun_path(r: Reading, sun: Vector3) -> float:
+	if r == null or not _map.ready:
 		return 0.0
-	var f := _map.front_at(_world.world_x(p.x), _world.world_z(p.z), _world.time)
-	var depth := f.x + _bulge(p, _world.time)
+	var f := r.front
+	var depth := r.edge
 	var clear_side := -(sun.x * f.y + sun.z * f.z)
 	var up := maxf(sun.y, 0.02)
 	if depth <= 0.0:
-		return 0.0 if clear_side >= -0.001 else _roof_path(p.y + depth / clear_side * up) / up
-	var out_top := _roof_path(p.y) / up
+		return 0.0 if clear_side >= -0.001 else _roof_path(r.height + depth / clear_side * up) / up
+	var out_top := _roof_path(r.height) / up
 	return minf(out_top, depth / clear_side * BODY_WEIGHT) if clear_side > 0.001 else out_top
 
 
@@ -193,21 +222,26 @@ static func _billow(n: float) -> float:
 
 
 ## Trilinear, repeating, texel centres at (i + 0.5) / N: what the GPU does.
+## Corners in x, then y, then z order, as the sum has always been taken.
 func _sample(p: Vector3) -> Color:
 	var f := p * NOISE - Vector3(0.5, 0.5, 0.5)
 	var b := f.floor()
 	var fr := f - b
 	var out := Color(0, 0, 0, 0)
-	for corner in 8:
-		var o := Vector3i(corner & 1, (corner >> 1) & 1, (corner >> 2) & 1)
-		var x := posmod(int(b.x) + o.x, NOISE)
-		var y := posmod(int(b.y) + o.y, NOISE)
-		var z := posmod(int(b.z) + o.z, NOISE)
-		var weight := (fr.x if o.x else 1.0 - fr.x) * (fr.y if o.y else 1.0 - fr.y) \
-			* (fr.z if o.z else 1.0 - fr.z)
-		var i := ((z * NOISE + y) * NOISE + x) * 4
-		out += Color(_noise_bytes[i], _noise_bytes[i + 1], _noise_bytes[i + 2],
-			_noise_bytes[i + 3]) * (weight / 255.0)
+	var x0 := posmod(int(b.x), NOISE)
+	var y0 := posmod(int(b.y), NOISE)
+	var z0 := posmod(int(b.z), NOISE)
+	for oz in 2:
+		var z := (z0 + oz) % NOISE
+		var wz := fr.z if oz else 1.0 - fr.z
+		for oy in 2:
+			var row := (z * NOISE + (y0 + oy) % NOISE) * NOISE
+			var wy := fr.y if oy else 1.0 - fr.y
+			for ox in 2:
+				var weight := (fr.x if ox else 1.0 - fr.x) * wy * wz
+				var i := (row + (x0 + ox) % NOISE) * 4
+				out += Color(_noise_bytes[i], _noise_bytes[i + 1], _noise_bytes[i + 2],
+					_noise_bytes[i + 3]) * (weight / 255.0)
 	return out
 
 

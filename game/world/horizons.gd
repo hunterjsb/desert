@@ -6,6 +6,9 @@ var _world: World
 var _views := {}
 var _sand: ShaderMaterial
 var _summit: ShaderMaterial
+## The origin and landforms revision the hills were last placed for: they
+## stand still until either moves.
+var _placed_for := []
 
 func setup(world: World) -> void:
 	_world = world
@@ -21,6 +24,10 @@ func _process(_delta: float) -> void:
 	var frame := Vector3(eye.x, eye.z, SurfaceProjection.radius(_world.tuning))
 	_sand.set_shader_parameter("surface_frame", frame)
 	_summit.set_shader_parameter("surface_frame", frame)
+	var placing := [_world.origin_chunk, _world.shape.landforms.revision]
+	if placing == _placed_for:
+		return
+	_placed_for = placing
 	for hill in _world.shape.landforms.hills:
 		if not _views.has(hill.id):
 			var ground := MeshInstance3D.new()

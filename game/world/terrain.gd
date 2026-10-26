@@ -97,6 +97,9 @@ var _pressed := {}
 var _far_turn := 0
 var _occupants := PackedVector2Array()
 var _occupants_frame := -1
+## Chunks with their collision, counted again only once some gain or lose it.
+var _collided := 0
+var _collision_changed := true
 var _policy: TerrainResidency.Policy
 var _home_requested := false
 var _home_kept := Rect2i()
@@ -181,7 +184,10 @@ func _process(_delta: float) -> void:
 	frame_ms = (Time.get_ticks_usec() - started) / 1000.0
 	slowest_frame_ms = maxf(slowest_frame_ms, frame_ms)
 	Dev.put("terrain/chk", "%d" % _chunks.size())
-	Dev.put("terrain/col", "%d" % collision_count())
+	if _collision_changed:
+		_collision_changed = false
+		_collided = collision_count()
+	Dev.put("terrain/col", "%d" % _collided)
 	Dev.put("terrain/bld", "%d" % (_tasks.size() + _wanted.size()))
 	Dev.put("terrain/upl", "%.1fms" % slowest_frame_ms)
 	Dev.put("terrain/site", "%.2fms %d pressed %.2fms" % [follow_ms, presses, slowest_press_ms])
@@ -233,6 +239,29 @@ func height_at(world_x: float, world_z: float) -> float:
 	var k := j * w + i
 	var h := chunk.heights
 	return TerrainShape.across(fx, fz, h[k + 1], h[k + w], h[k] if fx + fz <= 1.0 else h[k + w + 1])
+
+
+## The highest height_at reads anywhere over a world rectangle: between a
+## chunk's samples its triangles, never above the highest of them. INF where
+## any of it lies off loaded 1 m ground, which height_at asks the shape for.
+func highest_in(x0: float, z0: float, x1: float, z1: float) -> float:
+	var lo := chunk_at(x0, z0)
+	var hi := chunk_at(x1, z1)
+	var w := _size + 1
+	var top := -INF
+	for cz in range(lo.y, hi.y + 1):
+		for cx in range(lo.x, hi.x + 1):
+			var chunk: TerrainChunk = _chunks.get(Vector2i(cx, cz))
+			if chunk == null or chunk.step != NEAR_STEP:
+				return INF
+			# The samples round every place of it on this chunk, far edges included.
+			var h := chunk.heights
+			var i0 := clampi(floori(x0 - cx * _size), 0, _size)
+			var i1 := clampi(floori(x1 - cx * _size) + 1, 0, _size)
+			for j in range(clampi(floori(z0 - cz * _size), 0, _size), clampi(floori(z1 - cz * _size) + 1, 0, _size) + 1):
+				for i in range(i0, i1 + 1):
+					top = maxf(top, h[j * w + i])
+	return top
 
 
 ## The loaded chunk a world place lies on, or null: its heights are the
@@ -293,6 +322,7 @@ func forget(rect: Rect2) -> void:
 			_chunks.erase(coord)
 			_standing.erase(coord)
 			_joined.erase(coord)
+			_collision_changed = true
 	_planned = false
 
 
@@ -563,6 +593,7 @@ func _ground() -> void:
 			_to_ground.pop_front()
 		elif chunk.add_collision_piece(_size, _sand):
 			_to_ground.pop_front()
+			_collision_changed = true
 			grounded.emit(chunk)
 
 
@@ -580,9 +611,11 @@ func _retire() -> void:
 			_chunks.erase(coord)
 			_standing.erase(coord)
 			_joined.erase(coord)
+			_collision_changed = true
 		elif not _policy.keeps_collision(coord):
 			if chunk.has_collision():
 				ungrounded.emit(chunk)
+				_collision_changed = true
 			_to_ground.erase(chunk)
 			chunk.remove_collision()
 		elif _policy.needs_collision(coord) and chunk.step == NEAR_STEP and not chunk.has_collision() \

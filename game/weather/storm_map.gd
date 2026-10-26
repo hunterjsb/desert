@@ -201,11 +201,12 @@ func _sample(x: float, z: float, t: float) -> PackedFloat32Array:
 	var u := fx - i0
 	var v := fz - j0
 	var w := _blend(t)
+	var k := (j0 * size + i0) * CHANNELS
+	var below := size * CHANNELS
 	for c in 3:
-		var at := func(texels: PackedFloat32Array) -> float:
-			var k := j0 * size + i0
-			var top := lerpf(texels[k * CHANNELS + c], texels[(k + 1) * CHANNELS + c], u)
-			var bottom := lerpf(texels[(k + size) * CHANNELS + c], texels[(k + size + 1) * CHANNELS + c], u)
-			return lerpf(top, bottom, v)
-		out[c] = lerpf(at.call(_a), at.call(_b), w)
+		var a := lerpf(lerpf(_a[k + c], _a[k + CHANNELS + c], u),
+			lerpf(_a[k + below + c], _a[k + below + CHANNELS + c], u), v)
+		var b := lerpf(lerpf(_b[k + c], _b[k + CHANNELS + c], u),
+			lerpf(_b[k + below + c], _b[k + below + CHANNELS + c], u), v)
+		out[c] = lerpf(a, b, w)
 	return out

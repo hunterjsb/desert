@@ -533,6 +533,13 @@ func _press_body(body: RigidBody3D, depth: float, from: Vector2, to: Vector2) ->
 			shape.set_meta(&"sand_box", Catalog.bounds(shape.shape))
 		var box: AABB = shape.get_meta(&"sand_box")
 		var frame := body.global_transform * shape.transform
+		# Clear of the highest sand under it, no corner of it can touch: a
+		# deck's hundreds of shapes cost a few samples each, not 8 heights.
+		var around := frame * box
+		if around.position.y - _world.terrain.highest_in(_world.world_x(around.position.x) - 0.01,
+				_world.world_z(around.position.z) - 0.01, _world.world_x(around.end.x) + 0.01,
+				_world.world_z(around.end.z) + 0.01) > CONTACT + 0.001:
+			continue
 		var lowest := INF
 		for i in 8:
 			var corner := frame * box.get_endpoint(i)

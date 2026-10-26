@@ -234,9 +234,12 @@ func _stale(here: Vector2, t: float) -> Array[Seed]:
 ## A cell's middle, world metres.
 func middle(seed: Seed) -> Vector2:
 	var shape: TerrainShape = _ctx.shape.get_ref()
-	var down := shape.downwind()
-	var u := (seed.key.x + 0.5) * _tuning.dune_spacing
-	var v := (seed.key.y + 0.5) * _tuning.dune_ruin_cell_m
+	return _middle(seed.key, shape.downwind())
+
+
+func _middle(key: Vector2i, down: Vector2) -> Vector2:
+	var u := (key.x + 0.5) * _tuning.dune_spacing
+	var v := (key.y + 0.5) * _tuning.dune_ruin_cell_m
 	return Vector2(u * down.x - v * down.y, u * down.y + v * down.x)
 
 
@@ -362,9 +365,10 @@ func _forget(here: Vector2) -> void:
 	if _cells.size() < 256:
 		return
 	var lift := _tuning.history_lift_m
+	# Every frame once there are this many: the downwind read once for them all.
+	var down := (_ctx.shape.get_ref() as TerrainShape).downwind()
 	for key: Vector2i in _cells.keys():
-		var seed: Seed = _cells[key]
-		if middle(seed).distance_to(here) > lift + _tuning.dune_spacing and not retained.call(seed):
+		if _middle(key, down).distance_to(here) > lift + _tuning.dune_spacing and not retained.call(_cells[key]):
 			_cells.erase(key)
 
 
