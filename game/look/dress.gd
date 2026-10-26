@@ -13,9 +13,11 @@ static var _shells := {}
 static var _marks := {}
 
 
-## A frame's look, or null to keep a grey box. `extra` is its mast's height.
-static func frame(id: StringName, size: Vector3, extra := 0.0) -> ArrayMesh:
-	return _cached(&"frame", id, func() -> ArrayMesh: return _frame(id, size, extra))
+## A frame's look, or null to keep a grey box. `extra` is its mast's height;
+## `shape`, an era's own shape of it (ShieldLooks.shape_of), none for its own.
+static func frame(id: StringName, size: Vector3, extra := 0.0, shape := &"") -> ArrayMesh:
+	var key := id if shape == &"" else StringName("%s:%s" % [id, shape])
+	return _cached(&"frame", key, func() -> ArrayMesh: return _frame(id, size, extra, shape))
 
 
 ## A part's look, or null to keep a grey box; food in pieces drawn with
@@ -185,7 +187,8 @@ static func tell(kind: StringName) -> ArrayMesh:
 
 ## A thing's look with its lineage's marks over it (Paint.Shell), merged into
 ## one mesh: each entry's marks are made once a thing, each lineage's look
-## once while anything wears it. Null where it has no look to mark.
+## once while anything wears it, in its era's shape where it has one. Null
+## where it has no look to mark.
 static func lineage(id: StringName, line: Array) -> ArrayMesh:
 	var key := [id, Eras.key(line)]
 	var kept: WeakRef = _lines.get(key)
@@ -198,13 +201,14 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 
 
 static func _lineage(id: StringName, line: Array) -> ArrayMesh:
-	var own := _own(id)
-	var shell := shell(id)
+	var shape := ShieldLooks.shape_of(id, line)
+	var own := _own(id, shape)
+	var shell := shell(id, shape)
 	if own == null or own.get_surface_count() == 0 or shell == null:
 		return own
 	var overs := []
 	for entry: Array in line:
-		var key := [id, Eras.entry_key(entry)]
+		var key := [id, shape, Eras.entry_key(entry)]
 		if not _marks.has(key):
 			var marks := Paint.Over.new()
 			shell.layer(marks, entry)
@@ -216,12 +220,12 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 
 ## Where a lineage's marks go on a thing, or null where they don't: worked
 ## out once from its look, clear of its sockets, its charge light, its mast
-## and its stamps.
-static func shell(id: StringName) -> Paint.Shell:
-	if _shells.has(id):
-		return _shells[id]
+## and its stamps; on its era's shape where it has one.
+static func shell(id: StringName, shape := &"") -> Paint.Shell:
+	if _shells.has([id, shape]):
+		return _shells[[id, shape]]
 	var made: Paint.Shell = null
-	var own := _own(id)
+	var own := _own(id, shape)
 	if Catalog.lineal(id) and not id in Catalog.BARE and own != null and own.get_surface_count() > 0:
 		var avoid := PackedVector3Array()
 		var box: AABB
@@ -242,17 +246,18 @@ static func shell(id: StringName) -> Paint.Shell:
 		# Too small to read, marks or not.
 		if made.unit < 0.012:
 			made = null
-	_shells[id] = made
+	_shells[[id, shape]] = made
 	return made
 
 
-## A thing's own look by its catalog id, as the catalog makes it.
-static func _own(id: StringName) -> ArrayMesh:
+## A thing's own look by its catalog id, as the catalog makes it, or in an
+## era's shape of it.
+static func _own(id: StringName, shape := &"") -> ArrayMesh:
 	if id == &"stake":
 		return frame(&"stake", Vector3(0.06, Stake.LENGTH, 0.06))
 	if Catalog.DEVICES.has(id):
 		var spec: Dictionary = Catalog.DEVICES[id]
-		return frame(id, spec.size, spec.get("mast", 0.0))
+		return frame(id, spec.size, spec.get("mast", 0.0), shape)
 	if Catalog.PARTS.has(id):
 		return part(id, Catalog.PARTS[id].size)
 	return null
@@ -265,6 +270,8 @@ static func prepare() -> void:
 	for id: StringName in Catalog.DEVICES:
 		Catalog.device(id).free()
 		shell(id)
+	for shape: StringName in ShieldLooks.SHAPES.values():
+		shell(&"shield", shape)
 	Catalog.stake().free()
 	shell(&"stake")
 	for step in BEDROLL_STEPS:
@@ -289,13 +296,15 @@ static func _cached(group: StringName, id: StringName, build: Callable) -> Array
 	return _made[key]
 
 
-static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
+static func _frame(id: StringName, size: Vector3, extra: float, shape := &"") -> ArrayMesh:
 	var h := size * 0.5
 	var b := Paint.Pieces.new(-h.y)
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
 	if PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
+		return b.commit()
+	if ShieldLooks.frame(b, id, size, shape):
 		return b.commit()
 	match id:
 		&"cargo":
@@ -382,29 +391,6 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 			# Its fan's ring, under the top mount's tell and over the lid.
 			b.drum(0.2, 0.008, Vector3(0.0, h.y + 0.001, 0.0), black, Basis.IDENTITY, 20)
 			_hazard(b, Vector3(size.x * 0.7, 0.035, 0.012), Vector3(0.0, -h.y + 0.05, h.z - 0.006), Basis.IDENTITY)
-		&"shield", &"light_shield":
-			# A different maker: bone white, round, finned, on pads for its sockets.
-			# Bought new, it carries its maker's sign on its back; a deep one wears
-			# the tag of the contractor who fitted it there, its maker's only on
-			# the emitter.
-			var r := h.x * 0.88
-			var back := Basis(Vector3.UP, PI)
-			var fitted := id == &"shield"
-			b.drum(h.x * 0.98, size.y * 0.24, Vector3(0.0, -h.y + size.y * 0.12, 0.0), gun, Basis.IDENTITY, 20)
-			b.stamp(Paint.Mark.CONTRACTOR if fitted else Paint.Mark.SHIELD_MAKER, Vector3(0.0, -h.y + size.y * 0.52, -r),
-				0.12 if fitted else 0.16, back)
-			b.drum(r, size.y * 0.6, Vector3(0.0, -h.y + size.y * 0.5, 0.0), Paint.coat(Paint.BONE, 0.4), Basis.IDENTITY, 24)
-			for i in 8:
-				var turn := Basis(Vector3.UP, i * TAU / 8.0 + PI / 8.0)
-				b.box(Vector3(0.015, size.y * 0.4, h.x * 0.25), turn * Vector3(0.0, -0.02, r + h.x * 0.06), gun, 0.004, turn)
-			for turn: Basis in [Basis.IDENTITY, Basis(Vector3.UP, PI * 0.5), Basis(Vector3.UP, -PI * 0.5)]:
-				b.box(Vector3(0.13, 0.13, h.x - r + 0.02), turn * Vector3(0.0, -0.05 * size.y / 0.42, h.x - (h.x - r + 0.02) * 0.5), gun, 0.01, turn)
-			if fitted:
-				b.stamp(Paint.Mark.SHIELD_MAKER, Vector3(0.0, h.y - size.y * 0.14, -h.x * 0.65), 0.1, back, Paint.Ink.PALE)
-			b.drum(h.x * 0.65, size.y * 0.12, Vector3(0.0, h.y - size.y * 0.14, 0.0), gun, Basis.IDENTITY, 20)
-			b.ball(h.x * 0.5, Vector3(0.0, h.y - size.y * 0.13, 0.0), Paint.coat(Paint.CELL, 0.0, 0.4, 0.15, 0.4), Vector3(1.0, 0.55, 1.0))
-			# A bracket out to the box's corner, where every frame's charge light sits.
-			b.box(Vector3(0.09, 0.07, 0.09), Vector3(h.x - 0.045, h.y - 0.05, h.z - 0.05), gun, 0.01)
 		&"light_panel":
 			b.box(Vector3(size.x - 0.006, 0.03, size.z - 0.06), Vector3(0.0, -0.01, 0.0), Paint.coat(Paint.STEEL, 0.4, 0.5), 0.006)
 			for s in [-1, 1]:

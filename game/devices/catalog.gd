@@ -263,7 +263,7 @@ const COLONIAL_MARKS := {&"chassis": &"tilg", &"frame": &"tilg", &"board": &"til
 ## Where a lineage's marks sit on what isn't a box: round about its top's
 ## axis, as [its radius over its half width, and the shares of its height its
 ## round body spans].
-const ROUND := {&"shield": [0.88, 0.22, 0.8], &"light_shield": [0.88, 0.22, 0.8], &"canister": [0.92, 0.0, 0.82],
+const ROUND := {&"light_shield": [0.88, 0.22, 0.8], &"canister": [0.92, 0.0, 0.82],
 	&"lamp": [0.92, 0.68, 0.96], &"barometer": [0.95, 0.0, 0.66]}
 ## Made things too small or too busy to carry a lineage's marks, though they
 ## keep its numbers: the ends of lines, a coil, the dish, the screen's glass,
