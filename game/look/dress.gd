@@ -13,11 +13,9 @@ static var _shells := {}
 static var _marks := {}
 
 
-## A frame's look, or null to keep a grey box. `extra` is its mast's height;
-## `shape`, an era's own shape of it (ShieldLooks.shape_of), none for its own.
-static func frame(id: StringName, size: Vector3, extra := 0.0, shape := &"") -> ArrayMesh:
-	var key := id if shape == &"" else StringName("%s:%s" % [id, shape])
-	return _cached(&"frame", key, func() -> ArrayMesh: return _frame(id, size, extra, shape))
+## A frame's look, or null to keep a grey box. `extra` is its mast's height.
+static func frame(id: StringName, size: Vector3, extra := 0.0) -> ArrayMesh:
+	return _cached(&"frame", id, func() -> ArrayMesh: return _frame(id, size, extra))
 
 
 ## A part's look, or null to keep a grey box; food in pieces drawn with
@@ -187,8 +185,7 @@ static func tell(kind: StringName) -> ArrayMesh:
 
 ## A thing's look with its lineage's marks over it (Paint.Shell), merged into
 ## one mesh: each entry's marks are made once a thing, each lineage's look
-## once while anything wears it, in its era's shape where it has one. Null
-## where it has no look to mark.
+## once while anything wears it. Null where it has no look to mark.
 static func lineage(id: StringName, line: Array) -> ArrayMesh:
 	var key := [id, Eras.key(line)]
 	var kept: WeakRef = _lines.get(key)
@@ -201,9 +198,13 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 
 
 static func _lineage(id: StringName, line: Array) -> ArrayMesh:
-	var shape := ShieldLooks.shape_of(id, line)
-	var own := _own(id, shape)
-	var shell := shell(id, shape)
+	var own := ChassisLooks.lineage(id, line)
+	if own == null:
+		own = ShieldLooks.lineage(id, line)
+	var shape := own.get_instance_id() if own != null else 0
+	if own == null:
+		own = _own(id)
+	var shell := shell(id, own) if shape != 0 else shell(id)
 	if own == null or own.get_surface_count() == 0 or shell == null:
 		return own
 	var overs := []
@@ -220,12 +221,15 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 
 ## Where a lineage's marks go on a thing, or null where they don't: worked
 ## out once from its look, clear of its sockets, its charge light, its mast
-## and its stamps; on its era's shape where it has one.
-static func shell(id: StringName, shape := &"") -> Paint.Shell:
-	if _shells.has([id, shape]):
-		return _shells[[id, shape]]
+## and its stamps.
+static func shell(id: StringName, own: ArrayMesh = null) -> Paint.Shell:
+	# Repairs follow the era's rebuilt surfaces, including its missing corners.
+	var key: Variant = [id, own.get_instance_id()] if own != null else id
+	if _shells.has(key):
+		return _shells[key]
 	var made: Paint.Shell = null
-	var own := _own(id, shape)
+	if own == null:
+		own = _own(id)
 	if Catalog.lineal(id) and not id in Catalog.BARE and own != null and own.get_surface_count() > 0:
 		var avoid := PackedVector3Array()
 		var box: AABB
@@ -246,18 +250,17 @@ static func shell(id: StringName, shape := &"") -> Paint.Shell:
 		# Too small to read, marks or not.
 		if made.unit < 0.012:
 			made = null
-	_shells[[id, shape]] = made
+	_shells[key] = made
 	return made
 
 
-## A thing's own look by its catalog id, as the catalog makes it, or in an
-## era's shape of it.
-static func _own(id: StringName, shape := &"") -> ArrayMesh:
+## A thing's own look by its catalog id, as the catalog makes it.
+static func _own(id: StringName) -> ArrayMesh:
 	if id == &"stake":
 		return frame(&"stake", Vector3(0.06, Stake.LENGTH, 0.06))
 	if Catalog.DEVICES.has(id):
 		var spec: Dictionary = Catalog.DEVICES[id]
-		return frame(id, spec.size, spec.get("mast", 0.0), shape)
+		return frame(id, spec.size, spec.get("mast", 0.0))
 	if Catalog.PARTS.has(id):
 		return part(id, Catalog.PARTS[id].size)
 	return null
@@ -270,8 +273,8 @@ static func prepare() -> void:
 	for id: StringName in Catalog.DEVICES:
 		Catalog.device(id).free()
 		shell(id)
-	for shape: StringName in ShieldLooks.SHAPES.values():
-		shell(&"shield", shape)
+	for era: StringName in ShieldLooks.SHAPES:
+		shell(&"shield", ShieldLooks.look(&"shield", era))
 	Catalog.stake().free()
 	shell(&"stake")
 	for step in BEDROLL_STEPS:
@@ -296,15 +299,15 @@ static func _cached(group: StringName, id: StringName, build: Callable) -> Array
 	return _made[key]
 
 
-static func _frame(id: StringName, size: Vector3, extra: float, shape := &"") -> ArrayMesh:
+static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var h := size * 0.5
 	var b := Paint.Pieces.new(-h.y)
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
-	if PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
+	if ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
 		return b.commit()
-	if ShieldLooks.frame(b, id, size, shape):
+	if ShieldLooks.frame(b, id, size):
 		return b.commit()
 	match id:
 		&"cargo":
@@ -551,57 +554,6 @@ static func _frame(id: StringName, size: Vector3, extra: float, shape := &"") ->
 				b.box(Vector3(p0.distance_to(p1) + 0.004, 0.006, 0.022), Vector3(mid.x, cups + mid.y, 0.0), band, 0.002,
 					Basis(Vector3.BACK, (p1 - p0).angle()))
 			b.drum(0.006, 0.012, Vector3(-h.x - 0.004, cups, 0.0), Paint.coat(Paint.STEEL, 0.3, 0.9, 0.2), sideways, 10)
-		&"chassis":
-			# A flatbed's section: rails round a ribbed plate, sticky top and
-			# bottom, caps at the corners where it meets the next, and hazard
-			# bands either side of each ring, so a deck's outer edge reads. The
-			# consignee's stencil is on its top. Rails sit inside the caps' faces.
-			for s in [-1, 1]:
-				b.box(Vector3(size.x - 0.16, size.y - 0.02, 0.08), Vector3(0.0, 0.0, s * (h.z - 0.045)), gun, 0.01)
-				b.box(Vector3(0.08, size.y - 0.02, size.z - 0.16), Vector3(s * (h.x - 0.045), 0.0, 0.0), gun, 0.01)
-			for x in [-1, 1]:
-				for z in [-1, 1]:
-					b.box(Vector3(0.16, size.y, 0.16), Vector3(x * (h.x - 0.08), 0.0, z * (h.z - 0.08)),
-						Paint.coat(Paint.BLACK, 0.7, 0.3), 0.02)
-			b.stamp(Paint.Mark.CONSIGNMENT, Vector3(0.16, h.y - 0.02, 0.31), 0.22, Basis(Vector3.RIGHT, -PI / 2.0), Paint.Ink.PALE)
-			b.box(Vector3(size.x - 2.0 * Chassis.PANEL_INSET, 0.03, size.z - 2.0 * Chassis.PANEL_INSET),
-				Vector3(0.0, h.y - Chassis.PANEL_DROP - 0.015, 0.0), teal, 0.006)
-			for z in [-0.2, 0.2]:
-				b.box(Vector3(size.x - 0.18, 0.006, 0.014), Vector3(0.0, h.y - 0.017, z), black, 0.002)
-			b.box(Vector3(size.x - 0.16, 0.05, 0.06), Vector3(0.0, -h.y + 0.045, 0.0), gun, 0.008)
-			b.box(Vector3(0.06, 0.05, size.z - 0.16), Vector3(0.0, -h.y + 0.048, 0.0), gun, 0.008)
-			for side in 4:
-				var turn := Basis(Vector3.UP, side * PI * 0.5)
-				for x in [-0.22, 0.22]:
-					_hazard(b, Vector3(0.2, 0.03, 0.012), turn * Vector3(x, 0.0, h.z - 0.004), turn)
-		&"hand_winch":
-			b.box(Vector3(0.31, 0.04, 0.28), Vector3(0, -0.16, 0), gun, 0.014)
-			for x in [-0.12, 0.12]:
-				b.box(Vector3(0.035, 0.22, 0.18), Vector3(x, -0.02, 0), teal, 0.012)
-			var axle := Basis(Vector3.RIGHT, PI / 2.0)
-			b.drum(0.087, 0.21, Vector3(0, 0.035, 0), black, axle, 16)
-			for z in [-0.105, 0.105]:
-				b.drum(0.11, 0.018, Vector3(0, 0.035, z), gun, axle, 20)
-			for z in [-0.07, -0.035, 0.0, 0.035, 0.07]:
-				b.ring(0.083, 0.092, Vector3(0, 0.035, z), Paint.coat(Paint.ROPE), axle, 16)
-			for x in [-0.12, 0.12]:
-				for z in [-0.1, 0.1]:
-					b.drum(0.014, 0.012, Vector3(x, -0.115, z), gun, Basis.IDENTITY, 6)
-		&"mast":
-			# A stowed pole, its upper reach telescoped inside, a collar at its
-			# foot and the gooseneck the boom swings on.
-			b.drum(0.05, size.y, Vector3.ZERO, Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45))
-			b.drum(0.07, 0.08, Vector3(0.0, -h.y + 0.04, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3))
-			b.drum(0.062, 0.05, Vector3(0.0, Mast.BOOM_AT.y, 0.0), gun)
-			b.box(Vector3(0.05, 0.05, 0.1), Vector3(0.0, Mast.BOOM_AT.y, -0.07), gun, 0.008)
-			b.drum(0.058, 0.03, Vector3(0.0, h.y - 0.015, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3))
-		&"mast_top":
-			# Its upper reach, up from the stowed pole, and a cap at the masthead.
-			b.drum(size.x * 0.5, size.y, Vector3(0.0, h.y, 0.0), Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45), Basis.IDENTITY, 12)
-			b.drum(size.x * 0.6, 0.06, Vector3(0.0, size.y - 0.03, 0.0), Paint.coat(Paint.BLACK, 0.7, 0.3), Basis.IDENTITY, 12)
-		&"boom":
-			b.drum(size.x * 0.5, size.z, Vector3(0.0, 0.0, h.z), Paint.coat(Paint.STEEL, 0.8, 0.6, 0.45), Basis(Vector3.RIGHT, PI / 2.0), 10)
-			b.drum(size.x * 0.75, 0.05, Vector3(0.0, 0.0, size.z - 0.03), Paint.coat(Paint.BLACK, 0.7, 0.3), Basis(Vector3.RIGHT, PI / 2.0), 10)
 		&"console":
 			# A rack: four rails on a plinth, a cap, teal side panels vented in two
 			# columns either side of their computer-mod ports, its back panel with
@@ -638,27 +590,6 @@ static func _frame(id: StringName, size: Vector3, extra: float, shape := &"") ->
 						Basis(Vector3.RIGHT, PI / 2.0), 8)
 			b.box(Vector3(size.x - 0.08, 0.04, 0.03), Vector3(0.0, h.y - 0.06, -h.z - 0.015), black, 0.005, front)
 			_hazard(b, Vector3(size.x * 0.8, 0.03, 0.012), Vector3(0.0, -h.y + 0.045, -h.z - 0.004), front)
-		&"helm_seat":
-			# A skimmer pilot's seat on its pedestal: an olive cushion and back,
-			# armrests, a hazard band round the post and the crew's patch on its back.
-			var olive := Paint.coat(SkimmerKit.OLIVE, 1.0, 0.4, 0.6)
-			var canvas := Paint.coat(SkimmerKit.CANVAS, 0.2, 0.0, 0.95)
-			b.box(Vector3(size.x, 0.05, size.z), Vector3(0.0, -h.y + 0.025, 0.0), gun, 0.01)
-			b.drum(0.07, h.y - 0.1, Vector3(0.0, -h.y * 0.5 - 0.05, 0.0), gun, Basis.IDENTITY, 12)
-			_hazard(b, Vector3(0.15, 0.04, 0.012), Vector3(0.0, -0.17, 0.073), Basis.IDENTITY)
-			b.box(Vector3(size.x - 0.04, 0.08, size.z - 0.06), Vector3(0.0, -0.04, 0.03), olive, 0.02)
-			b.box(Vector3(size.x - 0.1, 0.03, size.z - 0.16), Vector3(0.0, 0.01, 0.05), canvas, 0.01)
-			b.box(Vector3(size.x - 0.04, h.y, 0.07), Vector3(0.0, h.y * 0.5, -h.z + 0.035), olive, 0.02)
-			b.box(Vector3(size.x - 0.12, h.y - 0.08, 0.02), Vector3(0.0, h.y * 0.5, -h.z + 0.08), canvas, 0.006)
-			b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.0, h.y * 0.5, -h.z - 0.002), 0.2, Basis(Vector3.UP, PI), Paint.Ink.PALE)
-			for x in [-1, 1]:
-				b.box(Vector3(0.04, 0.04, size.z * 0.6), Vector3(x * (h.x - 0.02), 0.08, 0.0), gun, 0.008)
-				b.box(Vector3(0.03, 0.08, 0.03), Vector3(x * (h.x - 0.02), 0.03, 0.12), gun, 0.006)
-		&"stake":
-			var iron := Paint.coat(Paint.RUST.lightened(0.1), 1.4, 0.3, 0.8)
-			b.box(Vector3(0.05, Stake.LENGTH - 0.12, 0.05), Vector3(0.0, 0.03, 0.0), iron, 0.01)
-			b.drum(0.035, 0.12, Vector3(0.0, -h.y + 0.06, 0.0), iron, Basis(Vector3.RIGHT, PI), 4, 0.0)
-			b.box(Vector3(0.09, 0.05, 0.09), Vector3(0.0, Stake.RING.y - 0.06, 0.0), iron, 0.012)
 		&"cutter":
 			# A heat lance: its barrel and heat shield, a copper nozzle out the
 			# front (-z), a grip under the back, hazard yellow on its housing.
@@ -683,6 +614,8 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
 	var black := Paint.coat(Paint.BLACK, 0.4, 0.2)
 	var along := Basis(Vector3.RIGHT, PI / 2.0)
+	if ChassisLooks.part(b, id, size):
+		return b.commit()
 	match id:
 		&"coalcane_bundle":
 			for x in [-0.12, 0.0, 0.12]:
@@ -954,27 +887,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 			b.box(Vector3(0.05, 0.016, 0.004), Vector3(0.0, 0.0, size.z + 0.001), Paint.coat(Paint.TEAL, 0.2), 0.0)
 			b.box(Vector3(0.016, 0.05, 0.004), Vector3(0.0, 0.0, size.z + 0.001), Paint.coat(Paint.TEAL, 0.2), 0.0)
 			b.box(Vector3(size.x + 0.004, 0.012, size.z * 0.3), Vector3(0.0, h.y - 0.01, size.z * 0.5), black, 0.002)
-		&"hull_plate":
-			b.box(size, Vector3(0.0, 0.0, h.z), Paint.coat(Wreckage.PLATE, 1.0, 0.55, 0.62), 0.008)
-			for x in [-1, 1]:
-				for y in [-1, 1]:
-					b.box(Vector3(0.04, 0.04, 0.012), Vector3(x * (h.x - 0.06), y * (h.y - 0.06), size.z + 0.004), steel, 0.004)
-		&"frame":
-			# Gunmetal rails along a cube's edges, black caps where they meet and
-			# a hazard band low on each post, so a frame reads from across a camp.
-			var r := Frame.RAIL
-			var e := h.x - r * 0.5
-			var caps := Paint.coat(Paint.BLACK, 0.7, 0.3)
-			for x in [-1, 1]:
-				for y in [-1, 1]:
-					b.box(Vector3(r, r, size.z - 0.04), Vector3(x * e, y * e, h.z), gun, 0.008)
-					for z in [0.03, size.z - 0.03]:
-						b.box(Vector3(r + 0.016, r + 0.016, 0.06), Vector3(x * e, y * e, z), caps, 0.01)
-					_hazard(b, Vector3(r + 0.004, 0.08, r + 0.004), Vector3(x * e, y * e, 0.16), Basis(Vector3.RIGHT, PI / 2.0))
-			for z in [r * 0.5, size.z - r * 0.5]:
-				for s in [-1, 1]:
-					b.box(Vector3(size.x - 2.0 * r - 0.01, r * 0.9, r * 0.9), Vector3(0.0, s * e, z), gun, 0.006)
-					b.box(Vector3(r * 0.9, size.y - 2.0 * r - 0.01, r * 0.9), Vector3(s * e, 0.0, z), gun, 0.006)
 		&"fabric":
 			# Its hem stitched and its corners grommeted; the canvas is its own
 			# cloth, which bellies and flutters (Faces).

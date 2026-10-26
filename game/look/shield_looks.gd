@@ -25,15 +25,33 @@ const FACES := 4
 const NECK := 0.12
 
 
-## A look's shape by the era of its last hands, or &"" for its own.
-static func shape_of(id: StringName, line: Array) -> StringName:
-	return SHAPES.get(Eras.era_of(line), &"") if id == &"shield" else &""
+static var _eras := {}
 
 
-## Draws a shield's look into its pieces; false for an id that isn't one.
-static func frame(b: Paint.Pieces, id: StringName, size: Vector3, shape := &"") -> bool:
+## A thing's look in the shape the era of its last hands gave it, for its
+## lineage's marks to go on (Dress); null where it keeps its own.
+static func lineage(id: StringName, line: Array) -> ArrayMesh:
+	var era := Eras.era_of(line)
+	return look(id, era) if id == &"shield" and SHAPES.has(era) else null
+
+
+## The base shield in an era's shape, made once.
+static func look(id: StringName, era: StringName) -> ArrayMesh:
+	var key := [id, era]
+	if not _eras.has(key):
+		var size: Vector3 = Catalog.DEVICES[id].size
+		var b := Paint.Pieces.new(-size.y * 0.5)
+		frame(b, id, size, era)
+		_eras[key] = b.commit()
+	return _eras[key]
+
+
+## Draws a shield's look into its pieces, in an era's shape where it has one;
+## false for an id that isn't one.
+static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
 	match id:
 		&"shield":
+			var shape: StringName = SHAPES.get(era, &"")
 			_housing(b, size, shape)
 			match shape:
 				&"first":
@@ -65,6 +83,12 @@ static func _deck(size: Vector3) -> float:
 ## Where its cap starts, over its collar.
 static func _cap(size: Vector3) -> float:
 	return collar(&"shield", size).x + 0.03
+
+
+## The housing's body's half width, in from its box so what later hands
+## bound on stays inside it.
+static func _body(size: Vector3) -> float:
+	return size.x * 0.5 - 0.016
 
 
 ## The housing's body, from over its skid to under its deck.
@@ -99,7 +123,7 @@ static func _housing(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 	var rubber := Paint.coat(Paint.BLACK, 0.2, 0.0, 0.85)
 	var lo := _span(size).x
 	var hi := _span(size).y
-	var w := h.x - 0.008
+	var w := _body(size)
 	b.box(Vector3(size.x - 0.03, 0.026, size.z - 0.03), Vector3(0.0, -h.y + 0.02, 0.0), dark, 0.008)
 	for sx in [-1.0, 1.0]:
 		for sz in [-1.0, 1.0]:
@@ -120,7 +144,7 @@ static func _housing(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 	for k in FACES:
 		var turn := Basis(Vector3.UP, k * PI * 0.5)
 		if k == 1:
-			b.box(Vector3(0.15, 0.15, 0.012), turn * Vector3(0.0, -0.05, w + 0.002), grey, 0.004, turn)
+			b.box(Vector3(0.15, 0.15, h.x - w + 0.004), turn * Vector3(0.0, -0.05, (h.x + w - 0.004) * 0.5), grey, 0.004, turn)
 			for s in [-1.0, 1.0]:
 				b.box(Vector3(0.062, tall, 0.01), turn * Vector3(s * 0.121, mid, w + 0.002), panel, 0.003, turn)
 			continue
@@ -168,7 +192,7 @@ static func _lens(b: Paint.Pieces, y: float, radius: float, bezel: Paint.Coat) -
 ## steel guard welded over its lens.
 static func _skimmer(b: Paint.Pieces, size: Vector3) -> void:
 	var h := size * 0.5
-	var w := h.x - 0.008
+	var w := _body(size)
 	var lo := _span(size).x
 	var hi := _span(size).y
 	var tape := Paint.coat(SkimmerKit.TAPE, 0.2, 0.0, 0.8, 0.6)
@@ -187,7 +211,7 @@ static func _skimmer(b: Paint.Pieces, size: Vector3) -> void:
 	var top := _cap(size) + 0.059
 	for x in [-0.05, 0.05]:
 		var foot := Vector3(x, top, 0.085)
-		var crown := Vector3(x, top + 0.032, 0.0)
+		var crown := Vector3(x, top + 0.026, 0.0)
 		_strand(b, foot, crown, 0.008, steel)
 		_strand(b, crown, Vector3(x, top, -0.085), 0.008, steel)
 
@@ -203,7 +227,7 @@ static func _first(b: Paint.Pieces, size: Vector3) -> void:
 	var brass := Paint.coat(Paint.BRASS, 0.3, 0.9, 0.35, 0.5)
 	var copper := Paint.coat(Paint.COPPER, 0.3, 0.85, 0.4, 0.5)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
-	var w := h.x - 0.008
+	var w := _body(size)
 	var lo := _span(size).x
 	var hi := _span(size).y
 	var mid := (lo + hi) * 0.5
@@ -280,14 +304,14 @@ static func _second(b: Paint.Pieces, size: Vector3) -> void:
 	var cord := Paint.coat(Paint.CORD, 0.0, 0.0, 0.95, 0.7)
 	var wood := Paint.coat(Paint.SALTWOOD, 0.1, 0.0, 0.85, 0.6)
 	var lime := Paint.coat(Paint.LIMEWASH, 0.4, 0.0, 0.85, 0.8)
-	var w := h.x - 0.008
+	var w := _body(size)
 	var lo := _span(size).x
 	var hi := _span(size).y
 	# The dome, banded as it was coiled, leaning a little.
 	var at := Vector3(-0.025, base, 0.02)
 	var lean := Basis(Vector3(1.0, 0.0, 1.0).normalized(), 0.08)
 	var radius := 0.148
-	var high := h.y - base - 0.006
+	var high := h.y - base - 0.01
 	var bands := 5
 	for i in bands:
 		var a0 := float(i) / bands * PI * 0.5
@@ -321,28 +345,28 @@ static func _second(b: Paint.Pieces, size: Vector3) -> void:
 	# A rounded saltbush rail over the slats, lashed on at its ends and middle.
 	var rail := lo + 0.056 + (slats.size() - 1) * 0.027 + 0.0205
 	var along := left * Basis(Vector3.BACK, PI / 2.0)
-	b.drum(0.009, 0.33, left * Vector3(0.0, rail, w + 0.009), wood, along, 8)
+	b.drum(0.007, 0.33, left * Vector3(0.0, rail, w + 0.007), wood, along, 8)
 	for z in [-0.14, 0.0, 0.14]:
 		for i in 3:
-			b.drum(0.0115, 0.005, left * Vector3(z + (i - 1) * 0.006, rail, w + 0.009), cord, along, 6)
+			b.drum(0.0088, 0.005, left * Vector3(z + (i - 1) * 0.006, rail, w + 0.007), cord, along, 6)
 	# Limewash where a front panel was, laid on by hand, and an oval of
 	# sand-glass backed in ceramic over the hole under it.
 	var mid := (lo + hi) * 0.5
 	b.box(Vector3(0.15, 0.12, 0.004), Vector3(0.086, mid + 0.004, w + 0.002), lime, 0.0015, Basis(Vector3.BACK, -0.05))
 	b.box(Vector3(0.09, 0.05, 0.005), Vector3(0.11, mid - 0.04, w + 0.0025), lime, 0.0015, Basis(Vector3.BACK, 0.12))
-	var oval := Vector3(0.09, mid + 0.012, w + 0.004)
+	var oval := Vector3(0.09, mid + 0.012, w + 0.002)
 	b.ball(0.042, oval, glazed, Vector3(0.75, 1.0, 0.3))
-	b.ball(0.03, oval + Vector3(0.0, 0.0, 0.007), Paint.coat(Paint.SAND_GLASS, 0.0, 0.2, 0.12, 0.3), Vector3(0.7, 1.0, 0.25))
+	b.ball(0.03, oval + Vector3(0.0, 0.0, 0.005), Paint.coat(Paint.SAND_GLASS, 0.0, 0.2, 0.12, 0.3), Vector3(0.7, 1.0, 0.25))
 	# Cord wound three times round the back, the left and the front, then round
 	# the port's two edges and knotted there.
 	for turn_i in 3:
 		var y := lo + 0.048 + turn_i * 0.0075
 		for k in [0, 2]:
 			var face := Basis(Vector3.UP, k * PI * 0.5)
-			b.box(Vector3(w * 2.0 - 0.056, 0.006, 0.006), face * Vector3(0.0, y, w + 0.012), cord, 0.0, face)
-		b.box(Vector3(0.006, 0.006, w * 2.0 - 0.056), Vector3(-(w + 0.016), y, 0.0), cord, 0.0)
+			b.box(Vector3(w * 2.0 - 0.056, 0.006, 0.006), face * Vector3(0.0, y, w + 0.011), cord, 0.0, face)
+		b.box(Vector3(0.006, 0.006, w * 2.0 - 0.056), Vector3(-(w + 0.011), y, 0.0), cord, 0.0)
 		for sz in [-1.0, 1.0]:
-			_strand(b, Vector3(-(w - 0.028), y, sz * (w + 0.012)), Vector3(-(w + 0.016), y, sz * (w - 0.028)), 0.006, cord)
+			_strand(b, Vector3(-(w - 0.028), y, sz * (w + 0.011)), Vector3(-(w + 0.011), y, sz * (w - 0.028)), 0.006, cord)
 	for sz in [-1.0, 1.0]:
 		var edge := Vector3(w - 0.013, 0.0, sz * (w - 0.013))
 		for i in 4:
