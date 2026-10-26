@@ -29,8 +29,9 @@ func run() -> void:
 		world.time = world.tuning.day_minutes * 60.0 * fposmod((0.38 if light == "morning" else 0.715) - world.tuning.start_time_of_day, 1.0)
 		for k in groups.size():
 			var id := IDS[k / ERAS.size()]
-			var focus := groups[k].global_position + Vector3.UP * (0.6 if id == &"turbine" else 0.0)
+			var focus := groups[k].global_position + Vector3.UP * (0.85 if id == &"turbine" else 0.0)
 			var offset := Vector3(-1.6, 1.2, -2.23) if id == &"console" else Vector3(1.6, 1.2, 2.23)
+			if id == &"turbine": offset = Vector3(1.6, 0.45, 2.23)
 			look(focus + offset.normalized() * 3.0, focus)
 			for tick in 12: await get_tree().physics_frame
 			print("CAMP VIEW ", light, " ", id, " ", ERAS[k % ERAS.size()], " distance_m=", world.player.camera.global_position.distance_to(focus), " local_time=", world.weather.day.time_of_day(world.time, world.moon.longitude))

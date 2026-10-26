@@ -145,7 +145,7 @@ static func _turbine(b: Paint.Pieces, size: Vector3, mast: float, era: StringNam
 static func _condenser(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var h := size * 0.5
 	_feet(b, size)
-	b.box(size - Vector3(0.07, 0.08, 0.07), Vector3(0, 0, 0), _dark(), 0.025)
+	b.box(size - Vector3(0.07, 0.08, 0.18), Vector3(0, 0, -0.04), _dark(), 0.025)
 	for x in [-1, 1]:
 		for z in [-1, 1]:
 			b.box(Vector3(0.045, size.y - 0.03, 0.045), Vector3(x * (h.x - 0.026), 0, z * (h.z - 0.026)), _metal(), 0.008)
@@ -228,8 +228,8 @@ static func _cargo(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	# Drop orange is a recognition cue, even on a container repaired by later hands.
 	b.box(size - Vector3(0.04, 0.04, 0.08), Vector3.ZERO, Paint.coat(Paint.DROP_ORANGE, 0.45, 0.2), 0.04)
 	for z in [-1, 1]:
-		if era == Eras.SECOND and z == -1:
-			b.ball(1, Vector3(0, 0, -h.z + 0.09), Paint.coat(Paint.CERAMIC), Vector3(h.x - 0.005, h.y - 0.005, 0.087))
+		if era == Eras.SECOND and z == 1:
+			b.ball(1, Vector3(0, 0, h.z - 0.09), Paint.coat(Paint.CERAMIC), Vector3(h.x - 0.005, h.y - 0.005, 0.087))
 		else:
 			b.box(Vector3(size.x - 0.006, size.y - 0.006, 0.055), Vector3(0, 0, z * (h.z - 0.029)), _metal(), 0.018)
 		for x in [-1, 1]:
