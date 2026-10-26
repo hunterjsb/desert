@@ -210,8 +210,9 @@ picks how finely it is drawn. Low draws as the game did before; medium is the de
   lamp on a full-Tu night with the eye open, so it never blooms. The shield, charge strips, lamp lenses
   and tray emitters, 1.5 to 3.5 by day, do: barely by day, a soft halo in a storm, most at night. A lone
   glint's flash is weighed down and barely blooms. The dusk sun already draws its own halo. Its
-  source is capped at 4, a storm's brightest, so a night with the eye open keeps a housing's shape
-  round its glowing band.
+  source is capped at 4, a storm's brightest. Shot with the eye held fully open on a full-Tu night,
+  the shield's band still floods its dark housing cyan; in play the camp's own glow holds the eye
+  partly closed, which wasn't shot.
 - **Contact shade** darkens where devices meet the sand (radius 0.8 m, and a fifth of it in direct
   light). It is High's only: it costs most for the least, and in a storm it greys the bone white
   that should read.
