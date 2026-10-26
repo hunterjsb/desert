@@ -199,14 +199,15 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 
 static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 	var own := ChassisLooks.lineage(id, line)
+	var shape := own.get_instance_id() if own != null else 0
 	if own == null:
 		own = _own(id)
-	var shell := shell(id)
+	var shell := shell(id, own) if shape != 0 else shell(id)
 	if own == null or own.get_surface_count() == 0 or shell == null:
 		return own
 	var overs := []
 	for entry: Array in line:
-		var key := [id, Eras.entry_key(entry)]
+		var key := [id, shape, Eras.entry_key(entry)]
 		if not _marks.has(key):
 			var marks := Paint.Over.new()
 			shell.layer(marks, entry)
@@ -219,11 +220,14 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 ## Where a lineage's marks go on a thing, or null where they don't: worked
 ## out once from its look, clear of its sockets, its charge light, its mast
 ## and its stamps.
-static func shell(id: StringName) -> Paint.Shell:
-	if _shells.has(id):
-		return _shells[id]
+static func shell(id: StringName, own: ArrayMesh = null) -> Paint.Shell:
+	# Repairs follow the era's rebuilt surfaces, including its missing corners.
+	var key: Variant = [id, own.get_instance_id()] if own != null else id
+	if _shells.has(key):
+		return _shells[key]
 	var made: Paint.Shell = null
-	var own := _own(id)
+	if own == null:
+		own = _own(id)
 	if Catalog.lineal(id) and not id in Catalog.BARE and own != null and own.get_surface_count() > 0:
 		var avoid := PackedVector3Array()
 		var box: AABB
@@ -244,7 +248,7 @@ static func shell(id: StringName) -> Paint.Shell:
 		# Too small to read, marks or not.
 		if made.unit < 0.012:
 			made = null
-	_shells[id] = made
+	_shells[key] = made
 	return made
 
 
