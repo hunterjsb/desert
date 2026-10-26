@@ -119,6 +119,10 @@ var _face := NAN
 ## change or move (a recompute): what the world holds clear of the sand.
 var _bounds := AABB()
 var _bounds_known := false
+## Its collision shapes in child order, kept until its shapes change: the
+## world holds each of a deck's hundreds clear of the sand every tick.
+var _collision: Array[CollisionShape3D] = []
+var _collision_known := false
 
 
 func _ready() -> void:
@@ -855,6 +859,18 @@ func wind_catch() -> float:
 func _shapes_changed() -> void:
 	_face = NAN
 	_bounds_known = false
+	_collision_known = false
+
+
+## Its collision shapes, in child order, without walking its other children.
+func collision_shapes() -> Array[CollisionShape3D]:
+	if not _collision_known:
+		_collision.clear()
+		for child in get_children():
+			if child is CollisionShape3D:
+				_collision.append(child)
+		_collision_known = true
+	return _collision.duplicate()
 
 
 ## All its shapes' bounds together, in its own frame.

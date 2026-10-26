@@ -500,12 +500,22 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 		var z0 := world_z(whole.position.z)
 		var x1 := world_x(whole.end.x)
 		var z1 := world_z(whole.end.z)
-		patch = body.get_meta(&"sand_patch", null)
+		patch = body.get_meta(&"sand_patch") if body.has_meta(&"sand_patch") else null
 		if patch == null or not patch.still_holds(x0, z0, x1, z1):
 			patch = shape.patch_in(x0, z0, x1, z1)
 			body.set_meta(&"sand_patch", patch)
 	var deepest := 0.0
-	for child in body.get_children():
+	# A deck's shapes without its thousand other children; its pose and the
+	# origin read once for all of them.
+	var children: Array
+	if device != null:
+		children = device.collision_shapes()
+	else:
+		children = body.get_children()
+	var pose := body.global_transform
+	var origin_x := world_x(0.0)
+	var origin_z := world_z(0.0)
+	for child in children:
 		var shape := child as CollisionShape3D
 		if shape == null or shape.shape == null:
 			continue
@@ -513,16 +523,16 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 		if not shape.has_meta(&"sand_box"):
 			shape.set_meta(&"sand_box", Catalog.bounds(shape.shape))
 		var box: AABB = shape.get_meta(&"sand_box")
-		var to_world := body.global_transform * shape.transform
+		var to_world := pose * shape.transform
 		# Clear of the highest sand anywhere under it, no corner of it can be in:
 		# a floating deck's dozens of shapes cost a few held points, not 8 reads each.
 		var around := to_world * box
-		if _clear_of_sand(around, patch):
+		if _clear_at(around, patch, origin_x, origin_z):
 			continue
 		for i in 8:
 			var corner := to_world * box.get_endpoint(i)
 			var under := height_under(corner) if patch == null \
-				else patch.held_height_at(world_x(corner.x), world_z(corner.z))
+				else patch.held_height_at(origin_x + corner.x, origin_z + corner.z)
 			deepest = maxf(deepest, under - corner.y)
 	if deepest > SAND_SLOP:
 		body.global_position.y += deepest - SAND_SLOP * 0.5
@@ -533,10 +543,15 @@ func _hold_above_sand(body: RigidBody3D) -> void:
 ## highest sand under it, a millimetre to spare for rounding: then none of
 ## its corners can be deeper than that in it. Read from `patch` where given.
 func _clear_of_sand(box: AABB, patch: TerrainShape.Patch = null) -> bool:
-	var x0 := world_x(box.position.x) - 0.01
-	var z0 := world_z(box.position.z) - 0.01
-	var x1 := world_x(box.end.x) + 0.01
-	var z1 := world_z(box.end.z) + 0.01
+	return _clear_at(box, patch, world_x(0.0), world_z(0.0))
+
+
+## _clear_of_sand with the world origin already read, as a deck's every shape asks.
+func _clear_at(box: AABB, patch: TerrainShape.Patch, origin_x: float, origin_z: float) -> bool:
+	var x0 := origin_x + box.position.x - 0.01
+	var z0 := origin_z + box.position.z - 0.01
+	var x1 := origin_x + box.end.x + 0.01
+	var z1 := origin_z + box.end.z + 0.01
 	var top := shape.highest_in(x0, z0, x1, z1) if patch == null else patch.highest_in(x0, z0, x1, z1)
 	return top - box.position.y < SAND_SLOP - 0.001
 
