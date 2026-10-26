@@ -562,6 +562,7 @@ func _set_scene() -> void:
 	environment.fog_mode = Environment.FOG_MODE_DEPTH
 	environment.fog_depth_begin = tuning.haze_begin
 	environment.fog_depth_end = tuning.haze_end
+	Settings.dress(environment)
 
 
 ## No anomaly reaches a run in its first days, counted from its own start.
