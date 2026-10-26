@@ -106,6 +106,14 @@ var _unseated_mode := RigidBody3D.FREEZE_MODE_STATIC
 ## change: a deck has hundreds of children, and both are asked for every tick.
 var _sockets: Array[Socket] = []
 var _sockets_known := false
+## What those sockets hold, kept until one changes or what's in one does
+## (Socket): a deck's are asked for its devices and batteries many times a tick.
+var _parts: Array[Part] = []
+var _filled: Array[Socket] = []
+var _mounted: Array[Device] = []
+var _batteries: Array[Battery] = []
+var _stuck: Array[Socket] = []
+var _held_known := false
 var _face := NAN
 ## All its shapes' bounds together, in its own frame, kept until its children
 ## change or move (a recompute): what the world holds clear of the sand.
@@ -123,6 +131,7 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_CHILD_ORDER_CHANGED:
 		_sockets_known = false
+		_held_known = false
 		_shapes_changed()
 	elif what == NOTIFICATION_PREDELETE:
 		for socket in sockets():
@@ -207,11 +216,8 @@ func battery() -> Battery:
 
 ## Every battery in its battery slots, and loose on its sticky faces.
 func batteries() -> Array[Battery]:
-	var found: Array[Battery] = []
-	for socket in sockets():
-		if (socket.kind == &"battery" or socket.kind == Socket.STUCK) and socket.part is Battery:
-			found.append(socket.part)
-	return found
+	_read_held()
+	return _batteries.duplicate()
 
 
 ## The batteries it lends its pool (Power).
@@ -242,11 +248,8 @@ func charge_share() -> float:
 
 ## The devices seated on its sockets, or stuck on it.
 func mounted() -> Array[Device]:
-	var found: Array[Device] = []
-	for socket in sockets():
-		if socket.mounted != null:
-			found.append(socket.mounted)
-	return found
+	_read_held()
+	return _mounted.duplicate()
 
 
 ## A sticky face of this host as Stick sets things on it, in its own frame:
@@ -322,11 +325,8 @@ func frame_sockets() -> Array[Socket]:
 
 ## What's stuck on its sticky faces, as their sockets.
 func stuck() -> Array[Socket]:
-	var found: Array[Socket] = []
-	for socket in sockets():
-		if socket.stuck() and (socket.part != null or socket.mounted != null):
-			found.append(socket)
-	return found
+	_read_held()
+	return _stuck.duplicate()
 
 
 ## Sticks a part or a device on it at a pose in its frame, on a sticky face
@@ -474,11 +474,31 @@ func _show_blast() -> void:
 
 
 func parts() -> Array[Part]:
-	var found: Array[Part] = []
+	_read_held()
+	return _parts.duplicate()
+
+
+## Its sockets' parts, seated devices, batteries and stuck things, in socket order.
+func _read_held() -> void:
+	if _held_known:
+		return
+	_parts.clear()
+	_filled.clear()
+	_mounted.clear()
+	_batteries.clear()
+	_stuck.clear()
 	for socket in sockets():
-		if socket.part != null:
-			found.append(socket.part)
-	return found
+		var part := socket.part
+		if part != null:
+			_parts.append(part)
+			_filled.append(socket)
+		if socket.mounted != null:
+			_mounted.append(socket.mounted)
+		if (socket.kind == &"battery" or socket.kind == Socket.STUCK) and part is Battery:
+			_batteries.append(part)
+		if socket.stuck() and (part != null or socket.mounted != null):
+			_stuck.append(socket)
+	_held_known = true
 
 
 ## The socket a fitted shape or mesh belongs to, or null for the frame itself.
@@ -729,13 +749,14 @@ func stats() -> Dictionary:
 	# it lifts counts that share. A lossier make's draws more a kilogram.
 	var lifts := 0.0
 	var draws_kg := 0.0
-	for socket in sockets():
+	# Only a socket with a part adds anything: a deck's thousand are mostly empty.
+	_read_held()
+	for socket in _filled:
 		var part := socket.part
-		if part != null:
-			_sum_into(total, part.stats)
-			var lift: float = part.stats.get("lift_kg", 0.0) * Device.facing_down(socket.outward())
-			lifts += lift
-			draws_kg += lift * part.stats.get("hover_draw", 1.0)
+		_sum_into(total, part.stats)
+		var lift: float = part.stats.get("lift_kg", 0.0) * Device.facing_down(socket.outward())
+		lifts += lift
+		draws_kg += lift * part.stats.get("hover_draw", 1.0)
 		if (socket.kind == &"battery" or socket.stuck()) and part is Battery:
 			charge += (part as Battery).charge_wh
 			cells += 1
@@ -924,12 +945,13 @@ func _rest_seated(h: float) -> void:
 		if each == self and self is Chassis:
 			(self as Chassis).frame_contact_points(points, clearances, clearance)
 			continue
+		var pose := each.global_transform
 		for child in each.get_children():
 			var shape := child as CollisionShape3D
 			if shape == null or shape.shape == null or shape.disabled or shape.has_meta(&"socket"):
 				continue
 			var box := Catalog.bounds(shape.shape)
-			var to_world := each.global_transform * shape.transform
+			var to_world := pose * shape.transform
 			for i in 8:
 				points.append(to_world * box.get_endpoint(i))
 				clearances.append(clearance)
@@ -953,34 +975,35 @@ func _lift(tuning: Tuning, delta: float) -> void:
 	var reach := tuning.hover_falloff
 	var full := (tuning.hover_height + SETTLE_BELOW * reach) * lift_share - SETTLE_BELOW * reach
 	var rate := 2.0 * tuning.hover_damping / sqrt(g * reach)
-	var middle := global_transform * center_of_mass
+	# The pose holds through the tick: read once, not per corner.
+	var frame := global_transform
+	var middle := frame * center_of_mass
 	var turn := PhysicsServer3D.body_get_direct_state(get_rid()).inverse_inertia_tensor
 	var rise_at := linear_velocity.y
 	var spin := angular_velocity
 	var lifted := 0.0
 	var damped := 0.0
 	var twist := Vector3.ZERO
+	var pushes := PackedFloat64Array()
 	for tray: Array in _trays:
 		var corners: PackedVector3Array = tray[1]
-		var facing := clampf(-(global_basis * (tray[2] as Vector3)).normalized().y, 0.0, 1.0)
+		var facing := clampf(-(frame.basis * (tray[2] as Vector3)).normalized().y, 0.0, 1.0)
 		var most: float = tray[0] * g * facing
-		var points: Array[Vector3] = []
+		var points := frame * corners
+		pushes.resize(corners.size())
 		var sand := 0.0
-		for corner in corners:
-			var at := global_transform * corner
-			points.append(at)
-			sand += world.height_under(at) / corners.size()
-		var pushes: Array[float] = []
-		var all := 0.0
 		for at in points:
-			var push := most / corners.size() * exp(minf((full - at.y + sand) / reach, 30.0))
-			pushes.append(push)
+			sand += world.height_under(at) / corners.size()
+		var all := 0.0
+		for i in points.size():
+			var push := most / corners.size() * exp(minf((full - points[i].y + sand) / reach, 30.0))
+			pushes[i] = push
 			all += push
 		var over := maxf(all / most, 1.0) if most > 0.0 else 1.0
 		var spare := most - all / over
 		for i in points.size():
 			var push := pushes[i] / over
-			apply_force(Vector3.UP * push, points[i] - global_position)
+			apply_force(Vector3.UP * push, points[i] - frame.origin)
 			var lever := (points[i] - middle).cross(Vector3.UP)
 			var give := 1.0 / mass + lever.dot(turn * lever)
 			var rise := rise_at + spin.dot(lever)

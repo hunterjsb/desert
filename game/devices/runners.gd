@@ -190,14 +190,17 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 	var gaps := PackedFloat64Array()
 	var limits := PackedFloat64Array()
 	var basis := body.global_basis
+	# The pose, origin and clearance hold through the tick; read once, not per corner.
+	var frame := body.global_transform
+	var origin_x := world.world_x(0.0)
+	var origin_z := world.world_z(0.0)
+	var clearance := world.tuning.runner_clearance
+	var sand := PackedFloat64Array()
 	for runner: Array in runners:
-		var corners: PackedVector3Array = runner[0]
-		var at: Array[Vector3] = []
-		var sand: Array[float] = []
-		for corner in corners:
-			var p := body.global_transform * corner
-			at.append(p)
-			sand.append(world.height_at(world.world_x(p.x), world.world_z(p.z)))
+		var at := frame * (runner[0] as PackedVector3Array)
+		sand.resize(at.size())
+		for c in at.size():
+			sand[c] = world.height_at(origin_x + at[c].x, origin_z + at[c].z)
 		# The sand's slope under the runner, from its corners' own sand.
 		var one := Vector3(at[3].x - at[0].x, sand[3] - sand[0], at[3].z - at[0].z)
 		var two := Vector3(at[2].x - at[1].x, sand[2] - sand[1], at[2].z - at[1].z)
@@ -209,12 +212,13 @@ func glide(body: RigidBody3D, world: World, h: float) -> void:
 		var length := (basis * (runner[1] as Vector3))
 		var along := (length - normal * length.dot(normal)).normalized()
 		var across := normal.cross(along)
+		var trio: Array[Vector3] = [normal, along, across]
 		for i in at.size():
-			var gap := (at[i].y - sand[i]) * normal.y - world.tuning.runner_clearance
+			var gap := (at[i].y - sand[i]) * normal.y - clearance
 			if gap > REACH:
 				continue
 			var arm := at[i] - middle
-			for way: Vector3 in [normal, along, across]:
+			for way in trio:
 				var lever := arm.cross(way)
 				var spin := angular_force * way + angular_torque * lever
 				var drift := linear_force * way + linear_torque * lever
