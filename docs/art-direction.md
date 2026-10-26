@@ -170,8 +170,9 @@ its tub, the light panel's base against its rails, the hoverboard's nose band in
 and a socket tell's tab against its plate. Each now stands a few millimetres proud or inside.
 The ruin's formwork seams, tie holes, band and stencils, and the paint's chips, now soften by a
 pixel's footprint, and the seams fade out by about 30 m, as the sand's ripples do. To shoot the
-runs that show it, use `look/marks` with `--motion`. What still crawls is the edges of thin
-pieces, such as rope and louvres: the project draws without antialiasing.
+runs that show it, use `look/marks` with `--motion`. What still crawled was the edges of thin
+pieces, such as rope and louvres, drawn without antialiasing until the graphics quality
+([Rendering](#rendering)) smoothed them.
 
 **Crops** (2026-10-17). Each crop has a look at each of its stages, built in B's kit of
 bevelled pieces, balls and drums, and it grows into each stage before the next replaces
@@ -185,6 +186,50 @@ close up against their stems, a pose in steps of a sixth. Every look of every st
 built while the world loads. `look/crops/shoot.sh <dir> [sheet]` shoots each crop at each
 stage in a planter on a clear morning, unseen; the sheet from 2026-10-17 is
 `~/Desktop/crops.png`.
+
+## Rendering
+
+*2026-10-26* (Hunter: "work on graphical fidelity ... aligning with our artistic vision"). The look
+is unchanged: the tonemapper, exposure, eye, haze and sand shaders are as they were. Options' Graphics
+picks how finely it is drawn. Low draws as the game did before; medium is the default:
+
+| | Low | Medium | High |
+|---|---|---|---|
+| Edges | none | SMAA | 4× MSAA and SMAA |
+| Glow | off | on | on |
+| Contact shade (SSAO) | off | off | on, full size |
+| Sun's shadow filter | soft low | soft medium | soft high |
+
+- **Edges.** SMAA takes the stairs off the rope, the bubble's rim and device edges, and leaves the
+  sand's grain and glints as they were. 4× MSAA also holds pieces thinner than a pixel, such as the
+  rope at range. As the camera creeps past the rope, 161 of its pixels a frame change sharply at low,
+  136 at medium and 86 at high. TAA was weighed and left out: it ghosts on a walk (3,300 pixels still
+  trailing), softens the grain and mutes the glints' twinkle. FXAA blurs the sand. The sand's
+  lightness is the same at every quality, within 0.03 L*, at noon, dusk and in a storm.
+- **Glow** blooms only what passes 2.0 after exposure. Lit sand peaks at 0.67 at noon and 1.1 by a
+  lamp on a full-Tu night with the eye open, so it never blooms. The shield, charge strips, lamp lenses
+  and tray emitters, 1.5 to 3.5 by day, do: barely by day, a soft halo in a storm, most at night. A lone
+  glint's flash is weighed down and barely blooms. The dusk sun already draws its own halo. Its
+  source is capped at 4, a storm's brightest. Shot with the eye held fully open on a full-Tu night,
+  the shield's band tints its dark housing cyan, though the housing's shape still reads; in play the
+  camp's own glow holds the eye partly closed, which wasn't shot.
+- **Contact shade** darkens where devices meet the sand (radius 0.8 m, and a fifth of it in direct
+  light). It is High's only: it costs most for the least, and in a storm it greys the bone white
+  that should read.
+- **Shadows.** Soft low dithers a checker into shadow edges; soft medium smooths it at no measurable
+  cost. The map stays 4096; 8192 cost 0.2 to 0.35 ms for little.
+
+**What it costs**, on the RTX 3070 at 1920×1080 by the GPU's own clock, the median of seven rounds of
+master, the try and master again. The headless screen paces frames at 60 a second, so the GPU idles
+near 1 GHz, half its top clock: these are about twice what a full-speed 3070 pays, roughly a modest
+card's. Each feature on low's drawing, clear and in a storm: SMAA +0.24 and +0.10 ms; 2× MSAA +0.41
+and +0.73; 4× MSAA +0.69 and +1.43; SSAO +0.81 to 0.93
+and +0.65; glow +0.12 to 0.36 and nothing measurable; the soft-medium filter +0.01 to 0.06.
+Each quality against low's drawing, which costs what the game did: medium +0.23 to 0.53 ms clear and
++0.40 in a storm; high +1.68 to 1.85 and +2.30.
+
+To shoot each quality against low's drawing, stills, the rope creeping and the walk, clear, in a
+storm and at night: `look/render/shoot.sh <dir> [sheets]`; `--time` times them.
 
 ## Eye adaptation
 
@@ -844,7 +889,8 @@ you, a soft sheen and glitter that never crawls, not a brighter desert.
   two with the pixel's footprint, two scales blended so none pops as you walk, and each grain is drawn
   round on screen a pixel or two across, so none is ever smaller than a pixel to crawl. It fades out
   between 3 and 12 cm a pixel, about 6 to 12 m ahead at eye height, further looking down. A flash goes
-  past 1, but the game has no glow, so it clips to white rather than blooms.
+  past 1 and clips to white; glow ([Rendering](#rendering)) weighs a lone pixel's flash down, so it
+  barely blooms.
 - **Gone in the dust and on tracks.** Weather hands the sand its `seen_shade` (the uniform `storm`):
   in the dust the light comes from all round, so nothing glints or shines. Trodden sand has no glitter
   and a third of the sheen.
@@ -898,8 +944,8 @@ measured 0.2 to 0.3 ms the same way, so the times and the count agree.
   it, so the probes can't catch it. The look-test prints any shader error.
 - The backscatter's fade by height was judged with Tu 30° up. Where Tu stands lower, toward the far
   side, its light glows behind you as a low sun's does; not shot.
-- No glow, so glints clip to white. Glow would be the whole frame's change: the sun's disc, lamps and
-  Tu under the open eye would bloom too.
+- Glints clip to white. Glow ([Rendering](#rendering)) blooms what passes its threshold, so lamps and
+  the shield under the open eye at night bloom most; the sand by day stays under it.
 - Times were taken with Hunter's game on the same GPU; between runs a frame's own time moved by
   2 ms, and only the alternated differences hold.
 
@@ -1161,6 +1207,12 @@ dusk and storm-bubble views; `look/pod_shell` and `look/paint` retain the pod an
 The second age is the era table's craft object with a machine buried inside: a rounded saltwood
 rail lashed in cord, a ceramic replacement corner, limewash infill and an oval repaired seat with a
 charm, all in Paint's existing ages-after materials.
+
+## Camp device fidelity (2026-10-26)
+
+Hunter’s graphical-fidelity request follows the [chassis kit](#chassis-kit-fidelity-2026-10-26). SANDGAME assigns planters, burner, turbine, condenser, light panel, Console, cargo, survival kit and bedroll to the same worn modular language and [era silhouettes](#shape-by-era). Planting points, the Console’s live screen recess, the turbine’s mast and separate rotor, drop-orange cargo and the bedroll’s existing unrolling path stay in place. Era-specific bedroll cloth follows the same lineage in both poses. Only the looks change.
+
+`CampLooks` builds growing tubs with pale corner shoes, raised rims and diagonal bracing, an insulated burner with a vented heat guard and latch, a serviceable turbine base and mast, louvred condenser, framed solar cells, a stepped metal Console bezel and recessed rack, strapped drop cargo, a latched supply case and folded canvas. Colonial panels are modular, First Kingdoms fittings are flared brass, second-age repairs use ceramic and cord-bound saltbush wood, and skimmer parts show welded splices. Lineage repairs project onto the actual era mesh. The bedroll uses the same era cloth as it unrolls. Base/era triangle ranges: planter 1,512–1,856; deep_planter 1,512–1,856; burner 1,636–2,272; turbine 936–1,688; condenser 1,536–2,216; light_panel 1,052–1,264; console 1,988–2,348; cargo 1,056–1,860; survival_kit 720–1,568; bedroll 4,104–4,148. Each static builder has one shared worn surface; the turbine rotor, socket tells and live screen keep their existing draws. The envelope probe covers ten ids in five eras, with the turbine’s existing mast reach. Including free-socket tells and existing lights, the complete Console is 4,364–4,928 triangles in 10 draws, the planter 4,428–4,976 in 13 and the deep planter 2,568–3,116 in 5. Recessed vent cuts and fitted cord bands keep those costs below 5k without adding draws. `look/camp/audit` checks the tub beneath ripe saltbush and coalcane and the bare stepped Console bezel at 5 m in morning, dusk and storm.
 
 ## Held tools and food fidelity (2026-10-26)
 

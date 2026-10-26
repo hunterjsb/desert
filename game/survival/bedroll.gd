@@ -122,7 +122,7 @@ func _show() -> void:
 		frame_view.visible = not spread
 	_spread.visible = spread
 	if spread:
-		_spread_view.mesh = Dress.bedroll(1.0 - (1.0 - _open) * (1.0 - _open))
+		_spread_view.mesh = Dress.bedroll(1.0 - (1.0 - _open) * (1.0 - _open), get_meta(&"lineage", []))
 	elif _left or _spread.top_level:
 		_left = false
 		_spread.top_level = false

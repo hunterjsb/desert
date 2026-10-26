@@ -455,6 +455,8 @@ func options() -> Words:
 		_change.bind(1, &"vsync", true), _change.bind(&"vsync", false))
 	menu.add(func() -> String: return "Render scale   %d%%" % roundi(Settings.render_scale * 100.0),
 		_change.bind(1, &"render_scale", true), _change.bind(&"render_scale", false))
+	menu.add(func() -> String: return "Graphics   %s" % Settings.quality,
+		_change.bind(1, &"quality", true), _change.bind(&"quality", false))
 	menu.add("Controls", func() -> void: open(controls()))
 	if main.profile() != null:
 		menu.add("Reset profile", func() -> void:
@@ -516,6 +518,10 @@ func _change(by: int, what: StringName, wrap: bool) -> void:
 			var at := Settings.SCALES.find(Settings.render_scale) + by
 			Settings.render_scale = Settings.SCALES[posmod(at, Settings.SCALES.size()) if wrap
 				else clampi(at, 0, Settings.SCALES.size() - 1)]
+		&"quality":
+			var at := Settings.QUALITIES.find(Settings.quality) + by
+			Settings.quality = Settings.QUALITIES[posmod(at, Settings.QUALITIES.size()) if wrap
+				else clampi(at, 0, Settings.QUALITIES.size() - 1)]
 	Settings.apply(get_window())
 	Settings.save()
 
