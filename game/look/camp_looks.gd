@@ -46,9 +46,12 @@ static func _feet(b: Paint.Pieces, size: Vector3) -> void:
 	var h := size * 0.5
 	for x in [-1, 1]:
 		b.box(Vector3(0.075, 0.045, size.z - 0.04), Vector3(x * (h.x - 0.055), -h.y + 0.0225, 0), _metal(), 0.009)
-static func _bindings(b: Paint.Pieces, at: Vector3, r: float, turn := Basis.IDENTITY) -> void:
+static func _bindings(b: Paint.Pieces, at: Vector3, r: float, turn := Basis.IDENTITY, flat := false) -> void:
 	for t in [-0.009, 0.009]:
-		b.ring(r, r + 0.008, at + turn.y * t, Paint.coat(Paint.CORD, 0.0, 0.0, 0.95), turn, 8)
+		if flat:
+			b.drum(r + 0.008, 0.007, at + turn.y * t, Paint.coat(Paint.CORD, 0, 0, 0.95), turn, 8)
+		else:
+			b.ring(r, r + 0.008, at + turn.y * t, Paint.coat(Paint.CORD, 0.0, 0.0, 0.95), turn, 8)
 static func _rim(b: Paint.Pieces, size: Vector3, y: float, wide: float, look: Paint.Coat) -> void:
 	for s in [-1, 1]:
 		b.box(Vector3(size.x, wide, wide), Vector3(0, y, s * (size.z - wide) * 0.5), look, wide * 0.2)
@@ -81,11 +84,20 @@ static func _planter(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		for x in [-1, 1]: _bolt(b, Vector3(x * (h.x - 0.06), h.y - 0.004, s * (h.z - 0.035)), 0.008)
 	if era == Eras.SECOND:
 		b.drum(0.018, size.x - 0.12, Vector3(0, h.y - 0.030, -h.z + 0.030), Paint.coat(Paint.SALTWOOD), Basis(Vector3.BACK, PI / 2), 12)
-		for x in [-0.24, 0.24]: _bindings(b, Vector3(x, h.y - 0.030, -h.z + 0.030), 0.018, Basis(Vector3.BACK, PI / 2))
+		for x in [-0.24, 0.24]: _bindings(b, Vector3(x, h.y - 0.030, -h.z + 0.030), 0.018, Basis(Vector3.BACK, PI / 2), true)
 	elif era == Eras.FIRST:
 		_rim(b, size - Vector3(0.012, 0, 0.012), h.y - 0.013, 0.022, _trim(era))
 	elif era == Eras.SKIMMER:
 		b.box(Vector3(size.x * 0.65, 0.026, 0.018), Vector3(0.04, -0.04, h.z - 0.01), _metal(), 0.003)
+	# Pale impact shoes and diagonal braces keep the tub readable beneath its crop.
+	var edging := _trim(era) if era == Eras.FIRST else Paint.coat(Paint.CERAMIC if era == Eras.SECOND else Paint.BONE)
+	_rim(b, size - Vector3(0.018, 0, 0.018), h.y - 0.012, 0.014, edging)
+	for x in [-1, 1]:
+		for z in [-1, 1]:
+			if era == Eras.SECOND and x == 1 and z == 1: continue
+			b.box(Vector3(0.052, size.y - 0.055, 0.052), Vector3(x * (h.x - 0.031), 0.0, z * (h.z - 0.031)), edging, 0.008)
+	for z in [-1, 1]:
+		_bar(b, Vector3(-h.x + 0.09, -h.y + 0.065, z * (h.z - 0.009)), Vector3(h.x - 0.09, h.y - 0.065, z * (h.z - 0.009)), 0.007, _trim(era))
 	# The level gauge is a protected slit beside, not over, the water port.
 	b.box(Vector3(0.10, 0.03, 0.008), Vector3(0.10, -0.025, h.z - 0.008), _dark(), 0.003)
 	for x in [-0.03, 0, 0.03]: b.box(Vector3(0.008, 0.012, 0.004), Vector3(0.10 + x, -0.025, h.z - 0.002), Paint.coat(Paint.HOSE), 0)
@@ -202,21 +214,23 @@ static func _console(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 				b.ball(1, Vector3(h.x - 0.026, 0.02, -0.19), Paint.coat(Paint.CERAMIC), Vector3(0.024, 0.56, 0.085))
 			else:
 				b.box(Vector3(0.025, size.y - 0.13, 0.16), Vector3(x * (h.x - 0.018), 0, z * 0.19), _skin(era), 0.007)
-			for y in 8: b.box(Vector3(0.01, 0.009, 0.10), Vector3(x * (h.x - 0.005), -0.46 + y * 0.12, z * 0.19), _dark(), 0.001)
-		for y in [-0.54, -0.36, -0.18, 0, 0.18, 0.36, 0.54]: _bolt(b, Vector3(x * (h.x - 0.024), y, -h.z + 0.006), 0.007, ALONG)
+			for y in 8: b.box(Vector3(0.01, 0.009, 0.10), Vector3(x * (h.x - 0.005), -0.46 + y * 0.12, z * 0.19), _dark(), 0.0)
+		for y in [-0.54, -0.27, 0, 0.27, 0.54]: _bolt(b, Vector3(x * (h.x - 0.024), y, -h.z + 0.006), 0.007, ALONG)
 	# Electronics sit behind removable cheeks, with the same live display recess.
 	b.box(Vector3(size.x - 0.12, size.y - 0.16, size.z - 0.12), Vector3(0, 0, 0.015), _dark(), 0.015)
 	# The fitted display remains on the existing screen socket, ahead of this recess.
-	b.box(Vector3(0.61, 1.13, 0.015), Vector3(0, 0.01, -h.z + 0.018), _dark(), 0.005)
-	for y in [-0.57, 0.59]: b.box(Vector3(0.61, 0.025, 0.03), Vector3(0, y, -h.z + 0.017), _skin(era), 0.006)
+	b.box(Vector3(0.59, 1.10, 0.015), Vector3(0, 0.01, -h.z + 0.027), _metal(), 0.008)
+	for x in [-1, 1]:
+		b.box(Vector3(0.04, 1.18, 0.032), Vector3(x * 0.313, 0.01, -h.z + 0.018), _trim(era), 0.008)
+	for y in [-0.57, 0.59]:
+		b.box(Vector3(0.63, 0.04, 0.032), Vector3(0, y, -h.z + 0.018), _trim(era), 0.008)
 	b.box(Vector3(size.x - 0.10, size.y - 0.15, 0.025), Vector3(0, 0.015, h.z - 0.018), _skin(era), 0.01)
 	for y in [-0.42, 0.25]:
 		b.drum(0.095, 0.012, Vector3(0.03, y, h.z - 0.008), _dark(), ALONG, 18)
-		for x in [-0.05, 0, 0.05]: b.box(Vector3(0.01, 0.14, 0.008), Vector3(0.03 + x, y, h.z - 0.004), _trim(era), 0.001)
+		for x in [-0.05, 0, 0.05]: b.box(Vector3(0.01, 0.14, 0.008), Vector3(0.03 + x, y, h.z - 0.004), _trim(era), 0.0)
 	if era == Eras.SECOND:
-		# A lost rear corner is a salt-glazed service jar, bound to the rack.
-		b.ball(1, Vector3(-h.x + 0.085, 0.13, h.z - 0.085), Paint.coat(Paint.CERAMIC), Vector3(0.08, 0.38, 0.08))
-		for y in [-0.10, 0.34]: _bindings(b, Vector3(-h.x + 0.035, y, h.z - 0.035), 0.025)
+		# Cord holds the surviving post beside the rebuilt ceramic cheek.
+		for y in [-0.10, 0.34]: _bindings(b, Vector3(-h.x + 0.035, y, h.z - 0.035), 0.025, Basis.IDENTITY, true)
 		b.box(Vector3(0.022, 0.82, 0.15), Vector3(h.x - 0.018, -0.06, -0.18), Paint.coat(Paint.SALTWOOD), 0.008)
 	elif era == Eras.FIRST:
 		b.box(Vector3(size.x - 0.025, 0.045, 0.10), Vector3(0, h.y - 0.026, 0), _trim(era), 0.012)
@@ -264,7 +278,7 @@ static func _kit(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	_patch(b, size - Vector3(0.01, 0.01, 0.01), era)
 
 static func _cloth(era: StringName) -> Paint.Coat:
-	return Paint.coat({Eras.COLONIAL: Paint.BONE, Eras.SECOND: Paint.OCHRE_DYE, Eras.SKIMMER: Paint.RUST_DYE}.get(era, Paint.TEAL), 0, 0, 0.95)
+	return Paint.coat({Eras.COLONIAL: Paint.BONE, Eras.SECOND: Paint.CORD, Eras.SKIMMER: Paint.RUST}.get(era, Paint.TEAL), 0, 0, 0.95)
 static func _roll(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var h := size * 0.5
 	var r := h.x - 0.009
