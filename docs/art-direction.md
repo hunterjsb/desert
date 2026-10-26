@@ -1115,11 +1115,13 @@ arms keep their lengths; vaulting, empty hands reach for the ledge and a knee ga
 and what it costs are in [Movement](prd/movement.md#your-body-2026-10-21). Look-test:
 `look/player_body`; held things, `look/player_body/held.tscn`.
 
-
 ## Chassis kit fidelity (2026-10-26)
 
-Hunter: "work on graphical fidelity and model consistency aligning with our artistic vision across all agents". SANDGAME assigns the chassis, frame, hull plate, helm seat, hand winch, mast, masthead, boom and stake to B’s merged worn kit. Drawn details stay within each existing catalog envelope; collision, sockets, mass and sizes stay as they are. Existing lineage selects the era silhouette under [Shape by era](#shape-by-era); the recoverable pod keeps its cream skins and charred underside.
-
+Hunter: "work on graphical fidelity and model consistency aligning with our artistic vision across
+all agents". The chassis, frame, hull plate, helm seat, hand winch, mast, masthead, boom and stake
+are now real models in B's merged worn kit, drawn inside each catalog box: collision, sockets, mass
+and sizes are unchanged. A find's lineage picks its era's silhouette ([Shape by era](#shape-by-era));
+the pod keeps its cream skins and charred underside.
 
 `ChassisLooks` replaces the structural placeholder arms in Dress: inset split deck plates,
 corner castings and exposed join shoes, frame knees, pressed hull stiffeners, a braced helm
@@ -1131,5 +1133,6 @@ mast 872–1,088; masthead and boom 560 each; stake 276. Each builder adds one s
 existing moving wheels, sockets and pod skins retain their own draws. The envelope check
 covers all nine meshes and five era selections. `look/chassis/fidelity` repeats 5 m, 20 m,
 dusk and storm-bubble views; `look/pod_shell` and `look/paint` retain the pod and camp context.
-
-SANDGAME’s second-age review (2026-10-26) calls for a fern-cord wrap, an asymmetric rounded replacement corner/panel, limewash or clay infill and a seat charm: the [era table](#shape-by-era)’s craft object with a machine buried inside. The chassis kit uses the existing `CORD`, `CERAMIC`, `SALTWOOD` and `LIMEWASH` materials for those repairs.
+The second age is the era table's craft object with a machine buried inside: a rounded saltwood
+rail lashed in cord, a ceramic replacement corner, limewash infill and an oval repaired seat with a
+charm, all in Paint's existing ages-after materials.
