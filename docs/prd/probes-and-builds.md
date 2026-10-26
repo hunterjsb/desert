@@ -119,8 +119,12 @@ At median runner speed, the critical path is about a fifth shorter. In both
 runs after the change, a slow runner landed on a full group. The hardware
 draw still decides most of a run's wall time.
 
-`verify.sh` now checks its run every 20 s instead of 60 s, and asks again
-after a failed check. While five lanes landed at once, the account's
+`verify.sh` now checks its run's status every 20 s instead of 60 s. If one
+status request fails, it asks once more; two failures in a row stop the wait,
+as one did before. It never reruns a job. For a run that was rerun, it names
+each failed job of an earlier attempt and that job's failing lines. A green
+rerun still counts as green. The dashboard keeps every attempt's jobs, and
+labels the earlier ones. While five lanes landed at once, the account's
 20-job limit queued Linux jobs for up to 20 minutes. Each verify run asks for
 about 90 runner-minutes. Each master run asked for about 280: 90 on Linux,
 185 on macOS and Windows, and 4 for builds.
@@ -130,9 +134,14 @@ work. A landing pushes the very commit its verify run passed, so master's
 Linux probes repeated that run on the same workflow. A `proven` job now
 finds a successful verify-branch run at the pushed commit. When it finds
 one, master skips its nine Linux jobs and still runs macOS, Windows and the
-builds. Any other push runs them, and so does a failed check. The dashboard
+builds. Any other push runs them, and so does a failed lookup. The dashboard
 takes that verify run's Linux jobs as the commit's evidence. Master's Linux
 timing history then refreshes only on pushes that no verify run proved.
+
+Kits probe 8 is a known real-frame flake. Its check "the seeds cost a frame
+under 0.2 ms" measured 0.480 ms in run 39603518301 (2026-10-21) and 0.244 ms
+in run 40243679401, attempt 1 (2026-10-25). Both were on hosted runners, and
+the 2026-10-25 rerun passed. Its threshold stays as it is.
 
 ## Performance dashboard (agreed 2026-10-21)
 
