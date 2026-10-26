@@ -54,6 +54,29 @@ PROBE_METRIC {"probe":"probes/world/a.gd","name":"x","value":"1","unit":"ms"}
         self.assertEqual(result['jobs'][0]['probes'],[])
         self.assertEqual(result['elapsed_seconds'],60)
 
+    def test_master_skipping_proven_linux_keeps_the_verify_runs_evidence(self):
+        def job(i, name, conclusion, steps):
+            return {'id':i,'name':name,'conclusion':conclusion,'started_at':'2026-10-21T18:00:10Z',
+                    'completed_at':'2026-10-21T18:01:00Z','html_url':f'https://github.com/job/{i}',
+                    'steps':[{'name':s,'conclusion':conclusion,'started_at':'2026-10-21T18:00:10Z',
+                              'completed_at':'2026-10-21T18:01:00Z'} for s in steps]}
+        jobs = {1:[job(10,'${{ matrix.group }}','skipped',[]), job(11,'macOS the rest','success',['Probes'])],
+                2:[job(20,'the rest','success',['Probes'])]}
+        class API:
+            def pages(self, path, key):
+                return [] if key == 'artifacts' else jobs[int(path.split('/')[2])]
+            def get(self, path, raw=False):
+                if path.startswith('actions/workflows/'):
+                    return {'workflow_runs':[{'id':1,'head_branch':'master'},{'id':2,'head_branch':'verify-x','run_attempt':1,
+                            'name':'Probes','head_sha':'abc','html_url':'u','created_at':'2026-10-21T18:00:00Z','conclusion':'success'}]}
+                return f"PASS     probes/{'mac' if '/11/' in path else 'linux'}/1.gd (3s)"
+        run={'id':1,'run_attempt':1,'name':'Probes','head_branch':'master','head_sha':'abc',
+             'html_url':'u','created_at':'2026-10-21T18:00:00Z','conclusion':'success'}
+        result=collect_run(API(),run)
+        self.assertEqual(result['proved_by'],2)
+        self.assertEqual(sorted((j['platform'],j['probes'][0]['path']) for j in result['jobs']),
+                         [('Linux','probes/linux/1.gd'),('macOS','probes/mac/1.gd')])
+
 
 if __name__ == '__main__':
     unittest.main()

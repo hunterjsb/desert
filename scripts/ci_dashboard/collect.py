@@ -145,12 +145,23 @@ def collect_run(api, run):
         return out
     with ThreadPoolExecutor(max_workers=4) as pool:
         collected = list(pool.map(collect_job, jobs))
+    # Master skips the Linux probes of a commit its verify run passed: that
+    # run's Linux jobs are this commit's evidence.
+    proved_by = None
+    if run['head_branch'] == 'master' and any(j['platform'] == 'Linux' and j['conclusion'] == 'skipped' for j in collected):
+        runs = api.get(f"actions/workflows/probes.yml/runs?head_sha={run['head_sha']}&status=success&per_page=50")
+        proving = next((r for r in runs['workflow_runs'] if r['head_branch'].startswith('verify-')), None)
+        if proving:
+            proved_by = proving['id']
+            linux = [j for j in collect_run(api, proving)['jobs'] if j['platform'] == 'Linux' and j['probes']]
+            collected = [j for j in collected if not (j['platform'] == 'Linux' and j['conclusion'] == 'skipped')] + linux
     artifacts = api.pages(f"actions/runs/{run['id']}/artifacts", 'artifacts')
     end = max((j['completed_at'] for j in jobs if j.get('completed_at')), default=None)
     return {'id': run['id'], 'attempt': run['run_attempt'], 'workflow': run['name'],
             'branch': run['head_branch'], 'sha': run['head_sha'], 'url': run['html_url'],
             'created_at': run['created_at'], 'result': run['conclusion'],
             'elapsed_seconds': seconds(run['created_at'], end),
+            'proved_by': proved_by,
             'jobs': collected,
             'artifacts': [{'name': a['name'], 'bytes': a['size_in_bytes'], 'expired': a['expired']}
                           for a in artifacts if a['name'].startswith('desert-')]}

@@ -15,7 +15,30 @@ on:
         default: true
 
 jobs:
+  proven:
+    # Landing pushes the very commit a verify run passed: its Linux probes ran
+    # there, on this same workflow. macOS, Windows and the builds still run here.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      by: ${{ steps.find.outputs.by }}
+    steps:
+      - id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          by=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/probes.yml/runs?head_sha=$GITHUB_SHA&status=success&per_page=50" \
+            -q '[.workflow_runs[] | select(.head_branch | startswith("verify-")) | .id][0] // empty') || by=""
+          echo "by=$by" >>"$GITHUB_OUTPUT"
+          if [[ -n $by ]]; then echo "Linux probes passed at this commit in run $by"; else echo "No verify run passed this commit: Linux probes run here"; fi
+
   probes:
+    needs: proven
+    # Also when the check above is skipped or fails: only a found run skips them.
+    if: ${{ !cancelled() && needs.proven.outputs.by == '' }}
     # The suite split by folder so it runs side by side; "the rest" runs any
     # folder not listed here, so a new one is never skipped. Keep REST_EXCEPT
     # in step with the groups. Balanced by measured wall time, a probe that
