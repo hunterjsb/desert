@@ -94,8 +94,8 @@ func construct_pod() -> void:
 
 
 ## The controller may point the real orbital renderer at its currently selected geography.
-func set_view(point: Vector3, heading := 0.0) -> void:
-	var direction := Sphere.toward(point, -heading + PI, deg_to_rad(42.0))
+func set_view(point: Vector3) -> void:
+	var direction := Sphere.toward(point, PI, deg_to_rad(42.0))
 	_orbital_origin = direction * ArrivalOrbit.RADIUS * 1.65
 	_orbital_basis = Basis.looking_at(point * ArrivalOrbit.RADIUS - _orbital_origin, Sphere.north(direction))
 

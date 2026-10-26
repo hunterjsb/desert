@@ -17,7 +17,8 @@ static var _current: Tuning
 @export var moon_visual_radius_m: float = 3700000.0
 @export var spawn_latitude_degrees: float = 0.0
 @export var spawn_longitude_degrees: float = 0.0
-## Surface gravity, m/s². The body research leans toward 0.4-0.5 g; F6 tries it live.
+## Surface gravity, m/s². The body research leans toward 0.4-0.5 g; the dev
+## console's gravity tries it live.
 @export var gravity: float = 9.8
 ## How many chunks the player may stray from the engine origin before the
 ## world shifts back, keeping 32-bit positions precise.

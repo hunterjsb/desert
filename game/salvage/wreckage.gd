@@ -50,9 +50,8 @@ const HAZARD_BOX := Vector3(0.5, 0.6, 0.4)
 const SETTLE := 0.5
 const SETTLE_MOST := 6.0
 ## Rust-brown, apart from any hull's paint, so a plate reads as the thing to
-## cut; its welds a dull bead round its edge.
+## cut.
 const PLATE := Color(0.5, 0.3, 0.19)
-const BEAD := Color(0.42, 0.39, 0.34)
 const SAND := Color(0.72, 0.57, 0.39)
 ## A light alloy's density, kg/m³, for a fallen plate's mass; a plate falls
 ## this much smaller than the opening it was welded over, so it comes free.

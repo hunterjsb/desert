@@ -12,8 +12,6 @@ extends Device
 ## any device; the share it replants waits for its own control (Hunter,
 ## 2026-10-17).
 
-## The shares use steps through.
-const SPLITS: Array[float] = [0.0, 0.25, 0.5, 0.75, 1.0]
 ## What wild seed waiting for a slot is kept under, after its crop's id.
 const WILD := "/wild"
 ## Where its crops feel the weather: just over the slots.
