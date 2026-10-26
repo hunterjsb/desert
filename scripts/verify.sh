@@ -49,18 +49,25 @@ land_it() {
 	git push -q origin "$target:master"
 	echo "landed ${target:0:7} on master"
 }
-# Waits for run $1 to finish, at most ci_wait seconds.
+# Waits for run $1 to finish, at most ci_wait seconds. Checked often, since
+# every landing waits on it; one failed status request is asked again, two
+# in a row stop the wait.
 wait_run() {
-	local waited=0 status
+	local waited=0 status missed=0
 	while :; do
-		status=$(gh run view "$1" --json status -q .status)
+		if status=$(gh run view "$1" --json status -q .status); then
+			missed=0
+		else
+			((missed == 0)) || { echo "run $1: its status could not be read twice running" >&2; return 1; }
+			missed=1
+		fi
 		[[ $status == completed ]] && return 0
 		if ((waited >= ci_wait)); then
 			echo "run $1 still $status after $((ci_wait / 60)) min: check it" >&2
 			return 1
 		fi
-		sleep 60
-		waited=$((waited + 60))
+		sleep 20
+		waited=$((waited + 20))
 	done
 }
 sha=$(git rev-parse HEAD)
@@ -125,6 +132,20 @@ failures() {
 			cut -c30- | head -20 || true
 	done
 }
+# A rerun's earlier attempts stay on record: what failed before is named.
+attempts=$(gh run view "$id" --json attempt -q .attempt)
+for ((n = 1; n < ${attempts:-1}; n++)); do
+	if ! earlier=$(gh api "repos/{owner}/{repo}/actions/runs/$id/attempts/$n/jobs" \
+		-q '.jobs[] | select(.conclusion == "failure") | "\(.id) \(.name)"'); then
+		echo "  attempt $n: its jobs could not be read"
+		continue
+	fi
+	while read -r job name; do
+		[[ -n $job ]] || continue
+		echo "  attempt $n failed  $name"
+		echo "$job" | failures
+	done <<<"$earlier"
+done
 if [[ $conclusion != success ]]; then
 	gh run view "$id" --json jobs -q '.jobs[] | select(.conclusion == "failure") | .databaseId' | failures
 	exit 1

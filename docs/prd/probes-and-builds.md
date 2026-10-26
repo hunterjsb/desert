@@ -87,6 +87,62 @@ and their wall times were sent with the verification report. Recent master build
 measurements were 62 s for export and 46 s for the Linux smoke check; build
 steps were not changed.
 
+On 2026-10-25, a profiled run (40241045337) showed the parallel phase at
+95–100% of the runner's four vCPUs and the alone phase at 5–35%. Hosted
+runners came as three CPU models, and the EPYC 7763 ran the same probes up
+to twice as slowly as the 9V74 or 9V45. Setup outside the probe step was
+10–15 s per job, with about 10 s more for the import, so neither was worth
+cutting. Three changes followed:
+
+- Salvage probe 2's 73 hand-laid finds now settle at `speed_up(6)`. Each one
+  still gets its 270 ticks of 1/60 s. The probe took 343 s locally and now
+  takes 69 s, with the same tally and the same worst errors. On CI it went
+  from 358 s to 107–120 s.
+- The nine Linux groups were rebalanced from per-folder medians over eight
+  runs. A probe that runs alone or exclusively counts for the whole runner's
+  time. There are still nine jobs, so a run asks for no more runners.
+- A regrouped group restores another group's timing history instead of
+  starting with none. `test_verify.py` fails if `REST_EXCEPT` and the
+  grouped folders disagree.
+
+All 533 probes still run. No check, threshold, simulated duration or failure
+path changed. The table below divides each group's probe time by its
+runner's speed: that runner's probe seconds over the eight-run medians.
+
+| Linux runs | Slowest job | Runner speed | Heaviest group at median speed | Spread between groups |
+| --- | ---: | ---: | ---: | ---: |
+| six green runs before, 40214486894–40227315812 | 12:12–16:15 (median 15:01) | 0.55–1.51 | 13:06–13:24 | 7:06–7:36 |
+| 40242535618, history from old groups | 13:24 | 0.60–1.29 | 10:56 | 2:28 |
+| 40243679401, its own history | 13:52 | 0.62–1.38 | 10:37 | 2:12 |
+
+At median runner speed, the critical path is about a fifth shorter. In both
+runs after the change, a slow runner landed on a full group. The hardware
+draw still decides most of a run's wall time.
+
+`verify.sh` now checks its run's status every 20 s instead of 60 s. If one
+status request fails, it asks once more; two failures in a row stop the wait,
+as one did before. It never reruns a job. For a run that was rerun, it names
+each failed job of an earlier attempt and that job's failing lines. A green
+rerun still counts as green. The dashboard keeps every attempt's jobs, and
+labels the earlier ones. While five lanes landed at once, the account's
+20-job limit queued Linux jobs for up to 20 minutes. Each verify run asks for
+about 90 runner-minutes. Each master run asked for about 280: 90 on Linux,
+185 on macOS and Windows, and 4 for builds.
+
+At the coordinator's request the same day, master stopped repeating proven
+work. A landing pushes the very commit its verify run passed, so master's
+Linux probes repeated that run on the same workflow. A `proven` job now
+finds a successful verify-branch run at the pushed commit. When it finds
+one, master skips its nine Linux jobs and still runs macOS, Windows and the
+builds. Any other push runs them, and so does a failed lookup. The dashboard
+takes that verify run's Linux jobs as the commit's evidence. Master's Linux
+timing history then refreshes only on pushes that no verify run proved.
+
+Kits probe 8 is a known real-frame flake. Its check "the seeds cost a frame
+under 0.2 ms" measured 0.480 ms in run 39603518301 (2026-10-21) and 0.244 ms
+in run 40243679401, attempt 1 (2026-10-25). Both were on hosted runners, and
+the 2026-10-25 rerun passed. Its threshold stays as it is.
+
 ## Performance dashboard (agreed 2026-10-21)
 
 *Hunter, 2026-10-21: "let's add github pages... after deploys we should rebuild a
