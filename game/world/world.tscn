@@ -24,13 +24,22 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_sky")
 tonemap_mode = 2
+ssao_radius = 0.8
+ssao_light_affect = 0.2
+glow_levels/2 = 0.3
+glow_levels/3 = 0.6
+glow_levels/4 = 0.4
+glow_levels/5 = 0.2
+glow_intensity = 0.6
+glow_hdr_threshold = 2.0
+glow_hdr_luminance_cap = 4.0
 fog_light_color = Color(0.86, 0.76, 0.62, 1)
 fog_sky_affect = 0.6
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_world")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." groups=["quality_drawn"]]
 environment = SubResource("Environment_world")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]

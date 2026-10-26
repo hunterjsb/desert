@@ -35,5 +35,9 @@ theme/custom="res://game/ui/theme.tres"
 
 [rendering]
 
+anti_aliasing/quality/screen_space_aa=2
 anti_aliasing/quality/use_debanding=true
+environment/glow/upscale_mode=0
+environment/ssao/half_size=false
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
 textures/vram_compression/import_etc2_astc=true
