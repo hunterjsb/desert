@@ -47,7 +47,8 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 	return _eras[key]
 
 static func _panel(era: StringName) -> Paint.Coat:
-	return Paint.coat(Paint.BONE if era in [Eras.COLONIAL, Eras.SECOND] else (Paint.RUST if era == Eras.SKIMMER else Paint.TEAL), 0.65, 0.2, 0.6)
+	var color: Color = {Eras.SECOND: Paint.CERAMIC, Eras.COLONIAL: Paint.BONE, Eras.SKIMMER: Paint.RUST}.get(era, Paint.TEAL)
+	return Paint.coat(color, 0.65, 0.2, 0.6)
 
 static func _metal() -> Paint.Coat:
 	return Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
@@ -71,20 +72,32 @@ static func _deck(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	# Extruded perimeter and inset walking plates leave the joining rings clear.
 	for s in [-1.0, 1.0]:
 		b.box(Vector3(size.x - 0.14, size.y - 0.018, edge), Vector3(0, 0, s * (h.z - edge * 0.5 - 0.006)), metal, 0.012)
-		b.box(Vector3(edge, size.y - 0.018, size.z - 0.14), Vector3(s * (h.x - edge * 0.5 - 0.006), 0, 0), metal, 0.012)
+		if era == Eras.SECOND and s < 0:
+			# A lost extrusion replaced by a round saltbush spar, lashed to the core.
+			b.drum(0.045, size.z - 0.16, Vector3(-h.x + 0.055, -0.003, 0), Paint.coat(Paint.SALTWOOD, 0.45, 0.0, 0.9), ALONG, 12)
+		else:
+			b.box(Vector3(edge, size.y - 0.018, size.z - 0.14), Vector3(s * (h.x - edge * 0.5 - 0.006), 0, 0), metal, 0.012)
 		b.box(Vector3(size.x - 0.22, 0.015, 0.025), Vector3(0, -h.y + 0.014, s * 0.22), metal, 0.004)
 	for x in [-1.0, 1.0]:
 		for z in [-1.0, 1.0]:
 			var at := Vector3(x * (h.x - 0.065), 0, z * (h.z - 0.065))
-			b.box(Vector3(0.13, size.y, 0.13), at, _black(), 0.022)
-			_bolt(b, at + Vector3(0, h.y - 0.006, 0), 0.013)
+			if era == Eras.SECOND and x < 0 and z > 0:
+				b.ball(1.0, Vector3(-h.x + 0.1, 0, h.z - 0.1), Paint.coat(Paint.CERAMIC, 0.45, 0.0, 0.3), Vector3(0.098, 0.055, 0.098))
+			else:
+				b.box(Vector3(0.13, size.y, 0.13), at, _black(), 0.022)
+				_bolt(b, at + Vector3(0, h.y - 0.006, 0), 0.013)
 	# Two removable panels, each with pressed channels and recessed screws.
 	for x in [-1.0, 1.0]:
 		var wide := (size.x - 0.19) * 0.5
 		var at := Vector3(x * (wide * 0.5 + 0.006), h.y - Chassis.PANEL_DROP - 0.014, 0)
-		b.box(Vector3(wide, 0.028, size.z - 0.18), at, panel, 0.007)
-		for z in [-0.27, -0.09, 0.09, 0.27]:
-			b.box(Vector3(wide - 0.05, 0.006, 0.012), at + Vector3(0, 0.016, z), metal, 0.002)
+		if era == Eras.SECOND and x < 0:
+			b.box(Vector3(wide - 0.015, 0.028, size.z - 0.2), at, Paint.coat(Paint.LIMEWASH, 0.5, 0.0, 0.9), 0.013)
+			for z in [-0.24, 0.23]:
+				b.box(Vector3(wide - 0.06, 0.009, 0.033), at + Vector3(0.01, 0.018, z), Paint.coat(Paint.SALTWOOD, 0.5, 0.0, 0.9), 0.005)
+		else:
+			b.box(Vector3(wide, 0.028, size.z - 0.18), at, panel, 0.007)
+			for z in [-0.27, -0.09, 0.09, 0.27]:
+				b.box(Vector3(wide - 0.05, 0.006, 0.012), at + Vector3(0, 0.016, z), metal, 0.002)
 		for z in [-1.0, 1.0]:
 			_bolt(b, at + Vector3(0, 0.017, z * (h.z - 0.125)), 0.009)
 	# Side join shoes and high contrast tie points, rather than a painted edge.
@@ -100,9 +113,9 @@ static func _deck(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 			for z in [-0.23, 0.0, 0.23]:
 				_bolt(b, Vector3(x * (h.x - 0.1), h.y - 0.005, z), 0.011)
 	elif era == Eras.SECOND:
-		b.box(Vector3(0.17, 0.035, size.z - 0.22), Vector3(0.16, h.y - 0.018, 0.0), Paint.coat(Paint.BONE, 0.5, 0.0, 0.8), 0.016)
-		for z in [-0.31, 0.31]:
-			b.box(Vector3(0.22, 0.012, 0.028), Vector3(0.16, h.y - 0.008, z), Paint.coat(Paint.ROPE), 0.004)
+		for z in [-0.22, 0.22]:
+			for turn in [-0.016, 0.0, 0.016]:
+				b.ring(0.041, 0.052, Vector3(-h.x + 0.055, -0.003, z + turn), Paint.coat(Paint.CORD, 0.4, 0.0, 0.9), ALONG, 8)
 	elif era == Eras.SKIMMER:
 		for z in [-0.24, 0.17]:
 			b.box(Vector3(0.25, 0.02, 0.09), Vector3(-0.12, h.y - 0.011, z), metal, 0.003, Basis(Vector3.UP, 0.2))
@@ -141,7 +154,6 @@ static func _plate(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	for x in [-0.16, 0.0, 0.16]:
 		b.box(Vector3(0.024, size.y - 0.1, size.z * 0.22), Vector3(x, 0, size.z * 0.85), metal, 0.004)
 
-
 	if era == Eras.FIRST:
 		b.box(Vector3(0.1, 0.16, 0.004), Vector3(0, 0.12, size.z - 0.003), Paint.coat(Paint.YELLOW, 0.4, 0.6), 0.001)
 	elif era == Eras.SECOND:
@@ -170,12 +182,11 @@ static func _winch(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	for x in [-0.05, 0.05]:
 		b.drum(0.014, 0.05, Vector3(x, 0.035, -0.165), Paint.coat(Paint.STEEL, 0.4, 0.8), Basis.IDENTITY, 10)
 
-
 	if era == Eras.FIRST:
 		for x in [-1.0, 1.0]:
 			b.box(Vector3(0.06, 0.025, 0.22), Vector3(x * (h.x - 0.035), 0.11, 0), Paint.coat(Paint.YELLOW, 0.5, 0.7), 0.009)
 	elif era == Eras.SECOND:
-		b.drum(0.055, 0.024, Vector3(h.x - 0.018, 0.04, 0), Paint.coat(Paint.BONE, 0.5), Basis(Vector3.BACK, PI / 2.0), 12)
+		b.drum(0.055, 0.024, Vector3(h.x - 0.018, 0.04, 0), Paint.coat(Paint.CERAMIC, 0.5, 0.0, 0.3), Basis(Vector3.BACK, PI / 2.0), 12)
 	elif era == Eras.SKIMMER:
 		b.box(Vector3(0.015, 0.15, 0.09), Vector3(-h.x + 0.022, 0.01, 0.02), metal, 0.002, Basis(Vector3.RIGHT, 0.2))
 
@@ -187,22 +198,34 @@ static func _seat(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	b.drum(0.075, 0.13, Vector3(0, -0.145, 0), metal, Basis.IDENTITY, 16)
 	b.drum(0.09, 0.025, Vector3(0, -0.1, 0), Paint.coat(Paint.YELLOW), Basis.IDENTITY, 16)
 	b.box(Vector3(size.x - 0.07, 0.055, size.z - 0.1), Vector3(0, -0.055, 0.015), panel, 0.018)
-	b.box(Vector3(size.x - 0.11, 0.035, size.z - 0.15), Vector3(0, -0.012, 0.025), _black(), 0.015)
-	b.box(Vector3(size.x - 0.07, 0.22, 0.06), Vector3(0, 0.13, -h.z + 0.04), panel, 0.018)
-	b.box(Vector3(size.x - 0.12, 0.17, 0.026), Vector3(0, 0.13, -h.z + 0.085), _black(), 0.01)
+	if era == Eras.SECOND:
+		b.box(Vector3(size.x - 0.11, 0.035, size.z - 0.15), Vector3(0, -0.012, 0.025), Paint.coat(Paint.SALTWOOD, 0.5, 0.0, 0.9), 0.015)
+		b.ball(1.0, Vector3(0.015, 0.125, -h.z + 0.04), Paint.coat(Paint.CERAMIC, 0.45, 0.0, 0.3), Vector3(0.2, 0.12, 0.034))
+		b.ball(1.0, Vector3(-0.02, 0.12, -h.z + 0.09), Paint.coat(Paint.SALTWOOD, 0.5, 0.0, 0.9), Vector3(0.16, 0.085, 0.02))
+	else:
+		b.box(Vector3(size.x - 0.11, 0.035, size.z - 0.15), Vector3(0, -0.012, 0.025), _black(), 0.015)
+		b.box(Vector3(size.x - 0.07, 0.22, 0.06), Vector3(0, 0.13, -h.z + 0.04), panel, 0.018)
+		b.box(Vector3(size.x - 0.12, 0.17, 0.026), Vector3(0, 0.13, -h.z + 0.085), _black(), 0.01)
 	for x in [-1.0, 1.0]:
 		_bar(b, Vector3(x * 0.19, -0.08, -0.18), Vector3(x * 0.19, 0.19, -0.21), 0.025, metal)
-		b.box(Vector3(0.035, 0.035, 0.3), Vector3(x * (h.x - 0.02), 0.07, 0.015), panel, 0.009)
+		if era == Eras.SECOND and x < 0:
+			b.drum(0.018, 0.3, Vector3(x * (h.x - 0.02), 0.07, 0.015), Paint.coat(Paint.SALTWOOD, 0.5, 0.0, 0.9), ALONG, 12)
+		else:
+			b.box(Vector3(0.035, 0.035, 0.3), Vector3(x * (h.x - 0.02), 0.07, 0.015), panel, 0.009)
 		for z in [-0.18, 0.18]:
 			_bolt(b, Vector3(x * 0.18, -h.y + 0.045, z), 0.014)
-	for x in [-0.12, 0.0, 0.12]:
-		b.box(Vector3(0.01, 0.15, 0.004), Vector3(x, 0.13, -h.z + 0.1), panel, 0.001)
-
+	if era != Eras.SECOND:
+		for x in [-0.12, 0.0, 0.12]:
+			b.box(Vector3(0.01, 0.15, 0.004), Vector3(x, 0.13, -h.z + 0.1), panel, 0.001)
 
 	if era == Eras.FIRST:
 		b.box(Vector3(size.x - 0.025, 0.025, 0.075), Vector3(0, h.y - 0.014, -h.z + 0.04), Paint.coat(Paint.YELLOW, 0.5, 0.7), 0.01)
 	elif era == Eras.SECOND:
-		b.drum(0.06, 0.025, Vector3(0.1, 0.18, -h.z + 0.12), Paint.coat(Paint.BONE, 0.5), ALONG, 12)
+		# A cord, bead and loose fringe belong to the repaired wooden arm.
+		b.drum(0.004, 0.16, Vector3(-0.22, -0.02, 0.15), Paint.coat(Paint.CORD), Basis.IDENTITY, 8)
+		b.ball(0.014, Vector3(-0.22, -0.11, 0.15), Paint.coat(Paint.CERAMIC, 0.45, 0.0, 0.3))
+		for x in [-0.008, 0.0, 0.008]:
+			_bar(b, Vector3(-0.22, -0.12, 0.15), Vector3(-0.22 + x, -0.185, 0.16), 0.003, Paint.coat(Paint.CORD))
 	elif era == Eras.SKIMMER:
 		b.box(Vector3(0.05, 0.14, 0.022), Vector3(-0.09, 0.13, -h.z + 0.12), Paint.coat(Paint.ROPE), 0.003, Basis(Vector3.BACK, 0.2))
 
@@ -218,12 +241,11 @@ static func _mast(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		b.box(Vector3(0.016, 0.14, 0.012), Vector3(0, y, 0.049), metal, 0.004)
 	b.box(Vector3(0.045, 0.045, 0.04), Vector3(0, minf(Mast.BOOM_AT.y, h.y - 0.04), -0.05), metal, 0.008)
 
-
 	if era == Eras.FIRST:
 		b.drum(0.07, 0.035, Vector3(0, h.y - 0.02, 0), Paint.coat(Paint.YELLOW, 0.5, 0.7), Basis.IDENTITY, 12, 0.054)
 	elif era == Eras.SECOND:
 		for y in [0.16, 0.18, 0.20]:
-			b.drum(0.06, 0.014, Vector3(0, y, 0), Paint.coat(Paint.ROPE), Basis.IDENTITY, 12)
+			b.drum(0.06, 0.014, Vector3(0, y, 0), Paint.coat(Paint.CORD), Basis.IDENTITY, 12)
 	elif era == Eras.SKIMMER:
 		b.box(Vector3(0.025, 0.24, 0.014), Vector3(0.0, 0.2, 0.052), metal, 0.003)
 

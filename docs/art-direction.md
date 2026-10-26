@@ -1126,8 +1126,10 @@ corner castings and exposed join shoes, frame knees, pressed hull stiffeners, a 
 seat, a fairlead and pawl on the rope drum, telescoping mast collars and forged stake. Latest
 lineage selects heirloom flares, asymmetric ceramic repairs or welded splices; existing marks
 and per-instance wear remain on the same shared worn surface. Base/era triangle ranges:
-chassis 2,672–3,048; frame 1,440; hull plate 456–500; helm 912–984; winch 2,932–3,020;
+chassis 2,672–4,224; frame 1,440; hull plate 456–500; helm 912–1,404; winch 2,932–3,020;
 mast 872–1,088; masthead and boom 560 each; stake 276. Each builder adds one surface/draw;
 existing moving wheels, sockets and pod skins retain their own draws. The envelope check
 covers all nine meshes and five era selections. `look/chassis/fidelity` repeats 5 m, 20 m,
 dusk and storm-bubble views; `look/pod_shell` and `look/paint` retain the pod and camp context.
+
+SANDGAME’s second-age review (2026-10-26) calls for a fern-cord wrap, an asymmetric rounded replacement corner/panel, limewash or clay infill and a seat charm: the [era table](#shape-by-era)’s craft object with a machine buried inside. The chassis kit uses the existing `CORD`, `CERAMIC`, `SALTWOOD` and `LIMEWASH` materials for those repairs.
