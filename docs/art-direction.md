@@ -1114,3 +1114,20 @@ are drawn only for their shadow and for others; the slim chest stays below and b
 arms keep their lengths; vaulting, empty hands reach for the ledge and a knee gathers. How it moves
 and what it costs are in [Movement](prd/movement.md#your-body-2026-10-21). Look-test:
 `look/player_body`; held things, `look/player_body/held.tscn`.
+
+
+## Chassis kit fidelity (2026-10-26)
+
+Hunter: "work on graphical fidelity and model consistency aligning with our artistic vision across all agents". SANDGAME assigns the chassis, frame, hull plate, helm seat, hand winch, mast, masthead, boom and stake to B’s merged worn kit. Drawn details stay within each existing catalog envelope; collision, sockets, mass and sizes stay as they are. Existing lineage selects the era silhouette under [Shape by era](#shape-by-era); the recoverable pod keeps its cream skins and charred underside.
+
+
+`ChassisLooks` replaces the structural placeholder arms in Dress: inset split deck plates,
+corner castings and exposed join shoes, frame knees, pressed hull stiffeners, a braced helm
+seat, a fairlead and pawl on the rope drum, telescoping mast collars and forged stake. Latest
+lineage selects heirloom flares, asymmetric ceramic repairs or welded splices; existing marks
+and per-instance wear remain on the same shared worn surface. Base/era triangle ranges:
+chassis 2,672–3,048; frame 1,440; hull plate 456–500; helm 912–984; winch 2,932–3,020;
+mast 872–1,088; masthead and boom 560 each; stake 276. Each builder adds one surface/draw;
+existing moving wheels, sockets and pod skins retain their own draws. The envelope check
+covers all nine meshes and five era selections. `look/chassis/fidelity` repeats 5 m, 20 m,
+dusk and storm-bubble views; `look/pod_shell` and `look/paint` retain the pod and camp context.
