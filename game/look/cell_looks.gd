@@ -433,36 +433,33 @@ static func _hook(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 			b.drum(0.0055, 0.004, turn * Vector3(0.0, 0.027, 0.012), _black() if era == Eras.SECOND else _steel(), ALONG, 6)
 	b.drum(0.023, 0.008, Vector3(0.0, 0.0, 0.014), _collar(&"ring"), ALONG, 16)
 	b.drum(0.017, 0.016, Vector3(0.0, 0.0, 0.026), forged, ALONG, 12)
-	# The shank out to the bend, the bend turned up and back to a point.
-	var bend := Vector3(0.0, 0.0155, 0.072)
-	var r := 0.0155
-	var thick := 0.0072 if era == Eras.SKIMMER else 0.0085
-	b.drum(thick + 0.0005, bend.z - 0.032, Vector3(0.0, 0.0, (bend.z + 0.032) * 0.5), forged, ALONG, 10)
-	var steps := 8
-	var last := Vector3(0.0, 0.0, bend.z)
-	for i in steps:
-		var a := -PI / 2.0 + (i + 1) * (PI * 4.0 / 3.0) / steps
-		var at := bend + Vector3(0.0, sin(a) * r, cos(a) * r)
-		var taper := lerpf(thick, 0.004, maxf(0.0, (i - 4.0) / (steps - 4.0)))
+	# The throat replaces the old separate ring, centred on the unchanged rope guide.
+	var bend := Vector3(0.0, 0.0, 0.16)
+	var radius := 0.045
+	var thick := 0.0075
+	var root := Vector3(0, 0, 0.032)
+	var shoulder := bend + Vector3(-radius, 0, 0)
+	var shank := shoulder - root
+	b.drum(thick, shank.length(), (root + shoulder) * 0.5, forged, Basis(Quaternion(Vector3.UP, shank.normalized())), 10)
+	var last := bend + Vector3(-radius, 0, 0)
+	for i in 12:
+		var angle := PI + (i + 1) * (PI * 1.25) / 12.0
+		var at := bend + Vector3(cos(angle) * radius, 0, sin(angle) * radius)
 		var span := at - last
-		b.drum(taper, span.length() + 0.004, (at + last) * 0.5, forged, Basis(Quaternion(Vector3.UP, span.normalized())), 10)
+		var taper := lerpf(thick, 0.004, maxf(0.0, (i - 7.0) / 4.0))
+		b.drum(taper, span.length() + 0.002, (last + at) * 0.5, forged, Basis(Quaternion(Vector3.UP, span.normalized())), 10)
 		last = at
-	var tip := last
-	match era:
-		Eras.SKIMMER:
-			# No gate: a lashing of rope round its throat.
-			for i in 3:
-				b.drum(0.0105, 0.004, Vector3(0.0, 0.0, 0.05 + i * 0.006), _rope(), ALONG, 8)
-		Eras.SECOND:
-			for i in 4:
-				b.drum(0.011, 0.004, Vector3(0.0, 0.0, 0.04 + i * 0.006), _cord(), ALONG, 8)
-			# A bead on a tail of the cord.
-			_strand(b, Vector3(0.0, -0.01, 0.05), Vector3(0.012, -0.03, 0.054), 0.003, _cord())
-			b.ball(0.006, Vector3(0.013, -0.033, 0.055), _ceramic())
-		_:
-			var gate := _orange() if era == Eras.COLONIAL else (_brass() if era == Eras.FIRST else Paint.coat(Paint.YELLOW, 0.6))
-			_strand(b, Vector3(0.0, thick, bend.z - 0.026), tip, 0.0035, gate)
-			b.box(Vector3(0.008, 0.006, 0.008), Vector3(0.0, thick + 0.002, bend.z - 0.026), forged, 0.001)
+	# A slightly open latch leaves the throat readable from above and in profile.
+	var hinge := bend + Vector3(-0.043, 0, 0.016)
+	var gate := _brass() if era == Eras.FIRST else (_cord() if era == Eras.SECOND else _orange())
+	_strand(b, hinge, bend + Vector3(0.022, 0, 0.025), 0.0035, gate)
+	b.drum(0.008, 0.019, hinge, forged, Basis.IDENTITY, 10)
+	if era == Eras.SKIMMER or era == Eras.SECOND:
+		for i in 3:
+			b.drum(0.011, 0.004, Vector3(0, 0, 0.04 + i * 0.006), _cord() if era == Eras.SECOND else _rope(), ALONG, 8)
+	if era == Eras.SECOND:
+		_strand(b, Vector3(0, -0.01, 0.05), Vector3(0.012, -0.03, 0.054), 0.003, _cord())
+		b.ball(0.006, Vector3(0.013, -0.033, 0.055), _ceramic())
 
 
 ## The water canister: drawn alloy on its blue seat, rolled beads round it, a

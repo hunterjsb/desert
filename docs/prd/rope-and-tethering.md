@@ -497,7 +497,7 @@ it passes through or removes the route.
 
 The line's total paid-out length covers both legs, and a held end's reach subtracts the
 other leg's length. The three-body rope constraint carries tension to both endpoints and the
-actual guide holder, including its bend load, and the drawn rope runs through the same ring;
+actual guide holder, including its bend load, and the drawn rope runs through the same guide;
 offsetting a visual line alone is not routing. A guide removed from its mounting remains the
 physical guide while carried or loose, and a deleted guide releases the route cleanly. Saves
 add optional route references through existing item and end identity, and old saves default
@@ -589,3 +589,10 @@ continuity across the old thresholds and near empty and full, and rope 27 the cl
   was a 13.27 m/s chassis collision, with the measured opposing load below the injury
   threshold. Any release control and feedback must tell returning an end to the hands from
   dropping it, and resultant towing pull from opposing strain.
+
+### Hook appearance (SANDGAME, 2026-10-26)
+
+“The hook itself is the tie point, so the separate tie ring goes.” The drawn open throat
+replaces that ring within its existing footprint; the Socket, guide, rope attachment,
+interaction target and reach keep their existing positions and behavior. Other items retain
+their tie rings. [Art direction](../art-direction.md#one-kit-envelope-and-an-open-hook-2026-10-26) owns the model.

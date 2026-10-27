@@ -11,6 +11,8 @@ extends RefCounted
 ## the skimmer era repainted it crew red, taped it and welded scrap on; the
 ## second age mended it in glazed ceramic, saltwood and cord, with a charm.
 
+const IDS: Array[StringName] = [&"cutter", &"compass", &"sand_scoop", &"flare", &"sealant", &"med_kit", &"ration", &"tubers", &"fungus_caps", &"salt", &"saltbush_leaves", &"coalcane_bundle"]
+
 ## The tools whose last hands give them a shape, and the eras that do; any
 ## other is the company's issue.
 const SHAPED: Array[StringName] = [&"cutter", &"compass", &"sand_scoop", &"sealant", &"med_kit"]
@@ -757,7 +759,7 @@ static func _salt(b: Paint.Pieces) -> void:
 static func _leaves(b: Paint.Pieces, count: int) -> void:
 	var leaf: Paint.Coat = Dress.SALTBUSH
 	var wood: Paint.Coat = Dress.WOOD
-	var foot := Vector3(0.0, -0.03, 0.016)
+	var foot := Vector3(0.0, -0.0295, 0.016)
 	var shown := count if count >= 0 else 5
 	for i in shown:
 		var a := (i - 2) * 0.33

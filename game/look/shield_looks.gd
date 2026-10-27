@@ -14,6 +14,8 @@ extends RefCounted
 ## is the maker's own, bought new: round, bone white, finned, carried by its
 ## handle.
 
+const IDS: Array[StringName] = [&"shield", &"light_shield"]
+
 ## The eras whose hands gave the base shield a shape of its own; any other is
 ## colonial make, the company's issue too.
 const SHAPES := {Eras.SKIMMER: &"skimmer", Eras.FIRST: &"first", Eras.SECOND: &"second"}

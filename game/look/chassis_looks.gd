@@ -5,6 +5,7 @@ extends RefCounted
 
 const FRAMES: Array[StringName] = [&"chassis", &"helm_seat", &"hand_winch", &"mast", &"mast_top", &"boom", &"stake"]
 const PARTS: Array[StringName] = [&"frame", &"hull_plate"]
+const IDS: Array[StringName] = FRAMES + PARTS
 const ALONG := Basis(Vector3.RIGHT, PI / 2.0)
 static var _eras := {}
 

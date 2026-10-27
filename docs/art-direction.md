@@ -512,7 +512,7 @@ with the generator's blue collar ringing a neck between housing and cap, so a st
 - **The light shield** stays the maker's round bone white. It now has a gunmetal foot on rubber, eight
   fins, seams and vent slots, and a rubber-gripped carry handle over its lens.
 
-Each is one merged mesh, so draws are as before. Each stays inside its box (devices probe 48), and a
+Each is one merged mesh, so draws are as before. Each stays inside its box (devices probe 50), and a
 lineage's marks go on its era's shape. Triangles: colonial 1,932, skimmer 2,224, First Kingdoms 3,332
 and second age 4,116, against 1,080 for the old round one. The light shield is 2,568, also against
 1,080. A lineage's marks add up to about 700. Shots: `look/shield/shoot.sh`.
@@ -1342,3 +1342,21 @@ sand scoop 2,068 (1,624–1,792), flare 1,688, sealant 2,048 (1,608–2,088), me
 (356–1,020); ration 912 whole, tubers 2,080 at five, fungus caps 1,980 at three, salt 608,
 saltbush leaves 1,320 at five, coalcane bundle 2,056; the needle 100. Each is one draw, as before;
 the ration loses its light's. Shots: `look/held/shoot.sh`.
+
+
+## One kit envelope and an open hook (2026-10-26)
+
+SANDGAME’s fidelity review consolidates the three builder envelope probes into one check for
+all seven Looks families: every listed id in every era stays in its catalog envelope on one
+shared worn surface. The hook must read as a curved, open hook with a latch tongue at one metre,
+keeping its fit and real rope guide. SANDGAME’s follow-up places the throat at the existing tie,
+replacing only the hook’s separate ring within that ring’s footprint; the physical socket,
+guide, target and reach stay unchanged. The envelope check allows this footprint only for the hook.
+The forged throat grows relative to its mount;
+era changes stay in the flange, collar and lashings. No tie position or rope behavior changes.
+
+As built: the hook is one merged worn mesh; its open steel throat and ajar latch replace the
+separate ring at the existing guide. Era mounts keep their brass, ceramic, cord and scrap.
+Devices probe 50 checks 295 variants across seven builders, including the existing turbine mast
+and runner keel depths. It replaces probes 47–49. The leaf bundle sits half a millimetre higher
+to keep its outermost leaf within the food’s existing box.

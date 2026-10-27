@@ -14,6 +14,8 @@ extends RefCounted
 ## above while ridden, so its top carries the detail; emitters and lamps glow
 ## while it runs. Nose -Z, tail +Z; a part grows along +Z.
 
+const IDS: Array[StringName] = [&"board", &"racer_board", &"patrol_board", &"temple_board", &"hover_tray", &"skates", &"board_plate", &"keel", &"sail"]
+
 ## The eras whose hands give the company's board a shape of its own: a
 ## colonial one wears the colony's paint, the others what they did to it.
 const SHAPES := {Eras.COLONIAL: &"colonial", Eras.SKIMMER: &"skimmer", Eras.FIRST: &"first", Eras.SECOND: &"second"}

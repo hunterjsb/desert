@@ -849,6 +849,9 @@ static func _add_tie(body: Node3D, at: Vector3, outward: Vector3) -> void:
 	tie.kind = &"tie"
 	tie.transform = Transform3D(_facing(outward), at)
 	body.add_child(tie)
+	# The hook throat itself surrounds the tie; other fittings need a separate ring.
+	if body is RopeHook:
+		return
 	var ring := RopeEnd.ring_mesh()
 	# Stood across its socket, so a line's end reads as clipped through it.
 	ring.transform = Transform3D(_facing(outward) * Basis(Vector3.UP, PI / 2.0), at)
