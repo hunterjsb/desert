@@ -595,4 +595,4 @@ continuity across the old thresholds and near empty and full, and rope 27 the cl
 “The hook itself is the tie point, so the separate tie ring goes.” The drawn open throat
 replaces that ring within its existing footprint; the Socket, guide, rope attachment,
 interaction target and reach keep their existing positions and behavior. Other items retain
-their tie rings. [Art direction](../art-direction.md#one-kit-envelope-and-an-open-hook-2026-10-26) owns the model.
+their tie rings. [Art direction](../art-direction.md#model-standard-2026-10-26) owns the model.

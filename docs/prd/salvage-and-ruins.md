@@ -1739,4 +1739,4 @@ radio tools; this first slice adds no exposition dump or mandatory travel object
 
 The fidelity lane remodels the pipe-wall hut, cistern, low wall, pipeline, fuel bladder and
 vent spatter. Their existing site era, solids, rooms, exposure, ground profile and salvage
-sockets remain authoritative. [Art direction](../art-direction.md#ruins-at-a-distance-and-sailing-kit-2026-10-26) owns the appearance and viewing distances.
+sockets remain authoritative. [Art direction](../art-direction.md#model-standard-2026-10-26) owns the appearance and viewing distances.
