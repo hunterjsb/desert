@@ -13,7 +13,6 @@ const STONE_DARK := Color(0.5, 0.42, 0.33)
 const PIPE := Color(0.71, 0.7, 0.65)
 const HULL := Color(0.42, 0.44, 0.44)
 const BRASS := Color(0.74, 0.57, 0.27)
-const COPPER := Color(0.62, 0.36, 0.22)
 const TIDE := Color(0.78, 0.74, 0.66)
 ## The great houses' enamel: deep red, ochre, teal; a site's look picks one.
 const HOUSES: Array[Color] = [Color(0.5, 0.12, 0.1), Color(0.74, 0.53, 0.15), Color(0.1, 0.42, 0.42)]
@@ -29,7 +28,7 @@ static func coats() -> Dictionary:
 	if _coats.is_empty():
 		_coats = {"stone": Paint.coat(STONE, 0.15, 0.0, 0.92), "stone_dark": Paint.coat(STONE_DARK, 0.15, 0.0, 0.95),
 			"pipe": Paint.coat(PIPE, 0.6, 0.2, 0.55), "hull": Paint.coat(HULL, 0.9, 0.6, 0.5),
-			"brass": Paint.coat(BRASS, 0.0, 0.9, 0.32, 0.6), "copper": Paint.coat(COPPER, 0.0, 0.85, 0.4, 0.6),
+			"brass": Paint.coat(BRASS, 0.0, 0.9, 0.32, 0.6), "copper": Paint.coat(Paint.COPPER, 0.0, 0.85, 0.4, 0.6),
 			"tide": Paint.coat(TIDE, 0.0, 0.0, 0.95, 0.5)}
 		# Drawn in the first house's colour; each look swaps in its own.
 		_coats["house"] = Paint.coat(HOUSES[0], 0.6, 0.1, 0.35)

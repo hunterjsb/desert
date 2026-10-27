@@ -255,7 +255,7 @@ static func _console(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 static func _cargo(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var h := size * 0.5
 	# Drop orange is a recognition cue, even on a container repaired by later hands.
-	b.box(size - Vector3(0.04, 0.04, 0.08), Vector3.ZERO, Paint.coat(Paint.DROP_ORANGE, 0.45, 0.2), 0.04)
+	b.box(size - Vector3(0.04, 0.04, 0.08), Vector3.ZERO, Paint.coat(Paint.SAFETY_ORANGE, 0.45, 0.2), 0.04)
 	for z in [-1, 1]:
 		if era == Eras.SECOND and z == 1:
 			b.ball(1, Vector3(0, 0, h.z - 0.09), Paint.coat(Paint.CERAMIC), Vector3(h.x - 0.005, h.y - 0.005, 0.087))

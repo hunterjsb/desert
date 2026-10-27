@@ -18,6 +18,10 @@ const RUST := Color(0.4, 0.16, 0.07)
 const ROPE := Color(0.42, 0.31, 0.2)
 ## Sun-faded rubber, in the water socket's blue.
 const HOSE := Color(0.2, 0.36, 0.46)
+## The colonial survey's off-white composite and its safety orange (art
+## direction: off-white, grey, safety orange), which the company's drops wear too.
+const OFF_WHITE := Color(0.8, 0.79, 0.74)
+const SAFETY_ORANGE := Color(0.86, 0.42, 0.1)
 
 ## How worn each era's paint starts, before the weather: deep things were
 ## sealed away, surface ones were made crude and left out. Older is better.
@@ -73,20 +77,20 @@ const NOMAD_WOOD := Color(0.62, 0.5, 0.34)
 const NOMAD_BONE := Color(0.86, 0.82, 0.7)
 ## The Surveyor's suit is the shield maker's bone white, a shade darker at its
 ## seams, under a dark visor, with work gloves, a warm lamp and an amber
-## readout; company drops wear safety orange.
+## readout.
 const SUIT_SHADE := Color(0.7, 0.66, 0.57)
 const VISOR := Color(0.12, 0.16, 0.2)
 const GLOVE := Color(0.3, 0.29, 0.27)
 const LAMP := Color(1.0, 0.88, 0.7)
 const READOUT := Color(1.0, 0.62, 0.2)
-const DROP_ORANGE := Color(0.85, 0.45, 0.12)
-## A signal flare's red tube; an aerial wire's bare copper.
+## A signal flare's red tube; bare copper, an aerial wire's and the First
+## Kingdoms' fittings.
 const FLARE_RED := Color(0.75, 0.12, 0.08)
-const COPPER := Color(0.55, 0.36, 0.2)
+const COPPER := Color(0.62, 0.36, 0.22)
 const DYED := Color(0.55, 0.22, 0.12)
 const SCRAP: Array[Color] = [YELLOW, TEAL, BONE, STEEL]
 ## Boards lane: the hover field's blue, under every tray, board and keel;
-## grip tape, blacker than paint; the Knights Requisitioner's grey; sail cloth,
+## grip tape, blacker than paint (a dock's bay liners too); the Knights Requisitioner's grey; sail cloth,
 ## as the raised sail's shader has it.
 const HOVER := Color(0.45, 0.8, 1.0)
 const GRIP := Color(0.05, 0.05, 0.05)
@@ -107,6 +111,87 @@ const RATION_FOIL := Color(0.62, 0.53, 0.37)
 const RATION_BAR := Color(0.5, 0.36, 0.2)
 const CANE := Color(0.24, 0.15, 0.07)
 const CANE_PITH := Color(0.66, 0.56, 0.38)
+## Crops (Dress.crop) wear no paint: a tuber's skin, an oyster cap and its
+## cream gills over a white mat of mycelium, a potato's leaf and stem, the
+## leaf yellowing as it ripens and its pale flower, saltbush's leaf silvered
+## by its salt, its live wood (greyer than worked saltwood), and salt.
+const TUBER := Color(0.74, 0.6, 0.4)
+const CAP := Color(0.52, 0.48, 0.43)
+const GILLS := Color(0.88, 0.84, 0.74)
+const MYCELIUM := Color(0.9, 0.88, 0.82)
+const POTATO_LEAF := Color(0.26, 0.46, 0.18)
+const POTATO_STEM := Color(0.36, 0.48, 0.24)
+const FADING := Color(0.5, 0.52, 0.22)
+const FLOWER := Color(0.86, 0.82, 0.9)
+const SALTBUSH := Color(0.6, 0.69, 0.68)
+const STEM_WOOD := Color(0.42, 0.37, 0.3)
+const SALT := Color(0.9, 0.89, 0.84)
+## The radio's bands (RadioBandLooks), each its own colour so you can tell at
+## a glance which you're on: the window's glow, the tell stripe, the window
+## dark. Shortwave's violet is the antenna kite's cloth, the aerial it wants.
+const AM_GLOW := Color(1.0, 0.82, 0.55)
+const AM_TELL := Color(0.95, 0.62, 0.18)
+const AM_DARK := Color(0.42, 0.33, 0.2)
+const FM_GLOW := Color(0.62, 1.0, 0.78)
+const FM_TELL := Color(0.2, 0.75, 0.5)
+const FM_DARK := Color(0.2, 0.36, 0.28)
+const SW_GLOW := Color(0.8, 0.66, 1.0)
+const SW_TELL := Color(0.55, 0.32, 0.9)
+const SW_DARK := Color(0.3, 0.24, 0.4)
+## A radio's needle, lit red so it reads across its glowing band.
+const RADIO_NEEDLE := Color(0.85, 0.12, 0.06)
+## A free socket's recess (Dress.tell), darker than its bezel so its tab reads.
+const RECESS := Color(0.04, 0.04, 0.04)
+## The colonial converters and misc modules, another maker's than the set
+## (Dress): the converters' bands in teal and amber, their black enamel and
+## chrome, a converter's small dial face, its ink and red needle, and the
+## aerial's binding post in red.
+const FM_TEAL := Color(0.25, 0.62, 0.62)
+const SW_AMBER := Color(0.95, 0.55, 0.12)
+const ENAMEL := Color(0.07, 0.07, 0.075)
+const CHROME := Color(0.78, 0.78, 0.76)
+const DIAL_FACE := Color(0.93, 0.84, 0.62)
+const DIAL_INK := Color(0.12, 0.09, 0.07)
+const CONVERTER_NEEDLE := Color(0.8, 0.12, 0.06)
+const POST_RED := Color(0.55, 0.1, 0.07)
+## What a module shows on its face: a bleed resistor's neon, a preamp's valve
+## glass and glowing filament, a choke's blue can, a wire logger's window and
+## its recording lamp.
+const NEON := Color(1.0, 0.45, 0.2)
+const VALVE_GLASS := Color(0.5, 0.55, 0.5)
+const FILAMENT := Color(1.0, 0.5, 0.15)
+const CHOKE_BLUE := Color(0.2, 0.38, 0.6)
+const LOGGER_GLASS := Color(0.12, 0.14, 0.16)
+const RECORDING := Color(1.0, 0.2, 0.1)
+## The kites (KiteLooks): carbon spars; the flying line pale on its drum, its
+## turns a shade darker; the salvage kite's teal cloth and yellow trim.
+const CARBON := Color(0.1, 0.1, 0.1)
+const FLYING_LINE := Color(0.82, 0.8, 0.72)
+const LINE_SHADE := Color(0.7, 0.68, 0.6)
+const SALVAGE_CLOTH := Color(0.15, 0.48, 0.46)
+const SALVAGE_TRIM := Color(0.98, 0.74, 0.16)
+## The survey walker's lens strip, lit amber across its head (WalkerLooks).
+const SURVEY_LENS := Color(1.0, 0.6, 0.2)
+## The deliveryship's hull in stages of grey (DeliveryshipLooks), so a low sun
+## splits its facets: a pale belly panelled in two greys, a charcoal aft, the
+## shade under its keel.
+const HULL_PALE := Color(0.6, 0.6, 0.58)
+const HULL_MID := Color(0.5, 0.5, 0.49)
+const CHARCOAL := Color(0.3, 0.3, 0.32)
+const HULL_SHADE := Color(0.22, 0.22, 0.24)
+## The Varran empire's gear, new and glossy and out of place on Zan
+## (VarranLooks): imperial blue, ivory armour, an amber light where it's working.
+const IMPERIAL_BLUE := Color(0.1, 0.16, 0.34)
+const IVORY := Color(0.88, 0.85, 0.76)
+const WORKING_AMBER := Color(1.0, 0.62, 0.16)
+## The survey receiver's meter (SurveyReceiverLooks): its paper scale, lit
+## faintly from behind, the ink on it, its needle, and its amber lamp.
+const METER_PAPER := Color(0.88, 0.81, 0.61)
+const METER_INK := Color(0.08, 0.12, 0.12)
+const METER_NEEDLE := Color(0.73, 0.105, 0.045)
+const RECEIVER_LAMP := Color(0.77, 0.37, 0.07)
+## A burnt-out power bay's soot (PowerLooks), warmer than paint's black.
+const SOOT := Color(0.05, 0.045, 0.04)
 
 static var _worn: ShaderMaterial
 static var _noise: NoiseTexture2D
@@ -281,6 +366,15 @@ static func matte_black() -> Coat:
 ## The company's gunmetal fittings.
 static func gunmetal() -> Coat:
 	return coat(GUNMETAL, 0.5, 0.6, 0.5)
+
+
+## Colonial gear's off-white panels and its safety-orange stripes.
+static func off_white() -> Coat:
+	return coat(OFF_WHITE, 0.5, 0.1, 0.5)
+
+
+static func safety_orange() -> Coat:
+	return coat(SAFETY_ORANGE, 0.7, 0.0, 0.5)
 
 
 class Coat:

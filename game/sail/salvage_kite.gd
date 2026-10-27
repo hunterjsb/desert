@@ -26,8 +26,8 @@ func _ready() -> void:
 	_wing = MeshInstance3D.new()
 	_wing.mesh = KiteLooks.kite()
 	var cloth := _wing.mesh.surface_get_material(_wing.mesh.get_surface_count() - 1).duplicate() as ShaderMaterial
-	cloth.set_shader_parameter(&"cloth", KiteLooks.SALVAGE_CLOTH)
-	cloth.set_shader_parameter(&"chevron", KiteLooks.SALVAGE_TRIM)
+	cloth.set_shader_parameter(&"cloth", Paint.SALVAGE_CLOTH)
+	cloth.set_shader_parameter(&"chevron", Paint.SALVAGE_TRIM)
 	_wing.set_surface_override_material(_wing.mesh.get_surface_count() - 1, cloth)
 	add_child(_wing)
 	_canopy = CollisionShape3D.new()

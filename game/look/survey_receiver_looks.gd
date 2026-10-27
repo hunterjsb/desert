@@ -29,8 +29,8 @@ static func frame() -> ArrayMesh:
 	var rubber := Paint.coat(Paint.BLACK, 0.35, 0.0, 0.94)
 	var brass := Paint.coat(Paint.BRASS, 0.24, 0.75, 0.43)
 	var steel := Paint.coat(Paint.STEEL, 0.18, 0.8, 0.42)
-	var paper := Paint.coat(Color(0.88, 0.81, 0.61), 0.08, 0.0, 0.9, 1.0, 0.14)
-	var ink := Paint.coat(Color(0.08, 0.12, 0.12), 0.0, 0.0, 0.85)
+	var paper := Paint.coat(Paint.METER_PAPER, 0.08, 0.0, 0.9, 1.0, 0.14)
+	var ink := Paint.coat(Paint.METER_INK, 0.0, 0.0, 0.85)
 	# The cast rim protects the recessed face when the instrument is set down.
 	b.box(Vector3(0.324, 0.25, 0.15), Vector3(0.0, -0.105, 0.0), shell, 0.026)
 	b.box(Vector3(0.282, 0.214, 0.014), Vector3(0.0, -0.105, 0.074), enamel, 0.018)
@@ -74,7 +74,7 @@ static func frame() -> ArrayMesh:
 		b.box(Vector3(0.002, 0.004 + i * 0.003, 0.001), Vector3(0.069 + i * 0.005, -0.184, 0.090), ink, 0.0)
 	b.drum(0.010, 0.010, LAMP_AT, dark, FRONT, 16)
 	b.drum(0.0065, 0.011, LAMP_AT + Vector3(0.0, 0.0, 0.002),
-		Paint.coat(Color(0.77, 0.37, 0.07), 0.08, 0.1, 0.35, 1.0, 0.8), FRONT, 16)
+		Paint.coat(Paint.RECEIVER_LAMP, 0.08, 0.1, 0.35, 1.0, 0.8), FRONT, 16)
 	# The loop hinges between two cast lugs, not in empty space.
 	for x in [-1.0, 1.0]:
 		b.box(Vector3(0.041, 0.024, 0.054), Vector3(x * 0.072, 0.021, 0.0), dark, 0.006)
@@ -95,7 +95,7 @@ static func needle() -> ArrayMesh:
 	if _needle == null:
 		var b := Paint.Pieces.new()
 		b.box(Vector3(0.0018, 0.062, 0.0015), Vector3(0.0, 0.028, 0.0),
-			Paint.coat(Color(0.73, 0.105, 0.045), 0.0, 0.3, 0.4), 0.0003)
+			Paint.coat(Paint.METER_NEEDLE, 0.0, 0.3, 0.4), 0.0003)
 		b.drum(0.006, 0.003, Vector3.ZERO, Paint.coat(Paint.GUNMETAL, 0.0, 0.7), FRONT, 16)
 		_needle = b.commit()
 	return _needle

@@ -104,7 +104,7 @@ static func needle() -> ArrayMesh:
 static func _body(era: StringName) -> Paint.Coat:
 	match era:
 		Eras.COLONIAL, Eras.FIRST:
-			return Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5)
+			return Paint.off_white()
 		Eras.SKIMMER:
 			return Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55)
 		Eras.SECOND:
@@ -126,7 +126,7 @@ static func _metal(era: StringName) -> Paint.Coat:
 static func _accent(era: StringName) -> Paint.Coat:
 	match era:
 		Eras.COLONIAL:
-			return Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
+			return Paint.safety_orange()
 		Eras.FIRST:
 			return _brass()
 		Eras.SKIMMER:
@@ -359,7 +359,7 @@ static func _compass(b: Paint.Pieces, era: StringName) -> void:
 			b.box(Vector3(0.0028, 0.0018, 0.006), turn * Vector3(0.0, 0.0548, 0.0245), metal, 0.0, turn)
 	var card := Paint.coat(Paint.LIMEWASH if era == Eras.SECOND else Paint.BONE, 0.15, 0.0, 0.5, 0.3)
 	b.drum(0.0445, 0.0012, Vector3(0.0, 0.0, 0.0286), card, ALONG, 32)
-	var north := Paint.coat(Paint.RUST if era == Eras.SECOND else (ColonialKit.ORANGE if square else Paint.YELLOW), 0.1, 0.0, 0.5)
+	var north := Paint.coat(Paint.RUST if era == Eras.SECOND else (Paint.SAFETY_ORANGE if square else Paint.YELLOW), 0.1, 0.0, 0.5)
 	for i in 16:
 		var turn := Basis(Vector3.BACK, TAU * i / 16.0)
 		var long := 0.01 if i % 4 == 0 else (0.006 if i % 2 == 0 else 0.004)
@@ -473,7 +473,7 @@ static func _scoop(b: Paint.Pieces, era: StringName) -> void:
 static func _flare(b: Paint.Pieces, size: Vector3) -> void:
 	var red := Paint.coat(Paint.FLARE_RED, 0.5, 0.0, 0.55)
 	var rubber := _rubber()
-	var orange := Paint.coat(Paint.DROP_ORANGE, 0.5, 0.0, 0.5)
+	var orange := Paint.coat(Paint.SAFETY_ORANGE, 0.5, 0.0, 0.5)
 	b.drum(0.0235, 0.03, Vector3(0.0, 0.0, 0.015), rubber, ALONG, 16)
 	for i in 12:
 		var turn := Basis(Vector3.BACK, TAU * i / 12.0)
@@ -609,7 +609,7 @@ static func _med_kit(b: Paint.Pieces, era: StringName) -> void:
 		# A finger groove along the lid's edge where you lift it.
 		b.box(Vector3(0.13, 0.003, 0.004), Vector3(0.0, 0.0555, 0.043), _rubber(), 0.0)
 		# The latches either side of its seal, on the edge you open.
-		var latch := Paint.coat(ColonialKit.ORANGE, 0.6, 0.0, 0.5) if era == Eras.COLONIAL else (_brass() if era == Eras.FIRST else _steel())
+		var latch := Paint.coat(Paint.SAFETY_ORANGE, 0.6, 0.0, 0.5) if era == Eras.COLONIAL else (_brass() if era == Eras.FIRST else _steel())
 		for x in [-0.045, 0.045]:
 			b.box(Vector3(0.022, 0.006, 0.026), Vector3(x, 0.0565, 0.038), latch, 0.002)
 			b.box(Vector3(0.016, 0.004, 0.008), Vector3(x, 0.0575, 0.046), _rubber(), 0.001)

@@ -39,13 +39,6 @@ const BARREL := 30.0
 ## Where the muzzle is, for the flash.
 const MUZZLE := Vector3(0.0, -DRUM_DEEP * 0.5 - BARREL - 2.0, 0.0)
 
-const BELLY := Color(0.6, 0.6, 0.58)
-const BELLY_2 := Color(0.5, 0.5, 0.49)
-const CHARCOAL := Color(0.3, 0.3, 0.32)
-const SHADE := Color(0.22, 0.22, 0.24)
-const OFF_WHITE := Color(0.84, 0.82, 0.76)
-const ORANGE := Color(0.9, 0.42, 0.1)
-
 static var _made := {}
 static var _flash: ArrayMesh
 
@@ -74,10 +67,10 @@ class CraftKit:
 
 
 static func _coats() -> Dictionary:
-	return {"hull": Paint.coat(BELLY, 0.3, 0.0, 0.7), "hull_2": Paint.coat(BELLY_2, 0.3, 0.0, 0.7),
-		"dark": Paint.coat(CHARCOAL, 0.3, 0.0, 0.65), "shade": Paint.coat(SHADE, 0.2, 0.0, 0.8),
-		"white": Paint.coat(OFF_WHITE, 0.4, 0.0, 0.5), "grey": Paint.coat(Paint.GUNMETAL.lightened(0.25), 0.4, 0.2, 0.5),
-		"orange": Paint.coat(ORANGE, 0.4, 0.0, 0.5), "black": Paint.coat(Paint.BLACK, 0.1, 0.2, 0.6),
+	return {"hull": Paint.coat(Paint.HULL_PALE, 0.3, 0.0, 0.7), "hull_2": Paint.coat(Paint.HULL_MID, 0.3, 0.0, 0.7),
+		"dark": Paint.coat(Paint.CHARCOAL, 0.3, 0.0, 0.65), "shade": Paint.coat(Paint.HULL_SHADE, 0.2, 0.0, 0.8),
+		"white": Paint.coat(Paint.OFF_WHITE, 0.4, 0.0, 0.5), "grey": Paint.coat(Paint.GUNMETAL.lightened(0.25), 0.4, 0.2, 0.5),
+		"orange": Paint.coat(Paint.SAFETY_ORANGE, 0.4, 0.0, 0.5), "black": Paint.coat(Paint.BLACK, 0.1, 0.2, 0.6),
 		"steel": Paint.coat(Paint.STEEL, 0.3, 0.45, 0.32),
 		"lens": Paint.coat(Paint.CELL, 0.0, 0.4, 0.12, 0.0),
 		"cells": Paint.coat(Paint.CELL.lightened(0.08), 0.0, 0.3, 0.25, 0.0)}

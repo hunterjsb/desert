@@ -248,9 +248,9 @@ static func _taped_lamp(b: Paint.Pieces, at: Vector3) -> void:
 static func _issue(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 	var issue := shape == &""
 	var crew := shape == &"skimmer"
-	var orange := Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
+	var orange := Paint.safety_orange()
 	var deck := Paint.coat(Paint.TEAL) if issue else (Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55) if crew
-		else Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5))
+		else Paint.off_white())
 	var rail := Paint.coat(Paint.GUNMETAL) if issue else Paint.coat(ColonialKit.GREY, 0.6, 0.4, 0.45)
 	var under := Paint.coat(Paint.GUNMETAL, 0.8, 0.5, 0.5) if issue else Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
 	_hull(b, size, under, rail, Paint.brass() if shape == &"first" else Paint.rubber())

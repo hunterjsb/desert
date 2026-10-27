@@ -118,10 +118,10 @@ static func _lost(shape: StringName, k: int, side: float) -> bool:
 static func _housing(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 	var h := size * 0.5
 	var crew := shape == &"skimmer"
-	var panel := Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55) if crew else Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5)
+	var panel := Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55) if crew else Paint.off_white()
 	var grey := Paint.coat(ColonialKit.GREY, 0.6, 0.4, 0.45)
 	var dark := Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
-	var stripe := Paint.coat(Paint.BONE, 0.7) if crew else Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
+	var stripe := Paint.coat(Paint.BONE, 0.7) if crew else Paint.safety_orange()
 	var rubber := Paint.rubber()
 	var lo := _span(size).x
 	var hi := _span(size).y
@@ -169,8 +169,8 @@ static func _housing(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 ## dark lens in a grey bezel on top.
 static func _colonial(b: Paint.Pieces, size: Vector3, crew := false) -> void:
 	var base := _cap(size)
-	var panel := Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55) if crew else Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5)
-	var ends := Paint.tape() if crew else Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
+	var panel := Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55) if crew else Paint.off_white()
+	var ends := Paint.tape() if crew else Paint.safety_orange()
 	var dark := Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
 	var black := Paint.black()
 	b.box(Vector3(0.31, 0.012, 0.23), Vector3(0.0, base + 0.004, 0.0), dark, 0.004)
@@ -225,7 +225,7 @@ static func _skimmer(b: Paint.Pieces, size: Vector3) -> void:
 static func _first(b: Paint.Pieces, size: Vector3) -> void:
 	var h := size * 0.5
 	var base := _cap(size)
-	var panel := Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5)
+	var panel := Paint.off_white()
 	var brass := Paint.brass()
 	var copper := Paint.coat(Paint.COPPER, 0.3, 0.85, 0.4, 0.5)
 	var black := Paint.black()

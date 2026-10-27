@@ -105,7 +105,7 @@ static func dial_needle() -> ArrayMesh:
 	return _cached(&"needle", &"radio", func() -> ArrayMesh:
 		var b := Paint.Pieces.new()
 		b.box(Vector3(0.0022, Radio.BAND_HEIGHT - 0.008, 0.0016), Vector3.ZERO,
-			Paint.coat(Color(0.85, 0.12, 0.06), 0.0, 0.0, 0.4, 0.0, 1.2), 0.0005)
+			Paint.coat(Paint.RADIO_NEEDLE, 0.0, 0.0, 0.4, 0.0, 1.2), 0.0005)
 		return b.commit())
 
 
@@ -149,7 +149,7 @@ static func tell(kind: StringName) -> ArrayMesh:
 		for s in [-1, 1]:
 			b.box(Vector3(0.13, 0.022, 0.012), Vector3(0.0, s * 0.054, 0.006), bezel, 0.004)
 			b.box(Vector3(0.022, 0.086, 0.012), Vector3(s * 0.054, 0.0, 0.006), bezel, 0.004)
-		b.box(Vector3(0.088, 0.088, 0.006), Vector3(0.0, 0.0, 0.003), Paint.coat(Color(0.04, 0.04, 0.04), 0.0, 0.0, 0.7, 0.3))
+		b.box(Vector3(0.088, 0.088, 0.006), Vector3(0.0, 0.0, 0.003), Paint.coat(Paint.RECESS, 0.0, 0.0, 0.7, 0.3))
 		b.box(Vector3(0.084, 0.04, 0.008), Vector3(0.0, 0.022, 0.005), Paint.coat(Catalog.KINDS[kind], 0.0, 0.0, 0.5, 0.15, 0.35), 0.002)
 		return b.commit())
 
@@ -329,7 +329,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 		&"antenna_kite":
 			return KiteLooks.packed(size)
 		&"salvage_kite":
-			return KiteLooks.packed(size, KiteLooks.SALVAGE_CLOTH, KiteLooks.SALVAGE_TRIM)
+			return KiteLooks.packed(size, Paint.SALVAGE_CLOTH, Paint.SALVAGE_TRIM)
 		&"radio", &"radio_colonial", &"radio_skimmer", &"radio_kingdoms", &"radio_second_age":
 			# The field radio in its maker's look, its body alone: its needle,
 			# knobs, lamps and band window are the radio's own, live.
@@ -394,7 +394,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 		&"fm_converter":
 			# Its whip up from the top's outer back corner on a chromed swivel,
 			# leaning out from the set, drawn out in three lengths to a ball tip.
-			var chrome := _converter(b, size, FM_TEAL, "FM")
+			var chrome := _converter(b, size, Paint.FM_TEAL, "FM")
 			var lean := Basis(Vector3.RIGHT, 0.14)
 			var foot := Vector3(-h.x + 0.024, h.y - 0.005, size.z - 0.018)
 			b.drum(0.0065, 0.005, foot + Vector3(0.0, 0.0025, 0.0), chrome, Basis.IDENTITY, 10)
@@ -407,9 +407,9 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 		&"sw_converter":
 			# Two binding posts on its top for a long wire, short enough to clear
 			# the converter over it: the aerial's on red, the ground's on black.
-			_converter(b, size, SW_AMBER, "SW")
+			_converter(b, size, Paint.SW_AMBER, "SW")
 			var brass := Paint.coat(Paint.BRASS, 0.6, 0.8, 0.35)
-			for post: Array in [[-0.014, Color(0.55, 0.1, 0.07)], [0.014, Paint.BLACK]]:
+			for post: Array in [[-0.014, Paint.POST_RED], [0.014, Paint.BLACK]]:
 				var at := Vector3(post[0], h.y - 0.005, size.z * 0.55)
 				b.drum(0.0055, 0.003, at + Vector3(0.0, 0.0015, 0.0), Paint.coat(post[1], 0.3, 0.0, 0.35), Basis.IDENTITY, 10)
 				b.drum(0.0022, 0.006, at + Vector3(0.0, 0.005, 0.0), brass, Basis.IDENTITY, 8)
@@ -445,18 +445,17 @@ static func crop(id: StringName, stage: StringName, fold := 0.0) -> ArrayMesh:
 
 
 ## Plants wear no paint, so nothing of them chips; they hold a little sand.
-## Saltbush is silvered by the salt in its leaves.
-static var TUBER := Paint.coat(Color(0.74, 0.6, 0.4), 0.0, 0.0, 0.8, 0.4)
-static var CAP := Paint.coat(Color(0.52, 0.48, 0.43), 0.0, 0.0, 0.7, 0.3)
-static var GILLS := Paint.coat(Color(0.88, 0.84, 0.74), 0.0, 0.0, 0.8, 0.1)
-static var MYCELIUM := Paint.coat(Color(0.9, 0.88, 0.82), 0.0, 0.0, 0.95, 0.3)
-static var POTATO_LEAF := Paint.coat(Color(0.26, 0.46, 0.18), 0.0, 0.0, 0.7, 0.3)
-static var POTATO_STEM := Paint.coat(Color(0.36, 0.48, 0.24), 0.0, 0.0, 0.8, 0.3)
-static var FADING := Paint.coat(Color(0.5, 0.52, 0.22), 0.0, 0.0, 0.75, 0.4)
-static var FLOWER := Paint.coat(Color(0.86, 0.82, 0.9), 0.0, 0.0, 0.6, 0.1)
-static var SALTBUSH := Paint.coat(Color(0.6, 0.69, 0.68), 0.0, 0.25, 0.4, 0.2)
-static var WOOD := Paint.coat(Color(0.42, 0.37, 0.3), 0.0, 0.0, 0.9, 0.5)
-static var SALT := Paint.coat(Color(0.9, 0.89, 0.84), 0.0, 0.0, 0.9, 0.2)
+static var TUBER := Paint.coat(Paint.TUBER, 0.0, 0.0, 0.8, 0.4)
+static var CAP := Paint.coat(Paint.CAP, 0.0, 0.0, 0.7, 0.3)
+static var GILLS := Paint.coat(Paint.GILLS, 0.0, 0.0, 0.8, 0.1)
+static var MYCELIUM := Paint.coat(Paint.MYCELIUM, 0.0, 0.0, 0.95, 0.3)
+static var POTATO_LEAF := Paint.coat(Paint.POTATO_LEAF, 0.0, 0.0, 0.7, 0.3)
+static var POTATO_STEM := Paint.coat(Paint.POTATO_STEM, 0.0, 0.0, 0.8, 0.3)
+static var FADING := Paint.coat(Paint.FADING, 0.0, 0.0, 0.75, 0.4)
+static var FLOWER := Paint.coat(Paint.FLOWER, 0.0, 0.0, 0.6, 0.1)
+static var SALTBUSH := Paint.coat(Paint.SALTBUSH, 0.0, 0.25, 0.4, 0.2)
+static var WOOD := Paint.coat(Paint.STEM_WOOD, 0.0, 0.0, 0.9, 0.5)
+static var SALT := Paint.coat(Paint.SALT, 0.0, 0.0, 0.9, 0.2)
 static var MOUND := Paint.coat(Paint.SOIL.lightened(0.04), 0.0, 0.0, 1.0, 0.8)
 ## Upright, y up, onto a part's +Z.
 const UP := Basis(Vector3.RIGHT, PI / 2.0)
@@ -467,17 +466,12 @@ const UP := Basis(Vector3.RIGHT, PI / 2.0)
 ## shortwave converter's amber.
 static func band_lamp(band: StringName) -> ArrayMesh:
 	return _cached(&"band_lamp", band, func() -> ArrayMesh:
-		var colour: Color = {Radio.AM_BAND: Color(1.0, 0.82, 0.55), Radio.FM_BAND: FM_TEAL.lightened(0.35),
-			Radio.SW_BAND: SW_AMBER}[band]
+		var colour: Color = {Radio.AM_BAND: Paint.AM_GLOW, Radio.FM_BAND: Paint.FM_TEAL.lightened(0.35),
+			Radio.SW_BAND: Paint.SW_AMBER}[band]
 		var b := Paint.Pieces.new()
 		b.drum(0.0032, 0.0016, Vector3(0.0, 0.0, 0.0008), Paint.coat(colour, 0.0, 0.0, 0.3, 0.0, 1.4),
 			Basis(Vector3.RIGHT, PI / 2.0), 10)
 		return b.commit())
-
-
-## The converters' bands: what tells one from the other on a set's side.
-const FM_TEAL := Color(0.25, 0.62, 0.62)
-const SW_AMBER := Color(0.95, 0.55, 0.12)
 
 
 ## The converters' maker's case, a converter's or a misc bay module's, a
@@ -487,8 +481,8 @@ const SW_AMBER := Color(0.95, 0.55, 0.12)
 ## one over or under it clears what stands on its top. Returns its body.
 static func _case(b: Paint.Pieces, size: Vector3, colour: Paint.Coat) -> Vector3:
 	var h := size * 0.5
-	var enamel := Paint.coat(Color(0.07, 0.07, 0.075), 0.7, 0.2, 0.35)
-	var chrome := Paint.coat(Color(0.78, 0.78, 0.76), 0.3, 0.95, 0.18)
+	var enamel := Paint.coat(Paint.ENAMEL, 0.7, 0.2, 0.35)
+	var chrome := Paint.coat(Paint.CHROME, 0.3, 0.95, 0.18)
 	var tall := size.y - 0.01
 	b.box(Vector3(size.x - 0.002, tall, 0.004), Vector3(0.0, 0.0, 0.002), enamel, 0.001)
 	for x in [-1, 1]:
@@ -510,20 +504,20 @@ static func _case(b: Paint.Pieces, size: Vector3, colour: Paint.Coat) -> Vector3
 ## Returns its chrome.
 static func _converter(b: Paint.Pieces, size: Vector3, band: Color, name: String) -> Paint.Coat:
 	var along := UP
-	var chrome := Paint.coat(Color(0.78, 0.78, 0.76), 0.3, 0.95, 0.18)
-	var ink := Paint.coat(Color(0.12, 0.09, 0.07), 0.0, 0.0, 0.7, 0.0)
+	var chrome := Paint.coat(Paint.CHROME, 0.3, 0.95, 0.18)
+	var ink := Paint.coat(Paint.DIAL_INK, 0.0, 0.0, 0.7, 0.0)
 	var colour := Paint.coat(band, 0.5, 0.0, 0.5)
 	var tall := size.y - 0.01
 	var body := _case(b, size, colour)
 	var on := 0.004 + body.z + 0.0035
 	# Its own small dial: a pale window ruled across, a red needle.
 	var window := Vector3(-0.011, 0.016, on)
-	b.box(Vector3(0.05, 0.013, 0.001), window, Paint.coat(Color(0.93, 0.84, 0.62), 0.0, 0.0, 0.25, 0.0), 0.0)
+	b.box(Vector3(0.05, 0.013, 0.001), window, Paint.coat(Paint.DIAL_FACE, 0.0, 0.0, 0.25, 0.0), 0.0)
 	for i in 11:
 		var long := i % 5 == 0
 		var tick := 0.006 if long else 0.0035
 		b.box(Vector3(0.0007, tick, 0.001), window + Vector3(-0.022 + i * 0.0044, -0.0065 + tick * 0.5, 0.0005), ink, 0.0)
-	b.box(Vector3(0.0012, 0.012, 0.001), window + Vector3(0.004, 0.0, 0.001), Paint.coat(Color(0.8, 0.12, 0.06), 0.0, 0.0, 0.4), 0.0)
+	b.box(Vector3(0.0012, 0.012, 0.001), window + Vector3(0.004, 0.0, 0.001), Paint.coat(Paint.CONVERTER_NEEDLE, 0.0, 0.0, 0.4), 0.0)
 	# Its tuning knob toward the set's face, black, a chrome cap.
 	var knob := Vector3(0.029, 0.01, on)
 	b.drum(0.0105, 0.007, knob + Vector3(0.0, 0.0, 0.0035), Paint.coat(Paint.BLACK, 0.3, 0.3, 0.5), along, 14)
@@ -548,7 +542,7 @@ static func _converter(b: Paint.Pieces, size: Vector3, band: Color, name: String
 static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 	var h := size * 0.5
 	var along := UP
-	var copper := Paint.coat(Color(0.72, 0.38, 0.2), 0.6, 0.7, 0.35)
+	var copper := Paint.coat(Paint.COPPER, 0.6, 0.7, 0.35)
 	var ceramic := Paint.coat(Paint.CERAMIC, 0.4, 0.0, 0.3)
 	var steel := Paint.coat(Paint.STEEL, 0.6, 0.6, 0.3)
 	var colour := Paint.coat(Catalog.PARTS[id].color, 0.5, 0.0, 0.5)
@@ -564,33 +558,33 @@ static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 			b.drum(0.008, 0.07, Vector3(0.0, 0.012, on + 0.008), ceramic, Basis(Vector3.BACK, PI / 2.0), 10)
 			for i in 6:
 				b.drum(0.012, 0.0025, Vector3(-0.028 + i * 0.0112, 0.012, on + 0.008), ceramic, Basis(Vector3.BACK, PI / 2.0), 12)
-			b.ball(0.004, Vector3(0.036, -0.012, on + 0.003), Paint.coat(Color(1.0, 0.45, 0.2), 0.0, 0.0, 0.3, 0.0, 1.2))
+			b.ball(0.004, Vector3(0.036, -0.012, on + 0.003), Paint.coat(Paint.NEON, 0.0, 0.0, 0.3, 0.0, 1.2))
 		&"valve_preamp":
 			# A valve in a cage, its filament glowing.
 			b.drum(0.01, 0.006, Vector3(0.0, 0.006, on + 0.003), Paint.coat(Paint.BLACK, 0.5), along, 12)
-			b.drum(0.008, 0.04, Vector3(0.0, 0.006, on + 0.026), Paint.coat(Color(0.5, 0.55, 0.5), 0.2, 0.2, 0.05), along, 12)
-			b.drum(0.0025, 0.024, Vector3(0.0, 0.006, on + 0.026), Paint.coat(Color(1.0, 0.5, 0.15), 0.0, 0.0, 0.3, 0.0, 2.0), along, 6)
+			b.drum(0.008, 0.04, Vector3(0.0, 0.006, on + 0.026), Paint.coat(Paint.VALVE_GLASS, 0.2, 0.2, 0.05), along, 12)
+			b.drum(0.0025, 0.024, Vector3(0.0, 0.006, on + 0.026), Paint.coat(Paint.FILAMENT, 0.0, 0.0, 0.3, 0.0, 2.0), along, 6)
 			for i in 6:
 				var a := TAU * i / 6.0
 				b.box(Vector3(0.0018, 0.0018, 0.046), Vector3(cos(a) * 0.012, 0.006 + sin(a) * 0.012, on + 0.024), steel, 0.0)
 			b.drum(0.015, 0.0025, Vector3(0.0, 0.006, on + 0.047), steel, along, 12)
 		&"static_choke":
 			# A choke's can, its windings showing through a slot.
-			b.drum(0.017, 0.03, Vector3(0.0, 0.006, on + 0.015), Paint.coat(Color(0.2, 0.38, 0.6), 0.5, 0.5, 0.3), along, 14)
+			b.drum(0.017, 0.03, Vector3(0.0, 0.006, on + 0.015), Paint.coat(Paint.CHOKE_BLUE, 0.5, 0.5, 0.3), along, 14)
 			for i in 5:
 				b.ring(0.0155, 0.0185, Vector3(0.0, 0.006, on + 0.004 + i * 0.006), copper, along, 12)
 		&"wire_logger":
 			# Two reels of wire under a window, a red lamp while it records.
-			b.box(Vector3(0.07, 0.04, 0.002), Vector3(-0.004, 0.008, on + 0.001), Paint.coat(Color(0.12, 0.14, 0.16), 0.0, 0.0, 0.1), 0.001)
+			b.box(Vector3(0.07, 0.04, 0.002), Vector3(-0.004, 0.008, on + 0.001), Paint.coat(Paint.LOGGER_GLASS, 0.0, 0.0, 0.1), 0.001)
 			for x in [-0.02, 0.012]:
 				b.drum(0.013, 0.004, Vector3(x, 0.008, on + 0.004), Paint.coat(Paint.BONE, 0.4), along, 14)
 				b.drum(0.006, 0.005, Vector3(x, 0.008, on + 0.005), copper, along, 12)
-			b.ball(0.003, Vector3(0.04, 0.024, on + 0.002), Paint.coat(Color(1.0, 0.2, 0.1), 0.0, 0.0, 0.3, 0.0, 1.5))
+			b.ball(0.003, Vector3(0.04, 0.024, on + 0.002), Paint.coat(Paint.RECORDING, 0.0, 0.0, 0.3, 0.0, 1.5))
 		&"solar_lid":
 			# A lid of cells, hinged open off its top.
 			var lid := Basis(Vector3.RIGHT, -0.5)
 			var hinge := Vector3(0.0, h.y, front)
-			b.box(Vector3(body.x, 0.004, 0.07), hinge + lid * Vector3(0.0, 0.0, 0.035), Paint.coat(Color(0.07, 0.07, 0.075), 0.7, 0.2, 0.35), 0.002, lid)
+			b.box(Vector3(body.x, 0.004, 0.07), hinge + lid * Vector3(0.0, 0.0, 0.035), Paint.coat(Paint.ENAMEL, 0.7, 0.2, 0.35), 0.002, lid)
 			for i in 3:
 				for j in 2:
 					b.box(Vector3(0.026, 0.002, 0.03), hinge + lid * Vector3(-0.03 + i * 0.03, 0.003, 0.018 + j * 0.033),
@@ -607,7 +601,7 @@ static func _crop(id: StringName, stage: StringName, fold: float) -> ArrayMesh:
 		&"coalcane":
 			# Ringed woody stalks repeat the cut bundle's six stems, with long cane leaves.
 			var tall := 0.18 if young else (0.65 if stage == Plant.YOUNG else 1.2)
-			var wood := Paint.coat(Color(0.24, 0.15, 0.07), 0.7)
+			var wood := Paint.coat(Paint.CANE, 0.7)
 			for i in 6:
 				var a := TAU * i / 6.0
 				var foot := Vector3(sin(a) * 0.14, 0, cos(a) * 0.14)

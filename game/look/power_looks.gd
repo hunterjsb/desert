@@ -50,10 +50,10 @@ static func _bezels(b: Paint.Pieces, id: StringName, look: Paint.Coat, rim: floa
 
 static func _cabinet(b: Paint.Pieces, size: Vector3) -> void:
 	var h := size * 0.5
-	var panel := Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5)
+	var panel := Paint.off_white()
 	var grey := Paint.coat(ColonialKit.GREY, 0.6, 0.4, 0.45)
 	var dark := Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
-	var orange := Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
+	var orange := Paint.safety_orange()
 	var black := Paint.black()
 	var face := -h.z
 	var recess: float = PowerBox.MODELS[&"power_cabinet"].recess
@@ -118,7 +118,7 @@ static func _dock(b: Paint.Pieces, size: Vector3) -> void:
 		b.box(Vector3(size.x, recess, bar.y - bar.x), Vector3(0.0, y, (bar.x + bar.y) * 0.5), teal, 0.003)
 	for each: Array in _bays(&"power_box"):
 		var at: Transform3D = each[1]
-		b.box(Vector3(0.276, 0.196, 0.004), at * Vector3(0.0, 0.0, 0.003), Paint.coat(Color(0.05, 0.05, 0.05), 0.2), 0.001, at.basis)
+		b.box(Vector3(0.276, 0.196, 0.004), at * Vector3(0.0, 0.0, 0.003), Paint.coat(Paint.GRIP, 0.2), 0.001, at.basis)
 	_bezels(b, &"power_box", black, 0.006)
 	# Rubber corners, the batch stencil on its front, grips in its sides.
 	for x in [-1, 1]:
@@ -139,7 +139,7 @@ static func _rack(b: Paint.Pieces, size: Vector3) -> void:
 	var gun := Paint.coat(SkimmerKit.GUNMETAL, 0.8, 0.5, 0.5)
 	var rubber := Paint.coat(SkimmerKit.RUBBER, 0.2, 0.0, 0.9)
 	var tape := Paint.tape()
-	var soot := Paint.coat(Color(0.05, 0.045, 0.04), 0.0, 0.0, 1.0, 0.3)
+	var soot := Paint.coat(Paint.SOOT, 0.0, 0.0, 1.0, 0.3)
 	# Tube posts on rubber feet, rails across, a sheet of scrap behind.
 	for x in [-1, 1]:
 		for z in [-1, 1]:

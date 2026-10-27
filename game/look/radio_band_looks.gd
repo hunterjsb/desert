@@ -16,13 +16,13 @@ extends RefCounted
 ## tell colour (stripes, switch), dark colour (the window when off)]
 const AM := {"id": &"am", "label": "AM", "low": Dial.LOWEST, "high": Dial.HIGHEST, "unit": "kHz",
 	"numbers": ["150", "530", "1100", "1700"], "per": 1.0,
-	"glow": Color(1.0, 0.82, 0.55), "tell": Color(0.95, 0.62, 0.18), "dark": Color(0.42, 0.33, 0.2)}
+	"glow": Paint.AM_GLOW, "tell": Paint.AM_TELL, "dark": Paint.AM_DARK}
 const FM := {"id": &"fm", "label": "FM", "low": Fm.LOWEST, "high": Fm.HIGHEST, "unit": "MHz",
 	"numbers": ["88", "92", "96", "100", "104", "108"], "per": 1.0,
-	"glow": Color(0.62, 1.0, 0.78), "tell": Color(0.2, 0.75, 0.5), "dark": Color(0.2, 0.36, 0.28)}
+	"glow": Paint.FM_GLOW, "tell": Paint.FM_TELL, "dark": Paint.FM_DARK}
 const SW := {"id": &"sw", "label": "SW", "low": Shortwave.LOWEST / 1000.0, "high": Shortwave.HIGHEST / 1000.0, "unit": "MHz",
 	"numbers": ["2", "6", "10", "14", "18", "22", "26", "30"], "per": 1.0,
-	"glow": Color(0.8, 0.66, 1.0), "tell": Color(0.55, 0.32, 0.9), "dark": Color(0.3, 0.24, 0.4)}
+	"glow": Paint.SW_GLOW, "tell": Paint.SW_TELL, "dark": Paint.SW_DARK}
 const ALL := [AM, FM, SW]
 
 

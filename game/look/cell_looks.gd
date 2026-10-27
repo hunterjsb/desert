@@ -79,7 +79,7 @@ static func _steel() -> Paint.Coat:
 
 
 static func _orange() -> Paint.Coat:
-	return Paint.coat(Paint.DROP_ORANGE, 0.6, 0.0, 0.5)
+	return Paint.coat(Paint.SAFETY_ORANGE, 0.6, 0.0, 0.5)
 
 
 static func _rope() -> Paint.Coat:

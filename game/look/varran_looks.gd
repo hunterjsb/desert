@@ -7,9 +7,6 @@ extends RefCounted
 ## personal shield a flat puck with a dome for its emitter, its battery
 ## cradled at its back.
 
-const BLUE := Color(0.1, 0.16, 0.34)
-const IVORY := Color(0.88, 0.85, 0.76)
-const AMBER := Color(1.0, 0.62, 0.16)
 const FRONT := Basis(Vector3.UP, PI)
 
 
@@ -26,10 +23,10 @@ static func frame(b: Paint.Pieces, id: StringName, size: Vector3, _era := Eras.N
 
 
 static func _coats() -> Dictionary:
-	return {"blue": Paint.coat(BLUE, 0.6, 0.35, 0.3, 0.5), "ivory": Paint.coat(IVORY, 0.5, 0.0, 0.35, 0.6),
+	return {"blue": Paint.coat(Paint.IMPERIAL_BLUE, 0.6, 0.35, 0.3, 0.5), "ivory": Paint.coat(Paint.IVORY, 0.5, 0.0, 0.35, 0.6),
 		"chrome": Paint.coat(Paint.STEEL.lightened(0.2), 0.3, 0.95, 0.15, 0.3),
 		"brass": Paint.coat(Paint.BRASS, 0.3, 0.9, 0.3, 0.4), "black": Paint.coat(Paint.BLACK, 0.3, 0.3, 0.4),
-		"amber": Paint.coat(AMBER, 0.0, 0.0, 0.4, 0.0, 2.5)}
+		"amber": Paint.coat(Paint.WORKING_AMBER, 0.0, 0.0, 0.4, 0.0, 2.5)}
 
 
 ## Its screen fills the front; ivory armour wraps the corners and the head, a

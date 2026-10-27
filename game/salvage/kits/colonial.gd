@@ -7,10 +7,8 @@ extends RefCounted
 ## member state's seal on them. The deepest of the eras: big, mostly buried,
 ## rarely exposed; a storm strips a dune and shows a roof or a tower's top.
 
-const PANEL := Color(0.8, 0.79, 0.74)
 const GREY := Color(0.5, 0.52, 0.53)
 const DARK := Color(0.24, 0.26, 0.27)
-const ORANGE := Color(0.86, 0.42, 0.1)
 const CONCRETE := Color(0.62, 0.6, 0.56)
 const GLASS := Color(0.06, 0.09, 0.11)
 const INSULATOR := Color(0.85, 0.82, 0.74)
@@ -28,8 +26,8 @@ static func pieces() -> Array[StructureKit.Piece]:
 
 static func coats() -> Dictionary:
 	if _coats.is_empty():
-		_coats = {"panel": Paint.coat(PANEL, 1.0, 0.1, 0.5), "grey": Paint.coat(GREY, 1.0, 0.5, 0.45),
-			"dark": Paint.coat(DARK, 1.0, 0.4, 0.5), "orange": Paint.coat(ORANGE, 1.0, 0.1, 0.45),
+		_coats = {"panel": Paint.coat(Paint.OFF_WHITE, 1.0, 0.1, 0.5), "grey": Paint.coat(GREY, 1.0, 0.5, 0.45),
+			"dark": Paint.coat(DARK, 1.0, 0.4, 0.5), "orange": Paint.coat(Paint.SAFETY_ORANGE, 1.0, 0.1, 0.45),
 			"concrete": Paint.coat(CONCRETE, 0.3, 0.0, 0.9), "glass": Paint.coat(GLASS, 0.2, 0.3, 0.08, 0.3),
 			"steel": Paint.coat(Paint.STEEL, 0.8, 0.85, 0.4), "insulator": Paint.coat(INSULATOR, 0.2, 0.0, 0.25, 0.5)}
 	return _coats

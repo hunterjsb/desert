@@ -9,8 +9,8 @@ render_mode cull_disabled;
 // pale violet of a corona discharge, flickering.
 
 uniform vec3 cloth : source_color = vec3(0.5, 0.36, 0.78);
-uniform vec3 chevron : source_color = vec3(0.9, 0.42, 0.1);
-uniform vec3 copper : source_color = vec3(0.72, 0.38, 0.2);
+uniform vec3 chevron : source_color = vec3(0.86, 0.42, 0.1);
+uniform vec3 copper : source_color = vec3(0.62, 0.36, 0.22);
 
 instance uniform float torn = 0.0;
 instance uniform float weathered = 0.0;

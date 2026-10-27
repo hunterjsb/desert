@@ -7,8 +7,6 @@ extends RefCounted
 ## snapped short and dragged, a flank panel gone to its frame, its mast bent.
 ## Its front is -Z, its hips at y 0.
 
-const OFF_WHITE := Color(0.84, 0.82, 0.76)
-const ORANGE := Color(0.9, 0.42, 0.1)
 ## The hull's size, and how far its belly hangs under the hips, m.
 const HULL := Vector3(1.4, 0.8, 2.8)
 const BELLY := 0.25
@@ -29,9 +27,9 @@ static var _made := {}
 
 
 static func _coats() -> Dictionary:
-	return {"white": Paint.coat(OFF_WHITE, 1.0, 0.0, 0.55), "grey": Paint.coat(Paint.GUNMETAL, 0.8, 0.6, 0.45),
-		"steel": Paint.coat(Paint.STEEL, 0.5, 0.85, 0.35), "orange": Paint.coat(ORANGE, 0.9, 0.0, 0.5),
-		"black": Paint.coat(Paint.BLACK, 0.3, 0.2, 0.6), "lens": Paint.coat(Color(1.0, 0.6, 0.2), 0.0, 0.0, 0.3, 0.0, 2.0)}
+	return {"white": Paint.coat(Paint.OFF_WHITE, 1.0, 0.0, 0.55), "grey": Paint.coat(Paint.GUNMETAL, 0.8, 0.6, 0.45),
+		"steel": Paint.coat(Paint.STEEL, 0.5, 0.85, 0.35), "orange": Paint.coat(Paint.SAFETY_ORANGE, 0.9, 0.0, 0.5),
+		"black": Paint.coat(Paint.BLACK, 0.3, 0.2, 0.6), "lens": Paint.coat(Paint.SURVEY_LENS, 0.0, 0.0, 0.3, 0.0, 2.0)}
 
 
 ## The hull, its head, mast and hips, in one mesh.
@@ -144,7 +142,7 @@ static func hips() -> Array[Vector3]:
 ## coats, as [size, middle, colour, metal, rough], its hips at y 0 over sand
 ## `stand` m below them.
 static func far(stand: float) -> Array:
-	return [[Vector3(HULL.x, HULL.y, HULL.z + 0.5), Vector3(0.0, 0.15, -0.2), OFF_WHITE, 0.0, 0.55],
+	return [[Vector3(HULL.x, HULL.y, HULL.z + 0.5), Vector3(0.0, 0.15, -0.2), Paint.OFF_WHITE, 0.0, 0.55],
 		[Vector3(0.06, MAST, 0.06), Vector3(0.0, HULL.y - BELLY + MAST * 0.5, MAST_AT.z), Paint.STEEL, 0.85, 0.35],
 		[Vector3(HULL.x + 1.8, 0.12, 0.12), Vector3(0.0, -stand * 0.5, -1.05), Paint.GUNMETAL, 0.6, 0.45],
 		[Vector3(HULL.x + 1.8, 0.12, 0.12), Vector3(0.0, -stand * 0.5, 0.0), Paint.GUNMETAL, 0.6, 0.45],
