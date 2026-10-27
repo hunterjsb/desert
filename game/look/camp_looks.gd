@@ -160,8 +160,14 @@ static func _condenser(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	b.box(size - Vector3(0.07, 0.08, 0.18), Vector3(0, 0, -0.04), _dark(), 0.025)
 	for x in [-1, 1]:
 		for z in [-1, 1]:
-			b.box(Vector3(0.045, size.y - 0.03, 0.045), Vector3(x * (h.x - 0.026), 0, z * (h.z - 0.026)), _metal(), 0.008)
-		b.box(Vector3(0.028, size.y - 0.14, size.z - 0.09), Vector3(x * (h.x - 0.027), 0.01, 0), _skin(era), 0.01)
+			if era == Eras.SECOND and x == 1 and z == 1:
+				b.drum(0.023, 0.40, Vector3(h.x - 0.027, -0.13, h.z - 0.027), Paint.coat(Paint.SALTWOOD), Basis.IDENTITY, 12)
+			else:
+				b.box(Vector3(0.045, size.y - 0.03, 0.045), Vector3(x * (h.x - 0.026), 0, z * (h.z - 0.026)), _metal(), 0.008)
+		if era == Eras.SECOND and x == 1:
+			b.ball(1, Vector3(h.x - 0.028, 0.01, 0), Paint.coat(Paint.CERAMIC), Vector3(0.026, 0.29, 0.26))
+		else:
+			b.box(Vector3(0.028, size.y - 0.14, size.z - 0.09), Vector3(x * (h.x - 0.027), 0.01, 0), _skin(era), 0.01)
 		for i in 6:
 			b.box(Vector3(0.015, 0.018, size.z - 0.17), Vector3(x * (h.x - 0.012), -0.12 + i * 0.06, 0), _trim(era), 0.003)
 	b.box(Vector3(size.x - 0.09, size.y - 0.17, 0.022), Vector3(0, 0, -h.z + 0.023), _skin(era), 0.009)
@@ -207,9 +213,16 @@ static func _console(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	b.box(Vector3(size.x - 0.015, 0.075, size.z - 0.015), Vector3(0, -h.y + 0.04, 0), _metal(), 0.018)
 	b.box(Vector3(size.x - 0.015, 0.035, size.z - 0.015), Vector3(0, h.y - 0.023, 0), _metal(), 0.01)
 	for x in [-1, 1]:
-		for z in [-1, 1]: b.box(Vector3(0.035, size.y - 0.035, 0.035), Vector3(x * (h.x - 0.022), 0, z * (h.z - 0.022)), _trim(era), 0.007)
+		for z in [-1, 1]:
+			if era == Eras.SECOND and x == -1 and z == 1:
+				b.drum(0.022, size.y - 0.07, Vector3(-h.x + 0.031, -0.01, h.z - 0.037), Paint.coat(Paint.SALTWOOD), Basis.IDENTITY, 16)
+			else:
+				b.box(Vector3(0.035, size.y - 0.035, 0.035), Vector3(x * (h.x - 0.022), 0, z * (h.z - 0.022)), _trim(era), 0.007)
 		# Split service cheeks leave the computer-mod centres unobstructed.
 		for z in [-1, 1]:
+			if era == Eras.SECOND and x == -1 and z == 1:
+				b.ball(1, Vector3(-h.x + 0.05, 0.02, 0.17), Paint.coat(Paint.CERAMIC), Vector3(0.045, 0.50, 0.115))
+				continue
 			if era == Eras.SECOND and x == 1 and z == -1:
 				b.ball(1, Vector3(h.x - 0.026, 0.02, -0.19), Paint.coat(Paint.CERAMIC), Vector3(0.024, 0.56, 0.085))
 			else:
@@ -219,7 +232,7 @@ static func _console(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	# Electronics sit behind removable cheeks, with the same live display recess.
 	b.box(Vector3(size.x - 0.12, size.y - 0.16, size.z - 0.12), Vector3(0, 0, 0.015), _dark(), 0.015)
 	# The fitted display remains on the existing screen socket, ahead of this recess.
-	b.box(Vector3(0.59, 1.10, 0.015), Vector3(0, 0.01, -h.z + 0.027), _metal(), 0.008)
+	b.box(Vector3(0.59, 1.10, 0.015), Vector3(0, 0.01, -h.z + 0.027), StationLooks.glass(), 0.008)
 	for x in [-1, 1]:
 		b.box(Vector3(0.04, 1.18, 0.032), Vector3(x * 0.313, 0.01, -h.z + 0.018), _trim(era), 0.008)
 	for y in [-0.57, 0.59]:
