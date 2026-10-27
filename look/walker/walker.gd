@@ -152,7 +152,7 @@ func _in_sight(at: Vector3, far: float, high: float) -> Vector3:
 		top.y = shape.height_at(world.world_x(at.x), world.world_z(at.z)) + high
 	var best := at + Vector3(far, 0.0, 0.0)
 	var highest := -INF
-	for d in [1.0, 0.9, 1.1, 0.8, 1.2]:
+	for d: float in [1.0, 0.9, 1.1, 0.8, 1.2]:
 		for k in 16:
 			var way := Vector3(cos(TAU * k / 16.0), 0.0, sin(TAU * k / 16.0))
 			var spot := at + way * far * d
