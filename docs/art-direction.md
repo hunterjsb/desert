@@ -1216,7 +1216,7 @@ Hunter’s graphical-fidelity request follows the [chassis kit](#chassis-kit-fid
 
 ## Station kit fidelity (2026-10-26)
 
-Hunter’s fidelity request continues through the weather instruments, both radars, harvester, screen and socket solar panel. SANDGAME assigns era silhouettes in B’s merged kit, with sensing, catalog envelopes and fit unchanged. Cups, needle and dish remain static pieces of the merged mesh; animation is outside this pass. The unpowered Console and screen use non-emissive dark glazing that catches the sun and sky; the live display stays as drawn. The second-age Console and condenser gain another ceramic, cord or saltwood replacement that breaks their outlines, following [Shape by era](#shape-by-era).
+Hunter’s fidelity request continues through the weather instruments, both radars, harvester, screen and socket solar panel. SANDGAME assigns era silhouettes in B’s merged kit, with sensing, catalog envelopes and fit unchanged. Cups, needle and dish remain static pieces of the merged mesh; animation is outside this pass. SANDGAME’s review (2026-10-26) retains the anemometer’s recognizable three-cup rotor: open hemispherical cups facing the same way round, safety yellow or second-age bone, with era changes in the hub, arms and mount. Small-instrument era sheets use their own camera at 1 m through a narrow lens. The unpowered Console and screen use non-emissive dark glazing that catches the sun and sky; the live display stays as drawn. The second-age Console and condenser gain another ceramic, cord or saltwood replacement that breaks their outlines, following [Shape by era](#shape-by-era).
 
 
 `StationLooks` replaces the nine part arms in Dress: bolted service plates, cup mouths and
@@ -1224,14 +1224,14 @@ spindle collars, an enamel pressure dial, sheltered humidity louvres, a guarded 
 downward survey antenna, braced weather dish, a comb harvester, backed dark glass and framed
 solar cells. Lineage selects brass flares, ceramic rebuilds with cord and saltwood, or welded
 splices; existing marks and wear stay on the same surface. Base/era triangles: anemometer
-1,036–1,420; barometer 1,204–1,512; hygrometer 628–968; particle sensor 748–1,132;
+1,180–1,564; barometer 1,204–1,512; hygrometer 628–968; particle sensor 748–1,132;
 ground radar 684–1,100; radar 760–1,048; harvester 640–1,056; screen 408–480;
 solar panel 860–1,304. Each is one surface/draw, including its static cups, needle or dish.
 The Console’s bare recess and screen use the same low-roughness, non-emissive navy glazing;
 the powered Map is unchanged. The second-age Console replaces a rear cheek with ceramic and
 a rail with cord-bound saltwood; the condenser’s rounded ceramic side replaces a flat panel
 and tall metal post. The complete condenser is 2,064–3,100 triangles in three draws.
-`look/station/eras` compares all five eras at 3 m in morning and dusk, plus handling views;
+`look/station/eras` compares the small instruments at 1 m through its own 25° camera in morning and dusk, plus wider handling views; larger screens and housings stand farther back to fit their catalog envelopes;
 `look/station/context` checks fitted instruments, powered and dark screens, a 20 m camp and
 its storm bubble. The existing `look/map` checks the live filters.
 

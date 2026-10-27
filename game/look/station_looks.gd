@@ -4,6 +4,7 @@ extends RefCounted
 const IDS: Array[StringName] = [&"anemometer", &"barometer", &"hygrometer", &"particle_sensor", &"ground_radar", &"radar", &"harvester", &"screen", &"solar_panel"]
 const ALONG := Basis(Vector3.RIGHT, PI / 2.0)
 static var _eras := {}
+static var _cup_shell := []
 
 static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
 	match id:
@@ -54,7 +55,7 @@ static func _cord(b: Paint.Pieces, at: Vector3, radius: float, turn := ALONG) ->
 
 static func _wind(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	_plate(b, size, 0.028, era)
-	b.box(Vector3(0.10, 0.075, 0.018), Vector3(0, -0.005, 0.033), _skin(era), 0.012)
+	b.box(Vector3(0.08, 0.055, 0.018), Vector3(0, -0.005, 0.033), _skin(era), 0.012)
 	b.drum(0.014, 0.063, Vector3(0, 0, 0.069), _trim(era), ALONG, 12)
 	b.drum(0.020, 0.018, Vector3(0, 0, 0.104), _dark(), ALONG, 16)
 	b.drum(0.012, 0.014, Vector3(0, 0, 0.12), _trim(era), ALONG, 12)
@@ -62,14 +63,51 @@ static func _wind(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		var angle := i * TAU / 3.0
 		var radial := Vector3(sin(angle), cos(angle), 0)
 		var tangent := Vector3(cos(angle), -sin(angle), 0)
-		var cup := radial * 0.046 + Vector3(0, 0, 0.123)
-		b.box(Vector3(0.006, 0.046, 0.006), radial * 0.023 + Vector3(0, 0, 0.12), _trim(era), 0.001, Basis(Vector3.BACK, -angle))
-		var turn := Basis(Quaternion(Vector3.UP, tangent))
-		b.drum(0.016, 0.022, cup, _skin(era), turn, 12, 0.011)
-		b.drum(0.012, 0.002, cup - tangent * 0.011, _dark(), turn, 12)
+		var cup := radial * 0.048 + Vector3(0, 0, 0.123)
+		b.box(Vector3(0.006, 0.048, 0.006), radial * 0.024 + Vector3(0, 0, 0.12), _trim(era), 0.001, Basis(Vector3.BACK, -angle))
+		_cup(b, cup, tangent, Paint.coat(Paint.BONE if era == Eras.SECOND else Paint.YELLOW, 0.45, 0.08, 0.5))
 	if era == Eras.SECOND:
 		b.ball(1, Vector3(-0.029, -0.012, 0.035), _skin(era), Vector3(0.032, 0.04, 0.015))
 		_cord(b, Vector3(0, 0, 0.072), 0.016)
+
+
+static func _cup(b: Paint.Pieces, at: Vector3, opening: Vector3, coat: Paint.Coat) -> void:
+	# A hollow hemisphere, not a capped drum: every mouth catches the same turn.
+	if _cup_shell.is_empty():
+		var vertices := PackedVector3Array()
+		var normals := PackedVector3Array()
+		for band in 4:
+			var low := band * PI / 8.0
+			var high := (band + 1) * PI / 8.0
+			for side in 12:
+				var a := side * TAU / 12.0
+				var z := (side + 1) * TAU / 12.0
+				var points := [Vector3(sin(low) * cos(a), -cos(low), sin(low) * sin(a)),
+					Vector3(sin(high) * cos(a), -cos(high), sin(high) * sin(a)),
+					Vector3(sin(high) * cos(z), -cos(high), sin(high) * sin(z)),
+					Vector3(sin(low) * cos(z), -cos(low), sin(low) * sin(z))]
+				for face: Array in [[0, 1, 2], [0, 2, 3]]:
+					var outer := [points[face[0]], points[face[1]], points[face[2]]]
+					_cup_face(vertices, normals, outer, outer)
+					_cup_face(vertices, normals, [outer[0] * 0.86, outer[1] * 0.86, outer[2] * 0.86], [-outer[0], -outer[1], -outer[2]])
+				if band == 3:
+					var x: Vector3 = points[1]
+					var y: Vector3 = points[2]
+					_cup_face(vertices, normals, [x, y, y * 0.86], [Vector3.UP, Vector3.UP, Vector3.UP])
+					_cup_face(vertices, normals, [x, y * 0.86, x * 0.86], [Vector3.UP, Vector3.UP, Vector3.UP])
+		_cup_shell.resize(Mesh.ARRAY_MAX)
+		_cup_shell[Mesh.ARRAY_VERTEX] = vertices
+		_cup_shell[Mesh.ARRAY_NORMAL] = normals
+	var turn := Basis(Quaternion(Vector3.UP, opening)) * Basis.from_scale(Vector3.ONE * 0.019)
+	b._add(_cup_shell, Transform3D(turn, at), coat, Vector3.ONE, 1.0)
+
+static func _cup_face(vertices: PackedVector3Array, normals: PackedVector3Array, points: Array, facing: Array) -> void:
+	var cross: Vector3 = (points[1] - points[0]).cross(points[2] - points[0])
+	if cross.length_squared() < 1e-12: return
+	var order := [0, 2, 1] if cross.dot(facing[0] + facing[1] + facing[2]) > 0 else [0, 1, 2]
+	for i: int in order:
+		vertices.append(points[i])
+		normals.append(facing[i])
 
 static func _pressure(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var r := size.x * 0.5
