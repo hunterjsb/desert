@@ -125,7 +125,7 @@ static func _survey(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	# The guarded antenna looks into the sand, clear of the rear connector.
 	b.box(Vector3(size.x - 0.05, 0.010, size.z - 0.065), Vector3(0, -size.y * 0.5 + 0.007, size.z * 0.6), _dark(), 0.003)
 	for z in [0.06, 0.09, 0.12]:
-		b.box(Vector3(size.x - 0.065, 0.006, 0.003), Vector3(0, -size.y * 0.5 + 0.002, z), _trim(era), 0.001)
+		b.box(Vector3(size.x - 0.065, 0.006, 0.003), Vector3(0, -size.y * 0.5 + 0.003, z), _trim(era), 0.001)
 	b.box(Vector3(size.x - 0.044, 0.012, 0.008), Vector3(0, 0.045, size.z - 0.012), Paint.coat(Paint.YELLOW, 0.6), 0.002)
 	for x in [-0.04, 0, 0.04]:
 		b.drum(0.006, 0.003, Vector3(x, 0.02, size.z - 0.003), Paint.coat(Paint.TEAL, 0, 0, 0.4, 0.3, 1.5), ALONG, 8)
