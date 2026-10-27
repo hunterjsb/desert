@@ -249,13 +249,6 @@ func shown() -> PackedVector3Array:
 	return _look.get_shader_parameter("points")
 
 
-## Arc length as drawn.
-func drawn_length() -> float:
-	var total := 0.0
-	for i in points.size() - 1:
-		total += points[i].distance_to(points[i + 1])
-	return total
-
 
 ## One physics tick: wind is the felt wind at the strand, sag how far its rope
 ## says its middle hangs (NAN: by its length alone).

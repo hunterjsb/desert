@@ -364,28 +364,11 @@ static func stability(day: DayCycle, t: float, latitude: float, longitude: float
 	return lerpf(STABILITY.y, STABILITY.x, up) * sqrt(g)
 
 
-## How high a buoyant plume has risen `age` s out, m: bent over by the wind
-## as F^1/3 x^2/3 / u, and levelling where the air's stability stops it,
-## lower in a stronger wind (Briggs). f is its buoyancy flux, m⁴/s³; u the
-## wind, m/s; n the air's buoyancy frequency, 1/s.
-static func rise_in(f: float, u: float, age: float, n: float) -> float:
-	if age <= 0.0 or f <= 0.0:
-		return 0.0
-	var bent := 1.6 * pow(f, 1.0 / 3.0) * pow(u * age, 2.0 / 3.0) / u
-	var level := level_of(f, u, n)
-	return bent / pow(1.0 + pow(bent / level, 3.0), 1.0 / 3.0)
-
-
-## Where it levels, m: in the wind, or in still air, whichever is lower.
+## Where a buoyant plume levels, m, where the air's stability stops it: in
+## the wind, or in still air, whichever is lower (Briggs). f is its buoyancy
+## flux, m⁴/s³; u the wind, m/s; n the air's buoyancy frequency, 1/s.
 static func level_of(f: float, u: float, n: float) -> float:
 	return minf(2.6 * pow(f / (u * n * n), 1.0 / 3.0), 5.0 * pow(f, 0.25) * pow(n, -0.75)) if f > 0.0 else 0.0
-
-
-## How old what left is once it's all but levelled, s: from there it spreads.
-static func levelled_at(f: float, u: float, n: float) -> float:
-	if f <= 0.0:
-		return INF
-	return pow(0.85 * level_of(f, u, n) * pow(u, 1.0 / 3.0) / (1.6 * pow(f, 1.0 / 3.0)), 1.5)
 
 
 ## One read in turn: whether storms stand between you and the line at an

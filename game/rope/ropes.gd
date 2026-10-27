@@ -111,18 +111,6 @@ func tie(a: RopeEnd, b: RopeEnd, length: float, breaking := NAN, strand: RopeStr
 	return rope
 
 
-## Moves one end to another point, keeping the length: unstaking, staking
-## again, hand to waist.
-func move_end(rope: Rope, from: RopeEnd, to: RopeEnd) -> void:
-	if rope.a == from:
-		rope.a = to
-		rope.strand.a = to
-	elif rope.b == from:
-		rope.b = to
-		rope.strand.b = to
-	count_towed()
-
-
 ## An end lets go: the rope stops holding and its strand hangs from the other.
 func let_go(rope: Rope, end: RopeEnd) -> void:
 	rope.strand.let_go(end)

@@ -14,7 +14,6 @@ const WATER := 4
 const PIPE := 8
 const POWER := 16
 const TRACK := 32
-const CARRIES := {ROAD: "road", RAIL: "rail", WATER: "water", PIPE: "pipeline", POWER: "power", TRACK: "track"}
 ## Metres between a line's points.
 const STEP := 250.0
 ## Things placed along a path stand within this either side of it, m. Default.

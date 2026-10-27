@@ -120,14 +120,6 @@ static func power(id: StringName) -> float:
 	return row(id)[4]
 
 
-## The god whose band holds a frequency, or &"".
-static func in_band(khz: float) -> StringName:
-	for each: Array in ROSTER:
-		if khz >= each[2].x and khz <= each[2].y:
-			return each[0]
-	return &""
-
-
 ## Puts the Walker where a run's start keeps it far: as the run begins, at
 ## the point on the Rim farthest from `start`, a quarter of the moon off or
 ## more for its first three weeks, so finding it never happens early. A

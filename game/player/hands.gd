@@ -1149,11 +1149,6 @@ func _sliding() -> Transform3D:
 	return (_source.global_transform * _slide_at).translated(_source.global_basis * _slide_way * (_slide_from + _slide * out))
 
 
-## A socket's frame in the world (Fitting).
-func _frame_of(into: Socket) -> Transform3D:
-	return Fitting.frame_of(into)
-
-
 ## How what you hold is turned in the world as the tick has it.
 func _held_basis() -> Basis:
 	return Basis(Vector3.UP, _player.global_rotation.y) * _carry

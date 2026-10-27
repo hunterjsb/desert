@@ -3,7 +3,6 @@ extends RefCounted
 ## A survey instrument assembled from cast and screwed parts. Moving
 ## pieces share the case's worn paint but leave the dial clear to read.
 
-const SIZE := Vector3(0.36, 0.50, 0.26)
 const METER_CENTER := Vector3(-0.055, -0.062, 0.086)
 const METER_AT := METER_CENTER + Vector3(0.0, -0.027, 0.009)
 const KNOB_AT := Vector3(0.103, -0.115, 0.081)

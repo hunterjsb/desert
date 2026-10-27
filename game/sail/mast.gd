@@ -668,10 +668,6 @@ func _middle_at(swing: float) -> Vector3:
 	return BOOM_AT + Vector3(-sin(swing) * MIDDLE.y, MIDDLE.x * maxf(raise, 0.05), -cos(swing) * MIDDLE.y)
 
 
-func _boom_end() -> Vector3:
-	return BOOM_AT + Vector3(-sin(boom) * BOOM, 0.0, -cos(boom) * BOOM)
-
-
 func _sail_socket() -> Socket:
 	for socket in frame_sockets():
 		if socket.kind == &"sail":

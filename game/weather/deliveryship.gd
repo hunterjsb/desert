@@ -102,11 +102,6 @@ func flash(amount: float) -> void:
 	_muzzle.set_instance_shader_parameter(&"lit", amount)
 
 
-## Whether it's drawing its far mesh.
-func is_far() -> bool:
-	return _far
-
-
 ## Its span in pixels on the current camera, and the mesh for it.
 func _pick_detail(slant: float) -> void:
 	var camera := get_viewport().get_camera_3d()

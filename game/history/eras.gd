@@ -32,13 +32,6 @@ const BURIAL := {COLONIAL: Vector2(2.0, 6.0), SKIMMER: Vector2(0.2, 1.0), FIRST:
 ## How far a buried site of the era leans, degrees.
 const TILT := {SKIMMER: Vector2(10.0, 35.0)}
 
-## What each era's sites are best for (part 4).
-const LOOT := {COLONIAL: "infrastructure: power, crates, big systems",
-	SKIMMER: "the best single-item gear, from deserters and the black site",
-	FIRST: "intact working colonial tech used in new ways",
-	DARK: "none of its own: the lineage of second-age gear",
-	SECOND: "worn reused gear; water, seeds and salt"}
-
 ## Each era's make along part 5's one axis, efficiency against repairability,
 ## against colonial make: the share of its rated capacity, watts and lift it
 ## keeps, how much more it draws for the same work, how well it stands the

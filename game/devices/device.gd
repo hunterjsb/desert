@@ -267,11 +267,6 @@ func sticking_room(_face: StringName) -> Rect2:
 	return Rect2(-Vector2.ONE * Stick.WIDE_HALF, Vector2.ONE * Stick.WIDE_HALF * 2.0)
 
 
-## The piece of this host a socket on it is on.
-func sticking_piece(_socket: Socket) -> Device:
-	return self
-
-
 ## The device it's seated on, or null.
 func host() -> Device:
 	return get_parent() as Device

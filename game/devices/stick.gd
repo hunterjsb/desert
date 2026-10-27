@@ -53,11 +53,6 @@ static func room_on(host: Device, face: StringName) -> Rect2:
 	return host.sticking_room(face)
 
 
-## The piece of a host a socket on it is on: a deck's own piece, a mast itself.
-static func piece_of(host: Device, socket: Socket) -> Device:
-	return host.sticking_piece(socket)
-
-
 ## Sticks a thing on a piece's face at a place and turn: a frame square and
 ## centred. The socket it's in.
 static func put(deck: Device, piece: Device, face: StringName, at: Vector2, yaw: float, thing: RigidBody3D) -> Socket:

@@ -29,11 +29,6 @@ const GROUP := &"antenna_kites"
 const LINE_FROM := Vector3(0.0, 0.0, 0.0)
 ## Carried in the suit, its line runs from about this high on you, m.
 const ON_YOU := Vector3(0.0, 1.0, 0.0)
-## It settles to where the wind puts it over about this long, s.
-const SETTLE_S := 1.5
-## Its sway on the wind: degrees round and up, and how fast, rad/s.
-const SWAY_DEG := Vector2(6.0, 3.0)
-const SWAY_RATE := Vector2(0.31, 0.47)
 ## A scorch takes this much of a device's soundness.
 const SCORCH := 0.15
 ## Flying lower than this over the ground, m, it's on the sand, not up.
