@@ -99,6 +99,14 @@ const MOULDED := Color(0.2, 0.21, 0.19)
 const STRONG_RED := Color(0.7, 0.15, 0.1)
 ## Drawn alloy, the water canister's: pale, so water reads apart from power.
 const ALLOY := Color(0.55, 0.62, 0.68)
+## Held lane (HeldLooks): a compass needle's luminous north; a field ration's
+## tan foil, so it never reads as a cell, and its pressed meal bar; coalcane's
+## dark ringed stalk and the pale pith where it's cut.
+const NEEDLE_RED := Color(0.85, 0.16, 0.08)
+const RATION_FOIL := Color(0.62, 0.53, 0.37)
+const RATION_BAR := Color(0.5, 0.36, 0.2)
+const CANE := Color(0.24, 0.15, 0.07)
+const CANE_PITH := Color(0.66, 0.56, 0.38)
 
 static var _worn: ShaderMaterial
 static var _noise: NoiseTexture2D

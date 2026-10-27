@@ -145,8 +145,9 @@ static var PARTS := {
 	# they live in what you carry.
 	&"canister": {"kind": &"water", "label": "Water canister", "mass": 2.4, "size": Vector3(0.12, 0.12, 0.26),
 		"color": Color(0.55, 0.62, 0.68), "stats": {}},
+	# A ration's three meals show as its bars, one eaten a meal.
 	&"ration": {"kind": &"food", "label": "Ration", "mass": 0.5, "size": Vector3(0.16, 0.1, 0.06),
-		"color": Color(0.45, 0.42, 0.25), "stats": {}},
+		"color": Color(0.45, 0.42, 0.25), "stats": {}, "pieces": 3},
 	# What a harvest gives, "each" unit of it: food like a ration, holding its
 	# kcal, and salt, which does nothing yet but stack with what you carry.
 	# Food in "pieces" shows what's left by how many are left, not a light.
