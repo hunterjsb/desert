@@ -24,17 +24,7 @@ func run() -> void:
 			if id == &"hook": box = box.merge(AABB(Vector3(-0.065, -0.015, 0.095), Vector3(0.13, 0.03, 0.13)))
 			for era: StringName in ERAS:
 				var b := Paint.Pieces.new(0.0 if part or builder == ChassisLooks or builder == ShieldLooks else -size.y * 0.5)
-				var built: bool
-				if builder == CampLooks:
-					built = builder.frame(b, id, size, spec.get("mast", 0.0), era)
-				elif part and builder == HeldLooks:
-					built = builder.part(b, id, size, -1, era)
-				elif part and builder == BoardLooks:
-					built = builder.part(b, id, size)
-				elif part:
-					built = builder.part(b, id, size, era)
-				else:
-					built = builder.frame(b, id, size, era)
+				var built: bool = builder.part(b, id, size, era) if part else builder.frame(b, id, size, era, spec.get("mast", 0.0))
 				check(built, "%s has a builder for %s" % [id, era])
 				var mesh := b.commit()
 				check(mesh.get_surface_count() == 1 and mesh.surface_get_material(0) == Paint.worn(), "%s %s keeps one shared worn surface" % [id, era])

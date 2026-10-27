@@ -18,7 +18,7 @@ const ACROSS := Basis(Vector3.BACK, PI / 2.0)
 static var _eras := {}
 
 
-static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _count := -1) -> bool:
 	match id:
 		&"battery": _battery(b, size, era)
 		&"big_battery": _big_battery(b, size, era)

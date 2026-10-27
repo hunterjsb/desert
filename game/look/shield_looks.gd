@@ -50,7 +50,7 @@ static func look(id: StringName, era: StringName) -> ArrayMesh:
 
 ## Draws a shield's look into its pieces, in an era's shape where it has one;
 ## false for an id that isn't one.
-static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _extra := 0.0) -> bool:
 	match id:
 		&"shield":
 			var shape: StringName = SHAPES.get(era, &"")

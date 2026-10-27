@@ -20,7 +20,7 @@ const PLACES := {"a": Vector2(0.0, 0.5), "g": Vector2.ZERO, "d": Vector2(0.0, -0
 
 
 ## Draws a box's look into its pieces; false for an id that isn't one.
-static func frame(b: Paint.Pieces, id: StringName, size: Vector3) -> bool:
+static func frame(b: Paint.Pieces, id: StringName, size: Vector3, _era := Eras.NEW, _extra := 0.0) -> bool:
 	match id:
 		&"power_cabinet":
 			_cabinet(b, size)

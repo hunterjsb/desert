@@ -54,7 +54,7 @@ static func look(id: StringName, era: StringName) -> ArrayMesh:
 
 
 ## Draws a board into its pieces; false for an id that isn't one.
-static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _extra := 0.0) -> bool:
 	match id:
 		&"board":
 			_issue(b, size, SHAPES.get(era, &""))
@@ -70,7 +70,7 @@ static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NE
 
 
 ## Draws a rig part into its pieces; false for one that isn't the rig's.
-static func part(b: Paint.Pieces, id: StringName, size: Vector3) -> bool:
+static func part(b: Paint.Pieces, id: StringName, size: Vector3, _era := Eras.NEW, _count := -1) -> bool:
 	match id:
 		&"hover_tray":
 			_tray(b, size)

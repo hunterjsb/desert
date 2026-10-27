@@ -6,7 +6,7 @@ const ALONG := Basis(Vector3.RIGHT, PI / 2.0)
 static var _eras := {}
 static var _cup_shell := []
 
-static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _count := -1) -> bool:
 	match id:
 		&"anemometer": _wind(b, size, era)
 		&"barometer": _pressure(b, size, era)

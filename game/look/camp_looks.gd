@@ -5,7 +5,7 @@ const IDS: Array[StringName] = [&"planter", &"deep_planter", &"burner", &"turbin
 const ALONG := Basis(Vector3.RIGHT, PI / 2.0)
 static var _eras := {}
 
-static func frame(b: Paint.Pieces, id: StringName, size: Vector3, extra := 0.0, era := Eras.NEW) -> bool:
+static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, extra := 0.0) -> bool:
 	match id:
 		&"planter", &"deep_planter": _planter(b, size, era)
 		&"burner": _burner(b, size, era)
@@ -26,7 +26,7 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 	if not _eras.has(key):
 		var spec: Dictionary = Catalog.DEVICES[id]
 		var b := Paint.Pieces.new(-spec.size.y * 0.5)
-		frame(b, id, spec.size, spec.get("mast", 0.0), era)
+		frame(b, id, spec.size, era, spec.get("mast", 0.0))
 		_eras[key] = b.commit()
 	return _eras[key]
 

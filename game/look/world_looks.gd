@@ -15,14 +15,14 @@ static func site(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
 		&"fuel_bladder": _bladder(b, p, state)
 		&"pipeline_segment": _pipe(b, p, state)
 
-static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _extra := 0.0) -> bool:
 	match id:
 		&"streamer": _wand(b, size, era)
 		&"crows_nest": _nest(b, size, era)
 		_: return false
 	return true
 
-static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _count := -1) -> bool:
 	if id != &"fabric": return false
 	_fabric(b, size, era)
 	return true

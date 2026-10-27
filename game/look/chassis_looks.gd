@@ -9,7 +9,7 @@ const IDS: Array[StringName] = FRAMES + PARTS
 const ALONG := Basis(Vector3.RIGHT, PI / 2.0)
 static var _eras := {}
 
-static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _extra := 0.0) -> bool:
 	match id:
 		&"chassis": _deck(b, size, era)
 		&"helm_seat": _seat(b, size, era)
@@ -21,7 +21,7 @@ static func frame(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NE
 		_: return false
 	return true
 
-static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW) -> bool:
+static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, _count := -1) -> bool:
 	match id:
 		&"frame": _frame(b, size, era)
 		&"hull_plate": _plate(b, size, era)

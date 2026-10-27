@@ -6,6 +6,15 @@ extends RefCounted
 ## along +Z. Shapes are placeholders like the boxes were; only the finish is
 ## meant.
 
+## The lanes' looks, each asked in turn for a lineage, a frame or a part:
+## the first that knows an id draws it, and Dress's own arms take the rest.
+## No two lanes claim one id, so the order is only the asking order.
+const LOOKS: Array[GDScript] = [preload("res://game/look/chassis_looks.gd"), preload("res://game/look/shield_looks.gd"),
+	preload("res://game/look/camp_looks.gd"), preload("res://game/look/cell_looks.gd"),
+	preload("res://game/look/board_looks.gd"), preload("res://game/look/station_looks.gd"),
+	preload("res://game/look/held_looks.gd"), preload("res://game/look/world_looks.gd"),
+	preload("res://game/look/power_looks.gd"), preload("res://game/look/varran_looks.gd")]
+
 static var _made := {}
 ## A lineage's looks, let go once nothing wears them; and each thing's shell.
 static var _lines := {}
@@ -160,21 +169,12 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 
 
 static func _lineage(id: StringName, line: Array) -> ArrayMesh:
-	var own := ChassisLooks.lineage(id, line)
-	if own == null:
-		own = ShieldLooks.lineage(id, line)
-	if own == null:
-		own = CampLooks.lineage(id, line)
-	if own == null:
-		own = CellLooks.lineage(id, line)
-	if own == null:
-		own = BoardLooks.lineage(id, line)
-	if own == null:
-		own = StationLooks.lineage(id, line)
-	if own == null:
-		own = HeldLooks.lineage(id, line)
-	if own == null:
-		own = WorldLooks.lineage(id, line)
+	var own: ArrayMesh = null
+	for looks: GDScript in LOOKS:
+		if looks.has_method(&"lineage"):
+			own = looks.call(&"lineage", id, line)
+			if own != null:
+				break
 	var shape := own.get_instance_id() if own != null else 0
 	if own == null:
 		own = _own(id)
@@ -281,14 +281,9 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
-	if CampLooks.frame(b, id, size, extra) or ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or WorldLooks.frame(b, id, size):
-		return b.commit()
-	if BoardLooks.frame(b, id, size):
-		return b.commit()
-	if HeldLooks.frame(b, id, size):
-		return b.commit()
-	if ShieldLooks.frame(b, id, size):
-		return b.commit()
+	for looks: GDScript in LOOKS:
+		if looks.has_method(&"frame") and looks.call(&"frame", b, id, size, Eras.NEW, extra):
+			return b.commit()
 	match id:
 		&"home_beacon":
 			var bone := Paint.coat(Paint.BONE)
@@ -368,18 +363,11 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var b := Paint.Pieces.new()
 	var h := size * 0.5
-	var gun := Paint.coat(Paint.GUNMETAL)
 	var steel := Paint.coat(Paint.STEEL, 0.8, 0.6)
-	var black := Paint.coat(Paint.BLACK, 0.4, 0.2)
 	var along := Basis(Vector3.RIGHT, PI / 2.0)
-	if ChassisLooks.part(b, id, size):
-		return b.commit()
-	if CellLooks.part(b, id, size) or StationLooks.part(b, id, size) or WorldLooks.part(b, id, size):
-		return b.commit()
-	if BoardLooks.part(b, id, size):
-		return b.commit()
-	if HeldLooks.part(b, id, size, count):
-		return b.commit()
+	for looks: GDScript in LOOKS:
+		if looks.has_method(&"part") and looks.call(&"part", b, id, size, Eras.NEW, count):
+			return b.commit()
 	match id:
 		&"rope_end":
 			# Three laid cords and a small whipping explain the end without a metal block.

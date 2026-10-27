@@ -27,7 +27,7 @@ const LANCE := 0.01
 static var _eras := {}
 
 
-static func frame(b: Paint.Pieces, id: StringName, _size: Vector3, era := Eras.NEW) -> bool:
+static func frame(b: Paint.Pieces, id: StringName, _size: Vector3, era := Eras.NEW, _extra := 0.0) -> bool:
 	if id != &"cutter":
 		return false
 	_cutter(b, era)
@@ -36,7 +36,7 @@ static func frame(b: Paint.Pieces, id: StringName, _size: Vector3, era := Eras.N
 
 ## Draws a held thing or food into its pieces; food in pieces drawn with
 ## `count` of them left. False for an id that isn't one.
-static func part(b: Paint.Pieces, id: StringName, size: Vector3, count := -1, era := Eras.NEW) -> bool:
+static func part(b: Paint.Pieces, id: StringName, size: Vector3, era := Eras.NEW, count := -1) -> bool:
 	match id:
 		&"compass":
 			_compass(b, era)
@@ -80,7 +80,7 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 			frame(b, id, size, era)
 		else:
 			b = Paint.Pieces.new()
-			part(b, id, Catalog.PARTS[id].size, -1, era)
+			part(b, id, Catalog.PARTS[id].size, era)
 		_eras[key] = b.commit()
 	return _eras[key]
 
