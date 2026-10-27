@@ -175,6 +175,8 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 		own = CellLooks.lineage(id, line)
 	if own == null:
 		own = BoardLooks.lineage(id, line)
+	if own == null:
+		own = StationLooks.lineage(id, line)
 	var shape := own.get_instance_id() if own != null else 0
 	if own == null:
 		own = _own(id)
@@ -384,7 +386,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var along := Basis(Vector3.RIGHT, PI / 2.0)
 	if ChassisLooks.part(b, id, size):
 		return b.commit()
-	if CellLooks.part(b, id, size):
+	if CellLooks.part(b, id, size) or StationLooks.part(b, id, size):
 		return b.commit()
 	if BoardLooks.part(b, id, size):
 		return b.commit()
@@ -395,9 +397,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 					b.drum(0.065, size.z, Vector3(x, y, h.z), Paint.coat(Color(0.24, 0.15, 0.07), 0.7), along, 8)
 			for z in [0.12, size.z - 0.12]:
 				b.box(Vector3(size.x, size.y, 0.045), Vector3(0, 0, z), Paint.coat(Paint.CORD, 0.7), 0.025)
-		&"solar_panel":
-			b.box(Vector3(size.x, size.y, 0.03), Vector3(0.0, 0.0, 0.015), Paint.coat(Paint.STEEL, 0.4, 0.5), 0.006)
-			_cells(b, Vector2(size.x - 0.04, size.y - 0.04), 4, 2, Basis.IDENTITY, Vector3(0.0, 0.0, 0.032))
 		&"flare":
 			# A red tube with a black striker cap at its tip, where it burns.
 			b.drum(h.x, size.z - 0.04, Vector3(0.0, 0.0, (size.z - 0.04) * 0.5), Paint.coat(Paint.FLARE_RED, 0.5), along, 10)
@@ -439,57 +438,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				b.box(Vector3(0.004, 0.01, 0.003), Basis(Vector3.BACK, turn) * Vector3(0.0, h.y * 0.64, size.z), black,
 					0.0005, Basis(Vector3.BACK, turn))
 			b.box(Vector3(0.022, 0.016, 0.012), Vector3(0.0, h.y + 0.004, size.z * 0.4), gun, 0.003)
-		&"harvester":
-			b.box(Vector3(size.x, size.y, size.z * 0.6), Vector3(0.0, 0.0, size.z * 0.3), Paint.coat(Paint.TEAL), 0.012)
-			b.box(Vector3(size.x - 0.02, size.y - 0.04, size.z * 0.4), Vector3(0.0, 0.0, size.z * 0.8), Paint.coat(Paint.YELLOW, 0.7), 0.008)
-			for i in 5:
-				b.box(Vector3(0.012, size.y * 0.5, 0.01), Vector3(-0.07 + i * 0.035, 0.0, size.z), black, 0.002)
-		&"screen":
-			# Glass that shows black until its Console draws on it.
-			b.box(Vector3(size.x, size.y, 0.02), Vector3(0.0, 0.0, 0.01), gun, 0.006)
-			b.box(Vector3(size.x - 0.03, size.y - 0.03, 0.01), Vector3(0.0, 0.0, 0.025),
-				Paint.coat(Color(0.02, 0.03, 0.03), 0.0, 0.2, 0.08, 0.15), 0.002)
-		&"anemometer":
-			# Three cups on a spindle, turned to catch the wind from the port's side.
-			b.box(Vector3(size.x, size.y, 0.05), Vector3(0.0, 0.0, 0.025), gun, 0.01)
-			b.drum(0.008, 0.08, Vector3(0.0, 0.0, 0.09), steel, along, 8)
-			b.drum(0.016, 0.015, Vector3(0.0, 0.0, 0.13), black, along, 10)
-			for i in 3:
-				var turn := Basis(Vector3.BACK, i * TAU / 3.0)
-				b.box(Vector3(0.005, 0.045, 0.005), turn * Vector3(0.0, 0.025, 0.13), steel, 0.001, turn)
-				b.ball(0.018, turn * Vector3(0.0, 0.05, 0.13), Paint.coat(Paint.YELLOW, 0.6), Vector3(1.0, 1.0, 0.7))
-		&"barometer":
-			# A round dial on a gunmetal case, its needle and a yellow mark at storm.
-			b.drum(h.x * 0.95, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 20)
-			b.drum(h.x * 0.78, 0.004, Vector3(0.0, 0.0, 0.042), Paint.coat(Paint.BONE, 0.2, 0.0, 0.5, 0.3), along, 20)
-			b.ring(h.x * 0.78, h.x * 0.95, Vector3(0.0, 0.0, 0.043), Paint.coat(Paint.BLACK, 0.5, 0.3, 0.5), along, 10)
-			var tilt := Basis(Vector3.BACK, 0.5)
-			b.box(Vector3(0.004, 0.05, 0.003), tilt * Vector3(0.0, 0.018, 0.0) + Vector3(0.0, 0.0, 0.046), black, 0.0005, tilt)
-			b.box(Vector3(0.012, 0.008, 0.003), Vector3(-0.035, 0.035, 0.045), Paint.coat(Paint.YELLOW, 0.2), 0.001)
-		&"hygrometer":
-			b.box(Vector3(size.x, size.y, 0.06), Vector3(0.0, 0.0, 0.03), Paint.coat(Paint.TEAL), 0.01)
-			for i in 4:
-				b.box(Vector3(size.x - 0.03, 0.012, 0.012), Vector3(0.0, -0.045 + i * 0.03, 0.065), black, 0.002)
-			b.box(Vector3(0.05, 0.02, 0.006), Vector3(0.0, h.y - 0.02, 0.062), Paint.coat(Paint.BONE, 0.3), 0.002)
-		&"particle_sensor":
-			# An intake the sand is drawn in through, ringed in yellow.
-			b.box(Vector3(size.x, size.y, 0.06), Vector3(0.0, 0.0, 0.03), gun, 0.01)
-			b.drum(0.035, 0.07, Vector3(0.0, 0.0, 0.095), Paint.coat(Paint.BLACK, 0.4, 0.3, 0.5), along, 14, 0.03)
-			b.drum(0.037, 0.012, Vector3(0.0, 0.0, 0.125), Paint.coat(Paint.YELLOW, 0.6), along, 14)
-			b.drum(0.02, 0.006, Vector3(0.0, 0.0, size.z - 0.003), Paint.coat(Color(0.03, 0.03, 0.03), 0.0, 0.0, 0.9), along, 12)
-		&"ground_radar":
-			# A sealed survey set off the port: its antenna's face turned down to
-			# the sand, the contractor's amber band, three pilot lights.
-			var deep := size.z - 0.05
-			b.box(Vector3(size.x, size.y, 0.05), Vector3(0.0, 0.0, 0.025), gun, 0.01)
-			b.box(Vector3(size.x - 0.02, size.y - 0.02, deep), Vector3(0.0, 0.0, 0.05 + deep * 0.5),
-				Paint.coat(Paint.BONE, 0.4, 0.1, 0.6), 0.012)
-			b.box(Vector3(size.x - 0.006, 0.025, deep * 0.9), Vector3(0.0, h.y * 0.45, 0.05 + deep * 0.5),
-				Paint.coat(Paint.YELLOW, 0.6), 0.004)
-			b.box(Vector3(size.x - 0.04, 0.012, deep - 0.02), Vector3(0.0, -h.y + 0.006, 0.05 + deep * 0.5), black, 0.003)
-			for i in 3:
-				b.drum(0.008, 0.006, Vector3(-0.04 + i * 0.04, -0.02, size.z + 0.002),
-					Paint.coat(Paint.TEAL, 0.0, 0.0, 0.4, 0.3, 1.5), along, 8)
 		&"fm_converter":
 			# Its whip up from the top's outer back corner on a chromed swivel,
 			# leaning out from the set, drawn out in three lengths to a ball tip.
@@ -515,13 +463,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				b.drum(0.0042, 0.0028, at + Vector3(0.0, 0.0068, 0.0), brass, Basis.IDENTITY, 8)
 		&"bleed_resistor", &"valve_preamp", &"static_choke", &"wire_logger", &"solar_lid":
 			_module(b, size, id)
-		&"radar":
-			# A dish on a post, up from the Console's top.
-			b.drum(0.07, 0.04, Vector3(0.0, 0.0, 0.02), gun, along, 16)
-			b.drum(0.02, 0.11, Vector3(0.0, 0.0, 0.095), steel, along, 10)
-			b.drum(0.095, 0.025, Vector3(0.0, 0.02, 0.16), Paint.coat(Paint.BONE, 0.5), Basis.IDENTITY, 20, 0.07)
-			b.drum(0.012, 0.06, Vector3(0.0, 0.055, 0.16), Paint.coat(Paint.BLACK, 0.4, 0.3), Basis.IDENTITY, 8)
-			b.box(Vector3(0.06, 0.012, 0.012), Vector3(0.0, 0.0, 0.215), Paint.coat(Paint.YELLOW, 0.6), 0.002)
 		&"root_tuber", &"vat_fungus", &"saltbush":
 			return crop(id, Plant.RIPE)
 		&"tubers":
