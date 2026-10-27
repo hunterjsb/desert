@@ -190,46 +190,20 @@ stage in a planter on a clear morning, unseen; the sheet from 2026-10-17 is
 ## Rendering
 
 *2026-10-26* (Hunter: "work on graphical fidelity ... aligning with our artistic vision"). The look
-is unchanged: the tonemapper, exposure, eye, haze and sand shaders are as they were. Options' Graphics
-picks how finely it is drawn. Low draws as the game did before; medium is the default:
+is unchanged: tonemapper, exposure, eye, haze and sand shaders are as they were. Options' Graphics
+picks how finely it is drawn, and `game/ui/settings.gd` (`DRAWN`) owns each tier. **Low** draws as
+the game did before; **medium**, the default, adds SMAA, glow and a smoother sun-shadow filter;
+**high** adds 4× MSAA, contact shade (SSAO, High's only: it costs most for the least) and the
+softest filter.
 
-| | Low | Medium | High |
-|---|---|---|---|
-| Edges | none | SMAA | 4× MSAA and SMAA |
-| Glow | off | on | on |
-| Contact shade (SSAO) | off | off | on, full size |
-| Sun's shadow filter | soft low | soft medium | soft high |
-
-- **Edges.** SMAA takes the stairs off the rope, the bubble's rim and device edges, and leaves the
-  sand's grain and glints as they were. 4× MSAA also holds pieces thinner than a pixel, such as the
-  rope at range. As the camera creeps past the rope, 161 of its pixels a frame change sharply at low,
-  136 at medium and 86 at high. TAA was weighed and left out: it ghosts on a walk (3,300 pixels still
-  trailing), softens the grain and mutes the glints' twinkle. FXAA blurs the sand. The sand's
-  lightness is the same at every quality, within 0.03 L*, at noon, dusk and in a storm.
-- **Glow** blooms only what passes 2.0 after exposure. Lit sand peaks at 0.67 at noon and 1.1 by a
-  lamp on a full-Tu night with the eye open, so it never blooms. The shield, charge strips, lamp lenses
-  and tray emitters, 1.5 to 3.5 by day, do: barely by day, a soft halo in a storm, most at night. A lone
-  glint's flash is weighed down and barely blooms. The dusk sun already draws its own halo. Its
-  source is capped at 4, a storm's brightest. Shot with the eye held fully open on a full-Tu night,
-  the shield's band tints its dark housing cyan, though the housing's shape still reads; in play the
-  camp's own glow holds the eye partly closed, which wasn't shot.
-- **Contact shade** darkens where devices meet the sand (radius 0.8 m, and a fifth of it in direct
-  light). It is High's only: it costs most for the least, and in a storm it greys the bone white
-  that should read.
-- **Shadows.** Soft low dithers a checker into shadow edges; soft medium smooths it at no measurable
-  cost. The map stays 4096; 8192 cost 0.2 to 0.35 ms for little.
-
-**What it costs**, on the RTX 3070 at 1920×1080 by the GPU's own clock, the median of seven rounds of
-master, the try and master again. The headless screen paces frames at 60 a second, so the GPU idles
-near 1 GHz, half its top clock: these are about twice what a full-speed 3070 pays, roughly a modest
-card's. Each feature on low's drawing, clear and in a storm: SMAA +0.24 and +0.10 ms; 2× MSAA +0.41
-and +0.73; 4× MSAA +0.69 and +1.43; SSAO +0.81 to 0.93
-and +0.65; glow +0.12 to 0.36 and nothing measurable; the soft-medium filter +0.01 to 0.06.
-Each quality against low's drawing, which costs what the game did: medium +0.23 to 0.53 ms clear and
-+0.40 in a storm; high +1.68 to 1.85 and +2.30.
-
-To shoot each quality against low's drawing, stills, the rope creeping and the walk, clear, in a
-storm and at night: `look/render/shoot.sh <dir> [sheets]`; `--time` times them.
+- **Edges.** SMAA takes the stairs off thin rope, louvres and device edges and leaves the sand's
+  grain and glints alone; 4× MSAA also holds pieces thinner than a pixel at range. TAA ghosts on a
+  walk and mutes the glints' twinkle, and FXAA blurs the sand, so neither is used.
+- **Glow** blooms only what passes 2.0 after exposure: lit sand never does, the shield, charge
+  strips, lamp lenses and tray emitters do, most at night and in a storm. A lone glint's flash is
+  weighed down.
+- **Cost** at 1080p on the RTX 3070 against low: medium +0.23 to 0.53 ms, high +1.7 to 2.3 ms.
+  `look/render/shoot.sh <dir> [sheets]` shoots each tier; `--time` times them.
 
 ## Eye adaptation
 
@@ -1186,203 +1160,35 @@ arms keep their lengths; vaulting, empty hands reach for the ledge and a knee ga
 and what it costs are in [Movement](prd/movement.md#your-body-2026-10-21). Look-test:
 `look/player_body`; held things, `look/player_body/held.tscn`.
 
-## Chassis kit fidelity (2026-10-26)
+## Model standard (2026-10-26)
 
 Hunter: "work on graphical fidelity and model consistency aligning with our artistic vision across
-all agents". The chassis, frame, hull plate, helm seat, hand winch, mast, masthead, boom and stake
-are now real models in B's merged worn kit, drawn inside each catalog box: collision, sockets, mass
-and sizes are unchanged. A find's lineage picks its era's silhouette ([Shape by era](#shape-by-era));
-the pod keeps its cream skins and charred underside.
+all agents". Every placeholder grey box now has a real model in B's merged worn kit. A model is
+done when it follows these rules and `probes/devices/50_looks_keep_their_envelopes.gd` passes: it
+builds every listed id in all five eras and fails one that leaves its box or its one worn surface.
 
-`ChassisLooks` replaces the structural placeholder arms in Dress: inset split deck plates,
-corner castings and exposed join shoes, frame knees, pressed hull stiffeners, a braced helm
-seat, a fairlead and pawl on the rope drum, telescoping mast collars and forged stake. Latest
-lineage selects heirloom flares, asymmetric ceramic repairs or welded splices; existing marks
-and per-instance wear remain on the same shared worn surface. Base/era triangle ranges:
-chassis 2,672–4,224; frame 1,440; hull plate 456–500; helm 912–1,404; winch 2,932–3,020;
-mast 872–1,088; masthead and boom 560 each; stake 276. Each builder adds one surface/draw;
-existing moving wheels, sockets and pod skins retain their own draws. The envelope check
-covers all nine meshes and five era selections. `look/chassis/fidelity` repeats 5 m, 20 m,
-dusk and storm-bubble views; `look/pod_shell` and `look/paint` retain the pod and camp context.
-The second age is the era table's craft object with a machine buried inside: a rounded saltwood
-rail lashed in cord, a ceramic replacement corner, limewash infill and an oval repaired seat with a
-charm, all in Paint's existing ages-after materials.
+- **Stay inside the catalog box.** Collision, sockets, mass and sizes are unchanged; only the looks
+  change. The probe allows four exceptions, each reach the old model already had: a turbine's mast,
+  the keel depth under the skates and board plate, the hook's throat (it replaces the hook's tie
+  ring) and a site's plan footprint, grown 0.1 m, in each burial state.
+- **Build with the `Paint.Pieces` kit and Paint tokens.** No bare colours; a new colour is a token.
+- **One merged mesh per id, wear by instance.** The mesh is one surface on `Paint.worn()`; marks and
+  weathering belong to the instance. Moving or lit parts (rotors, wheels, needles, charge lights,
+  live screens, cloth, ladders) keep their own draws.
+- **Era by shape.** A lineage's last hands pick the silhouette and its marks go on that shape:
+  [Shape by era](#shape-by-era).
+- **Readability over dirt.** The id reads by silhouette before wear: handhelds at 1 m, devices at
+  5 m, 20 m and inside a storm bubble, sites at 20-60 m.
+- **Budgets.** Devices about 1-5k triangles, handhelds up to about 7.5k (the survey receiver, 7,324,
+  is the ceiling).
 
-## Camp device fidelity (2026-10-26)
-
-Hunter’s graphical-fidelity request follows the [chassis kit](#chassis-kit-fidelity-2026-10-26). SANDGAME assigns planters, burner, turbine, condenser, light panel, Console, cargo, survival kit and bedroll to the same worn modular language and [era silhouettes](#shape-by-era). Planting points, the Console’s live screen recess, the turbine’s mast and separate rotor, drop-orange cargo and the bedroll’s existing unrolling path stay in place. Era-specific bedroll cloth follows the same lineage in both poses. Only the looks change.
-
-`CampLooks` builds growing tubs with pale corner shoes, raised rims and diagonal bracing, an insulated burner with a vented heat guard and latch, a serviceable turbine base and mast, louvred condenser, framed solar cells, a stepped metal Console bezel and recessed rack, strapped drop cargo, a latched supply case and folded canvas. Colonial panels are modular, First Kingdoms fittings are flared brass, second-age repairs use ceramic and cord-bound saltbush wood, and skimmer parts show welded splices. Lineage repairs project onto the actual era mesh. The bedroll uses the same era cloth as it unrolls. Base/era triangle ranges: planter 1,512–1,856; deep_planter 1,512–1,856; burner 1,636–2,272; turbine 936–1,688; condenser 1,536–2,572; light_panel 1,052–1,264; console 1,988–2,632; cargo 1,056–1,860; survival_kit 720–1,568; bedroll 4,104–4,148. Each static builder has one shared worn surface; the turbine rotor, socket tells and live screen keep their existing draws. The envelope probe covers ten ids in five eras, with the turbine’s existing mast reach. Including free-socket tells and existing lights, the complete Console is 4,364–5,008 triangles in 10 draws, the planter 4,428–4,976 in 13 and the deep planter 2,568–3,116 in 5. Recessed vent cuts and fitted cord bands keep the complete Console around 5k without adding draws. `look/camp/audit` checks the tub beneath ripe saltbush and coalcane and the bare stepped Console bezel at 5 m in morning, dusk and storm.
-
-## Station kit fidelity (2026-10-26)
-
-Hunter’s fidelity request continues through the weather instruments, both radars, harvester, screen and socket solar panel. SANDGAME assigns era silhouettes in B’s merged kit, with sensing, catalog envelopes and fit unchanged. Cups, needle and dish remain static pieces of the merged mesh; animation is outside this pass. SANDGAME’s review (2026-10-26) retains the anemometer’s recognizable three-cup rotor: open hemispherical cups facing the same way round, safety yellow or second-age bone, with era changes in the hub, arms and mount. Small-instrument era sheets use their own camera at 1 m through a narrow lens. The unpowered Console and screen use non-emissive dark glazing that catches the sun and sky; the live display stays as drawn. The second-age Console and condenser gain another ceramic, cord or saltwood replacement that breaks their outlines, following [Shape by era](#shape-by-era).
-
-
-`StationLooks` replaces the nine part arms in Dress: bolted service plates, cup mouths and
-spindle collars, an enamel pressure dial, sheltered humidity louvres, a guarded sand intake,
-downward survey antenna, braced weather dish, a comb harvester, backed dark glass and framed
-solar cells. Lineage selects brass flares, ceramic rebuilds with cord and saltwood, or welded
-splices; existing marks and wear stay on the same surface. Base/era triangles: anemometer
-1,180–1,564; barometer 1,204–1,512; hygrometer 628–968; particle sensor 748–1,132;
-ground radar 684–1,100; radar 760–1,048; harvester 640–1,056; screen 408–480;
-solar panel 860–1,304. Each is one surface/draw, including its static cups, needle or dish.
-The Console’s bare recess and screen use the same low-roughness, non-emissive navy glazing;
-the powered Map is unchanged. The second-age Console replaces a rear cheek with ceramic and
-a rail with cord-bound saltwood; the condenser’s rounded ceramic side replaces a flat panel
-and tall metal post. The complete condenser is 2,064–3,100 triangles in three draws.
-`look/station/eras` compares the small instruments at 1 m through its own 25° camera in morning and dusk, plus wider handling views; larger screens and housings stand farther back to fit their catalog envelopes;
-`look/station/context` checks fitted instruments, powered and dark screens, a 20 m camp and
-its storm bubble. The existing `look/map` checks the live filters.
-
-## Commodity part fidelity (2026-10-26)
-
-The commonest things in the game, the battery, big battery, plug, strong plug, hose end, rope hook,
-water canister and lamp, are real models in B's merged worn kit, drawn inside their catalog boxes:
-collision, sockets, mass, sizes and each live charge light are unchanged (`CellLooks`).
-
-They share one company vocabulary: a moulded case, a collar in its socket kind's colour where it
-seats (amber cells, an orange plug, water blue, the ring's grey, a strong line's red), moulded grip
-ribs, capped terminals with the live one in safety yellow, and a dark window under each charge
-light. The pairs differ by shape. The battery is a slim slab with flush grips; the big battery is
-square-shouldered, with rubber bumpers down its edges, fins at its ends and a bail handle. The plug
-is round and fluted down to a strain-relief boot; the strong plug is a square armoured housing with
-a bayonet lock ring and banded grips. The hook is a forged J turned up on a swivel boss, with a
-sprung gate across its throat and the line's ring at its nose. The tie ring on every hook, stake and
-sail now wears the worn paint. The canister is drawn alloy with rolled beads and a fill-gauge
-saddle. The lamp has a square foot, a stem and a hinge under a hooded head with cooling rings, a
-bezel and a guard.
-
-A find's last hands set its shape ([Shape by era](#shape-by-era)). Issued parts are dark moulding;
-colonial ones are bone with grey caps and safety orange; First Kingdoms ones are kept clean, with
-brass caps, flared fittings and filigree vents. Skimmer parts are rust-painted, with welded plates
-and straps, rope lashings and bare studs. Second-age parts have their lost caps rebuilt in ceramic,
-with saltbush boards and stems, cord wraps and sand-glass windows. Base/era triangles: battery
-924–1,632; big battery 1,328–2,008; plug 660–804; strong plug 516–836; hose end 716–768; hook
-944–1,284, plus 192 for its ring; canister 1,152–1,376; lamp 1,020–1,356 (the placeholders were
-132–416). Each is one worn surface. The batteries' and the canister's charge lights and the hook's
-ring keep their own draw, so draws are as before: two for those, one for the rest. Paint gains
-`MOULDED`, `STRONG_RED` and `ALLOY`. `look/cells` shows each id in its five looks at about a metre,
-morning and dusk, and the camp with them seated, at 5 m and inside a storm's bubble.
-
-## Board fidelity (2026-10-26)
-
-Hunter's fidelity request, after the [chassis kit](#chassis-kit-fidelity-2026-10-26): the four boards
-and the rig under a camp are real models in B's merged worn kit, inside each catalog box. Collision,
-sockets, mass, sizes and the ride are unchanged. The four makes are the next
-[shape by era](#shape-by-era) set (`BoardLooks`), each keeping its [make's](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)
-marks. Ridden, the deck is seen from above, so the top carries the grip, the fittings and the wear.
-- **The company's board** is a crisp moulded hull: a rail round a narrower underbody, a rubber bumper
-  standing proud of it, nose and tail deck panels split by a seam, ribbed grip pads, a moulded
-  battery cradle with safety-yellow levers, a hazard band and two nose lamps. A colonial find is the
-  same hull in off-white, grey and safety orange.
-- **Its last hands reshape it** (its lineage's era): the First Kingdoms make the bumper a brass rub
-  strip and add flared brass bosses and a filigree vent; skimmer crews paint it red with a pale
-  stripe, tape the rails, weld a scrap plate on and tape a lamp where one was lost; the second age
-  planks the lost tail panel in saltbush, caps a lamp's hole in ceramic and binds the rail in cord.
-- **The skimmer racer** is light and hasty: a narrow crew-red sheet with a pointed nose on a welded
-  frame of stringers, its tail kicked up on a sheet of its own, an olive splice plate across a crack,
-  hand-cut grip, a welded battery plate, three pods underneath and a lamp taped to the nose.
-- **The patrol board** is a First Kingdoms heirloom the Knights Requisitioner keep: the colonial hull
-  intact, its bumper a house's enamel band, brass at its corners, a filigree vent and tread plate
-  under the order's grey, olive armour riveted down its rails and a steel bumper lashed across its nose.
-- **The temple board** is the second age's craft object: saltbush planks on battens over an old core,
-  lashed in separate turns of fern cord, its battery seated on a round glazed cap, a glazed bead on a
-  cord, the vial under its right planks.
-- **The rig:** the hover tray's guarded nacelles and junction box, skates on hangers with steel
-  edges, the board plate's gunmetal runner with three skid strips (it no longer reads as a white
-  sheet), the keel's ribbed fin with its emitter in cells, and the sail furled in lumpy folds and
-  gaskets on a collared boom.
-
-The hover glow, grip, the order's grey and sail cloth are Paint tokens. Emitters and lamps glow only
-while a board runs, so a board lying on the sand at night is dark; ridden, its emitters show as lit
-rims under it and its nose lamps as points ahead, in the dark and in a storm. Each look is one shared
-worn surface, so draws are as before: 4 for each board with its tells
-and charge light, 1 for each rig part. Own triangles: board 2,696 (era shapes 2,624–3,340), racer
-3,020, patrol 5,040, temple 2,540; hover tray 2,268, skates 1,392, board plate 1,500, keel 1,604,
-sail 1,948. `look/boards/fidelity.sh` shoots the makes at 2 m in morning and dusk, each from its
-rider's eye, the company's board in each era, the rig, and the makes hovering lit at night and in a
-storm bubble; `look/board_body_view` rides a make given after its folder.
-
-## Held tools and food fidelity (2026-10-26)
-
-Hunter: "work on graphical fidelity and model consistency aligning with our artistic vision across
-all agents". The six tools you hold and the six foods are real models in B's merged worn kit
-(`HeldLooks`), each one mesh inside its catalog box: collision, sockets, mass, sizes and where the
-hands take them are unchanged.
-
-- **Tools, company issue.** The compass: a ribbed rubber case, a brass ring under a ticked steel
-  bezel, a bone card with north in safety yellow, a luminous lubber line, a tapered needle on a
-  brass jewel, and a lug at one corner with its lanyard ring. The cutter: a copper nozzle in a
-  brass collar behind a bolted heat shield, a finned barrel under the cell's saddle, a teal power
-  unit with a gauge, vents and a safety stripe, a finger-moulded pistol grip where the hand takes
-  it, and a banded rubber butt. The sand scoop: a dished teal blade with ribs, rolled rims and an
-  edge worn bright, riveted to a sleeved shaft with a moulded D-grip. The flare: a red tube between
-  the drop's orange bands round a printed label, a ribbed foot, and the striker cap with its tear
-  strip. The sealant: a steel-rimmed yellow can with a label, a ribbed grip, a moulded head and
-  trigger and a red nozzle. The med kit: the clinic's moulded case on a gasket, guarded corners,
-  latches either side of a medicine-red seal, a hinge, a label and the raised teal cross.
-- **Tools by era.** A lineage's last era picks the cutter's, compass's, scoop's, sealant's and
-  med kit's shape under its marks ([Shape by era](#shape-by-era)). Colonial make is off-white
-  with safety orange, and the compass goes square with guarded corners. The First Kingdoms kept
-  that clean and fitted it in brass and bone: a flared brass nozzle bell and bezel, a crest on the
-  compass. The skimmer era repainted it crew red or olive, taped it and welded scrap on: a ring
-  guard on the nozzle, a bent-rod T-handle, a canvas pouch for the med kit. The second age mended
-  it in limewash, glazed ceramic, saltwood and cord, each with a charm: the cutter's works bound
-  under a round glazed cap, a corded can, a saltwood lid with a water vial. The flare stays the
-  company's.
-- **Food.** The ration is three tan foil meal bars, crimped at their ends and printed in food's
-  colour, two side by side and one across them: no box, band or strip a cell has. It shows what's
-  left by its bars, as harvests do, rather than by a charge light: three, one a meal. Tubers are lumpy, eyed potatoes; fungus caps, oyster fans over cream gills;
-  salt, a pan-salt cake crusted with crystals and tied; saltbush leaves, cut sprigs of silvered
-  leaves tied at the foot; the coalcane bundle, ten ringed stalks with pale cut ends, lashed twice.
-
-Triangles, company issue (era range): compass 3,188 (1,144–2,120), cutter 2,896 (2,580–3,240),
-sand scoop 2,068 (1,624–1,792), flare 1,688, sealant 2,048 (1,608–2,088), med kit 1,020
-(356–1,020); ration 912 whole, tubers 2,080 at five, fungus caps 1,980 at three, salt 608,
-saltbush leaves 1,320 at five, coalcane bundle 2,056; the needle 100. Each is one draw, as before;
-the ration loses its light's. Shots: `look/held/shoot.sh`.
-
-
-## One kit envelope and an open hook (2026-10-26)
-
-SANDGAME’s fidelity review consolidates the three builder envelope probes into one check for
-all seven Looks families: every listed id in every era stays in its catalog envelope on one
-shared worn surface. The hook must read as a curved, open hook with a latch tongue at one metre,
-keeping its fit and real rope guide. SANDGAME’s follow-up places the throat at the existing tie,
-replacing only the hook’s separate ring within that ring’s footprint; the physical socket,
-guide, target and reach stay unchanged. The envelope check allows this footprint only for the hook.
-The forged throat grows relative to its mount;
-era changes stay in the flange, collar and lashings. No tie position or rope behavior changes.
-
-As built: the hook is one merged worn mesh; its open steel throat and ajar latch replace the
-separate ring at the existing guide. Era mounts keep their brass, ceramic, cord and scrap.
-Devices probe 50 checks 295 variants across seven builders, including the existing turbine mast
-and runner keel depths. It replaces probes 47–49. The leaf bundle sits half a millimetre higher
-to keep its outermost leaf within the food’s existing box.
-
-## Ruins at a distance and sailing kit (2026-10-26)
-
-Hunter’s fidelity request continues through SANDGAME’s world-object lane: pipe-wall hut,
-cistern, low wall, vent mouth, fuel bladder and pipeline segment, plus streamer, fabric and
-crow’s nest. Their silhouettes must read at 20–60 m, with close views at 3 m. The existing
-site era governs its materials and structure; gear with lineage takes the era’s shape.
-Collision, site exposure, sockets, rooms, fit, cloth motion and deployed ladder behavior
-stay as built. The First Kingdoms’ kept pipe and masonry should read as constructions;
-vent spatter should read as broken rock instead of smooth domes. Use the established
-Paint palette and shared worn mesh; radio kit and headset remain with their owner.
-
-As built: `WorldLooks` draws the six historical sites; their era kit files keep the physical
-site definitions. The hut has separate salvaged roof sheets, the cistern has masonry courses,
-the low wall has kept gatepost fittings, and the pipeline has bolted flanges and clamps.
-Bladder straps follow the bag to its anchors. Vent spatter is angular, with mineral-shaped
-sulphur crusts on the existing crater. Site heights and footprints remain those of the original
-solids, so these remain low constructions. Each site is one worn draw: hut 4,976 triangles,
-cistern 3,040, wall 2,980, vent 2,214, bladder 2,800 and pipeline 2,572.
-
-The streamer wand, fabric edging and nest take lineage shapes through the same builder.
-The nest has separate floor planks, fitted cloth panels and a ceramic replacement post in
-the second age; the streamer's cloth and nest's deployed ladder retain their own moving meshes.
-Base kit meshes are one worn draw: streamer 636–848 triangles, fabric 904, nest 4,036–4,248,
-before lineage marks and deployed cloth or ladder. The shared envelope probe covers 310
-catalog variants and 36 historical site/state/house combinations.
+| Family | Looks file (`game/look/`) | Covers | Triangles | Know before the next model |
+|---|---|---|---|---|
+| Chassis | `chassis_looks.gd` | chassis, frame, hull plate, helm seat, hand winch, mast, masthead, boom, stake | 276-4,224 | Replaces the placeholder arms in Dress. The pod keeps its cream skins and charred underside on its detachable panels, with no extra collision. Stake, masthead and boom are not catalog parts: the probe holds their boxes. Shots: `look/chassis/fidelity`. |
+| Shield | `shield_looks.gd` | shield, light shield | 1,932-4,116; light 2,568 | Every era keeps one housing and the maker's emitter, with the generator's blue collar on a neck, so a storm still shows it by its glow. Shapes are in [Shape by era](#shape-by-era). Shots: `look/shield/shoot.sh`. |
+| Camp | `camp_looks.gd` | planter, deep planter, burner, turbine, condenser, light panel, Console, cargo, survival kit, bedroll | 720-2,632; bedroll about 4.1k | Planting points, the Console's live screen recess, the turbine's mast and separate rotor and the bedroll's unrolling path stay; the bedroll wears its era's cloth in both poses. With tells and lights the complete Console is 4.4-5.0k in 10 draws and the planter 4.4-5.0k in 13: hold the Console near 5k with recessed cuts and fitted bands, not new draws. Shots: `look/camp/audit`. |
+| Station | `station_looks.gd` | anemometer, barometer, hygrometer, particle sensor, ground radar, radar, harvester, screen, solar panel | 408-1,564 | Cups, needle and dish are static pieces of the mesh. The anemometer keeps three open hemispherical cups all facing one way round. The unpowered Console and screen use non-emissive, low-roughness navy glazing that catches sun and sky; the live display is unchanged. Small instruments are shot at 1 m through a 25° lens. Shots: `look/station/eras`, `look/station/context`. |
+| Cells and parts | `cell_looks.gd` | battery, big battery, plug, strong plug, hose end, hook, canister, lamp | 516-2,008 | One company vocabulary: moulded case, a collar in its socket kind's colour, grip ribs, capped terminals with the live one safety yellow, a dark window under each charge light (tokens `MOULDED`, `STRONG_RED`, `ALLOY`). Charge lights keep their own draw. The hook reads as a curved open hook with a latch tongue at 1 m; its throat sits at the existing tie, and rope guide, socket, target and reach are unchanged. Shots: `look/cells`. |
+| Boards | `board_looks.gd` | the company, racer, patrol and temple boards; hover tray, skates, board plate, keel, sail | 1,392-5,040; company 2,624-3,340 | The deck is seen from above when ridden, so grip, fittings and wear go on top. Each make keeps its [marks](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built). Emitters and lamps glow only while a board runs. Draws: 4 per board with tells and charge light, 1 per rig part. The board plate is a gunmetal runner, never a white sheet. Shots: `look/boards/fidelity.sh`. |
+| Held tools and food | `held_looks.gd` | compass, cutter, sand scoop, flare, sealant, med kit; ration, tubers, fungus caps, salt, saltbush leaves, coalcane bundle | 356-3,240, food at a full stack | One draw each, held where the hands already take it. All tools but the flare (always the company's) take era shapes. Food shows what is left by its pieces, not a charge light. The compass needle is its own 100-triangle mesh. Shots: `look/held/shoot.sh`. |
+| World sites and sailing | `world_looks.gd` | pipe-wall hut, cistern, low wall, vent mouth, fuel bladder, pipeline segment; streamer, fabric, crow's nest | sites 2,214-4,976; streamer 636-848; fabric 904; nest 4,036-4,248 | Read at 20-60 m, hold at 3 m. A site's era sets its materials and keeps its original solids' height and footprint, so these stay low constructions. First Kingdoms pipe and masonry read as built; vent spatter is angular broken rock, not domes. Cloth and the nest's deployed ladder keep their own moving meshes. |
