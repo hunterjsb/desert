@@ -2,8 +2,9 @@ extends Node
 ## Look-test: the held tools and the food on seed 1234, clear and calm, laid
 ## on the sand as you'd drop them: each about a metre off at morning and at
 ## dusk, the food laid out together, a planter and a deep planter of ripe
-## crops behind the packs they give, and each tool in the five looks a
-## lineage can give it (HeldLooks).
+## crops behind the packs they give, each tool in the five looks a
+## lineage can give it (HeldLooks), and a ration beside the cell it must
+## never be taken for.
 ##   godot --path . --disable-vsync res://look/held/held.tscn -- --capture <dir>
 ## look/held/shoot.sh shoots it and look/held/hold.tscn and builds the sheets.
 
@@ -72,6 +73,8 @@ func _capture(out_dir: String) -> void:
 	for i in FOOD.size():
 		_lay(FOOD[i], origin + Vector3((i - 2.5) * STEP * 0.4, 0.0, -FOOD_ROW))
 	_planters(origin + Vector3(0.0, 0.0, -FOOD_ROW - 0.9))
+	var beside := origin + Vector3(0.0, 0.0, 6.5)
+	var pair: Array[RigidBody3D] = [_lay(&"ration", beside + Vector3(-0.16, 0.0, 0.0)), _lay(&"battery", beside + Vector3(0.16, 0.0, 0.0))]
 	var eras := {}
 	for j in HeldLooks.SHAPED.size():
 		eras[HeldLooks.SHAPED[j]] = _eras(HeldLooks.SHAPED[j], origin + Vector3(0.0, 0.0, 1.6 + j * 0.9))
@@ -91,6 +94,9 @@ func _capture(out_dir: String) -> void:
 		await _shot(out_dir, "food_%s" % moment)
 		_look(food + Vector3(0.4, 1.3, 1.6), food + Vector3(0.0, 0.15, -0.6), 50.0)
 		await _shot(out_dir, "planter_%s" % moment)
+		var pair_at := beside + Vector3(0.0, pair[0].global_position.y - beside.y, 0.0)
+		_look(pair_at + Vector3(0.2, 0.5, 0.55), pair_at, 40.0)
+		await _shot(out_dir, "ration_cell_%s" % moment)
 		if moment != "morning":
 			continue
 		for id: StringName in eras:

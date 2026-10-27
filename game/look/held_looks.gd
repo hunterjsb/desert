@@ -649,41 +649,44 @@ static func _med_kit(b: Paint.Pieces, era: StringName) -> void:
 # --- Food -----------------------------------------------------------------
 
 ## A field ration: three meal bars sealed in tan foil, crimped at their
-## ends, banded together in a printed card in food's colour. Eaten from, the
-## band is gone and the top bar's foil torn back from its meal; empty, only
-## its foil is left.
+## ends and printed in food's colour, two side by side and one across them,
+## loose as they're packed, never a cell's box. Eaten from, the top bar goes
+## first and the next has its foil torn back from its meal; empty, only its
+## foil is left.
 static func _ration(b: Paint.Pieces, count: int) -> void:
 	var foil := Paint.coat(Paint.RATION_FOIL, 0.15, 0.35, 0.45, 0.6)
 	if count == 0:
-		b.box(Vector3(0.11, 0.032, 0.006), Vector3(0.0, 0.0, 0.003), foil, 0.002, Basis(Vector3.BACK, 0.2))
+		b.box(Vector3(0.11, 0.04, 0.005), Vector3(0.0, 0.0, 0.0025), foil, 0.002, Basis(Vector3.BACK, 0.2))
 		return
+	var food := Paint.coat(Catalog.KINDS[&"food"], 0.2, 0.0, 0.6)
+	var bars := [Vector3(-0.002, -0.021, 0.0145), Vector3(0.002, 0.021, 0.0145), Vector3(0.0, 0.0, 0.0405)]
+	var turns := [-0.04, 0.04, 0.1]
 	var left := 3 if count < 0 else count
 	for i in left:
 		var opened := count > 0 and count < 3 and i == left - 1
 		var long := 0.1 if opened else 0.124
-		var at := Vector3(-0.015 if opened else 0.0, -0.033 + i * 0.033, 0.019)
-		b.box(Vector3(long, 0.031, 0.034), at, foil, 0.011)
+		var turn := Basis(Vector3.BACK, turns[i])
+		var at: Vector3 = bars[i] + turn * Vector3(-0.012 if opened else 0.0, 0.0, 0.0)
+		b.box(Vector3(long, 0.04, 0.025), at, foil, 0.01, turn)
 		for s in ([-1.0] if opened else [-1.0, 1.0]):
-			var end := at + Vector3(s * (long * 0.5 + 0.006), 0.0, 0.0)
-			b.box(Vector3(0.014, 0.028, 0.004), end, foil, 0.001)
-			for k in 4:
-				b.box(Vector3(0.012, 0.0025, 0.0055), end + Vector3(0.0, -0.0105 + k * 0.007, 0.0), foil, 0.0)
+			var end := at + turn * Vector3(s * (long * 0.5 + 0.006), 0.0, 0.0)
+			b.box(Vector3(0.014, 0.036, 0.004), end, foil, 0.001, turn)
+			for k in 5:
+				b.box(Vector3(0.012, 0.0025, 0.0055), end + turn * Vector3(0.0, -0.014 + k * 0.007, 0.0), foil, 0.0, turn)
+		# Printed on its foil: food's stripe by one end and its lines.
+		var top := at + turn * Vector3(0.0, 0.0, 0.0125)
+		b.box(Vector3(0.012, 0.036, 0.0012), top + turn * Vector3(-long * 0.5 + 0.022, 0.0, 0.0), food, 0.0, turn)
+		for k in 3:
+			b.box(Vector3(0.03 - k * 0.007, 0.0016, 0.001), top + turn * Vector3(0.012, 0.008 - k * 0.005, 0.0), _ink(), 0.0, turn)
+		if i == 2 and not opened:
+			b.stamp(Paint.Mark.CONTRACTOR, top + turn * Vector3(0.012, -0.007, 0.0004), 0.026, turn)
+			b.box(Vector3(0.028, 0.013, 0.0008), top + turn * Vector3(0.012, -0.007, 0.0), foil, 0.0, turn)
 		if opened:
 			for k in 3:
-				b.box(Vector3(0.008, 0.012, 0.03), at + Vector3(long * 0.5 + 0.002, -0.01 + k * 0.01, 0.0), foil, 0.0,
-					Basis(Vector3.UP, 0.35 * (k - 1)) * Basis(Vector3.BACK, 0.2 * (1 - k)))
-			b.box(Vector3(0.045, 0.025, 0.026), at + Vector3(long * 0.5 + 0.0225, 0.0, -0.002),
-				Paint.coat(Paint.RATION_BAR, 0.0, 0.0, 0.85, 0.4), 0.006)
-	if left < 3:
-		return
-	# The band, printed: food's colour, the contractor's mark, its lines.
-	var card := Paint.coat(Paint.BONE, 0.2, 0.0, 0.75, 0.6)
-	b.box(Vector3(0.044, 0.099, 0.038), Vector3(0.0, 0.0, 0.0195), card, 0.006)
-	b.box(Vector3(0.044, 0.016, 0.002), Vector3(0.0, 0.03, 0.0385), Paint.coat(Catalog.KINDS[&"food"], 0.2, 0.0, 0.6), 0.0)
-	b.stamp(Paint.Mark.CONTRACTOR, Vector3(0.0, -0.006, 0.0388), 0.032)
-	b.box(Vector3(0.034, 0.018, 0.001), Vector3(0.0, -0.006, 0.0386), card, 0.0)
-	for k in 3:
-		b.box(Vector3(0.03 - k * 0.006, 0.0018, 0.001), Vector3(0.0, -0.026 - k * 0.005, 0.0389), _ink(), 0.0)
+				b.box(Vector3(0.008, 0.014, 0.022), at + turn * Vector3(long * 0.5 + 0.002, -0.013 + k * 0.013, 0.0), foil, 0.0,
+					turn * Basis(Vector3.UP, 0.35 * (k - 1)) * Basis(Vector3.BACK, 0.2 * (1 - k)))
+			b.box(Vector3(0.034, 0.032, 0.019), at + turn * Vector3(long * 0.5 + 0.017, 0.0, -0.001),
+				Paint.coat(Paint.RATION_BAR, 0.0, 0.0, 0.85, 0.4), 0.006, turn)
 
 
 ## Tubers as dug, washed of most of their soil: lumpy and eyed, three under

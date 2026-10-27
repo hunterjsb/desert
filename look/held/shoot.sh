@@ -29,8 +29,8 @@ for moment in morning dusk; do
 	sheet "tools_$moment" 3x 640x360+4+4 "held tools, about 1 m, $moment" "${tools[@]/%/_$moment}"
 	sheet "food_close_$moment" 3x 640x360+4+4 "food, about 1 m, $moment" "${food[@]/%/_$moment}"
 done
-sheet laid 2x 960x540+4+4 "the food laid out, and the planters beside their packs" \
-	food_morning food_dusk planter_morning planter_dusk
+sheet laid 2x 960x540+4+4 "the food laid out, the planters beside their packs, a ration beside a cell" \
+	food_morning food_dusk planter_morning planter_dusk ration_cell_morning ration_cell_dusk
 sheet eras 2x 960x540+4+4 "each tool in its lineages: issued, colonial, First Kingdoms, skimmer, second age" \
 	eras_cutter eras_compass eras_sand_scoop eras_sealant eras_med_kit
 holds=()

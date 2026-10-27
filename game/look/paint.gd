@@ -85,6 +85,13 @@ const FLARE_RED := Color(0.75, 0.12, 0.08)
 const COPPER := Color(0.55, 0.36, 0.2)
 const DYED := Color(0.55, 0.22, 0.12)
 const SCRAP: Array[Color] = [YELLOW, TEAL, BONE, STEEL]
+## Cells lane (CellLooks): the commodity parts' own.
+## Their moulded case: a dark composite, so their kind's collar is what reads.
+const MOULDED := Color(0.2, 0.21, 0.19)
+## A strong cable's plug: a heavy line's deep red, apart from a plain plug's orange.
+const STRONG_RED := Color(0.7, 0.15, 0.1)
+## Drawn alloy, the water canister's: pale, so water reads apart from power.
+const ALLOY := Color(0.55, 0.62, 0.68)
 ## Held lane (HeldLooks): a compass needle's luminous north; a field ration's
 ## tan foil, so it never reads as a cell, and its pressed meal bar; coalcane's
 ## dark ringed stalk and the pale pith where it's cut.

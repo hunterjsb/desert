@@ -1214,6 +1214,36 @@ Hunter’s graphical-fidelity request follows the [chassis kit](#chassis-kit-fid
 
 `CampLooks` builds growing tubs with pale corner shoes, raised rims and diagonal bracing, an insulated burner with a vented heat guard and latch, a serviceable turbine base and mast, louvred condenser, framed solar cells, a stepped metal Console bezel and recessed rack, strapped drop cargo, a latched supply case and folded canvas. Colonial panels are modular, First Kingdoms fittings are flared brass, second-age repairs use ceramic and cord-bound saltbush wood, and skimmer parts show welded splices. Lineage repairs project onto the actual era mesh. The bedroll uses the same era cloth as it unrolls. Base/era triangle ranges: planter 1,512–1,856; deep_planter 1,512–1,856; burner 1,636–2,272; turbine 936–1,688; condenser 1,536–2,216; light_panel 1,052–1,264; console 1,988–2,348; cargo 1,056–1,860; survival_kit 720–1,568; bedroll 4,104–4,148. Each static builder has one shared worn surface; the turbine rotor, socket tells and live screen keep their existing draws. The envelope probe covers ten ids in five eras, with the turbine’s existing mast reach. Including free-socket tells and existing lights, the complete Console is 4,364–4,928 triangles in 10 draws, the planter 4,428–4,976 in 13 and the deep planter 2,568–3,116 in 5. Recessed vent cuts and fitted cord bands keep those costs below 5k without adding draws. `look/camp/audit` checks the tub beneath ripe saltbush and coalcane and the bare stepped Console bezel at 5 m in morning, dusk and storm.
 
+## Commodity part fidelity (2026-10-26)
+
+The commonest things in the game, the battery, big battery, plug, strong plug, hose end, rope hook,
+water canister and lamp, are real models in B's merged worn kit, drawn inside their catalog boxes:
+collision, sockets, mass, sizes and each live charge light are unchanged (`CellLooks`).
+
+They share one company vocabulary: a moulded case, a collar in its socket kind's colour where it
+seats (amber cells, an orange plug, water blue, the ring's grey, a strong line's red), moulded grip
+ribs, capped terminals with the live one in safety yellow, and a dark window under each charge
+light. The pairs differ by shape. The battery is a slim slab with flush grips; the big battery is
+square-shouldered, with rubber bumpers down its edges, fins at its ends and a bail handle. The plug
+is round and fluted down to a strain-relief boot; the strong plug is a square armoured housing with
+a bayonet lock ring and banded grips. The hook is a forged J turned up on a swivel boss, with a
+sprung gate across its throat and the line's ring at its nose. The tie ring on every hook, stake and
+sail now wears the worn paint. The canister is drawn alloy with rolled beads and a fill-gauge
+saddle. The lamp has a square foot, a stem and a hinge under a hooded head with cooling rings, a
+bezel and a guard.
+
+A find's last hands set its shape ([Shape by era](#shape-by-era)). Issued parts are dark moulding;
+colonial ones are bone with grey caps and safety orange; First Kingdoms ones are kept clean, with
+brass caps, flared fittings and filigree vents. Skimmer parts are rust-painted, with welded plates
+and straps, rope lashings and bare studs. Second-age parts have their lost caps rebuilt in ceramic,
+with saltbush boards and stems, cord wraps and sand-glass windows. Base/era triangles: battery
+924–1,632; big battery 1,328–2,008; plug 660–804; strong plug 516–836; hose end 716–768; hook
+944–1,284, plus 192 for its ring; canister 1,152–1,376; lamp 1,020–1,356 (the placeholders were
+132–416). Each is one worn surface. The batteries' and the canister's charge lights and the hook's
+ring keep their own draw, so draws are as before: two for those, one for the rest. Paint gains
+`MOULDED`, `STRONG_RED` and `ALLOY`. `look/cells` shows each id in its five looks at about a metre,
+morning and dusk, and the camp with them seated, at 5 m and inside a storm's bubble.
+
 ## Held tools and food fidelity (2026-10-26)
 
 Hunter: "work on graphical fidelity and model consistency aligning with our artistic vision across
@@ -1241,14 +1271,14 @@ hands take them are unchanged.
   it in limewash, glazed ceramic, saltwood and cord, each with a charm: the cutter's works bound
   under a round glazed cap, a corded can, a saltwood lid with a water vial. The flare stays the
   company's.
-- **Food.** The ration is three foil meal bars crimped at their ends, banded in a printed card in
-  food's colour. It shows what's left by its bars, as harvests do, rather than by a charge light:
-  three, one a meal. Tubers are lumpy, eyed potatoes; fungus caps, oyster fans over cream gills;
+- **Food.** The ration is three tan foil meal bars, crimped at their ends and printed in food's
+  colour, two side by side and one across them: no box, band or strip a cell has. It shows what's
+  left by its bars, as harvests do, rather than by a charge light: three, one a meal. Tubers are lumpy, eyed potatoes; fungus caps, oyster fans over cream gills;
   salt, a pan-salt cake crusted with crystals and tied; saltbush leaves, cut sprigs of silvered
   leaves tied at the foot; the coalcane bundle, ten ringed stalks with pale cut ends, lashed twice.
 
 Triangles, company issue (era range): compass 3,188 (1,144–2,120), cutter 2,896 (2,580–3,240),
 sand scoop 2,068 (1,624–1,792), flare 1,688, sealant 2,048 (1,608–2,088), med kit 1,020
-(356–1,020); ration 788 whole, tubers 2,080 at five, fungus caps 1,980 at three, salt 608,
+(356–1,020); ration 912 whole, tubers 2,080 at five, fungus caps 1,980 at three, salt 608,
 saltbush leaves 1,320 at five, coalcane bundle 2,056; the needle 100. Each is one draw, as before;
 the ration loses its light's. Shots: `look/held/shoot.sh`.
