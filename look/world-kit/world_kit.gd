@@ -27,7 +27,11 @@ func run() -> void:
 	for id: StringName in KIT if eras else SITES + KIT:
 		for era: StringName in [Eras.NEW, Eras.COLONIAL, Eras.FIRST, Eras.SECOND, Eras.SKIMMER] if eras else [Eras.NEW]:
 			entries.append([id, era])
+	var only := PackedStringArray()
+	for arg: String in OS.get_cmdline_user_args():
+		if arg.begins_with("--only="): only = arg.trim_prefix("--only=").split(",")
 	for entry: Array in entries:
+		if not only.is_empty() and not only.has(String(entry[0])): continue
 		var id: StringName = entry[0]
 		var era: StringName = entry[1]
 		var root: Node3D

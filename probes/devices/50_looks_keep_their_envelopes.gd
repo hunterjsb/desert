@@ -39,7 +39,7 @@ func run() -> void:
 				var mesh := b.commit()
 				check(mesh.get_surface_count() == 1 and mesh.surface_get_material(0) == Paint.worn(), "%s %s keeps one shared worn surface" % [id, era])
 				check(box.grow(0.0001).encloses(mesh.get_aabb()), "%s %s stays in its existing envelope: %s" % [id, era, mesh.get_aabb()])
-				if id == &"hook": print("HOOK BUDGET ", era, " triangles=", mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() / 3)
+				if id == &"hook" or builder == WorldLooks: print("LOOKS BUDGET ", id, " ", era, " base_triangles=", mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() / 3)
 				variants += 1
 	_site_envelopes()
 	print("LOOKS ENVELOPES ", variants, " variants across ", looks.size(), " builders")

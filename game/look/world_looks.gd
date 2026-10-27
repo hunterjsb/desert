@@ -43,7 +43,18 @@ static func lineage(id: StringName, line: Array) -> ArrayMesh:
 static func _hut(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
 	var c := FirstKingdomsKit.coats()
 	var house: Paint.Coat = c.house
-	StructureKit.draw_boxes(b, p, state, c, 0.03)
+	# Separate salvaged roof sheets keep the solid slab's exact outer profile.
+	for i in p.shown(state):
+		var coat: String = p.coats[i]
+		if coat.is_empty(): continue
+		var solid: AABB = p.boxes[i]
+		if coat == "hull":
+			for panel in 4:
+				var width := solid.size.x / 4.0
+				var at := solid.position + Vector3((panel + 0.5) * width, solid.size.y * 0.5, solid.size.z * 0.5)
+				b.box(Vector3(width - 0.025, solid.size.y, solid.size.z), at, c.hull if panel % 2 else c.pipe, 0.025)
+		else:
+			b.box(solid.size, solid.get_center(), c[coat], 0.03)
 	# Each wall: a stone core with two courses of colonial pipe laid along it.
 	var runs := [[Vector2(-4.0, 2.5), Vector2(-2.2, 2.5)], [Vector2(-0.8, 2.5), Vector2(4.0, 2.5)],
 		[Vector2(-4.0, -2.5), Vector2(4.0, -2.5)], [Vector2(-3.5, -2.0), Vector2(-3.5, 2.0)],
@@ -202,8 +213,10 @@ static func _vent(b: Paint.Pieces, p: StructureKit.Piece, _state: int) -> void:
 		var y := GeologyKit.profile(GeologyKit.from_slot(at))
 		var down := (Vector2(at.x, signf(at.y) * maxf(absf(at.y) - GeologyKit.SLOT, 0.0))).normalized()
 		var tilt := Basis(Vector3(down.y, 0.0, -down.x).normalized(), -atan((GeologyKit.CREST_HEIGHT + GeologyKit.PIT_DEPTH) / (GeologyKit.CREST - GeologyKit.PIT)))
-		b.box(Vector3(rng.randf_range(1.2, 2.4), 0.08, rng.randf_range(0.8, 1.6)), Vector3(at.x, y + 0.02, at.y),
-			c.sulphur, 0.02, tilt * Basis(Vector3.UP, rng.randf() * TAU))
+		var width := rng.randf_range(1.2, 2.4)
+		var depth := rng.randf_range(0.8, 1.6)
+		var turn := tilt * Basis(Vector3.UP, rng.randf() * TAU) * Basis.from_scale(Vector3(width, 1, depth))
+		b.drum(0.5, 0.025, Vector3(at.x, y + 0.02, at.y), c.sulphur, turn, 6, 0.44)
 
 
 static func _bladder(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
@@ -311,7 +324,9 @@ static func _nest(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	for k in 8:
 		var angle := k * TAU / 8.0
 		var at := Vector3(cos(angle) * 0.39, 0, sin(angle) * 0.39)
-		b.drum(0.015, size.y - 0.08, at, c.wood, Basis.IDENTITY, 8)
+		var remade := era == Eras.SECOND and k == 4
+		b.drum(0.024 if remade else 0.015, size.y - 0.08, at, c.bone if remade else c.wood,
+			Basis.IDENTITY, 8, 0.017 if remade else -1.0)
 		for y in [-h.y + 0.1, h.y - 0.07]:
 			for j in 3:
 				b.drum(0.021, 0.006, at + Vector3(0, y + j * 0.008, 0), c.cord, Basis.IDENTITY, 8)
@@ -326,7 +341,6 @@ static func _nest(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 			for y in [-0.147, 0.147]:
 				b.box(Vector3(at.distance_to(next) - 0.03, 0.012, 0.012), middle + Vector3(0,y,0), c.cord, 0.001, turn)
 	if era == Eras.SECOND:
-		b.drum(0.026, 0.19, Vector3(-0.35, -0.12, -0.03), c.bone, Basis.IDENTITY, 8, 0.017)
 		b.ball(0.026, Vector3(-0.33, 0.22, 0.09), c.bone)
 		StructureKit.rod(b, Vector3(-0.34, 0.35, 0.09), Vector3(-0.33, 0.22, 0.09), 0.007, c.cord)
 	elif era == Eras.FIRST:

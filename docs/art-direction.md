@@ -1371,3 +1371,18 @@ Collision, site exposure, sockets, rooms, fit, cloth motion and deployed ladder 
 stay as built. The First Kingdoms’ kept pipe and masonry should read as constructions;
 vent spatter should read as broken rock instead of smooth domes. Use the established
 Paint palette and shared worn mesh; radio kit and headset remain with their owner.
+
+As built: `WorldLooks` draws the six historical sites; their era kit files keep the physical
+site definitions. The hut has separate salvaged roof sheets, the cistern has masonry courses,
+the low wall has kept gatepost fittings, and the pipeline has bolted flanges and clamps.
+Bladder straps follow the bag to its anchors. Vent spatter is angular, with mineral-shaped
+sulphur crusts on the existing crater. Site heights and footprints remain those of the original
+solids, so these remain low constructions. Each site is one worn draw: hut 4,976 triangles,
+cistern 3,040, wall 2,980, vent 2,214, bladder 2,800 and pipeline 2,572.
+
+The streamer wand, fabric edging and nest take lineage shapes through the same builder.
+The nest has separate floor planks, fitted cloth panels and a ceramic replacement post in
+the second age; the streamer's cloth and nest's deployed ladder retain their own moving meshes.
+Base kit meshes are one worn draw: streamer 636–848 triangles, fabric 904, nest 4,036–4,248,
+before lineage marks and deployed cloth or ladder. The shared envelope probe covers 310
+catalog variants and 36 historical site/state/house combinations.
