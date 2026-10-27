@@ -122,7 +122,7 @@ static func _housing(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 	var grey := Paint.coat(ColonialKit.GREY, 0.6, 0.4, 0.45)
 	var dark := Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
 	var stripe := Paint.coat(Paint.BONE, 0.7) if crew else Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
-	var rubber := Paint.coat(Paint.BLACK, 0.2, 0.0, 0.85)
+	var rubber := Paint.rubber()
 	var lo := _span(size).x
 	var hi := _span(size).y
 	var w := _body(size)
@@ -170,9 +170,9 @@ static func _housing(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 static func _colonial(b: Paint.Pieces, size: Vector3, crew := false) -> void:
 	var base := _cap(size)
 	var panel := Paint.coat(SkimmerKit.PLATE_RED, 0.9, 0.0, 0.55) if crew else Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5)
-	var ends := Paint.coat(SkimmerKit.TAPE, 0.2, 0.0, 0.8, 0.6) if crew else Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
+	var ends := Paint.tape() if crew else Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
 	var dark := Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
-	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+	var black := Paint.black()
 	b.box(Vector3(0.31, 0.012, 0.23), Vector3(0.0, base + 0.004, 0.0), dark, 0.004)
 	b.stamp(Paint.Mark.SHIELD_MAKER, Vector3(0.0, base + 0.034, -0.105), 0.075, BACK, Paint.Ink.PALE)
 	b.box(Vector3(0.29, 0.05, 0.21), Vector3(0.0, base + 0.034, 0.0), panel, 0.014)
@@ -197,8 +197,8 @@ static func _skimmer(b: Paint.Pieces, size: Vector3) -> void:
 	var w := _body(size)
 	var lo := _span(size).x
 	var hi := _span(size).y
-	var tape := Paint.coat(SkimmerKit.TAPE, 0.2, 0.0, 0.8, 0.6)
-	var scrap := Paint.coat(SkimmerKit.SCRAP, 1.0, 0.5, 0.6)
+	var tape := Paint.tape()
+	var scrap := Paint.scrap()
 	var steel := Paint.coat(Paint.STEEL, 0.8, 0.7, 0.45)
 	_colonial(b, size, true)
 	for sx in [-1.0, 1.0]:
@@ -214,8 +214,8 @@ static func _skimmer(b: Paint.Pieces, size: Vector3) -> void:
 	for x in [-0.05, 0.05]:
 		var foot := Vector3(x, top, 0.085)
 		var crown := Vector3(x, top + 0.026, 0.0)
-		_strand(b, foot, crown, 0.008, steel)
-		_strand(b, crown, Vector3(x, top, -0.085), 0.008, steel)
+		b.strand(foot, crown, 0.008, steel)
+		b.strand(crown, Vector3(x, top, -0.085), 0.008, steel)
 
 
 ## First Kingdoms: the colonial housing kept clean, brass rails up its edges
@@ -226,9 +226,9 @@ static func _first(b: Paint.Pieces, size: Vector3) -> void:
 	var h := size * 0.5
 	var base := _cap(size)
 	var panel := Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5)
-	var brass := Paint.coat(Paint.BRASS, 0.3, 0.9, 0.35, 0.5)
+	var brass := Paint.brass()
 	var copper := Paint.coat(Paint.COPPER, 0.3, 0.85, 0.4, 0.5)
-	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+	var black := Paint.black()
 	var w := _body(size)
 	var lo := _span(size).x
 	var hi := _span(size).y
@@ -242,7 +242,7 @@ static func _first(b: Paint.Pieces, size: Vector3) -> void:
 		b.box(Vector3(0.01, tall, 0.008), Vector3(s * 0.145, mid, face), brass, 0.002)
 		var half := Vector2(0.067, tall * 0.5 - 0.009)
 		for way in [Vector2(1.0, 1.0), Vector2(1.0, -1.0)]:
-			_bars(b, Basis.IDENTITY, Vector3(s * 0.073, mid, face - 0.001), half, way.normalized(), 0.026, brass)
+			b.bars(Basis.IDENTITY, Vector3(s * 0.073, mid, face - 0.001), half, way.normalized(), 0.026, brass)
 		b.drum(0.016, 0.006, Vector3(s * 0.073, mid, face + 0.003), brass, Basis(Vector3.RIGHT, PI / 2.0), 8)
 	b.box(Vector3(0.008, tall, 0.008), Vector3(0.0, mid, face), brass, 0.002)
 	# Brass rails up the chamfered edges between the corner caps, and posts
@@ -268,29 +268,6 @@ static func _first(b: Paint.Pieces, size: Vector3) -> void:
 	_lens(b, base + 0.07, 0.052, brass)
 
 
-## Bars along `way` across a rectangle `half` in a face's frame, `step` apart:
-## a lattice, laid in two ways.
-static func _bars(b: Paint.Pieces, turn: Basis, at: Vector3, half: Vector2, way: Vector2, step: float,
-		look: Paint.Coat) -> void:
-	var across := Vector2(-way.y, way.x)
-	var reach := absf(across.x) * half.x + absf(across.y) * half.y
-	var k := -floorf(reach / step)
-	while k * step < reach:
-		var off := across * k * step
-		var t0 := -INF
-		var t1 := INF
-		for axis in 2:
-			var a: float = (-half[axis] - off[axis]) / way[axis]
-			var c: float = (half[axis] - off[axis]) / way[axis]
-			t0 = maxf(t0, minf(a, c))
-			t1 = minf(t1, maxf(a, c))
-		if t1 - t0 > 0.012:
-			var middle := off + way * (t0 + t1) * 0.5
-			b.box(Vector3(t1 - t0, 0.004, 0.004), at + turn * Vector3(middle.x, middle.y, 0.0), look, 0.0,
-				turn * Basis(Vector3.BACK, atan2(way.y, way.x)))
-		k += 1.0
-
-
 ## Second age: the cap lost and rebuilt round in salt-glazed ceramic, off its
 ## axis, seated in a coil of bare ceramic with a sand-glass eye and corded
 ## down; the lost corner cap rebuilt rounded in ceramic, saltbush slats where
@@ -301,10 +278,10 @@ static func _bars(b: Paint.Pieces, turn: Basis, at: Vector3, half: Vector2, way:
 static func _second(b: Paint.Pieces, size: Vector3) -> void:
 	var h := size * 0.5
 	var base := _cap(size)
-	var glazed := Paint.coat(Paint.CERAMIC, 0.15, 0.0, 0.3, 0.6)
+	var glazed := Paint.glazed()
 	var bare := Paint.coat(Paint.CERAMIC, 0.1, 0.0, 0.85, 0.8)
-	var cord := Paint.coat(Paint.CORD, 0.0, 0.0, 0.95, 0.7)
-	var wood := Paint.coat(Paint.SALTWOOD, 0.1, 0.0, 0.85, 0.6)
+	var cord := Paint.cord()
+	var wood := Paint.saltwood()
 	var lime := Paint.coat(Paint.LIMEWASH, 0.4, 0.0, 0.85, 0.8)
 	var w := _body(size)
 	var lo := _span(size).x
@@ -331,7 +308,7 @@ static func _second(b: Paint.Pieces, size: Vector3) -> void:
 		for i in steps:
 			var p0 := _over(at, lean, out, radius + 0.004, high + 0.004, PI * i / steps)
 			var p1 := _over(at, lean, out, radius + 0.004, high + 0.004, PI * (i + 1) / steps)
-			_strand(b, p0, p1, 0.007, cord)
+			b.strand(p0, p1, 0.007, cord)
 	# The lost corner cap, rebuilt rounded in glazed ceramic.
 	var corner := Vector3(-(w - 0.03), hi - 0.026, w - 0.03)
 	b.drum(0.036, 0.03, corner, glazed, Basis.IDENTITY, 12)
@@ -368,7 +345,7 @@ static func _second(b: Paint.Pieces, size: Vector3) -> void:
 			b.box(Vector3(w * 2.0 - 0.056, 0.006, 0.006), face * Vector3(0.0, y, w + 0.011), cord, 0.0, face)
 		b.box(Vector3(0.006, 0.006, w * 2.0 - 0.056), Vector3(-(w + 0.011), y, 0.0), cord, 0.0)
 		for sz in [-1.0, 1.0]:
-			_strand(b, Vector3(-(w - 0.028), y, sz * (w + 0.011)), Vector3(-(w + 0.011), y, sz * (w - 0.028)), 0.006, cord)
+			b.strand(Vector3(-(w - 0.028), y, sz * (w + 0.011)), Vector3(-(w + 0.011), y, sz * (w - 0.028)), 0.006, cord)
 	for sz in [-1.0, 1.0]:
 		var edge := Vector3(w - 0.013, 0.0, sz * (w - 0.013))
 		for i in 4:
@@ -377,25 +354,15 @@ static func _second(b: Paint.Pieces, size: Vector3) -> void:
 		b.box(Vector3.ONE * 0.016, knot, cord, 0.004, Basis(Vector3.UP, PI * 0.25))
 		if sz > 0.0:
 			var bead := knot + Vector3(0.012, -0.04, 0.012)
-			_strand(b, knot, bead, 0.004, cord)
+			b.strand(knot, bead, 0.004, cord)
 			b.ball(0.009, bead, glazed)
 			for k in [-1.0, 0.0, 1.0]:
-				_strand(b, bead, bead + Vector3(k * 0.007, -0.035, k * -0.004), 0.003, cord)
+				b.strand(bead, bead + Vector3(k * 0.007, -0.035, k * -0.004), 0.003, cord)
 
 
 ## A point on a cord laid over the dome, `a` from one side round to the other.
 static func _over(at: Vector3, lean: Basis, out: Vector3, radius: float, high: float, a: float) -> Vector3:
 	return at + lean * (out * cos(a) * radius + Vector3.UP * sin(a) * high)
-
-
-## A straight length of cord or bar from one point to another.
-static func _strand(b: Paint.Pieces, from: Vector3, to: Vector3, thick: float, look: Paint.Coat) -> void:
-	var along := to - from
-	if along.length() < 1e-5:
-		return
-	var y := along.normalized()
-	var x := y.cross(Vector3.UP if absf(y.y) < 0.95 else Vector3.RIGHT).normalized()
-	b.box(Vector3(thick, along.length() + thick, thick), (from + to) * 0.5, look, 0.0, Basis(x, y, x.cross(y)))
 
 
 ## The light shield, the maker's own: a gunmetal foot on rubber, a round bone
@@ -408,8 +375,8 @@ static func _light(b: Paint.Pieces, size: Vector3) -> void:
 	var r := h.x * 0.88
 	var bone := Paint.coat(Paint.BONE, 0.4)
 	var gun := Paint.coat(Paint.GUNMETAL)
-	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
-	var rubber := Paint.coat(Paint.BLACK, 0.2, 0.0, 0.85)
+	var black := Paint.black()
+	var rubber := Paint.rubber()
 	var foot := -h.y
 	b.drum(h.x * 0.95, 0.028, Vector3(0.0, foot + 0.016, 0.0), gun, Basis.IDENTITY, 32, h.x * 0.9)
 	for i in 4:

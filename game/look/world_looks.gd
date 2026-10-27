@@ -279,7 +279,7 @@ static func _coats(era: StringName) -> Dictionary:
 	match era:
 		Eras.COLONIAL:
 			c.wood = Paint.coat(Paint.BONE, 0.5, 0.2, 0.5)
-			c.scrap = Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
+			c.scrap = Paint.gunmetal()
 			c.ochre = Paint.coat(Paint.DROP_ORANGE, 0.5, 0.0, 0.85)
 		Eras.FIRST:
 			c.wood = Paint.coat(Paint.BONE, 0.4, 0.1, 0.5)

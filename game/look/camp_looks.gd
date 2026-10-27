@@ -56,7 +56,9 @@ static func _rim(b: Paint.Pieces, size: Vector3, y: float, wide: float, look: Pa
 	for s in [-1, 1]:
 		b.box(Vector3(size.x, wide, wide), Vector3(0, y, s * (size.z - wide) * 0.5), look, wide * 0.2)
 		b.box(Vector3(wide, wide, size.z - wide * 2), Vector3(s * (size.x - wide) * 0.5, y, 0), look, wide * 0.2)
-static func _patch(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
+## What each era added to a camp thing: First Kingdoms trim, a second-age
+## ceramic knob lashed on, a crew's welded strip.
+static func _era_fittings(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var h := size * 0.5
 	if era == Eras.FIRST:
 		b.box(Vector3(size.x * 0.65, 0.018, 0.035), Vector3(0, h.y - 0.013, h.z - 0.025), _trim(era), 0.005)
@@ -131,7 +133,7 @@ static func _burner(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	for i in 6: b.box(Vector3(0.32, 0.015, 0.025), Vector3(0.04, -0.18 + i * 0.065, -h.z + 0.016), _trim(era), 0.003)
 	if era == Eras.SECOND:
 		_bindings(b, Vector3(-0.21, h.y - 0.10, -0.18), 0.052)
-	else: _patch(b, size - Vector3(0.04, 0.04, 0.04), era)
+	else: _era_fittings(b, size - Vector3(0.04, 0.04, 0.04), era)
 
 static func _turbine(b: Paint.Pieces, size: Vector3, mast: float, era: StringName) -> void:
 	var h := size * 0.5
@@ -266,7 +268,7 @@ static func _cargo(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	for z in [-0.26, 0.26]: _cargo_band(b, size, z, era)
 	# Rails stop at the supplies' socket plane rather than growing through it.
 	for y in [-0.30, 0, 0.30]: b.box(Vector3(0.018, 0.025, size.z - 0.22), Vector3(h.x - 0.01, y, -0.06), _metal(), 0.004)
-	_patch(b, size - Vector3(0.015, 0.015, 0.015), era)
+	_era_fittings(b, size - Vector3(0.015, 0.015, 0.015), era)
 static func _cargo_band(b: Paint.Pieces, size: Vector3, z: float, era: StringName) -> void:
 	var h := size * 0.5
 	for x in [-1, 1]: b.box(Vector3(0.018, size.y - 0.015, 0.05), Vector3(x * (h.x - 0.012), 0, z), _trim(era), 0.004)
@@ -288,7 +290,7 @@ static func _kit(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	for x in [-0.085, 0.085]:
 		b.box(Vector3(0.025, 0.055, 0.014), Vector3(x, 0, -h.z + 0.01), _trim(era), 0.004)
 	b.drum(0.009, 0.16, Vector3(0, 0.018, -h.z + 0.012), _dark(), Basis(Vector3.BACK, PI / 2), 10)
-	_patch(b, size - Vector3(0.01, 0.01, 0.01), era)
+	_era_fittings(b, size - Vector3(0.01, 0.01, 0.01), era)
 
 static func _cloth(era: StringName) -> Paint.Coat:
 	return Paint.coat({Eras.COLONIAL: Paint.BONE, Eras.SECOND: Paint.CORD, Eras.SKIMMER: Paint.RUST}.get(era, Paint.TEAL), 0, 0, 0.95)

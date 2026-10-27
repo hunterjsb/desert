@@ -239,6 +239,50 @@ static func coat(color: Color, share := 1.0, metal := 0.0, rough := 0.6, dust :=
 	return made
 
 
+## The finishes more than one look wears, each kept once so they stay one.
+static func brass() -> Coat:
+	return coat(BRASS, 0.3, 0.9, 0.35, 0.5)
+
+
+static func cord() -> Coat:
+	return coat(CORD, 0.0, 0.0, 0.95, 0.7)
+
+
+static func saltwood() -> Coat:
+	return coat(SALTWOOD, 0.1, 0.0, 0.85, 0.6)
+
+
+## Salt-glazed ceramic: the Dark Age's rebuilt caps, the second age's beads.
+static func glazed() -> Coat:
+	return coat(CERAMIC, 0.15, 0.0, 0.3, 0.6)
+
+
+static func tape() -> Coat:
+	return coat(SkimmerKit.TAPE, 0.2, 0.0, 0.8, 0.6)
+
+
+static func scrap() -> Coat:
+	return coat(SkimmerKit.SCRAP, 1.0, 0.5, 0.6)
+
+
+static func rubber() -> Coat:
+	return coat(BLACK, 0.2, 0.0, 0.85)
+
+
+## Black enamel on metal; matte black for moulded shrouds and a bolt's slot.
+static func black() -> Coat:
+	return coat(BLACK, 0.3, 0.3, 0.6)
+
+
+static func matte_black() -> Coat:
+	return coat(BLACK, 0.25, 0.1, 0.8)
+
+
+## The company's gunmetal fittings.
+static func gunmetal() -> Coat:
+	return coat(GUNMETAL, 0.5, 0.6, 0.5)
+
+
 class Coat:
 	var color: Color
 	var share: float
@@ -263,6 +307,15 @@ class Pieces:
 	var _stamps := PackedVector3Array()
 	var _marks: Array[int] = []
 	static var _cube := []
+	## Block strokes a to g: top, top right, bottom right, bottom, bottom
+	## left, top left, middle; and h to k, from the corners top left, top
+	## right, bottom left and bottom right in to the middle, for an M and a W.
+	const STROKES := {"0": "abcdef", "1": "bc", "2": "abged", "3": "abgcd", "4": "fgbc", "5": "afgcd",
+		"6": "afgedc", "7": "abc", "8": "abcdefg", "9": "abcdfg", "A": "abcefg", "F": "aefg", "S": "afgcd",
+		"M": "bcefhi", "W": "bcefjk"}
+	const PLACES := {"a": Vector2(0.0, 0.5), "g": Vector2.ZERO, "d": Vector2(0.0, -0.5), "b": Vector2(0.5, 0.25),
+		"c": Vector2(0.5, -0.25), "e": Vector2(-0.5, -0.25), "f": Vector2(-0.5, 0.25)}
+	const CORNERS := {"h": Vector2(-0.5, 0.5), "i": Vector2(0.5, 0.5), "j": Vector2(-0.5, -0.5), "k": Vector2(0.5, -0.5)}
 
 	## `foot` is where the whole thing meets the sand, in its own frame;
 	## without one, nothing drifts against its foot.
@@ -307,6 +360,80 @@ class Pieces:
 		m.radial_segments = 12
 		m.rings = 6
 		_add(m.get_mesh_arrays(), Transform3D(turn * Basis.from_scale(scale), at), look, Vector3.ONE, 1.0)
+
+	## A straight length of bar or cord from one point to another.
+	func strand(from: Vector3, to: Vector3, thick: float, look: Coat) -> void:
+		var along := to - from
+		if along.length() < 1e-5:
+			return
+		var y := along.normalized()
+		var x := y.cross(Vector3.UP if absf(y.y) < 0.95 else Vector3.RIGHT).normalized()
+		box(Vector3(thick, along.length() + thick, thick), (from + to) * 0.5, look, 0.0, Basis(x, y, x.cross(y)))
+
+	## A slotted bolt head, its axis along the turn's y.
+	func bolt(at: Vector3, radius := 0.012, turn := Basis.IDENTITY) -> void:
+		drum(radius, radius * 0.5, at, Paint.coat(STEEL, 0.4, 0.8), turn, 6)
+		box(Vector3(radius * 0.9, radius * 0.12, radius * 0.18), at + turn.y * radius * 0.28, Paint.matte_black(), 0.0, turn)
+
+	## Black and yellow: the bands a safety officer would sign off, `turn`'s
+	## +Z out of the band.
+	func hazard(size: Vector3, at: Vector3, turn: Basis) -> void:
+		box(size, at, Paint.coat(YELLOW, 0.75), 0.003, turn)
+		var n := int(size.x / (size.y * 1.6))
+		for i in n:
+			var x := -size.x * 0.5 + (i + 0.5) * size.x / n
+			box(Vector3(size.y * 0.55, size.y * 1.05, size.z + 0.002), at + turn * Vector3(x, 0.0, 0.0), Paint.coat(BLACK, 0.6), 0.001,
+				turn * Basis(Vector3.BACK, 0.7))
+
+	## Bars along `way` across a rectangle `half` in a face's frame, `step`
+	## apart: a lattice, laid in two ways.
+	func bars(turn: Basis, at: Vector3, half: Vector2, way: Vector2, step: float, look: Coat) -> void:
+		var across := Vector2(-way.y, way.x)
+		var reach := absf(across.x) * half.x + absf(across.y) * half.y
+		var k := -floorf(reach / step)
+		while k * step < reach:
+			var off := across * k * step
+			var t0 := -INF
+			var t1 := INF
+			for axis in 2:
+				var a: float = (-half[axis] - off[axis]) / way[axis]
+				var c: float = (half[axis] - off[axis]) / way[axis]
+				t0 = maxf(t0, minf(a, c))
+				t1 = minf(t1, maxf(a, c))
+			if t1 - t0 > 0.012:
+				var middle := off + way * (t0 + t1) * 0.5
+				box(Vector3(t1 - t0, 0.004, 0.004), at + turn * Vector3(middle.x, middle.y, 0.0), look, 0.0,
+					turn * Basis(Vector3.BACK, atan2(way.y, way.x)))
+			k += 1.0
+
+	## A number or a name in block strokes, `tall` m high and `deep` proud,
+	## its middle at `at`, facing the turn's +Z.
+	func numeral(text: String, at: Vector3, tall: float, look: Coat, turn := Basis.IDENTITY, deep := 0.001) -> void:
+		var wide := tall * 0.55
+		var line := tall * 0.13
+		var gap := wide * 0.5
+		# A 1 is one stroke, as narrow as it; an M and a W want more room.
+		var widths: Array[float] = []
+		var span := -gap
+		for digit in text:
+			widths.append(line if digit == "1" else (wide * 1.35 if digit in "MW" else wide))
+			span += widths[-1] + gap
+		var x := -span * 0.5
+		for i in text.length():
+			var w := widths[i] if text[i] in "MW" else wide
+			var middle := Vector3(x + widths[i] * 0.5, 0.0, 0.0)
+			for stroke in STROKES[text[i]]:
+				if CORNERS.has(stroke):
+					var from: Vector2 = CORNERS[stroke] * Vector2(w, tall)
+					box(Vector3(line, from.length(), deep), at + turn * (middle + Vector3(from.x, from.y, 0.0) * 0.5), look, 0.0,
+						turn * Basis(Vector3.BACK, atan2(from.x, -from.y)))
+					continue
+				var where: Vector2 = PLACES[stroke]
+				if text[i] == "1":
+					where.x = 0.0
+				var size := Vector3(w + line, line, deep) if stroke in "adg" else Vector3(line, tall * 0.5 + line, deep)
+				box(size, at + turn * (middle + Vector3(where.x * w, where.y * tall, 0.0)), look, 0.0, turn)
+			x += widths[i] + gap
 
 	## Paints a mark on the next piece's faces turned to `turn`'s +Z, centred
 	## at `at`, `width` across its x and half that up its y; from `row` of the
@@ -505,7 +632,7 @@ class Shell:
 						&"cord":
 							_lash(b)
 						&"ceramic":
-							_cap(b, 3, Paint.coat(CERAMIC, 0.15, 0.0, 0.3, 0.6))
+							_cap(b, 3, Paint.glazed())
 						&"plate":
 							_plate(b)
 						&"wood":
@@ -543,12 +670,12 @@ class Shell:
 			Paint.coat(house[2], 0.5, 0.1, 0.25, 0.6), at.basis, [house[0], unit * 4.6, Ink.SCRATCH, -1])
 		for x in [-1.0, 1.0]:
 			_drum(b, unit * 0.18, unit * 0.12, at * Vector3(x * unit * 0.62, unit * 0.86, unit * 0.24),
-				Paint.coat(BRASS, 0.3, 0.9, 0.35, 0.5), at.basis * Basis(Vector3.RIGHT, PI / 2.0), 6)
+				Paint.brass(), at.basis * Basis(Vector3.RIGHT, PI / 2.0), 6)
 
 	## Cord lashed round it: round a round body, round a part's body, or at
 	## two of a frame's corners, where a cracked post was bound.
 	func _lash(b: Over) -> void:
-		var cord := Paint.coat(CORD, 0.0, 0.0, 0.95, 0.7)
+		var cord := Paint.cord()
 		if radius > 0.0:
 			for k in 3:
 				_drum(b, radius + unit * 0.18, unit * 0.3, Vector3(0.0, lerpf(span.x, span.y, 0.4) + k * unit * 0.42, 0.0),
@@ -592,8 +719,8 @@ class Shell:
 
 	## A saltbush-wood splint along an edge, lashed at both ends.
 	func _splint(b: Over) -> void:
-		var wood := Paint.coat(SALTWOOD, 0.1, 0.0, 0.85, 0.6)
-		var cord := Paint.coat(CORD, 0.0, 0.0, 0.95, 0.7)
+		var wood := Paint.saltwood()
+		var cord := Paint.cord()
 		var k := mini(2, corners.size() - 1)
 		if k < 0 or not edges[k].is_finite():
 			return
@@ -627,7 +754,7 @@ class Shell:
 				else Vector3(at.origin.x, maxf(top, at.origin.y + unit), at.origin.z)
 			var to := at.origin + hang * unit * 0.6
 			_box(b, Vector3(unit * 0.1, from.distance_to(to), unit * 0.1), (from + to) * 0.5 + n * unit * 0.15,
-				Paint.coat(CORD, 0.0, 0.0, 0.95, 0.7), Basis(hang.cross(n), hang, n))
+				Paint.cord(), Basis(hang.cross(n), hang, n))
 		_drum(b, unit * 0.62, unit * 0.16, at.origin + n * unit * 0.12, look, at.basis * Basis(Vector3.RIGHT, PI / 2.0), 8)
 		_box(b, Vector3.ONE * unit * 0.36, at.origin + at.basis.y * unit * 0.62 + n * unit * 0.18,
 			Paint.coat(DYED, 0.0, 0.0, 0.5, 0.3), at.basis)
@@ -658,7 +785,7 @@ class Shell:
 		var middle := at.origin + n * unit * 0.42
 		_drum(b, unit * 0.38, unit * 1.5, middle, Paint.coat(SAND_GLASS, 0.0, 0.2, 0.12, 0.3), along, 6)
 		_drum(b, unit * 0.28, unit * 0.3, middle + along.y * unit * 0.85, Paint.coat(SALTWOOD, 0.0, 0.0, 0.85, 0.5), along, 6)
-		_drum(b, unit * 0.42, unit * 0.14, middle, Paint.coat(CORD, 0.0, 0.0, 0.95, 0.7), along, 6)
+		_drum(b, unit * 0.42, unit * 0.14, middle, Paint.cord(), along, 6)
 
 	## Strips round a box's top edges.
 	func _rim(b: Over, y: float, t: float, look: Coat) -> void:

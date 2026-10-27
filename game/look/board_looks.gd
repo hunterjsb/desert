@@ -97,32 +97,12 @@ static func _lamp() -> Paint.Coat:
 	return Paint.coat(Paint.LAMP, 0.0, 0.0, 0.2, 0.2, 4.0)
 
 
-static func _rubber() -> Paint.Coat:
-	return Paint.coat(Paint.BLACK, 0.2, 0.0, 0.85)
-
-
-static func _dark() -> Paint.Coat:
-	return Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
-
-
-static func _brass() -> Paint.Coat:
-	return Paint.coat(Paint.BRASS, 0.3, 0.9, 0.35, 0.5)
-
-
 static func _cord() -> Paint.Coat:
 	return Paint.coat(Paint.CORD, 0.1, 0.0, 0.9, 0.5)
 
 
-static func _tape() -> Paint.Coat:
-	return Paint.coat(SkimmerKit.TAPE, 0.2, 0.0, 0.8, 0.6)
-
-
 static func _weld() -> Paint.Coat:
 	return Paint.coat(Paint.RUST, 0.3, 0.6, 0.55)
-
-
-static func _scrap() -> Paint.Coat:
-	return Paint.coat(SkimmerKit.SCRAP, 1.0, 0.5, 0.6)
 
 
 # --- Kit pieces ----------------------------------------------------------------
@@ -247,7 +227,7 @@ static func _wrap(b: Paint.Pieces, side: float, z: float, long: float, look: Pai
 ## A scrap plate welded over a face, a bead at each corner.
 static func _patch(b: Paint.Pieces, at: Vector3, size: Vector2, turn: float, look: Paint.Coat = null) -> void:
 	var lie := Basis(Vector3.UP, turn)
-	b.box(Vector3(size.x, 0.003, size.y), at, look if look != null else _scrap(), 0.001, lie)
+	b.box(Vector3(size.x, 0.003, size.y), at, look if look != null else Paint.scrap(), 0.001, lie)
 	for x in [-1.0, 1.0]:
 		for z in [-1.0, 1.0]:
 			b.drum(0.005, 0.005, at + lie * Vector3(x * size.x * 0.5, 0.0005, z * size.y * 0.5), _weld(), Basis.IDENTITY, 6)
@@ -255,9 +235,9 @@ static func _patch(b: Paint.Pieces, at: Vector3, size: Vector2, turn: float, loo
 
 ## A salvaged lamp taped onto a nose, its middle at `at`, looking -Z.
 static func _taped_lamp(b: Paint.Pieces, at: Vector3) -> void:
-	b.drum(0.0105, 0.03, at, _dark(), ALONG, 10)
+	b.drum(0.0105, 0.03, at, Paint.black(), ALONG, 10)
 	b.ball(0.0085, at + Vector3(0.0, 0.0, -0.0148), _lamp(), Vector3(1.0, 1.0, 0.35))
-	b.drum(0.0122, 0.012, at + Vector3(0.0, 0.0, 0.004), _tape(), ALONG, 10)
+	b.drum(0.0122, 0.012, at + Vector3(0.0, 0.0, 0.004), Paint.tape(), ALONG, 10)
 
 
 # --- The company's moulded hull, and what each era's hands did to it ----------
@@ -273,7 +253,7 @@ static func _issue(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 		else Paint.coat(ColonialKit.PANEL, 0.5, 0.1, 0.5))
 	var rail := Paint.coat(Paint.GUNMETAL) if issue else Paint.coat(ColonialKit.GREY, 0.6, 0.4, 0.45)
 	var under := Paint.coat(Paint.GUNMETAL, 0.8, 0.5, 0.5) if issue else Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
-	_hull(b, size, under, rail, _brass() if shape == &"first" else _rubber())
+	_hull(b, size, under, rail, Paint.brass() if shape == &"first" else Paint.rubber())
 	# Tilg & Standard's batch stencil on its tail, or TILG's consignment.
 	b.stamp(Paint.Mark.CONSIGNMENT, Vector3(0.0, size.y * 0.5, 0.53), 0.24, TAIL, Paint.Ink.PALE)
 	_panels(b, size, deck, shape == &"second")
@@ -285,10 +265,10 @@ static func _issue(b: Paint.Pieces, size: Vector3, shape: StringName) -> void:
 	elif not crew:
 		b.box(Vector3(0.22, 0.003, 0.02), Vector3(0.0, DECK_TOP + 0.001, -0.603), orange, 0.001)
 	for x in [-0.06, 0.06]:
-		_nose_lamp(b, Vector3(x, 0.0095, -0.6478), 0.0055, _rubber(), x < 0.0 or not (crew or shape == &"second"))
+		_nose_lamp(b, Vector3(x, 0.0095, -0.6478), 0.0055, Paint.rubber(), x < 0.0 or not (crew or shape == &"second"))
 	for z in [-0.36, 0.36]:
-		_emitter(b, Vector3(0.0, -0.0369, z), 0.062, _dark())
-	_port(b, size, _rubber())
+		_emitter(b, Vector3(0.0, -0.0369, z), 0.062, Paint.black())
+	_port(b, size, Paint.rubber())
 	match shape:
 		&"first":
 			_heirloom(b)
@@ -313,7 +293,7 @@ static func _panels(b: Paint.Pieces, size: Vector3, deck: Paint.Coat, planked: b
 	if not planked:
 		_slab(b, _plan(w, SEAM_Z + 0.002, 0.618, 0.0, 0.085), 0.018, DECK_TOP, 0.004, deck)
 	_slab(b, _plan(w, nose, SEAM_Z - 0.002, 0.085, 0.0), 0.018, DECK_TOP, 0.004, deck)
-	b.box(Vector3(w - 0.004, 0.004, 0.008), Vector3(0.0, DECK_TOP + 0.0005, SEAM_Z), _dark(), 0.001)
+	b.box(Vector3(w - 0.004, 0.004, 0.008), Vector3(0.0, DECK_TOP + 0.0005, SEAM_Z), Paint.black(), 0.001)
 
 
 ## A grip pad over a span of the deck: ribbed tape, or tread plate whose
@@ -339,13 +319,13 @@ static func _grip(b: Paint.Pieces, kind: StringName, span: Vector2, w := 0.27) -
 				bump, 0.0, Basis(Vector3.UP, lean))
 	for x in [-1.0, 1.0]:
 		for z in [span.x + 0.014, span.y - 0.014]:
-			b.drum(0.006, 0.004, Vector3(x * (w * 0.5 - 0.014), DECK_TOP + 0.0035, z), _brass(), Basis.IDENTITY, 6)
+			b.drum(0.006, 0.004, Vector3(x * (w * 0.5 - 0.014), DECK_TOP + 0.0035, z), Paint.brass(), Basis.IDENTITY, 6)
 
 
 ## The battery's moulded cradle at the nose under its socket, a release lever
 ## each side.
 static func _cradle(b: Paint.Pieces, lever: Paint.Coat) -> void:
-	_slab(b, _plan(0.25, -0.585, -0.415, 0.02, 0.02), DECK_TOP - 0.004, 0.0392, 0.002, Paint.coat(Paint.BLACK, 0.25, 0.1, 0.8))
+	_slab(b, _plan(0.25, -0.585, -0.415, 0.02, 0.02), DECK_TOP - 0.004, 0.0392, 0.002, Paint.matte_black())
 	for x in [-1.0, 1.0]:
 		b.box(Vector3(0.014, 0.009, 0.07), Vector3(x * 0.138, 0.0352, -0.5), lever, 0.002)
 
@@ -361,23 +341,23 @@ static func _port(b: Paint.Pieces, size: Vector3, look: Paint.Coat, wide := 0.17
 static func _heirloom(b: Paint.Pieces) -> void:
 	_bosses(b, [-0.575, 0.575])
 	_vent(b, 0.01, 0.2)
-	b.drum(0.012, 0.008, Vector3(0.0, 0.0095, -0.6455), _brass(), ALONG, 12, 0.018)
+	b.drum(0.012, 0.008, Vector3(0.0, 0.0095, -0.6455), Paint.brass(), ALONG, 12, 0.018)
 
 
 static func _bosses(b: Paint.Pieces, zs: Array) -> void:
 	for x in [-1.0, 1.0]:
 		for z: float in zs:
-			b.drum(0.02, 0.013, Vector3(x * 0.146, 0.0305, z), _brass(), Basis.IDENTITY, 10, 0.014)
+			b.drum(0.02, 0.013, Vector3(x * 0.146, 0.0305, z), Paint.brass(), Basis.IDENTITY, 10, 0.014)
 
 
 ## A dark vent framed in brass under a diamond lattice, `wide` across at z.
 static func _vent(b: Paint.Pieces, z: float, wide: float) -> void:
-	var brass := _brass()
-	b.box(Vector3(wide, 0.003, 0.046), Vector3(0.0, DECK_TOP + 0.0005, z), _dark(), 0.0)
+	var brass := Paint.brass()
+	b.box(Vector3(wide, 0.003, 0.046), Vector3(0.0, DECK_TOP + 0.0005, z), Paint.black(), 0.0)
 	for s in [-1.0, 1.0]:
 		b.box(Vector3(wide + 0.008, 0.005, 0.006), Vector3(0.0, DECK_TOP + 0.0025, z + s * 0.025), brass, 0.001)
 		b.box(Vector3(0.006, 0.004, 0.044), Vector3(s * (wide * 0.5 + 0.001), DECK_TOP + 0.002, z), brass, 0.001)
-		ShieldLooks._bars(b, FLAT, Vector3(0.0, DECK_TOP + (0.0017 if s < 0.0 else 0.003), z), Vector2(wide * 0.5 - 0.004, 0.019),
+		b.bars(FLAT, Vector3(0.0, DECK_TOP + (0.0017 if s < 0.0 else 0.003), z), Vector2(wide * 0.5 - 0.004, 0.019),
 			Vector2(1.0, s).normalized(), 0.016, brass)
 
 
@@ -388,7 +368,7 @@ static func _crewed(b: Paint.Pieces) -> void:
 	b.box(Vector3(0.03, 0.003, 0.9), Vector3(0.0, DECK_TOP + 0.0005, 0.0), Paint.coat(Paint.BONE, 0.7), 0.0)
 	for z in [-0.28, 0.02, 0.3]:
 		for side in [-1.0, 1.0]:
-			_wrap(b, side, z + side * 0.03, 0.04, _tape(), 0.03 * side)
+			_wrap(b, side, z + side * 0.03, 0.04, Paint.tape(), 0.03 * side)
 	_patch(b, Vector3(0.13, DECK_TOP + 0.0015, 0.57), Vector2(0.06, 0.08), 0.3)
 	_taped_lamp(b, Vector3(0.06, 0.0265, -0.628))
 
@@ -454,7 +434,7 @@ static func _racer(b: Paint.Pieces, size: Vector3) -> void:
 	for i in 3:
 		var z: float = [-0.3, -0.04, 0.22][i]
 		for x in [-1.0, 1.0]:
-			b.box(Vector3(0.018, 0.0125, 0.034), Vector3(x * 0.122, 0.0258, z + x * 0.02), _tape(), 0.003,
+			b.box(Vector3(0.018, 0.0125, 0.034), Vector3(x * 0.122, 0.0258, z + x * 0.02), Paint.tape(), 0.003,
 				Basis(Vector3.UP, 0.06 * x * (i - 1)))
 	# The crew's pale stripe, hand-cut grip, an olive splice plate welded
 	# across where the sheet cracked, a scrap plate over the tail.
@@ -465,7 +445,7 @@ static func _racer(b: Paint.Pieces, size: Vector3) -> void:
 	_patch(b, Vector3(0.0, top + 0.0025, -0.024), Vector2(0.236, 0.042), 0.04, Paint.coat(SkimmerKit.OLIVE, 1.0, 0.4, 0.6))
 	_patch(b, Vector3(0.095, top + 0.0025, 0.39), Vector2(0.05, 0.08), -0.25)
 	# The battery's plate, beaded at its corners; rivets down the sheet's edges.
-	b.box(Vector3(0.17, 0.0095, 0.13), Vector3(0.0, 0.035, -0.5), _scrap(), 0.002)
+	b.box(Vector3(0.17, 0.0095, 0.13), Vector3(0.0, 0.035, -0.5), Paint.scrap(), 0.002)
 	for x in [-0.082, 0.082]:
 		for z in [-0.565, -0.435]:
 			b.drum(0.005, 0.008, Vector3(x, 0.034, z), weld, Basis.IDENTITY, 6)
@@ -490,7 +470,7 @@ static func _patrol(b: Paint.Pieces, size: Vector3) -> void:
 	_panels(b, size, Paint.coat(Paint.ORDER_GREY, 0.6, 0.0, 0.85), false, -0.592)
 	_grip(b, &"tread", Vector2(-0.34, -0.03), 0.28)
 	_grip(b, &"tread", Vector2(0.05, 0.33), 0.28)
-	_cradle(b, _brass())
+	_cradle(b, Paint.brass())
 	_bosses(b, [0.575])
 	_vent(b, 0.01, 0.2)
 	# The order's sign, daubed by hand across the tail.
@@ -503,17 +483,17 @@ static func _patrol(b: Paint.Pieces, size: Vector3) -> void:
 		for span: Vector2 in [Vector2(-0.4, -0.13), Vector2(-0.09, 0.18), Vector2(0.22, 0.48)]:
 			b.box(Vector3(0.008, 0.015, span.y - span.x), Vector3(x * 0.1745, 0.0185, (span.x + span.y) * 0.5), plate, 0.003)
 			for end in [span.x + 0.02, span.y - 0.02]:
-				b.drum(0.0045, 0.0023, Vector3(x * 0.17865, 0.0185, end), _brass(), ACROSS, 6)
+				b.drum(0.0045, 0.0023, Vector3(x * 0.17865, 0.0185, end), Paint.brass(), ACROSS, 6)
 	# The steel bumper across the nose on two brackets, lashed to them in cord.
 	b.box(Vector3(0.34, 0.022, 0.024), Vector3(0.0, 0.004, -0.6335), steel, 0.005)
 	for x in [-0.12, 0.12]:
 		b.box(Vector3(0.026, 0.026, 0.09), Vector3(x, 0.0, -0.59), steel, 0.005)
 		b.box(Vector3(0.036, 0.034, 0.016), Vector3(x, 0.001, -0.615), _cord(), 0.004)
 	for x in [-0.07, 0.07]:
-		_nose_lamp(b, Vector3(x, 0.006, -0.6478), 0.006, _rubber())
-	b.drum(0.016, 0.008, Vector3(0.0, 0.006, -0.6455), _brass(), ALONG, 12, 0.022)
+		_nose_lamp(b, Vector3(x, 0.006, -0.6478), 0.006, Paint.rubber())
+	b.drum(0.016, 0.008, Vector3(0.0, 0.006, -0.6455), Paint.brass(), ALONG, 12, 0.022)
 	for z in [-0.42, -0.14, 0.14, 0.42]:
-		_emitter(b, Vector3(0.0, -0.0369, z), 0.05, _brass(), 1.6)
+		_emitter(b, Vector3(0.0, -0.0369, z), 0.05, Paint.brass(), 1.6)
 	_port(b, size, steel)
 
 
@@ -551,9 +531,9 @@ static func _temple(b: Paint.Pieces, size: Vector3) -> void:
 	b.drum(0.112, 0.008, Vector3(0.0, -0.002, -0.535), bare, Basis.IDENTITY, 20)
 	b.drum(0.105, 0.0695, Vector3(0.0, 0.00475, -0.535), Paint.coat(Paint.GLAZE, 0.25, 0.0, 0.25, 0.4), Basis.IDENTITY, 20, 0.09)
 	for x in [-1.0, 1.0]:
-		ShieldLooks._strand(b, Vector3(x * 0.1, 0.03, -0.47), Vector3(x * 0.14, 0.036, -0.38), 0.005, cord)
+		b.strand(Vector3(x * 0.1, 0.03, -0.47), Vector3(x * 0.14, 0.036, -0.38), 0.005, cord)
 	# A charm off the left cord: a glazed bead on a short tail.
-	ShieldLooks._strand(b, Vector3(-0.14, 0.036, -0.38), Vector3(-0.172, 0.006, -0.36), 0.003, cord)
+	b.strand(Vector3(-0.14, 0.036, -0.38), Vector3(-0.172, 0.006, -0.36), 0.003, cord)
 	b.ball(0.008, Vector3(-0.172, 0.002, -0.36), Paint.coat(Paint.GLAZE, 0.25, 0.0, 0.25, 0.4))
 	# The sign of Tu on limewash at the tail.
 	b.stamp(Paint.Mark.TU, Vector3(0.0, h.y, 0.565), 0.17, TAIL)
@@ -568,7 +548,7 @@ static func _temple(b: Paint.Pieces, size: Vector3) -> void:
 	var knot := Vector3(-0.14, -0.002, h.z - 0.012)
 	b.box(Vector3.ONE * 0.014, knot, cord, 0.004, Basis(Vector3.UP, PI * 0.25))
 	for i in 3:
-		ShieldLooks._strand(b, knot, knot + Vector3((i - 1) * 0.008, -0.034, 0.004), 0.004, Paint.coat(Paint.DYED, 0.3, 0.0, 0.85))
+		b.strand(knot, knot + Vector3((i - 1) * 0.008, -0.034, 0.004), 0.004, Paint.coat(Paint.DYED, 0.3, 0.0, 0.85))
 	# Ceramic rings round the old core's two emitters.
 	for z in [-0.3, 0.32]:
 		_emitter(b, Vector3(0.0, -0.0369, z), 0.055, Paint.coat(Paint.CERAMIC, 0.5, 0.0, 0.35, 0.7), 2.4)
@@ -592,15 +572,15 @@ static func _tray(b: Paint.Pieces, size: Vector3) -> void:
 	for x in [-1.0, 1.0]:
 		for y in [-1.0, 1.0]:
 			var corner := Vector3(x * 0.29, y * 0.29, 0.0)
-			b.box(Vector3(0.07, 0.07, 0.016), corner + Vector3(0.0, 0.0, face + 0.004), _dark(), 0.006)
-			ChassisLooks._bolt(b, corner + Vector3(0.0, 0.0, face + 0.012), 0.011, ALONG)
-	b.box(Vector3(0.12, 0.12, 0.02), Vector3(0.0, 0.0, face + 0.006), _dark(), 0.006)
+			b.box(Vector3(0.07, 0.07, 0.016), corner + Vector3(0.0, 0.0, face + 0.004), Paint.black(), 0.006)
+			b.bolt(corner + Vector3(0.0, 0.0, face + 0.012), 0.011, ALONG)
+	b.box(Vector3(0.12, 0.12, 0.02), Vector3(0.0, 0.0, face + 0.006), Paint.black(), 0.006)
 	for x in [-1.0, 1.0]:
 		for y in [-1.0, 1.0]:
 			var at := Vector3(x * 0.18, y * 0.18, 0.0)
-			ShieldLooks._strand(b, Vector3(x * 0.055, y * 0.055, face + 0.005), at * 0.62 + Vector3(0.0, 0.0, face + 0.005), 0.012,
-				_dark())
-			b.drum(0.092, 0.024, at + Vector3(0.0, 0.0, face + 0.008), _dark(), ALONG, 18)
+			b.strand(Vector3(x * 0.055, y * 0.055, face + 0.005), at * 0.62 + Vector3(0.0, 0.0, face + 0.005), 0.012,
+				Paint.black())
+			b.drum(0.092, 0.024, at + Vector3(0.0, 0.0, face + 0.008), Paint.black(), ALONG, 18)
 			b.drum(0.072, 0.0058, at + Vector3(0.0, 0.0, face + 0.0205), _glow(), ALONG, 18)
 			for k in 2:
 				b.box(Vector3(0.17, 0.006, 0.008), at + Vector3(0.0, 0.0, face + 0.0225 - k * 0.0015), steel, 0.0,
@@ -619,7 +599,7 @@ static func _skates(b: Paint.Pieces, size: Vector3) -> void:
 	for y in [-0.28, 0.28]:
 		b.box(Vector3(size.x - 0.04, 0.06, size.z - 0.004), Vector3(0.0, y, size.z * 0.5), gun, 0.008)
 		for x in [-1.0, 1.0]:
-			b.box(Vector3(0.05, 0.074, size.z), Vector3(x * (h.x - 0.035), y, size.z * 0.5 + 0.0005), _dark(), 0.008)
+			b.box(Vector3(0.05, 0.074, size.z), Vector3(x * (h.x - 0.035), y, size.z * 0.5 + 0.0005), Paint.black(), 0.008)
 	b.box(Vector3(0.05, 0.62, 0.012), Vector3(0.0, 0.0, 0.015), gun, 0.004)
 	_hazard(b, Vector3(0.4, 0.03, 0.004), Vector3(0.0, 0.0, 0.023), ACROSS)
 	for x in [-1.0, 1.0]:
@@ -651,9 +631,9 @@ static func _plate(b: Paint.Pieces, size: Vector3) -> void:
 		_hazard(b, Vector3(0.24, 0.024, 0.004), Vector3(x * (h.x - 0.05), 0.0, size.z - 0.0005), ACROSS)
 		for y in [-1.0, 1.0]:
 			var at := Vector3(x * (h.x - 0.1), y * (h.y - 0.15), 0.0)
-			b.drum(0.026, 0.006, at + Vector3(0.0, 0.0, size.z + 0.003), _rubber(), ALONG, 10)
+			b.drum(0.026, 0.006, at + Vector3(0.0, 0.0, size.z + 0.003), Paint.rubber(), ALONG, 10)
 			b.box(Vector3(0.04, 0.04, keel - 0.012), at + Vector3(0.0, 0.0, size.z + 0.006 + (keel - 0.012) * 0.5), gun, 0.005)
-			ChassisLooks._bolt(b, Vector3(x * (h.x - 0.03), y * (h.y - 0.075), size.z - 0.0005), 0.009, ALONG)
+			b.bolt(Vector3(x * (h.x - 0.03), y * (h.y - 0.075), size.z - 0.0005), 0.009, ALONG)
 	b.box(Vector3(size.x - 0.01, size.y - 0.2, 0.012), Vector3(0.0, 0.0, face - 0.008), gun, 0.004)
 	for y in [-1.0, 1.0]:
 		var up := Basis(Vector3.RIGHT, -y * 0.45)
@@ -664,7 +644,7 @@ static func _plate(b: Paint.Pieces, size: Vector3) -> void:
 	for x in [-0.2, 0.0, 0.2]:
 		b.box(Vector3(0.03, size.y - 0.204, 0.004), Vector3(x, 0.0, face - 0.002), steel, 0.001)
 	for x in [-1.0, 1.0]:
-		b.box(Vector3(0.012, size.y - 0.2, 0.016), Vector3(x * (h.x - 0.0065), 0.0, face - 0.009), _rubber(), 0.003)
+		b.box(Vector3(0.012, size.y - 0.2, 0.016), Vector3(x * (h.x - 0.0065), 0.0, face - 0.009), Paint.rubber(), 0.003)
 
 
 ## The keel: a skimmer's ventral strake, an olive plate bolted under the deck,
@@ -683,21 +663,21 @@ static func _keel(b: Paint.Pieces, size: Vector3) -> void:
 		for x in [-1.0, 1.0]:
 			b.box(Vector3(0.006, 0.012, 0.038), Vector3(x * 0.025, y, 0.042), gun, 0.002)
 			b.drum(0.004, 0.012, Vector3(x * 0.026, y, 0.0225), weld, ALONG, 6)
-	b.box(Vector3(0.03, 0.62, 0.012), Vector3(0.0, 0.0, 0.072), _dark(), 0.003)
+	b.box(Vector3(0.03, 0.62, 0.012), Vector3(0.0, 0.0, 0.072), Paint.black(), 0.003)
 	for i in 6:
 		b.box(Vector3(0.016, 0.085, 0.006), Vector3(0.0, -0.25 + i * 0.1, 0.0765), _glow(), 0.001)
 	for y in [-1.0, 1.0]:
 		_hazard(b, Vector3(0.18, 0.026, 0.004), Vector3(0.0, y * (h.y - 0.03), 0.0225), Basis.IDENTITY)
 		for x in [-1.0, 1.0]:
-			ChassisLooks._bolt(b, Vector3(x * (h.x - 0.022), y * (h.y - 0.075), 0.0225), 0.008, ALONG)
-	b.box(Vector3(0.07, 0.11, 0.003), Vector3(0.06, 0.2, 0.0235), _scrap(), 0.001, Basis(Vector3.BACK, 0.18))
+			b.bolt(Vector3(x * (h.x - 0.022), y * (h.y - 0.075), 0.0225), 0.008, ALONG)
+	b.box(Vector3(0.07, 0.11, 0.003), Vector3(0.06, 0.2, 0.0235), Paint.scrap(), 0.001, Basis(Vector3.BACK, 0.18))
 
 
 ## The sail furled on its boom: a steel boom collared as the boom spar is, a
 ## gooseneck at its root and a sheet block at its end, the cloth flaked over
 ## it in lumpy folds, fuller toward the mast, tied down with gaskets.
 static func _sail(b: Paint.Pieces, size: Vector3) -> void:
-	var gun := Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
+	var gun := Paint.gunmetal()
 	var steel := Paint.coat(Paint.STEEL, 0.65, 0.7)
 	var cloth := Paint.coat(Paint.SAILCLOTH, 0.5, 0.0, 0.95)
 	var rope := Paint.coat(Paint.ROPE, 0.4, 0.0, 0.9)
@@ -707,7 +687,7 @@ static func _sail(b: Paint.Pieces, size: Vector3) -> void:
 	b.box(Vector3(0.05, 0.05, 0.05), Vector3(0.0, 0.0, 0.026), gun, 0.008)
 	b.drum(0.012, 0.07, Vector3(0.0, 0.0, 0.026), steel, Basis.IDENTITY, 8)
 	b.box(Vector3(0.03, 0.06, 0.05), Vector3(0.0, -0.01, size.z - 0.03), gun, 0.006)
-	b.drum(0.022, 0.016, Vector3(0.0, -0.022, size.z - 0.03), _dark(), ACROSS, 10)
+	b.drum(0.022, 0.016, Vector3(0.0, -0.022, size.z - 0.03), Paint.black(), ACROSS, 10)
 	# The furl between its gaskets, each fold a little off the last.
 	var ties: Array[float] = [0.18, 0.5, 0.84, 1.18, 1.5, 1.8]
 	var stops: Array[float] = [0.1]

@@ -49,7 +49,7 @@ static func _plate(b: Paint.Pieces, size: Vector3, depth: float, era: StringName
 		b.box(Vector3(size.x - 0.01, 0.009, depth), Vector3(0, size.y * 0.5 - 0.006, depth * 0.5), _trim(era), 0.002)
 	elif era == Eras.SKIMMER:
 		b.box(Vector3(0.014, size.y - 0.012, 0.008), Vector3(-size.x * 0.5 + 0.009, 0, depth - 0.003), _trim(era), 0.001)
-static func _cord(b: Paint.Pieces, at: Vector3, radius: float, turn := ALONG) -> void:
+static func _lashing(b: Paint.Pieces, at: Vector3, radius: float, turn := ALONG) -> void:
 	for step in [-0.004, 0.004]:
 		b.drum(radius, 0.004, at + turn.y * step, Paint.coat(Paint.CORD, 0, 0, 0.95), turn, 10)
 
@@ -68,7 +68,7 @@ static func _wind(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		_cup(b, cup, tangent, Paint.coat(Paint.BONE if era == Eras.SECOND else Paint.YELLOW, 0.45, 0.08, 0.5))
 	if era == Eras.SECOND:
 		b.ball(1, Vector3(-0.029, -0.012, 0.035), _skin(era), Vector3(0.032, 0.04, 0.015))
-		_cord(b, Vector3(0, 0, 0.072), 0.016)
+		_lashing(b, Vector3(0, 0, 0.072), 0.016)
 
 
 static func _cup(b: Paint.Pieces, at: Vector3, opening: Vector3, coat: Paint.Coat) -> void:
@@ -140,7 +140,7 @@ static func _humidity(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		b.box(Vector3(size.x - 0.038, 0.011, 0.012), Vector3(0, y, 0.070), _dark(), 0.002)
 		b.box(Vector3(size.x - 0.038, 0.003, 0.014), Vector3(0, y + 0.008, 0.071), _trim(era), 0.001)
 	b.box(Vector3(0.012, 0.068, 0.004), Vector3(-0.043, 0, 0.074), Paint.coat(Paint.BONE), 0.001)
-	if era == Eras.SECOND: _cord(b, Vector3(0.040, -0.03, 0.043), 0.017, Basis.IDENTITY)
+	if era == Eras.SECOND: _lashing(b, Vector3(0.040, -0.03, 0.043), 0.017, Basis.IDENTITY)
 
 static func _dust(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	_plate(b, size, 0.025, era)
@@ -153,7 +153,7 @@ static func _dust(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		b.box(Vector3(0.002, 0.032, 0.002), Vector3(x, 0, size.z - 0.0015), _trim(era), 0)
 	if era == Eras.SECOND:
 		b.ball(1, Vector3(-0.037, -0.019, 0.045), _skin(era), Vector3(0.034, 0.029, 0.022))
-		_cord(b, Vector3(0, 0, 0.083), 0.030)
+		_lashing(b, Vector3(0, 0, 0.083), 0.030)
 
 static func _survey(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	_plate(b, size, 0.025, era)
@@ -182,7 +182,7 @@ static func _radar(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		b.box(Vector3(0.009, 0.045, 0.008), Vector3(x * 0.068, 0.037, 0.145), _trim(era), 0.002, Basis(Vector3.BACK, x * 0.6))
 	if era == Eras.SECOND:
 		b.ball(1, Vector3(-0.047, 0, 0.027), _skin(era), Vector3(0.04, 0.045, 0.025))
-		_cord(b, Vector3(0, 0, 0.073), 0.028)
+		_lashing(b, Vector3(0, 0, 0.073), 0.028)
 	elif era == Eras.FIRST:
 		b.drum(0.075, 0.012, Vector3(0, 0, 0.032), _trim(era), ALONG, 20)
 	elif era == Eras.SKIMMER:

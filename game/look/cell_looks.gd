@@ -63,10 +63,10 @@ static func _case(era: StringName) -> Paint.Coat:
 static func _fitting(era: StringName) -> Paint.Coat:
 	match era:
 		Eras.FIRST:
-			return _brass()
+			return Paint.brass()
 		Eras.SKIMMER:
 			return _steel()
-	return Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
+	return Paint.gunmetal()
 
 
 ## Its socket kind's colour, kept bright under dust so a part reads by kind.
@@ -74,48 +74,16 @@ static func _collar(kind: StringName) -> Paint.Coat:
 	return Paint.coat(Catalog.KINDS[kind], 0.3, 0.1, 0.45, 0.35)
 
 
-static func _black() -> Paint.Coat:
-	return Paint.coat(Paint.BLACK, 0.25, 0.1, 0.8)
-
-
-static func _rubber() -> Paint.Coat:
-	return Paint.coat(Paint.BLACK, 0.2, 0.0, 0.85)
-
-
 static func _steel() -> Paint.Coat:
 	return Paint.coat(Paint.STEEL, 0.6, 0.8, 0.45)
-
-
-static func _brass() -> Paint.Coat:
-	return Paint.coat(Paint.BRASS, 0.3, 0.9, 0.35, 0.5)
 
 
 static func _orange() -> Paint.Coat:
 	return Paint.coat(Paint.DROP_ORANGE, 0.6, 0.0, 0.5)
 
 
-static func _ceramic() -> Paint.Coat:
-	return Paint.coat(Paint.CERAMIC, 0.15, 0.0, 0.3, 0.6)
-
-
-static func _cord() -> Paint.Coat:
-	return Paint.coat(Paint.CORD, 0.0, 0.0, 0.95, 0.7)
-
-
-static func _wood() -> Paint.Coat:
-	return Paint.coat(Paint.SALTWOOD, 0.1, 0.0, 0.85, 0.6)
-
-
 static func _rope() -> Paint.Coat:
 	return Paint.coat(Paint.ROPE, 0.3, 0.0, 0.9)
-
-
-## A straight length of bar or cord from one point to another.
-static func _strand(b: Paint.Pieces, from: Vector3, to: Vector3, thick: float, look: Paint.Coat) -> void:
-	var along := to - from
-	var y := along.normalized()
-	var x := y.cross(Vector3.UP if absf(y.y) < 0.95 else Vector3.RIGHT).normalized()
-	b.box(Vector3(thick, along.length() + thick, thick), (from + to) * 0.5, look, 0.0, Basis(x, y, x.cross(y)))
 
 
 ## A band laid round a box's sides at `z`: cord, rope or a crew's lashing.
@@ -142,16 +110,16 @@ static func _glass(era: StringName) -> Paint.Coat:
 ## A capped terminal on a face whose top is `at`: a shroud and its cap, the
 ## live one in safety yellow (colonial orange, First Kingdoms brass flared).
 static func _terminal(b: Paint.Pieces, at: Vector3, era: StringName, live: bool) -> void:
-	b.drum(0.017, 0.006, at - Vector3(0.0, 0.0, 0.005), _black(), ALONG, 12)
+	b.drum(0.017, 0.006, at - Vector3(0.0, 0.0, 0.005), Paint.matte_black(), ALONG, 12)
 	match era:
 		Eras.FIRST:
-			b.drum(0.01, 0.006, at - Vector3(0.0, 0.0, 0.003), _brass(), ALONG, 12, 0.015)
+			b.drum(0.01, 0.006, at - Vector3(0.0, 0.0, 0.003), Paint.brass(), ALONG, 12, 0.015)
 		Eras.SKIMMER:
 			# A cap long lost: the bare stud, a nut run down it.
 			b.drum(0.005, 0.008, at - Vector3(0.0, 0.0, 0.004), _steel(), ALONG, 6)
 			b.drum(0.009, 0.003, at - Vector3(0.0, 0.0, 0.0065), _steel(), ALONG, 6)
 		Eras.SECOND:
-			b.ball(0.011, at - Vector3(0.0, 0.0, 0.006), _ceramic(), Vector3(1.0, 1.0, 0.55))
+			b.ball(0.011, at - Vector3(0.0, 0.0, 0.006), Paint.glazed(), Vector3(1.0, 1.0, 0.55))
 		_:
 			var cap := (_orange() if era == Eras.COLONIAL else Paint.coat(Paint.YELLOW, 0.5)) if live else _fitting(era)
 			b.drum(0.012, 0.006, at - Vector3(0.0, 0.0, 0.003), cap, ALONG, 12)
@@ -160,7 +128,7 @@ static func _terminal(b: Paint.Pieces, at: Vector3, era: StringName, live: bool)
 ## A filigree vent the First Kingdoms set in a face: a brass frame round a
 ## zigzag, in the face turned by `turn` at `at`.
 static func _filigree(b: Paint.Pieces, at: Vector3, turn: Basis, wide: float, tall: float) -> void:
-	var brass := _brass()
+	var brass := Paint.brass()
 	for s in [-1.0, 1.0]:
 		b.box(Vector3(wide, 0.004, 0.004), at + turn * Vector3(0.0, s * tall * 0.5, 0.0), brass, 0.001, turn)
 		b.box(Vector3(0.004, tall, 0.004), at + turn * Vector3(s * wide * 0.5, 0.0, 0.0), brass, 0.001, turn)
@@ -169,7 +137,7 @@ static func _filigree(b: Paint.Pieces, at: Vector3, turn: Basis, wide: float, ta
 		var x0 := -wide * 0.5 + wide * i / n
 		var x1 := x0 + wide / n
 		var y0 := tall * (0.38 if i % 2 == 0 else -0.38)
-		_strand(b, at + turn * Vector3(x0, y0, 0.0), at + turn * Vector3(x1, -y0, 0.0), 0.003, brass)
+		b.strand(at + turn * Vector3(x0, y0, 0.0), at + turn * Vector3(x1, -y0, 0.0), 0.003, brass)
 
 
 ## The cell: a slim moulded slab on its amber collar, moulded grip ribs at its
@@ -190,17 +158,17 @@ static func _battery(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 			for at in [Vector2(-0.085, 0.045), Vector2(0.09, -0.05), Vector2(-0.08, -0.05)]:
 				b.box(Vector3(0.012, 0.006, 0.004), Vector3(at.x, at.y, 0.112), _steel(), 0.001)
 		Eras.SECOND:
-			b.box(Vector3(size.x - 0.03, size.y - 0.03, 0.008), Vector3(0.0, 0.0, 0.108), _wood(), 0.003,
+			b.box(Vector3(size.x - 0.03, size.y - 0.03, 0.008), Vector3(0.0, 0.0, 0.108), Paint.saltwood(), 0.003,
 				Basis(Vector3.BACK, -0.02))
 		_:
-			b.box(Vector3(size.x - 0.026, size.y - 0.026, 0.008), Vector3(0.0, 0.0, 0.108), _black() if era == Eras.NEW
+			b.box(Vector3(size.x - 0.026, size.y - 0.026, 0.008), Vector3(0.0, 0.0, 0.108), Paint.matte_black() if era == Eras.NEW
 				else fitting, 0.005)
-	_window(b, Vector3(0.0, size.y * 0.3, face), size.x * 0.7, _cord() if era == Eras.SECOND else _black(), _glass(era))
+	_window(b, Vector3(0.0, size.y * 0.3, face), size.x * 0.7, Paint.cord() if era == Eras.SECOND else Paint.matte_black(), _glass(era))
 	for s in [-1.0, 1.0]:
 		var at := Vector3(s * 0.064, -0.028, face)
 		if era == Eras.SECOND and s < 0.0:
 			# The lost cap rebuilt round in ceramic, off its axis, over this terminal.
-			b.ball(1.0, Vector3(-0.05, -0.026, face - 0.011), _ceramic(), Vector3(0.05, 0.034, 0.011))
+			b.ball(1.0, Vector3(-0.05, -0.026, face - 0.011), Paint.glazed(), Vector3(0.05, 0.034, 0.011))
 			continue
 		_terminal(b, at, era, s > 0.0)
 	# Corner caps over the lid; a crew lost two, the second age one.
@@ -209,9 +177,9 @@ static func _battery(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 			if era == Eras.SKIMMER and sx < 0.0 or era == Eras.SECOND and sx < 0.0 and sy < 0.0:
 				continue
 			b.box(Vector3(0.022, 0.022, 0.02), Vector3(sx * (h.x - 0.011), sy * (h.y - 0.011), face - 0.01),
-				_brass() if era == Eras.FIRST else Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5), 0.004)
+				Paint.brass() if era == Eras.FIRST else Paint.gunmetal(), 0.004)
 	# Moulded grips at its ends; lashed in their place by a crew, corded on one by the second age.
-	var grip := _rubber() if era == Eras.NEW else Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
+	var grip := Paint.rubber() if era == Eras.NEW else Paint.gunmetal()
 	for s in [-1.0, 1.0]:
 		if era == Eras.SKIMMER or era == Eras.SECOND and s < 0.0:
 			continue
@@ -230,7 +198,7 @@ static func _battery(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 				_band(b, Vector2(h.x - 0.006, h.y - 0.006), z, 0.005, _rope())
 		Eras.SECOND:
 			for i in 3:
-				_band(b, Vector2(h.x - 0.006, h.y - 0.006), 0.052 + i * 0.008, 0.004, _cord())
+				_band(b, Vector2(h.x - 0.006, h.y - 0.006), 0.052 + i * 0.008, 0.004, Paint.cord())
 
 
 ## The big pack: square-shouldered on a deeper collar, rubber bumpers down its
@@ -241,13 +209,13 @@ static func _big_battery(b: Paint.Pieces, size: Vector3, era: StringName) -> voi
 	var face := size.z
 	var case := _case(era)
 	var fitting := _fitting(era)
-	var metal := Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
+	var metal := Paint.gunmetal()
 	b.box(Vector3(size.x - 0.006, size.y - 0.006, 0.022), Vector3(0.0, 0.0, 0.011), _collar(&"battery"), 0.008)
 	b.box(Vector3(size.x - 0.016, size.y - 0.016, 0.138), Vector3(0.0, 0.0, 0.091), case, 0.01)
-	b.box(Vector3(size.x - 0.05, size.y - 0.04, 0.008), Vector3(0.0, 0.0, 0.158), _black() if era == Eras.NEW else metal, 0.004)
+	b.box(Vector3(size.x - 0.05, size.y - 0.04, 0.008), Vector3(0.0, 0.0, 0.158), Paint.matte_black() if era == Eras.NEW else metal, 0.004)
 	# The window's boss, raised to the light.
-	b.box(Vector3(0.21, 0.046, 0.012), Vector3(0.0, size.y * 0.3, 0.166), _black() if era == Eras.NEW else metal, 0.004)
-	_window(b, Vector3(0.0, size.y * 0.3, face), size.x * 0.7, _cord() if era == Eras.SECOND else _black(), _glass(era))
+	b.box(Vector3(0.21, 0.046, 0.012), Vector3(0.0, size.y * 0.3, 0.166), Paint.matte_black() if era == Eras.NEW else metal, 0.004)
+	_window(b, Vector3(0.0, size.y * 0.3, face), size.x * 0.7, Paint.cord() if era == Eras.SECOND else Paint.matte_black(), _glass(era))
 	# Bumpers down its edges; a crew welded an angle where one went.
 	for sx in [-1.0, 1.0]:
 		for sy in [-1.0, 1.0]:
@@ -258,11 +226,11 @@ static func _big_battery(b: Paint.Pieces, size: Vector3, era: StringName) -> voi
 				continue
 			if era == Eras.SECOND and sx > 0.0 and sy > 0.0:
 				# Rebuilt rounded in ceramic.
-				b.drum(0.015, 0.156, at, _ceramic(), ALONG, 10)
+				b.drum(0.015, 0.156, at, Paint.glazed(), ALONG, 10)
 				continue
-			b.box(Vector3(0.03, 0.03, 0.156), at, _rubber() if era == Eras.NEW else metal, 0.006)
+			b.box(Vector3(0.03, 0.03, 0.156), at, Paint.rubber() if era == Eras.NEW else metal, 0.006)
 			if era == Eras.FIRST:
-				b.drum(0.012, 0.008, Vector3(at.x, at.y, face - 0.004), _brass(), ALONG, 10, 0.0145)
+				b.drum(0.012, 0.008, Vector3(at.x, at.y, face - 0.004), Paint.brass(), ALONG, 10, 0.0145)
 	# Fins at its ends; a crew's scrap plate over one, the second age's limewash.
 	for s in [-1.0, 1.0]:
 		if era == Eras.SKIMMER and s < 0.0:
@@ -277,7 +245,7 @@ static func _big_battery(b: Paint.Pieces, size: Vector3, era: StringName) -> voi
 			b.box(Vector3(0.008, size.y - 0.07, 0.006), Vector3(s * (h.x - 0.004), 0.0, 0.05 + i * 0.018), metal, 0.0015)
 		if era == Eras.FIRST:
 			for z in [0.04, 0.148]:
-				b.box(Vector3(0.006, size.y - 0.064, 0.006), Vector3(s * (h.x - 0.003), 0.0, z), _brass(), 0.001)
+				b.box(Vector3(0.006, size.y - 0.064, 0.006), Vector3(s * (h.x - 0.003), 0.0, z), Paint.brass(), 0.001)
 	# The bail handle over its face: safety orange for colonial make, a crew's
 	# rope loop, the second age's saltbush bar corded on.
 	var bar := Vector3(0.0, -0.035, face - (0.01 if era == Eras.SECOND else 0.008))
@@ -286,32 +254,32 @@ static func _big_battery(b: Paint.Pieces, size: Vector3, era: StringName) -> voi
 			for i in 5:
 				var a0 := PI * i / 5.0
 				var a1 := PI * (i + 1) / 5.0
-				_strand(b, bar + Vector3(-cos(a0) * 0.07, 0.0, sin(a0) * 0.006 - 0.004),
+				b.strand(bar + Vector3(-cos(a0) * 0.07, 0.0, sin(a0) * 0.006 - 0.004),
 					bar + Vector3(-cos(a1) * 0.07, 0.0, sin(a1) * 0.006 - 0.004), 0.008, _rope())
 		Eras.SECOND:
-			b.drum(0.008, 0.16, bar, _wood(), ACROSS, 8)
+			b.drum(0.008, 0.16, bar, Paint.saltwood(), ACROSS, 8)
 			for s in [-1.0, 1.0]:
 				for i in 3:
-					b.drum(0.0095, 0.004, bar + Vector3(s * (0.075 + (i - 1) * 0.006), 0.0, 0.0), _cord(), ACROSS, 6)
+					b.drum(0.0095, 0.004, bar + Vector3(s * (0.075 + (i - 1) * 0.006), 0.0, 0.0), Paint.cord(), ACROSS, 6)
 		_:
 			for s in [-1.0, 1.0]:
 				b.box(Vector3(0.016, 0.02, 0.018), bar + Vector3(s * 0.08, 0.0, -0.001), fitting, 0.003)
-			b.drum(0.008, 0.144, bar, _orange() if era == Eras.COLONIAL else _rubber(), ACROSS, 10)
+			b.drum(0.008, 0.144, bar, _orange() if era == Eras.COLONIAL else Paint.rubber(), ACROSS, 10)
 	# Square terminal shrouds under the handle.
 	for s in [-1.0, 1.0]:
 		var at := Vector3(s * 0.05, -h.y + 0.024, face - 0.008)
-		b.box(Vector3(0.03, 0.022, 0.01), at - Vector3(0.0, 0.0, 0.005), _black(), 0.003)
+		b.box(Vector3(0.03, 0.022, 0.01), at - Vector3(0.0, 0.0, 0.005), Paint.matte_black(), 0.003)
 		_terminal(b, at + Vector3(0.0, 0.0, 0.006), era, s > 0.0)
 	if era == Eras.SECOND:
 		for i in 3:
-			_band(b, Vector2(h.x - 0.008, h.y - 0.008), 0.06 + i * 0.008, 0.004, _cord())
+			_band(b, Vector2(h.x - 0.008, h.y - 0.008), 0.06 + i * 0.008, 0.004, Paint.cord())
 
 
 ## The plug: round, its seat in the port's orange, a fluted moulded grip
 ## tapering to a ringed strain-relief boot. Told from the strong plug by its
 ## round taper.
 static func _plug(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
-	var body := _rubber() if era == Eras.NEW or era == Eras.SECOND else _case(era)
+	var body := Paint.rubber() if era == Eras.NEW or era == Eras.SECOND else _case(era)
 	b.drum(size.x * 0.5, 0.014, Vector3(0.0, 0.0, 0.007), _collar(&"port"), ALONG, 16)
 	b.drum(0.027, 0.004, Vector3(0.0, 0.0, 0.016), _fitting(era), ALONG, 16, 0.03 if era == Eras.FIRST else -1.0)
 	b.drum(0.025, 0.04, Vector3(0.0, 0.0, 0.038), body, ALONG, 12, 0.021)
@@ -319,25 +287,25 @@ static func _plug(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		var turn := Basis(Vector3.BACK, i * TAU / 6.0)
 		if era == Eras.SECOND and i % 2 == 1:
 			continue
-		b.box(Vector3(0.006, 0.004, 0.036), turn * Vector3(0.0, 0.0245, 0.038), _black() if era != Eras.NEW else _rubber(), 0.001,
+		b.box(Vector3(0.006, 0.004, 0.036), turn * Vector3(0.0, 0.0245, 0.038), Paint.matte_black() if era != Eras.NEW else Paint.rubber(), 0.001,
 			turn * Basis(Vector3.RIGHT, 0.1))
 	match era:
 		Eras.FIRST:
 			# A brass ferrule where its boot was.
-			b.drum(0.017, 0.022, Vector3(0.0, 0.0, 0.069), _brass(), ALONG, 12, 0.012)
-			b.drum(0.013, 0.01, Vector3(0.0, 0.0, 0.085), _rubber(), ALONG, 10)
+			b.drum(0.017, 0.022, Vector3(0.0, 0.0, 0.069), Paint.brass(), ALONG, 12, 0.012)
+			b.drum(0.013, 0.01, Vector3(0.0, 0.0, 0.085), Paint.rubber(), ALONG, 10)
 		Eras.SECOND:
-			b.drum(0.017, 0.026, Vector3(0.0, 0.0, 0.071), _ceramic(), ALONG, 12, 0.011)
+			b.drum(0.017, 0.026, Vector3(0.0, 0.0, 0.071), Paint.glazed(), ALONG, 12, 0.011)
 			for z in [0.026, 0.034, 0.042]:
-				b.drum(0.0245, 0.004, Vector3(0.0, 0.0, z), _cord(), ALONG, 10)
-			b.drum(0.011, 0.006, Vector3(0.0, 0.0, 0.087), _rubber(), ALONG, 10)
+				b.drum(0.0245, 0.004, Vector3(0.0, 0.0, z), Paint.cord(), ALONG, 10)
+			b.drum(0.011, 0.006, Vector3(0.0, 0.0, 0.087), Paint.rubber(), ALONG, 10)
 		_:
-			b.drum(0.017, 0.026, Vector3(0.0, 0.0, 0.071), _rubber(), ALONG, 12, 0.011)
+			b.drum(0.017, 0.026, Vector3(0.0, 0.0, 0.071), Paint.rubber(), ALONG, 12, 0.011)
 			# Rings on the boot, or a crew's rope wound over it.
 			for z in ([0.063, 0.07, 0.077] if era == Eras.SKIMMER else [0.064, 0.074]):
 				b.drum(0.0182 - (z - 0.058) * 0.23, 0.005 if era == Eras.SKIMMER else 0.003, Vector3(0.0, 0.0, z),
-					_rope() if era == Eras.SKIMMER else _rubber(), ALONG, 8 if era == Eras.SKIMMER else 12)
-			b.drum(0.011, 0.006, Vector3(0.0, 0.0, 0.087), _rubber(), ALONG, 10)
+					_rope() if era == Eras.SKIMMER else Paint.rubber(), ALONG, 8 if era == Eras.SKIMMER else 12)
+			b.drum(0.011, 0.006, Vector3(0.0, 0.0, 0.087), Paint.rubber(), ALONG, 10)
 
 
 ## The strong plug: a square armoured housing on a square seat in a strong
@@ -349,30 +317,30 @@ static func _strong_plug(b: Paint.Pieces, size: Vector3, era: StringName) -> voi
 	if era == Eras.SECOND:
 		# Its lock ring long gone: cord bound where it was.
 		for z in [0.019, 0.025]:
-			b.drum(0.028, 0.006, Vector3(0.0, 0.0, z), _cord(), ALONG, 10)
+			b.drum(0.028, 0.006, Vector3(0.0, 0.0, z), Paint.cord(), ALONG, 10)
 	else:
 		b.drum(0.031, 0.014, Vector3(0.0, 0.0, 0.023), ring, ALONG, 16, 0.034 if era == Eras.FIRST else -1.0)
 		for s in [-1.0, 1.0]:
 			b.box(Vector3(0.008, 0.012, 0.012), Vector3(s * 0.03, 0.0, 0.023), ring, 0.002)
-	var body := _black() if era == Eras.NEW else _case(era)
+	var body := Paint.matte_black() if era == Eras.NEW else _case(era)
 	b.box(Vector3(size.x - 0.012, size.y - 0.012, 0.044), Vector3(0.0, 0.0, 0.052), body, 0.009)
 	for z in [0.042, 0.054, 0.066]:
-		b.box(Vector3(size.x - 0.008, size.y - 0.008, 0.004), Vector3(0.0, 0.0, z), _rubber() if era == Eras.NEW else _black(), 0.002)
+		b.box(Vector3(size.x - 0.008, size.y - 0.008, 0.004), Vector3(0.0, 0.0, z), Paint.rubber() if era == Eras.NEW else Paint.matte_black(), 0.002)
 	if era == Eras.SKIMMER:
 		# A strap welded over its housing.
 		b.box(Vector3(0.012, size.y - 0.002, 0.03), Vector3(0.012, 0.0, 0.052), _steel(), 0.001, Basis(Vector3.BACK, 0.12))
-	b.box(Vector3(0.05, 0.05, 0.008), Vector3(0.0, 0.0, 0.078), _brass() if era == Eras.FIRST else _steel(), 0.003)
+	b.box(Vector3(0.05, 0.05, 0.008), Vector3(0.0, 0.0, 0.078), Paint.brass() if era == Eras.FIRST else _steel(), 0.003)
 	if era == Eras.SECOND:
-		b.drum(0.019, 0.016, Vector3(0.0, 0.0, 0.09), _ceramic(), ALONG, 12, 0.013)
+		b.drum(0.019, 0.016, Vector3(0.0, 0.0, 0.09), Paint.glazed(), ALONG, 12, 0.013)
 	else:
-		b.drum(0.018, 0.012, Vector3(0.0, 0.0, 0.088), _rubber(), ALONG, 12, 0.014)
+		b.drum(0.018, 0.012, Vector3(0.0, 0.0, 0.088), Paint.rubber(), ALONG, 12, 0.014)
 		b.box(Vector3(0.046, 0.01, 0.008), Vector3(0.0, 0.0, 0.09), _steel(), 0.002)
 		for s in [-1.0, 1.0]:
 			b.drum(0.004, 0.006, Vector3(s * 0.018, 0.0, 0.097), _steel(), ALONG, 6)
 		if era == Eras.SKIMMER:
 			for z in [0.084, 0.091]:
 				b.drum(0.017, 0.005, Vector3(0.0, 0.0, z), _rope(), ALONG, 8)
-	b.drum(0.012, 0.006, Vector3(0.0, 0.0, size.z - 0.003), _rubber(), ALONG, 10)
+	b.drum(0.012, 0.006, Vector3(0.0, 0.0, size.z - 0.003), Paint.rubber(), ALONG, 10)
 
 
 ## A hose's end: a water-blue seat and a hex coupling nut, a cast tee whose
@@ -389,10 +357,10 @@ static func _hose_end(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	b.drum(0.025, 0.056, Vector3(0.0, 0.0, 0.058), cast, ALONG, 12)
 	if era == Eras.SECOND:
 		# Its spout lost and thrown again in ceramic, a little off true.
-		b.drum(0.019, 0.032, Vector3(0.003, 0.021, 0.075), _ceramic(), Basis.IDENTITY, 12, 0.015)
+		b.drum(0.019, 0.032, Vector3(0.003, 0.021, 0.075), Paint.glazed(), Basis.IDENTITY, 12, 0.015)
 		b.drum(0.019, 0.005, Vector3(0.003, 0.0375, 0.075), water, Basis.IDENTITY, 12)
 	else:
-		b.drum(0.017, 0.03, Vector3(0.0, 0.022, 0.075), _brass() if era == Eras.FIRST else cast, Basis.IDENTITY, 12,
+		b.drum(0.017, 0.03, Vector3(0.0, 0.022, 0.075), Paint.brass() if era == Eras.FIRST else cast, Basis.IDENTITY, 12,
 			0.021 if era == Eras.FIRST else -1.0)
 		b.drum(0.021, 0.006, Vector3(0.0, 0.037, 0.075), water, Basis.IDENTITY, 12)
 	b.drum(0.02, 0.008, Vector3(0.0, 0.0, 0.09), nut, ALONG, 12)
@@ -406,7 +374,7 @@ static func _hose_end(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 			b.drum(0.027, 0.004, Vector3(0.0, 0.0, 0.05), _steel(), ALONG, 10)
 		Eras.SECOND:
 			for i in 3:
-				b.drum(0.031, 0.004, Vector3(0.0, 0.0, 0.098 + i * 0.006), _cord(), ALONG, 10)
+				b.drum(0.031, 0.004, Vector3(0.0, 0.0, 0.098 + i * 0.006), Paint.cord(), ALONG, 10)
 		_:
 			b.drum(0.031, 0.007, Vector3(0.0, 0.0, 0.1), _steel(), ALONG, 14)
 			b.box(Vector3(0.012, 0.008, 0.01), Vector3(0.0, -0.032, 0.1), _steel(), 0.002)
@@ -417,10 +385,10 @@ static func _hose_end(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 ## line's ring hangs at its nose (RopeHook).
 static func _hook(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var forged := Paint.coat(Paint.STEEL, 0.5, 0.85, 0.4)
-	var base := Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
+	var base := Paint.gunmetal()
 	match era:
-		Eras.FIRST: base = _brass()
-		Eras.SECOND: base = _ceramic()
+		Eras.FIRST: base = Paint.brass()
+		Eras.SECOND: base = Paint.glazed()
 	if era == Eras.SKIMMER:
 		# A square of scrap plate welded on for a flange.
 		b.box(Vector3(0.066, 0.066, 0.008), Vector3(0.0, 0.0, 0.004), Paint.coat(Paint.GUNMETAL, 1.0, 0.4, 0.6), 0.001,
@@ -430,7 +398,7 @@ static func _hook(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		b.drum(0.036, 0.01, Vector3(0.0, 0.0, 0.005), base, ALONG, 16, 0.03 if era == Eras.FIRST else -1.0)
 		for i in 3:
 			var turn := Basis(Vector3.BACK, PI / 2.0 + i * TAU / 3.0)
-			b.drum(0.0055, 0.004, turn * Vector3(0.0, 0.027, 0.012), _black() if era == Eras.SECOND else _steel(), ALONG, 6)
+			b.drum(0.0055, 0.004, turn * Vector3(0.0, 0.027, 0.012), Paint.matte_black() if era == Eras.SECOND else _steel(), ALONG, 6)
 	b.drum(0.023, 0.008, Vector3(0.0, 0.0, 0.014), _collar(&"ring"), ALONG, 16)
 	b.drum(0.017, 0.016, Vector3(0.0, 0.0, 0.026), forged, ALONG, 12)
 	# The throat replaces the old separate ring, centred on the unchanged rope guide.
@@ -451,15 +419,15 @@ static func _hook(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 		last = at
 	# A slightly open latch leaves the throat readable from above and in profile.
 	var hinge := bend + Vector3(-0.043, 0, 0.016)
-	var gate := _brass() if era == Eras.FIRST else (_cord() if era == Eras.SECOND else _orange())
-	_strand(b, hinge, bend + Vector3(0.022, 0, 0.025), 0.0035, gate)
+	var gate := Paint.brass() if era == Eras.FIRST else (Paint.cord() if era == Eras.SECOND else _orange())
+	b.strand(hinge, bend + Vector3(0.022, 0, 0.025), 0.0035, gate)
 	b.drum(0.008, 0.019, hinge, forged, Basis.IDENTITY, 10)
 	if era == Eras.SKIMMER or era == Eras.SECOND:
 		for i in 3:
-			b.drum(0.011, 0.004, Vector3(0, 0, 0.04 + i * 0.006), _cord() if era == Eras.SECOND else _rope(), ALONG, 8)
+			b.drum(0.011, 0.004, Vector3(0, 0, 0.04 + i * 0.006), Paint.cord() if era == Eras.SECOND else _rope(), ALONG, 8)
 	if era == Eras.SECOND:
-		_strand(b, Vector3(0, -0.01, 0.05), Vector3(0.012, -0.03, 0.054), 0.003, _cord())
-		b.ball(0.006, Vector3(0.013, -0.033, 0.055), _ceramic())
+		b.strand(Vector3(0, -0.01, 0.05), Vector3(0.012, -0.03, 0.054), 0.003, Paint.cord())
+		b.ball(0.006, Vector3(0.013, -0.033, 0.055), Paint.glazed())
 
 
 ## The water canister: drawn alloy on its blue seat, rolled beads round it, a
@@ -481,38 +449,38 @@ static func _canister(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	b.drum(r, 0.022, Vector3(0.0, 0.0, 0.217), shell, ALONG, 20, 0.034)
 	# The fill gauge under the light the catalog sets on its top.
 	var gauge := Vector3(0.0, size.y * 0.5 + 0.005, size.z * 0.6)
-	b.box(Vector3(0.1, 0.008, 0.026), Vector3(0.0, r - 0.002, gauge.z), _black(), 0.003)
+	b.box(Vector3(0.1, 0.008, 0.026), Vector3(0.0, r - 0.002, gauge.z), Paint.matte_black(), 0.003)
 	for s in [-1.0, 1.0]:
 		b.box(Vector3(0.006, 0.008, 0.022), Vector3(s * 0.047, r - 0.001, gauge.z), _fitting(era), 0.002)
 	match era:
 		Eras.SECOND:
 			# Its cap lost: a ceramic stopper, corded down over the neck.
 			b.drum(0.024, 0.012, Vector3(0.0, 0.0, 0.234), Paint.coat(Paint.GUNMETAL, 0.9, 0.6, 0.5), ALONG, 12)
-			b.ball(1.0, Vector3(0.0, 0.0, 0.246), _ceramic(), Vector3(0.026, 0.026, 0.014))
+			b.ball(1.0, Vector3(0.0, 0.0, 0.246), Paint.glazed(), Vector3(0.026, 0.026, 0.014))
 			for a in [0.0, PI / 2.0]:
 				var way := Vector3(cos(a), sin(a), 0.0)
 				for s in [-1.0, 1.0]:
-					_strand(b, way * s * 0.03 + Vector3(0.0, 0.0, 0.226), way * s * 0.012 + Vector3(0.0, 0.0, 0.255), 0.004, _cord())
+					b.strand(way * s * 0.03 + Vector3(0.0, 0.0, 0.226), way * s * 0.012 + Vector3(0.0, 0.0, 0.255), 0.004, Paint.cord())
 			# A cord net's band round its middle, a saltbush toggle tied on to carry it.
 			for z in [0.064, 0.071, 0.078]:
-				b.drum(r + 0.002, 0.004, Vector3(0.0, 0.0, z), _cord(), ALONG, 14)
-			b.box(Vector3(0.012, 0.06, 0.012), Vector3(-h.x + 0.006, 0.0, 0.071), _wood(), 0.003)
+				b.drum(r + 0.002, 0.004, Vector3(0.0, 0.0, z), Paint.cord(), ALONG, 14)
+			b.box(Vector3(0.012, 0.06, 0.012), Vector3(-h.x + 0.006, 0.0, 0.071), Paint.saltwood(), 0.003)
 		_:
 			b.drum(0.026, 0.01, Vector3(0.0, 0.0, 0.233), _fitting(era), ALONG, 14)
 			var cap := Paint.coat(Paint.TEAL, 0.5)
 			match era:
 				Eras.COLONIAL: cap = _orange()
-				Eras.FIRST: cap = _brass()
-				Eras.SKIMMER: cap = _rubber()
+				Eras.FIRST: cap = Paint.brass()
+				Eras.SKIMMER: cap = Paint.rubber()
 			b.drum(0.03, 0.018, Vector3(0.0, 0.0, 0.247), cap, ALONG, 12, 0.034 if era == Eras.FIRST else -1.0)
 			for i in 8:
 				var turn := Basis(Vector3.BACK, i * TAU / 8.0)
 				b.box(Vector3(0.004, 0.004, 0.014), turn * Vector3(0.0, 0.03, 0.247), cap, 0.0, turn)
-			b.drum(0.01, 0.004, Vector3(0.0, 0.0, 0.258), _black(), ALONG, 8)
+			b.drum(0.01, 0.004, Vector3(0.0, 0.0, 0.258), Paint.matte_black(), ALONG, 8)
 	if era == Eras.SKIMMER:
 		# A rope sling for carrying, knotted round its neck and its foot.
 		var side := Vector3(-h.x + 0.0035, 0.0, 0.0)
-		_strand(b, side + Vector3(0.0, 0.0, 0.03), side + Vector3(0.0, 0.0, 0.21), 0.007, _rope())
+		b.strand(side + Vector3(0.0, 0.0, 0.03), side + Vector3(0.0, 0.0, 0.21), 0.007, _rope())
 		for z in [0.03, 0.21]:
 			b.drum(r + 0.004, 0.006, Vector3(0.0, 0.0, z), _rope(), ALONG, 14)
 		b.box(Vector3(0.008, 0.05, 0.04), Vector3(0.051, -0.008, 0.12), _steel(), 0.001)
@@ -526,19 +494,19 @@ static func _lamp(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	var metal := _fitting(era)
 	var hood := Paint.coat(Paint.YELLOW, 0.7)
 	if era == Eras.SECOND:
-		hood = _ceramic()
+		hood = Paint.glazed()
 	elif era != Eras.NEW:
 		hood = _case(era)
-	b.box(Vector3(size.x - 0.01, size.y - 0.01, 0.012), Vector3(0.0, 0.0, 0.006), Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5), 0.005)
+	b.box(Vector3(size.x - 0.01, size.y - 0.01, 0.012), Vector3(0.0, 0.0, 0.006), Paint.gunmetal(), 0.005)
 	for sx in [-1.0, 1.0]:
 		for sy in [-1.0, 1.0]:
 			b.drum(0.006, 0.004, Vector3(sx * (h.x - 0.017), sy * (h.y - 0.017), 0.014), _steel(), ALONG, 6)
 	b.drum(0.03, 0.02, Vector3(0.0, 0.0, 0.022), metal, ALONG, 12)
 	if era == Eras.SECOND:
 		# Its stem rebuilt in saltbush, lashed at both ends.
-		b.drum(0.016, 0.11, Vector3(0.0, 0.0, 0.087), _wood(), ALONG, 8)
+		b.drum(0.016, 0.11, Vector3(0.0, 0.0, 0.087), Paint.saltwood(), ALONG, 8)
 		for z in [0.04, 0.046, 0.128, 0.134]:
-			b.drum(0.018, 0.004, Vector3(0.0, 0.0, z), _cord(), ALONG, 8)
+			b.drum(0.018, 0.004, Vector3(0.0, 0.0, z), Paint.cord(), ALONG, 8)
 	else:
 		b.drum(0.016, 0.11, Vector3(0.0, 0.0, 0.087), Paint.coat(Paint.STEEL, 0.4, 0.8, 0.4), ALONG, 12)
 		if era == Eras.SKIMMER:
@@ -556,12 +524,12 @@ static func _lamp(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 	else:
 		b.drum(r, 0.075, Vector3(0.0, 0.0, 0.2025), hood, ALONG, 16)
 		for z in [0.174, 0.184]:
-			b.drum(r + 0.003, 0.004, Vector3(0.0, 0.0, z), _black(), ALONG, 16)
-	var bezel := _black()
+			b.drum(r + 0.003, 0.004, Vector3(0.0, 0.0, z), Paint.matte_black(), ALONG, 16)
+	var bezel := Paint.matte_black()
 	match era:
-		Eras.COLONIAL: bezel = Paint.coat(Paint.GUNMETAL, 0.5, 0.6, 0.5)
-		Eras.FIRST: bezel = _brass()
-		Eras.SECOND: bezel = _cord()
+		Eras.COLONIAL: bezel = Paint.gunmetal()
+		Eras.FIRST: bezel = Paint.brass()
+		Eras.SECOND: bezel = Paint.cord()
 	b.drum(h.x - 0.002, 0.008, Vector3(0.0, 0.0, 0.236), bezel, ALONG, 16, h.x - 0.002 if era != Eras.FIRST else h.x)
 	b.drum(0.046, 0.008, Vector3(0.0, 0.0, 0.244), Paint.coat(Paint.LAMP, 0.0, 0.0, 0.2, 0.2, 3.0), ALONG, 16)
 	match era:
@@ -573,9 +541,9 @@ static func _lamp(b: Paint.Pieces, size: Vector3, era: StringName) -> void:
 					b.box(Vector3(0.096, 0.0035, 0.0035), turn * Vector3(0.0, t, 0.248), _steel(), 0.0, turn)
 		Eras.SECOND:
 			for a in [0.4, -0.4]:
-				_strand(b, Vector3(-0.044, -0.044 * a, 0.248), Vector3(0.044, 0.044 * a, 0.248), 0.003, _cord())
+				b.strand(Vector3(-0.044, -0.044 * a, 0.248), Vector3(0.044, 0.044 * a, 0.248), 0.003, Paint.cord())
 		_:
-			var guard := _orange() if era == Eras.COLONIAL else (_brass() if era == Eras.FIRST else _black())
+			var guard := _orange() if era == Eras.COLONIAL else (Paint.brass() if era == Eras.FIRST else Paint.matte_black())
 			for y in [-0.02, 0.0, 0.02]:
 				b.box(Vector3(0.092, 0.005, 0.004), Vector3(0.0, y, 0.248), guard, 0.001)
 			if era == Eras.FIRST:

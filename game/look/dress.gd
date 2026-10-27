@@ -115,7 +115,7 @@ static func dial_needle() -> ArrayMesh:
 static func knob() -> ArrayMesh:
 	return _cached(&"knob", &"radio", func() -> ArrayMesh:
 		var b := Paint.Pieces.new()
-		var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+		var black := Paint.black()
 		var r := 0.026
 		var out := Basis(Vector3.RIGHT, PI / 2.0)
 		b.drum(r, 0.02, Vector3(0.0, 0.0, 0.01), black, out, 18)
@@ -134,7 +134,7 @@ static func rotor(id: StringName) -> ArrayMesh:
 		if id != &"turbine":
 			return null
 		var b := Paint.Pieces.new()
-		b.drum(0.06, 0.08, Vector3(0.0, 0.0, 0.04), Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6), Basis(Vector3.RIGHT, PI / 2.0), 12)
+		b.drum(0.06, 0.08, Vector3(0.0, 0.0, 0.04), Paint.black(), Basis(Vector3.RIGHT, PI / 2.0), 12)
 		for s in [-1, 1]:
 			b.box(Vector3(0.55, 0.08, 0.02), Vector3(s * 0.32, 0.0, 0.06), Paint.coat(Paint.BONE, 0.8), 0.006)
 			b.box(Vector3(0.08, 0.082, 0.022), Vector3(s * 0.56, 0.0, 0.06), Paint.coat(Paint.YELLOW, 0.6), 0.004)
@@ -280,7 +280,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var b := Paint.Pieces.new(-h.y)
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
-	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+	var black := Paint.black()
 	for looks: GDScript in LOOKS:
 		if looks.has_method(&"frame") and looks.call(&"frame", b, id, size, Eras.NEW, extra):
 			return b.commit()
@@ -462,68 +462,6 @@ static var MOUND := Paint.coat(Paint.SOIL.lightened(0.04), 0.0, 0.0, 1.0, 0.8)
 const UP := Basis(Vector3.RIGHT, PI / 2.0)
 
 
-## Solar cells in a grid over `area`, facing +Z of `turn`.
-static func _cells(b: Paint.Pieces, area: Vector2, cols: int, rows: int, turn: Basis, at: Vector3) -> void:
-	var cell := Vector2(area.x / cols, area.y / rows)
-	for i in cols:
-		for j in rows:
-			var middle := Vector3(-area.x * 0.5 + (i + 0.5) * cell.x, -area.y * 0.5 + (j + 0.5) * cell.y, 0.0)
-			b.box(Vector3(cell.x - 0.01, cell.y - 0.01, 0.006), at + turn * middle, Paint.coat(Paint.CELL, 0.2, 0.6, 0.18, 0.3), 0.001, turn)
-
-
-## Black and yellow: the bands a safety officer would sign off.
-## A radio's band scale, its middle at `at` on the face: a lit window in a
-## gunmetal bezel ruled in three rows, one a band, each spread across the
-## window as the needle spreads it: FM over the top in MHz, shortwave under
-## it in MHz, and the AM dial at the foot numbered in hundreds of kHz as old
-## sets were. A tick at each step, a long one at each number.
-static func _band(b: Paint.Pieces, at: Vector3) -> void:
-	var gun := Paint.coat(Paint.GUNMETAL)
-	var ink := Paint.coat(Color(0.12, 0.09, 0.07), 0.0, 0.0, 0.7, 0.0)
-	var wide := Radio.BAND_WIDTH
-	var high := Radio.BAND_HEIGHT
-	# Set into the case, the bezel standing proud of the window.
-	b.box(Vector3(wide, high, 0.014), at + Vector3(0.0, 0.0, -0.005), Paint.coat(Color(1.0, 0.82, 0.55), 0.0, 0.0, 0.5, 0.0, 1.0), 0.001)
-	for s in [-1, 1]:
-		b.box(Vector3(wide + 0.016, 0.008, 0.018), at + Vector3(0.0, s * (high * 0.5 + 0.004), -0.003), gun, 0.002)
-		b.box(Vector3(0.008, high, 0.018), at + Vector3(s * (wide * 0.5 + 0.004), 0.0, -0.003), gun, 0.002)
-	var face := at.z + 0.0025
-	# Each row: its foot above the window's middle, m; the band's ends and its
-	# first and last steps in the units it's numbered in; a number every so
-	# many steps from the first; and a gap with no steps in it, AM's between
-	# longwave and mediumwave.
-	for row: Array in [
-			[0.0025, Fm.LOWEST, Fm.HIGHEST, 88, 108, 4, Vector2.ZERO],
-			[-0.011, Shortwave.LOWEST / 1000.0, Shortwave.HIGHEST / 1000.0, 2, 30, 4, Vector2.ZERO],
-			[-0.0245, Dial.LOWEST / 100.0, Dial.HIGHEST / 100.0, 2, 17, 4,
-				Vector2(Dial.LW_TOP, Dial.MW_BOTTOM) / 100.0]]:
-		var foot: float = at.y + row[0]
-		b.box(Vector3(Radio.BAND.y - Radio.BAND.x + 0.0014, 0.0008, 0.001), Vector3(at.x, foot, face), ink, 0.0)
-		for step in range(row[3], row[4] + 1):
-			if step > row[6].x and step < row[6].y:
-				continue
-			var x := lerpf(Radio.BAND.x, Radio.BAND.y, inverse_lerp(row[1], row[2], step))
-			var long: bool = (step - row[3]) % row[5] == 0
-			var tall := 0.0038 if long else 0.0022
-			b.box(Vector3(0.0012 if long else 0.0008, tall, 0.001), Vector3(x, foot + tall * 0.5, face), ink, 0.0)
-			if long:
-				_numeral(b, str(step), Vector3(x, foot + 0.0079, face), 0.0062, ink)
-
-
-## The strip under the band window that its lamps sit in: the signal lamps,
-## then a dark glass seat for the band lamp by each band's name, faintly
-## lit with the set so the names read in the dark.
-static func _lamp_strip(b: Paint.Pieces, face: float) -> void:
-	var y := Radio.LAMP_FROM.y
-	b.box(Vector3(0.232, 0.012, 0.01), Vector3(0.004, y, face - 0.005), Paint.coat(Paint.BLACK, 0.4, 0.3, 0.5), 0.002)
-	var bone := Paint.coat(Paint.BONE, 0.0, 0.0, 0.6, 0.0, 0.6)
-	var glass := Paint.coat(Color(0.05, 0.05, 0.05), 0.0, 0.0, 0.15, 0.0)
-	for i in Radio.BANDS.size():
-		var at := Radio.BAND_LAMP_FROM + Vector3(i * Radio.BAND_LAMP_GAP, 0.0, face)
-		b.drum(0.0034, 0.0012, at + Vector3(0.0, 0.0, 0.0006), glass, Basis(Vector3.RIGHT, PI / 2.0), 10)
-		_numeral(b, String(Radio.BANDS[i]).to_upper(), at + Vector3(0.0115, 0.0, 0.0006), 0.0055, bone)
-
-
 ## A radio's band lamp, set in the strip by the band it's on and lit in its
 ## colour: the AM dial's own warm light, the FM converter's teal, the
 ## shortwave converter's amber.
@@ -542,33 +480,42 @@ const FM_TEAL := Color(0.25, 0.62, 0.62)
 const SW_AMBER := Color(0.95, 0.55, 0.12)
 
 
-## A colonial converter for a set's side, as 1960s car radios took them, a
+## The converters' maker's case, a converter's or a misc bay module's, a
 ## different maker's than the set: a black enamel box on a flange bolted to
-## the side, a chromed bone face with its own small dial, a tuning knob and a
-## throw between AM and its band, the band's colour and name along the face's
-## foot and on its front end. Kept shorter than its socket so the converter
-## over or under it clears what stands on its top. Returns its chrome.
-static func _converter(b: Paint.Pieces, size: Vector3, band: Color, name: String) -> Paint.Coat:
+## the set's side, its colour on its front end toward the set's face where
+## you see it, and a chromed bone face. Kept shorter than its socket so the
+## one over or under it clears what stands on its top. Returns its body.
+static func _case(b: Paint.Pieces, size: Vector3, colour: Paint.Coat) -> Vector3:
 	var h := size * 0.5
-	var along := Basis(Vector3.RIGHT, PI / 2.0)
 	var enamel := Paint.coat(Color(0.07, 0.07, 0.075), 0.7, 0.2, 0.35)
 	var chrome := Paint.coat(Color(0.78, 0.78, 0.76), 0.3, 0.95, 0.18)
-	var ink := Paint.coat(Color(0.12, 0.09, 0.07), 0.0, 0.0, 0.7, 0.0)
-	var colour := Paint.coat(band, 0.5, 0.0, 0.5)
 	var tall := size.y - 0.01
 	b.box(Vector3(size.x - 0.002, tall, 0.004), Vector3(0.0, 0.0, 0.002), enamel, 0.001)
 	for x in [-1, 1]:
 		for y in [-1, 1]:
-			b.drum(0.0035, 0.003, Vector3(x * (h.x - 0.0065), y * (tall * 0.5 - 0.007), 0.0055), chrome, along, 6)
+			b.drum(0.0035, 0.003, Vector3(x * (h.x - 0.0065), y * (tall * 0.5 - 0.007), 0.0055), chrome, UP, 6)
 	var body := Vector3(size.x - 0.024, tall, size.z - 0.012)
 	b.box(body, Vector3(0.0, 0.0, 0.004 + body.z * 0.5), enamel, 0.006)
 	var front := 0.004 + body.z
-	# Its band on the front end, toward the set's face, where you see it.
 	b.box(Vector3(0.002, tall - 0.024, body.z - 0.014), Vector3(body.x * 0.5 + 0.0005, 0.0, 0.004 + body.z * 0.5), colour, 0.0005)
 	# The face: a chrome rim round bone.
 	b.box(Vector3(body.x - 0.006, tall - 0.014, 0.003), Vector3(0.0, 0.0, front + 0.0005), chrome, 0.001)
 	b.box(Vector3(body.x - 0.012, tall - 0.02, 0.002), Vector3(0.0, 0.0, front + 0.002), Paint.coat(Paint.BONE, 0.4, 0.0, 0.5), 0.0005)
-	var on := front + 0.0035
+	return body
+
+
+## A colonial converter for a set's side, as 1960s car radios took them: its
+## case with its own small dial on the face, a tuning knob and a throw
+## between AM and its band, the band's colour and name along the face's foot.
+## Returns its chrome.
+static func _converter(b: Paint.Pieces, size: Vector3, band: Color, name: String) -> Paint.Coat:
+	var along := UP
+	var chrome := Paint.coat(Color(0.78, 0.78, 0.76), 0.3, 0.95, 0.18)
+	var ink := Paint.coat(Color(0.12, 0.09, 0.07), 0.0, 0.0, 0.7, 0.0)
+	var colour := Paint.coat(band, 0.5, 0.0, 0.5)
+	var tall := size.y - 0.01
+	var body := _case(b, size, colour)
+	var on := 0.004 + body.z + 0.0035
 	# Its own small dial: a pale window ruled across, a red needle.
 	var window := Vector3(-0.011, 0.016, on)
 	b.box(Vector3(0.05, 0.013, 0.001), window, Paint.coat(Color(0.93, 0.84, 0.62), 0.0, 0.0, 0.25, 0.0), 0.0)
@@ -586,38 +533,28 @@ static func _converter(b: Paint.Pieces, size: Vector3, band: Color, name: String
 	b.box(Vector3(0.007, 0.011, 0.0015), throw + Vector3(0.0, 0.0, 0.00075), chrome, 0.0005)
 	var thrown := Basis(Vector3.UP, 0.45) * along
 	b.drum(0.0016, 0.009, throw + thrown * Vector3(0.0, 0.0045, 0.0) + Vector3(0.0, 0.0, 0.0015), chrome, thrown, 6)
-	_numeral(b, "AM", throw + Vector3(-0.011, 0.0, 0.0005), 0.004, ink)
-	_numeral(b, name, throw + Vector3(0.011, 0.0, 0.0005), 0.004, ink)
+	b.numeral("AM", throw + Vector3(-0.011, 0.0, 0.0005), 0.004, ink)
+	b.numeral(name, throw + Vector3(0.011, 0.0, 0.0005), 0.004, ink)
 	# Its band and name along the face's foot.
 	var foot := Vector3(0.0, -tall * 0.5 + 0.0165, on)
 	b.box(Vector3(body.x - 0.012, 0.009, 0.001), foot, colour, 0.0)
-	_numeral(b, name, foot + Vector3(0.0, 0.0, 0.0006), 0.0058, Paint.coat(Paint.BLACK, 0.0, 0.0, 0.6, 0.0))
+	b.numeral(name, foot + Vector3(0.0, 0.0, 0.0006), 0.0058, Paint.coat(Paint.BLACK, 0.0, 0.0, 0.6, 0.0))
 	return chrome
 
 
-## A misc bay module, the converters' maker's: the same enamel body on a
-## chromed flange, its colour along its front end, and on its face what it does
-## (from the radio kit lab's cartridges, look/radio_kit). Its +Z is out from the set.
+## A misc bay module, the converters' maker's: their case, and on its face
+## what it does (from the radio kit lab's cartridges, look/radio_kit). Its +Z
+## is out from the set.
 static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 	var h := size * 0.5
-	var along := Basis(Vector3.RIGHT, PI / 2.0)
-	var enamel := Paint.coat(Color(0.07, 0.07, 0.075), 0.7, 0.2, 0.35)
-	var chrome := Paint.coat(Color(0.78, 0.78, 0.76), 0.3, 0.95, 0.18)
+	var along := UP
 	var copper := Paint.coat(Color(0.72, 0.38, 0.2), 0.6, 0.7, 0.35)
 	var ceramic := Paint.coat(Paint.CERAMIC, 0.4, 0.0, 0.3)
 	var steel := Paint.coat(Paint.STEEL, 0.6, 0.6, 0.3)
 	var colour := Paint.coat(Catalog.PARTS[id].color, 0.5, 0.0, 0.5)
 	var tall := size.y - 0.01
-	b.box(Vector3(size.x - 0.002, tall, 0.004), Vector3(0.0, 0.0, 0.002), enamel, 0.001)
-	for x in [-1, 1]:
-		for y in [-1, 1]:
-			b.drum(0.0035, 0.003, Vector3(x * (h.x - 0.0065), y * (tall * 0.5 - 0.007), 0.0055), chrome, along, 6)
-	var body := Vector3(size.x - 0.024, tall, size.z - 0.012)
-	b.box(body, Vector3(0.0, 0.0, 0.004 + body.z * 0.5), enamel, 0.006)
+	var body := _case(b, size, colour)
 	var front := 0.004 + body.z
-	b.box(Vector3(0.002, tall - 0.024, body.z - 0.014), Vector3(body.x * 0.5 + 0.0005, 0.0, 0.004 + body.z * 0.5), colour, 0.0005)
-	b.box(Vector3(body.x - 0.006, tall - 0.014, 0.003), Vector3(0.0, 0.0, front + 0.0005), chrome, 0.001)
-	b.box(Vector3(body.x - 0.012, tall - 0.02, 0.002), Vector3(0.0, 0.0, front + 0.002), Paint.coat(Paint.BONE, 0.4, 0.0, 0.5), 0.0005)
 	var on := front + 0.0035
 	# Its colour in a band along the face's foot.
 	b.box(Vector3(body.x - 0.012, 0.009, 0.001), Vector3(0.0, -tall * 0.5 + 0.0165, on), colour, 0.0)
@@ -653,59 +590,11 @@ static func _module(b: Paint.Pieces, size: Vector3, id: StringName) -> void:
 			# A lid of cells, hinged open off its top.
 			var lid := Basis(Vector3.RIGHT, -0.5)
 			var hinge := Vector3(0.0, h.y, front)
-			b.box(Vector3(body.x, 0.004, 0.07), hinge + lid * Vector3(0.0, 0.0, 0.035), enamel, 0.002, lid)
+			b.box(Vector3(body.x, 0.004, 0.07), hinge + lid * Vector3(0.0, 0.0, 0.035), Paint.coat(Color(0.07, 0.07, 0.075), 0.7, 0.2, 0.35), 0.002, lid)
 			for i in 3:
 				for j in 2:
 					b.box(Vector3(0.026, 0.002, 0.03), hinge + lid * Vector3(-0.03 + i * 0.03, 0.003, 0.018 + j * 0.033),
 						Paint.coat(Paint.CELL, 0.6, 0.6, 0.2), 0.0, lid)
-
-
-## A number or a name in block strokes, `tall` m high, its middle at `at`,
-## facing +Z.
-static func _numeral(b: Paint.Pieces, text: String, at: Vector3, tall: float, look: Paint.Coat) -> void:
-	# Strokes a to g: top, top right, bottom right, bottom, bottom left, top
-	# left, middle; and h to k, from the corners top left, top right, bottom
-	# left and bottom right in to the middle, for an M and a W.
-	const STROKES := {"0": "abcdef", "1": "bc", "2": "abged", "3": "abgcd", "4": "fgbc", "5": "afgcd",
-		"6": "afgedc", "7": "abc", "8": "abcdefg", "9": "abcdfg", "A": "abcefg", "F": "aefg", "S": "afgcd",
-		"M": "bcefhi", "W": "bcefjk"}
-	const PLACES := {"a": Vector2(0.0, 0.5), "g": Vector2.ZERO, "d": Vector2(0.0, -0.5), "b": Vector2(0.5, 0.25),
-		"c": Vector2(0.5, -0.25), "e": Vector2(-0.5, -0.25), "f": Vector2(-0.5, 0.25)}
-	const CORNERS := {"h": Vector2(-0.5, 0.5), "i": Vector2(0.5, 0.5), "j": Vector2(-0.5, -0.5), "k": Vector2(0.5, -0.5)}
-	var wide := tall * 0.55
-	var line := tall * 0.13
-	var gap := wide * 0.5
-	# A 1 is one stroke, as narrow as it; an M and a W want more room.
-	var widths: Array[float] = []
-	var span := -gap
-	for digit in text:
-		widths.append(line if digit == "1" else (wide * 1.35 if digit in "MW" else wide))
-		span += widths[-1] + gap
-	var x := at.x - span * 0.5
-	for i in text.length():
-		var w := widths[i] if text[i] in "MW" else wide
-		var middle := Vector3(x + widths[i] * 0.5, at.y, at.z)
-		for stroke in STROKES[text[i]]:
-			if CORNERS.has(stroke):
-				var from: Vector2 = CORNERS[stroke] * Vector2(w, tall)
-				b.box(Vector3(line, from.length(), 0.001), middle + Vector3(from.x, from.y, 0.0) * 0.5, look, 0.0,
-					Basis(Vector3.BACK, atan2(from.x, -from.y)))
-				continue
-			var where: Vector2 = PLACES[stroke]
-			if text[i] == "1":
-				where.x = 0.0
-			var size := Vector3(w + line, line, 0.001) if stroke in "adg" else Vector3(line, tall * 0.5 + line, 0.001)
-			b.box(size, middle + Vector3(where.x * w, where.y * tall, 0.0), look, 0.0)
-		x += widths[i] + gap
-
-
-static func _hazard(b: Paint.Pieces, size: Vector3, at: Vector3, turn: Basis) -> void:
-	b.box(size, at, Paint.coat(Paint.YELLOW, 0.75), 0.003, turn)
-	var n := int(size.x / (size.y * 1.6))
-	for i in n:
-		var x := -size.x * 0.5 + (i + 0.5) * size.x / n
-		b.box(Vector3(size.y * 0.55, size.y * 1.05, size.z + 0.002), at + turn * Vector3(x, 0.0, 0.0), Paint.coat(Paint.BLACK, 0.6), 0.001,
-			turn * Basis(Vector3.BACK, 0.7))
 
 
 static func _crop(id: StringName, stage: StringName, fold: float) -> ArrayMesh:

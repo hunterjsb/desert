@@ -66,7 +66,7 @@ static func hull() -> ArrayMesh:
 	b.stamp(Paint.Mark.CONSIGNMENT, Vector3(h.x + 0.03, 0.3, 0.6), 0.44, Basis(Vector3.UP, PI * 0.5), Paint.Ink.DARK, 2)
 	b.box(Vector3(0.02, 0.3, 0.6), Vector3(h.x + 0.02, 0.3, 0.6), c.white, 0.004)
 	var flank := Basis(Vector3.UP, PI * 0.5)
-	_digits(b, "05", Vector3(h.x + 0.035, 0.31, -0.65), 0.2, c.black, flank)
+	b.numeral("05", Vector3(h.x + 0.035, 0.31, -0.65), 0.2, c.black, flank, 0.004)
 	# The port's orange ring, where a Console plugs in.
 	b.ring(0.05, 0.075, PORT + Vector3(0.0, 0.0, 0.0), c.orange, Basis(Vector3.BACK, PI * 0.5), 12)
 	b.box(Vector3(0.03, 0.16, 0.16), PORT - Vector3(0.012, 0.0, 0.0), c.black, 0.01)
@@ -151,19 +151,3 @@ static func far(stand: float) -> Array:
 		[Vector3(0.12, stand, HULL.z * 0.8), Vector3(HULL.x * 0.5 + 0.8, -stand * 0.5, 0.0), Paint.GUNMETAL, 0.6, 0.45],
 		[Vector3(0.12, stand, HULL.z * 0.8), Vector3(-HULL.x * 0.5 - 0.8, -stand * 0.5, 0.2), Paint.GUNMETAL, 0.6, 0.45]]
 
-
-## Block digits on a face turned by `turn`, `tall` m high, in the strokes
-## Dress's numerals use.
-static func _digits(b: Paint.Pieces, text: String, at: Vector3, tall: float, look: Paint.Coat, turn: Basis) -> void:
-	const STROKES := {"0": "abcdef", "1": "bc", "2": "abged", "5": "afgcd"}
-	const PLACES := {"a": Vector2(0.0, 0.5), "g": Vector2.ZERO, "d": Vector2(0.0, -0.5), "b": Vector2(0.5, 0.25),
-		"c": Vector2(0.5, -0.25), "e": Vector2(-0.5, -0.25), "f": Vector2(-0.5, 0.25)}
-	var wide := tall * 0.55
-	var line := tall * 0.13
-	var x := -(text.length() * wide + (text.length() - 1) * wide * 0.5) * 0.5
-	for digit in text:
-		for stroke in STROKES[digit]:
-			var where: Vector2 = PLACES[stroke]
-			var size := Vector3(wide + line, line, 0.004) if stroke in "adg" else Vector3(line, tall * 0.5 + line, 0.004)
-			b.box(size, at + turn * Vector3(x + wide * 0.5 + where.x * wide, where.y * tall, 0.0), look, 0.0, turn)
-		x += wide * 1.5

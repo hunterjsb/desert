@@ -11,12 +11,6 @@ extends RefCounted
 ## niches under ceramic lintels, sand-glass tubes, the sign of Tu, charms.
 
 const FRONT := Basis(Vector3.UP, PI)
-## A 7-segment digit's strokes, a to g: top, top right, bottom right,
-## bottom, bottom left, top left, middle.
-const STROKES := {"1": "bc", "2": "abged", "3": "abgcd", "4": "fgbc", "5": "afgcd", "6": "afgedc", "7": "abc",
-	"8": "abcdefg", "9": "abcfgd", "0": "abcdef"}
-const PLACES := {"a": Vector2(0.0, 0.5), "g": Vector2.ZERO, "d": Vector2(0.0, -0.5), "b": Vector2(0.5, 0.25),
-	"c": Vector2(0.5, -0.25), "e": Vector2(-0.5, -0.25), "f": Vector2(-0.5, 0.25)}
 
 
 ## Draws a box's look into its pieces; false for an id that isn't one.
@@ -60,13 +54,13 @@ static func _cabinet(b: Paint.Pieces, size: Vector3) -> void:
 	var grey := Paint.coat(ColonialKit.GREY, 0.6, 0.4, 0.45)
 	var dark := Paint.coat(ColonialKit.DARK, 0.4, 0.3, 0.5)
 	var orange := Paint.coat(ColonialKit.ORANGE, 0.7, 0.0, 0.5)
-	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+	var black := Paint.black()
 	var face := -h.z
 	var recess: float = PowerBox.MODELS[&"power_cabinet"].recess
 	# The body behind the bays, the plinth and the cap.
 	b.box(Vector3(size.x - 0.02, size.y - 0.13, size.z - recess), Vector3(0.0, 0.025, recess * 0.5), panel, 0.02)
 	b.box(Vector3(size.x, 0.09, size.z), Vector3(0.0, -h.y + 0.045, 0.0), dark, 0.015)
-	Dress._hazard(b, Vector3(size.x * 0.7, 0.03, 0.012), Vector3(0.0, -h.y + 0.045, face - 0.004), FRONT)
+	b.hazard(Vector3(size.x * 0.7, 0.03, 0.012), Vector3(0.0, -h.y + 0.045, face - 0.004), FRONT)
 	b.box(Vector3(size.x, 0.04, size.z), Vector3(0.0, h.y - 0.02, 0.0), grey, 0.012)
 	b.box(Vector3(size.x - 0.02, 0.012, 0.006), Vector3(0.0, h.y - 0.035, face - 0.002), orange, 0.002)
 	# The fascia: stiles and rails round the bays, set into it.
@@ -112,7 +106,7 @@ static func _dock(b: Paint.Pieces, size: Vector3) -> void:
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
 	var yellow := Paint.coat(Paint.YELLOW, 0.8)
-	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
+	var black := Paint.black()
 	var recess: float = PowerBox.MODELS[&"power_box"].recess
 	var sole := h.y - recess
 	b.box(Vector3(size.x - 0.02, sole + h.y, size.z - 0.02), Vector3(0.0, (sole - h.y) * 0.5, 0.0), gun, 0.012)
@@ -144,7 +138,7 @@ static func _rack(b: Paint.Pieces, size: Vector3) -> void:
 	var scrap := Paint.coat(SkimmerKit.SCRAP, 1.2, 0.5, 0.7)
 	var gun := Paint.coat(SkimmerKit.GUNMETAL, 0.8, 0.5, 0.5)
 	var rubber := Paint.coat(SkimmerKit.RUBBER, 0.2, 0.0, 0.9)
-	var tape := Paint.coat(SkimmerKit.TAPE, 0.2, 0.0, 0.8, 0.6)
+	var tape := Paint.tape()
 	var soot := Paint.coat(Color(0.05, 0.045, 0.04), 0.0, 0.0, 1.0, 0.3)
 	# Tube posts on rubber feet, rails across, a sheet of scrap behind.
 	for x in [-1, 1]:
@@ -156,7 +150,7 @@ static func _rack(b: Paint.Pieces, size: Vector3) -> void:
 		for z in [-1, 1]:
 			b.drum(0.02, size.x - 0.06, Vector3(0.0, y, z * (h.z - 0.03)), gun, across, 10)
 	b.box(Vector3(size.x - 0.08, size.y - 0.12, 0.012), Vector3(0.0, 0.0, h.z - 0.04), scrap, 0.002)
-	Dress._hazard(b, Vector3(0.5, 0.035, 0.012), Vector3(0.12, -h.y + 0.05, -h.z + 0.008), FRONT)
+	b.hazard(Vector3(0.5, 0.035, 0.012), Vector3(0.12, -h.y + 0.05, -h.z + 0.008), FRONT)
 	var looks := [olive, red, scrap, gun, olive, scrap, red, gun, olive, red, scrap, olive]
 	var bays := _bays(&"power_rack")
 	var recess: float = PowerBox.MODELS[&"power_rack"].recess
@@ -268,15 +262,15 @@ static func _shrine(b: Paint.Pieces, size: Vector3) -> void:
 	b.box(Vector3(0.3, 0.18, 0.008), Vector3(-0.2, -0.33, h.z - 0.004), gun, 0.003)
 
 
-## Digits in strokes, `tall` m high, reading left to right as you face the
+## Digits in Pieces.numeral's strokes, `tall` m high, reading left to right as you face the
 ## frame from its +Z, its first digit's top left at the frame's origin.
 static func _digits(b: Paint.Pieces, text: String, at: Transform3D, tall: float, look: Paint.Coat) -> void:
 	var wide := tall * 0.55
 	var line := tall * 0.14
 	var x := 0.0
 	for digit in text:
-		for stroke in STROKES.get(digit, ""):
-			var where: Vector2 = PLACES[stroke]
+		for stroke in Paint.Pieces.STROKES.get(digit, ""):
+			var where: Vector2 = Paint.Pieces.PLACES[stroke]
 			var mid := Vector3(x + wide * 0.5 + where.x * wide, -tall * 0.5 + where.y * tall, 0.0)
 			var size := Vector3(wide + line, line, 0.001) if stroke in "adg" else Vector3(line, tall * 0.5 + line, 0.001)
 			b.box(size, at * mid, look, 0.0, at.basis)
