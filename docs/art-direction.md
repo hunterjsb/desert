@@ -1234,3 +1234,33 @@ and tall metal post. The complete condenser is 2,064–3,100 triangles in three 
 `look/station/eras` compares all five eras at 3 m in morning and dusk, plus handling views;
 `look/station/context` checks fitted instruments, powered and dark screens, a 20 m camp and
 its storm bubble. The existing `look/map` checks the live filters.
+
+## Commodity part fidelity (2026-10-26)
+
+The commonest things in the game, the battery, big battery, plug, strong plug, hose end, rope hook,
+water canister and lamp, are real models in B's merged worn kit, drawn inside their catalog boxes:
+collision, sockets, mass, sizes and each live charge light are unchanged (`CellLooks`).
+
+They share one company vocabulary: a moulded case, a collar in its socket kind's colour where it
+seats (amber cells, an orange plug, water blue, the ring's grey, a strong line's red), moulded grip
+ribs, capped terminals with the live one in safety yellow, and a dark window under each charge
+light. The pairs differ by shape. The battery is a slim slab with flush grips; the big battery is
+square-shouldered, with rubber bumpers down its edges, fins at its ends and a bail handle. The plug
+is round and fluted down to a strain-relief boot; the strong plug is a square armoured housing with
+a bayonet lock ring and banded grips. The hook is a forged J turned up on a swivel boss, with a
+sprung gate across its throat and the line's ring at its nose. The tie ring on every hook, stake and
+sail now wears the worn paint. The canister is drawn alloy with rolled beads and a fill-gauge
+saddle. The lamp has a square foot, a stem and a hinge under a hooded head with cooling rings, a
+bezel and a guard.
+
+A find's last hands set its shape ([Shape by era](#shape-by-era)). Issued parts are dark moulding;
+colonial ones are bone with grey caps and safety orange; First Kingdoms ones are kept clean, with
+brass caps, flared fittings and filigree vents. Skimmer parts are rust-painted, with welded plates
+and straps, rope lashings and bare studs. Second-age parts have their lost caps rebuilt in ceramic,
+with saltbush boards and stems, cord wraps and sand-glass windows. Base/era triangles: battery
+924–1,632; big battery 1,328–2,008; plug 660–804; strong plug 516–836; hose end 716–768; hook
+944–1,284, plus 192 for its ring; canister 1,152–1,376; lamp 1,020–1,356 (the placeholders were
+132–416). Each is one worn surface. The batteries' and the canister's charge lights and the hook's
+ring keep their own draw, so draws are as before: two for those, one for the rest. Paint gains
+`MOULDED`, `STRONG_RED` and `ALLOY`. `look/cells` shows each id in its five looks at about a metre,
+morning and dusk, and the camp with them seated, at 5 m and inside a storm's bubble.
