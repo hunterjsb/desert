@@ -74,13 +74,19 @@ func _shots() -> Array:
 	for i in MAKES_X.size():
 		var x: float = MAKES_X[i]
 		shots.append(["deck_%d" % i, "midmorning", Vector3(x + 0.05, 1.15, MAKES_Z + 0.85), Vector3(x, 0.04, MAKES_Z - 0.2)])
+	# Close over two decks, the camera creeping 2 mm a frame: a face fighting
+	# another for its pixels flickers from frame to frame.
+	for i in 4:
+		var x := -0.56 + i * 0.002
+		shots.append(["creep_%d" % i, "midmorning", Vector3(x + 0.06, 0.95, MAKES_Z + 0.75), Vector3(x, 0.04, MAKES_Z - 0.1)])
 	shots.append(["eras2", "midmorning", Vector3(4.4, 1.5, ERAS_Z + 1.8), Vector3(4.3, 0.05, ERAS_Z)])
 	shots.append(["rig2", "midmorning", Vector3(-4.4, 1.7, RIG_Z + 2.0), Vector3(-4.4, 0.05, RIG_Z + 0.2)])
 	shots.append(["rig_dusk", "dusk", Vector3(-4.4, 1.7, RIG_Z + 2.0), Vector3(-4.4, 0.05, RIG_Z + 0.2)])
 	shots.append(["floater", "midmorning", Vector3(-2.5, 1.12, 2.05), Vector3(-1.9, 1.08, 0.6)])
 	var hover := Vector3(3.75, 0.3, HOVER_Z)
-	shots.append(["hover_night", "night", Vector3(3.95, 0.75, HOVER_Z + 1.9), hover])
-	shots.append(["hover_storm", "storm", Vector3(3.95, 0.75, HOVER_Z + 1.9), hover])
+	# Low and ahead of their noses, under their emitters, toward their lamps.
+	shots.append(["hover_night", "night", Vector3(4.5, 0.2, HOVER_Z - 1.9), hover])
+	shots.append(["hover_storm", "storm", Vector3(4.5, 0.2, HOVER_Z - 1.9), hover])
 	shots.append(["storm_makes", "storm", Vector3(0.35, 1.45, MAKES_Z + 1.75), middle])
 	shots.append(["storm_floater", "storm", Vector3(-2.5, 1.12, 2.05), Vector3(-1.9, 1.08, 0.6)])
 	return shots

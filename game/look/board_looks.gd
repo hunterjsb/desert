@@ -85,12 +85,14 @@ static func part(b: Paint.Pieces, id: StringName, size: Vector3) -> bool:
 	return true
 
 
-static func _glow(strength := 2.0) -> Paint.Coat:
+## The field's glow, bright enough to bloom: a board reads by it at night
+## and in a storm.
+static func _glow(strength := 3.0) -> Paint.Coat:
 	return Paint.coat(Paint.HOVER, 0.0, 0.0, 0.3, 0.3, strength)
 
 
 static func _lamp() -> Paint.Coat:
-	return Paint.coat(Paint.LAMP, 0.0, 0.0, 0.2, 0.2, 2.5)
+	return Paint.coat(Paint.LAMP, 0.0, 0.0, 0.2, 0.2, 4.0)
 
 
 static func _rubber() -> Paint.Coat:
@@ -222,7 +224,7 @@ static func _hazard(b: Paint.Pieces, size: Vector3, at: Vector3, turn: Basis, co
 
 ## A hover emitter under a deck: its housing, and its field's glow standing
 ## a little below it.
-static func _emitter(b: Paint.Pieces, at: Vector3, radius: float, housing: Paint.Coat, strength := 2.0) -> void:
+static func _emitter(b: Paint.Pieces, at: Vector3, radius: float, housing: Paint.Coat, strength := 3.0) -> void:
 	b.drum(radius + 0.016, 0.006, at + Vector3(0.0, 0.003, 0.0), housing, Basis.IDENTITY, 14)
 	b.drum(radius, 0.0058, at + Vector3(0.0, -0.0001, 0.0), _glow(strength), Basis.IDENTITY, 14)
 
@@ -509,7 +511,7 @@ static func _patrol(b: Paint.Pieces, size: Vector3) -> void:
 		_nose_lamp(b, Vector3(x, 0.006, -0.6478), 0.006, _rubber())
 	b.drum(0.016, 0.008, Vector3(0.0, 0.006, -0.6455), _brass(), ALONG, 12, 0.022)
 	for z in [-0.42, -0.14, 0.14, 0.42]:
-		_emitter(b, Vector3(0.0, -0.0369, z), 0.05, _brass(), 1.1)
+		_emitter(b, Vector3(0.0, -0.0369, z), 0.05, _brass(), 1.6)
 	_port(b, size, steel)
 
 
@@ -567,7 +569,7 @@ static func _temple(b: Paint.Pieces, size: Vector3) -> void:
 		ShieldLooks._strand(b, knot, knot + Vector3((i - 1) * 0.008, -0.034, 0.004), 0.004, Paint.coat(Paint.DYED, 0.3, 0.0, 0.85))
 	# Ceramic rings round the old core's two emitters.
 	for z in [-0.3, 0.32]:
-		_emitter(b, Vector3(0.0, -0.0369, z), 0.055, Paint.coat(Paint.CERAMIC, 0.5, 0.0, 0.35, 0.7), 1.6)
+		_emitter(b, Vector3(0.0, -0.0369, z), 0.055, Paint.coat(Paint.CERAMIC, 0.5, 0.0, 0.35, 0.7), 2.4)
 
 
 # --- The rig -------------------------------------------------------------------

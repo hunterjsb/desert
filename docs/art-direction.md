@@ -1213,3 +1213,42 @@ charm, all in Paint's existing ages-after materials.
 Hunter’s graphical-fidelity request follows the [chassis kit](#chassis-kit-fidelity-2026-10-26). SANDGAME assigns planters, burner, turbine, condenser, light panel, Console, cargo, survival kit and bedroll to the same worn modular language and [era silhouettes](#shape-by-era). Planting points, the Console’s live screen recess, the turbine’s mast and separate rotor, drop-orange cargo and the bedroll’s existing unrolling path stay in place. Era-specific bedroll cloth follows the same lineage in both poses. Only the looks change.
 
 `CampLooks` builds growing tubs with pale corner shoes, raised rims and diagonal bracing, an insulated burner with a vented heat guard and latch, a serviceable turbine base and mast, louvred condenser, framed solar cells, a stepped metal Console bezel and recessed rack, strapped drop cargo, a latched supply case and folded canvas. Colonial panels are modular, First Kingdoms fittings are flared brass, second-age repairs use ceramic and cord-bound saltbush wood, and skimmer parts show welded splices. Lineage repairs project onto the actual era mesh. The bedroll uses the same era cloth as it unrolls. Base/era triangle ranges: planter 1,512–1,856; deep_planter 1,512–1,856; burner 1,636–2,272; turbine 936–1,688; condenser 1,536–2,216; light_panel 1,052–1,264; console 1,988–2,348; cargo 1,056–1,860; survival_kit 720–1,568; bedroll 4,104–4,148. Each static builder has one shared worn surface; the turbine rotor, socket tells and live screen keep their existing draws. The envelope probe covers ten ids in five eras, with the turbine’s existing mast reach. Including free-socket tells and existing lights, the complete Console is 4,364–4,928 triangles in 10 draws, the planter 4,428–4,976 in 13 and the deep planter 2,568–3,116 in 5. Recessed vent cuts and fitted cord bands keep those costs below 5k without adding draws. `look/camp/audit` checks the tub beneath ripe saltbush and coalcane and the bare stepped Console bezel at 5 m in morning, dusk and storm.
+
+## Board fidelity (2026-10-26)
+
+Hunter's fidelity request, after the [chassis kit](#chassis-kit-fidelity-2026-10-26): the four boards
+and the rig under a camp are real models in B's merged worn kit, inside each catalog box. Collision,
+sockets, mass, sizes and the ride are unchanged. The four makes are the next
+[shape by era](#shape-by-era) set (`BoardLooks`), each keeping its [make's](prd/movement.md#the-rides-feel-and-boards-by-make-hunter-2026-10-18-built)
+marks. Ridden, the deck is seen from above, so the top carries the grip, the fittings and the wear.
+- **The company's board** is a crisp moulded hull: a rail round a narrower underbody, a rubber bumper
+  standing proud of it, nose and tail deck panels split by a seam, ribbed grip pads, a moulded
+  battery cradle with safety-yellow levers, a hazard band and two nose lamps. A colonial find is the
+  same hull in off-white, grey and safety orange.
+- **Its last hands reshape it** (its lineage's era): the First Kingdoms make the bumper a brass rub
+  strip and add flared brass bosses and a filigree vent; skimmer crews paint it red with a pale
+  stripe, tape the rails, weld a scrap plate on and tape a lamp where one was lost; the second age
+  planks the lost tail panel in saltbush, caps a lamp's hole in ceramic and binds the rail in cord.
+- **The skimmer racer** is light and hasty: a narrow crew-red sheet with a pointed nose on a welded
+  frame of stringers, its tail kicked up on a sheet of its own, an olive splice plate across a crack,
+  hand-cut grip, a welded battery plate, three pods underneath and a lamp taped to the nose.
+- **The patrol board** is a First Kingdoms heirloom the Knights Requisitioner keep: the colonial hull
+  intact, its bumper a house's enamel band, brass at its corners, a filigree vent and tread plate
+  under the order's grey, olive armour riveted down its rails and a steel bumper lashed across its nose.
+- **The temple board** is the second age's craft object: saltbush planks on battens over an old core,
+  lashed in separate turns of fern cord, its battery seated on a round glazed cap, a glazed bead on a
+  cord, the vial under its right planks.
+- **The rig:** the hover tray's guarded nacelles and junction box, skates on hangers with steel
+  edges, the board plate's gunmetal runner with three skid strips (it no longer reads as a white
+  sheet), the keel's ribbed fin with its emitter in cells, and the sail furled in lumpy folds and
+  gaskets on a collared boom.
+
+The hover glow, grip, the order's grey and sail cloth are Paint tokens. Emitters and lamps glow only
+while a board runs, so a board lying on the sand at night is dark; ridden, its emitters show as lit
+rims under it and its nose lamps as points ahead, in the dark and in a storm. Each look is one shared
+worn surface, so draws are as before: 4 for each board with its tells
+and charge light, 1 for each rig part. Own triangles: board 2,696 (era shapes 2,624–3,340), racer
+3,020, patrol 5,040, temple 2,540; hover tray 2,268, skates 1,392, board plate 1,500, keel 1,604,
+sail 1,948. `look/boards/fidelity.sh` shoots the makes at 2 m in morning and dusk, each from its
+rider's eye, the company's board in each era, the rig, and the makes hovering lit at night and in a
+storm bubble; `look/board_body_view` rides a make given after its folder.
