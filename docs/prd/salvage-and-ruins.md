@@ -1734,3 +1734,9 @@ salvage loop even before their ending quests exist. Discovery uses existing land
 Distant volcanic columns retain their real, dangerous vent mouths. None promises an easy
 rescue or a safe water source. Location can be learned visually or through existing map and
 radio tools; this first slice adds no exposition dump or mandatory travel objective.
+
+### World-object fidelity (SANDGAME, 2026-10-26)
+
+The fidelity lane remodels the pipe-wall hut, cistern, low wall, pipeline, fuel bladder and
+vent spatter. Their existing site era, solids, rooms, exposure, ground profile and salvage
+sockets remain authoritative. [Art direction](../art-direction.md#ruins-at-a-distance-and-sailing-kit-2026-10-26) owns the appearance and viewing distances.

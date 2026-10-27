@@ -88,7 +88,7 @@ static func _vent_mouth() -> StructureKit.Piece:
 		StructureKit.box(p, Vector3(at.x, y, at.y) - half, Vector3(at.x, y, at.y) + half, "")
 		s += rng.randf_range(2.6, 5.0)
 	p.approach = Vector2(0.0, 40.0)
-	p.look = _mouth_look
+	p.look = WorldLooks.site
 	return p
 
 
@@ -108,24 +108,3 @@ static func _on_crest(s: float) -> Vector2:
 		return Vector2(-CREST, SLOT - s)
 	var a := (s - side) / CREST
 	return Vector2(-CREST * cos(a), -SLOT - CREST * sin(a))
-
-
-static func _mouth_look(b: Paint.Pieces, p: StructureKit.Piece, _state: int) -> void:
-	var c := coats()
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 11
-	for box in p.boxes:
-		var middle := box.get_center()
-		var turn := Basis(Vector3.UP, rng.randf() * TAU) * Basis(Vector3.RIGHT, rng.randf_range(-0.3, 0.3))
-		b.ball(1.0, middle, c.basalt if rng.randf() < 0.7 else c.scoria, box.size * 0.62, turn)
-	# Sulphur crusts the throat's upper slope, where the gas cools.
-	for k in 9:
-		var a := rng.randf() * TAU
-		var d := rng.randf_range(3.5, 6.5)
-		var at := Vector2(cos(a) * d, sin(a) * d)
-		at.y += signf(at.y) * rng.randf() * SLOT
-		var y := profile(from_slot(at))
-		var down := (Vector2(at.x, signf(at.y) * maxf(absf(at.y) - SLOT, 0.0))).normalized()
-		var tilt := Basis(Vector3(down.y, 0.0, -down.x).normalized(), -atan((CREST_HEIGHT + PIT_DEPTH) / (CREST - PIT)))
-		b.box(Vector3(rng.randf_range(1.2, 2.4), 0.08, rng.randf_range(0.8, 1.6)), Vector3(at.x, y + 0.02, at.y),
-			c.sulphur, 0.02, tilt * Basis(Vector3.UP, rng.randf() * TAU))

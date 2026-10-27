@@ -1360,3 +1360,14 @@ separate ring at the existing guide. Era mounts keep their brass, ceramic, cord 
 Devices probe 50 checks 295 variants across seven builders, including the existing turbine mast
 and runner keel depths. It replaces probes 47–49. The leaf bundle sits half a millimetre higher
 to keep its outermost leaf within the food’s existing box.
+
+## Ruins at a distance and sailing kit (2026-10-26)
+
+Hunter’s fidelity request continues through SANDGAME’s world-object lane: pipe-wall hut,
+cistern, low wall, vent mouth, fuel bladder and pipeline segment, plus streamer, fabric and
+crow’s nest. Their silhouettes must read at 20–60 m, with close views at 3 m. The existing
+site era governs its materials and structure; gear with lineage takes the era’s shape.
+Collision, site exposure, sockets, rooms, fit, cloth motion and deployed ladder behavior
+stay as built. The First Kingdoms’ kept pipe and masonry should read as constructions;
+vent spatter should read as broken rock instead of smooth domes. Use the established
+Paint palette and shared worn mesh; radio kit and headset remain with their owner.

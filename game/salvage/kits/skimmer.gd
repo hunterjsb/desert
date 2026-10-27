@@ -54,23 +54,8 @@ static func _fuel_bladder() -> StructureKit.Piece:
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(2.75, 0.6, 0.0), &"cache"))
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(-2.3, 0.12, 1.3), &"floor"))
 	p.approach = Vector2(0.0, 7.0)
-	p.look = _bladder_look
+	p.look = WorldLooks.site
 	return p
-
-
-static func _bladder_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
-	var c := coats()
-	StructureKit.draw_boxes(b, p, state, c, 0.03)
-	# The bag itself, flattened by its own weight, and the tape over its leaks.
-	b.ball(1.0, Vector3(0.0, 0.66, 0.0), c.rubber, Vector3(2.4, 0.58, 1.42))
-	for patch: Array in [[Vector3(-0.9, 1.22, 0.3), 0.5], [Vector3(1.1, 1.12, -0.6), 0.3], [Vector3(0.2, 0.9, 1.25), 0.4]]:
-		b.box(Vector3(patch[1], 0.03, patch[1] * 0.6), patch[0], c.tape, 0.005)
-	# Straps over it to the pallet, a valve with its wheel, the crew's patch.
-	for u: float in [-1.4, 0.0, 1.4]:
-		b.box(Vector3(0.1, 0.03, 2.9), Vector3(u, 1.26, 0.0), c.olive, 0.005)
-	b.ring(0.12, 0.17, Vector3(2.8, 0.58, 0.0), c.red, Basis(Vector3.FORWARD, PI * 0.5), 8)
-	b.stamp(Paint.Mark.SKIMMER_CREW, Vector3(0.0, 0.25, 1.62), 0.7)
-	b.box(Vector3(1.0, 0.3, 0.04), Vector3(0.0, 0.0, 1.6), c.scrap, 0.01)
 
 
 # --- The dugout: a deserters' pit, sandbagged, roofed with scrap. ---

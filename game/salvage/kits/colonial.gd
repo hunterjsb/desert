@@ -104,28 +104,12 @@ static func _pipeline_segment() -> StructureKit.Piece:
 		StructureKit.box(p, Vector3(-0.95, -0.6, v - 0.4), Vector3(0.95, 0.55, v + 0.4), "concrete")
 	p.sockets.append(StructureKit.SiteSocket.new(Vector3(0.0, 1.8, 2.0), &"cache", 0.5))
 	p.approach = Vector2(5.0, 4.0)
-	p.look = _pipe_look
+	p.look = WorldLooks.site
 	# Its lengths in a row are a run of old pipe across the dunes.
 	StructureKit.far_box(p, Vector3(-0.7, 0.4, -6.0), Vector3(0.7, 1.9, 6.0), coats().panel)
 	StructureKit.glint(p, Vector3(0.66, 1.35, -3.0), Vector3(0.94, 0.34, 0.0), 4.0)
 	StructureKit.glint(p, Vector3(-0.66, 1.35, 3.5), Vector3(-0.94, 0.34, 0.0), 4.0)
 	return p
-
-
-static func _pipe_look(b: Paint.Pieces, p: StructureKit.Piece, state: int) -> void:
-	var c := coats()
-	StructureKit.draw_boxes(b, p, state, c, 0.05)
-	var along := Basis(Vector3.RIGHT, PI * 0.5)
-	if StructureKit.shows(p, state, 1.8):
-		b.drum(0.7, 12.0, Vector3(0.0, 1.1, 0.0), c.panel, along, 18)
-		# Bolted flanges at its ends and middle, a band and the contractor's tag.
-		for v: float in [-5.95, 0.0, 5.95]:
-			b.drum(0.8, 0.14, Vector3(0.0, 1.1, v), c.grey, along, 18)
-		b.drum(0.71, 0.4, Vector3(0.0, 1.1, 4.4), c.orange, along, 18)
-		b.stamp(Paint.Mark.CONTRACTOR, Vector3(0.71, 1.1, -2.0), 0.9, Basis(Vector3.UP, PI * 0.5))
-		b.box(Vector3(0.02, 0.5, 1.0), Vector3(0.7, 1.1, -2.0), c.panel, 0.002)
-		# The inspection hatch on its back.
-		b.box(Vector3(0.6, 0.06, 0.8), Vector3(0.0, 1.8, 2.0), c.dark, 0.02)
 
 
 # --- The hab pod: a modular living pod, overbuilt for this moon. ---

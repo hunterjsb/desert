@@ -75,3 +75,8 @@ its live cable before granting gain or grounding. Radio69–73 cover those bound
 corrections; Radio74 compares printed frequencies with the live band needle.
 Existing radio55–68, Power7 and saves13 retain the feature checks.
 See [the integration account](prd/radio-integration-review.md).
+
+World-object and sailing-kit appearance: `game/look/world_looks.gd`; the historical kit
+files retain their physical site definitions. `look/world-kit` compares actual site meshes
+and Catalog kit at 3, 20 and 60 m; its vent scene includes native crater terrain. The shared
+`probes/devices/50_looks_keep_their_envelopes.gd` covers the catalog kit and historical site states.

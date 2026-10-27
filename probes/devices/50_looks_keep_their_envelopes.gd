@@ -1,6 +1,6 @@
 extends Probe
 ## Every kit builder stays inside its existing housing on the shared worn material.
-var looks := [ChassisLooks, ShieldLooks, CampLooks, CellLooks, BoardLooks, StationLooks, HeldLooks]
+var looks := [ChassisLooks, ShieldLooks, CampLooks, CellLooks, BoardLooks, StationLooks, HeldLooks, WorldLooks]
 const ERAS := [Eras.NEW, Eras.COLONIAL, Eras.FIRST, Eras.SECOND, Eras.SKIMMER]
 
 func run() -> void:
@@ -41,4 +41,22 @@ func run() -> void:
 				check(box.grow(0.0001).encloses(mesh.get_aabb()), "%s %s stays in its existing envelope: %s" % [id, era, mesh.get_aabb()])
 				if id == &"hook": print("HOOK BUDGET ", era, " triangles=", mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size() / 3)
 				variants += 1
+	_site_envelopes()
 	print("LOOKS ENVELOPES ", variants, " variants across ", looks.size(), " builders")
+
+
+## Sites have plan footprints and burial states instead of Catalog part boxes.
+func _site_envelopes() -> void:
+	for id: StringName in WorldLooks.SITES:
+		var piece := StructureKit.piece(id)
+		var solid: AABB = piece.boxes[0]
+		for each: AABB in piece.boxes: solid = solid.merge(each)
+		var low := solid.position.y
+		if id == &"vent_mouth": low = minf(low, -GeologyKit.PIT_DEPTH)
+		# The existing capstones, flanges and valve rims stand slightly past their solids.
+		var box := AABB(Vector3(-piece.half.x, low, -piece.half.y), Vector3(piece.half.x * 2, solid.end.y - low, piece.half.y * 2)).merge(solid).grow(0.1)
+		for state: int in [Exposure.BURIED, Exposure.PARTLY, Exposure.EXPOSED]:
+			for variant in piece.looks():
+				var mesh := piece.mesh(state, variant)
+				check(mesh.get_surface_count() == 1 and mesh.surface_get_material(0) == Paint.worn(), "%s state %d keeps one shared worn surface" % [id, state])
+				check(box.encloses(mesh.get_aabb()), "%s state %d stays in its existing site footprint: %s" % [id, state, mesh.get_aabb()])

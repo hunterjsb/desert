@@ -173,6 +173,8 @@ static func _lineage(id: StringName, line: Array) -> ArrayMesh:
 		own = StationLooks.lineage(id, line)
 	if own == null:
 		own = HeldLooks.lineage(id, line)
+	if own == null:
+		own = WorldLooks.lineage(id, line)
 	var shape := own.get_instance_id() if own != null else 0
 	if own == null:
 		own = _own(id)
@@ -279,7 +281,7 @@ static func _frame(id: StringName, size: Vector3, extra: float) -> ArrayMesh:
 	var gun := Paint.coat(Paint.GUNMETAL)
 	var teal := Paint.coat(Paint.TEAL)
 	var black := Paint.coat(Paint.BLACK, 0.3, 0.3, 0.6)
-	if CampLooks.frame(b, id, size, extra) or ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or NomadLooks.frame(b, id, size):
+	if CampLooks.frame(b, id, size, extra) or ChassisLooks.frame(b, id, size) or PowerLooks.frame(b, id, size) or VarranLooks.frame(b, id, size) or WorldLooks.frame(b, id, size):
 		return b.commit()
 	if BoardLooks.frame(b, id, size):
 		return b.commit()
@@ -372,7 +374,7 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 	var along := Basis(Vector3.RIGHT, PI / 2.0)
 	if ChassisLooks.part(b, id, size):
 		return b.commit()
-	if CellLooks.part(b, id, size) or StationLooks.part(b, id, size):
+	if CellLooks.part(b, id, size) or StationLooks.part(b, id, size) or WorldLooks.part(b, id, size):
 		return b.commit()
 	if BoardLooks.part(b, id, size):
 		return b.commit()
@@ -441,15 +443,6 @@ static func _part(id: StringName, size: Vector3, count := -1) -> ArrayMesh:
 				var long := 2.0 * sqrt(maxf(pow(h.x - 0.02, 2.0) - across * across, 0.0))
 				b.box(Vector3(0.004, long, 0.004), Vector3(across, 0.0, 0.03), mesh, 0.0)
 				b.box(Vector3(long, 0.004, 0.004), Vector3(0.0, across, 0.034), mesh, 0.0)
-		&"fabric":
-			# Its hem stitched and its corners grommeted; the canvas is its own
-			# cloth, which bellies and flutters (Faces).
-			for s in [-1, 1]:
-				b.box(Vector3(size.x, 0.025, size.z + 0.004), Vector3(0.0, s * (h.y - 0.0125), h.z), Paint.coat(Color(0.62, 0.55, 0.42), 0.0, 0.0, 0.95), 0.001)
-				b.box(Vector3(0.025, size.y, size.z + 0.004), Vector3(s * (h.x - 0.0125), 0.0, h.z), Paint.coat(Color(0.62, 0.55, 0.42), 0.0, 0.0, 0.95), 0.001)
-			for x in [-1, 1]:
-				for y in [-1, 1]:
-					b.drum(0.018, size.z + 0.008, Vector3(x * (h.x - 0.04), y * (h.y - 0.04), h.z), steel, along, 10)
 		_:
 			return null
 	return b.commit()
