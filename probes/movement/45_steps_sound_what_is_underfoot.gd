@@ -35,7 +35,10 @@ func run() -> void:
 ## Walks ahead for `seconds`, and the step sounds started meanwhile.
 func _walk(seconds: float) -> Array:
 	var heard: Array = []
+	# A step still sounding from before counts as heard already, not as one of these.
 	var playing := {}
+	for foot: AudioStreamPlayer in player.feel._feet:
+		playing[foot] = foot.playing
 	hold(["move_forward"])
 	await simulate(seconds, func() -> void:
 		for foot: AudioStreamPlayer in player.feel._feet:
