@@ -92,6 +92,13 @@ const HOVER := Color(0.45, 0.8, 1.0)
 const GRIP := Color(0.05, 0.05, 0.05)
 const ORDER_GREY := Color(0.46, 0.46, 0.44)
 const SAILCLOTH := Color(0.86, 0.8, 0.68)
+## Cells lane (CellLooks): the commodity parts' own.
+## Their moulded case: a dark composite, so their kind's collar is what reads.
+const MOULDED := Color(0.2, 0.21, 0.19)
+## A strong cable's plug: a heavy line's deep red, apart from a plain plug's orange.
+const STRONG_RED := Color(0.7, 0.15, 0.1)
+## Drawn alloy, the water canister's: pale, so water reads apart from power.
+const ALLOY := Color(0.55, 0.62, 0.68)
 
 static var _worn: ShaderMaterial
 static var _noise: NoiseTexture2D
